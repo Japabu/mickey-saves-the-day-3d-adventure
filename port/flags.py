@@ -54,6 +54,10 @@ COMMON = [
     # braced initialisers narrowing a 64-bit `long` into 32-bit Windows fields
     # (RECT r = { 0, 0, rect.Width(), ... }): VC6 had no such rule
     '-Wno-c++11-narrowing',
+    # the complete destructor as an alias of the base destructor: clang otherwise compiles
+    # the complete destructor of an abstract class to a trap, and the game deletes through
+    # abstract bases with non-virtual destructors (MSVC ran the base destructor)
+    '-Xclang', '-mconstructor-aliases',
     '-include', os.path.join(PORT, 'compat', 'prelude.h'),
     '-isystem', os.path.join(PORT, 'compat', 'include'),
     '-D_WIN32', '-DWIN32', '-D_X86_', '-D_M_IX86=500', '-D_MSC_VER=1200', '-DPORT_MACOS',

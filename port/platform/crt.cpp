@@ -200,3 +200,4 @@ _se_translator_function _set_se_translator(_se_translator_function f)
     gTranslator = f;
     return old;
 }
+

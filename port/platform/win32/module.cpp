@@ -9,6 +9,8 @@
 #include <dirent.h>
 #include <dlfcn.h>
 #include <mach-o/dyld.h>
+#include <mach-o/loader.h>
+#include <mach-o/nlist.h>
 #include <mutex>
 #include <string.h>
 #include <strings.h>
@@ -195,6 +197,48 @@ BOOL WINAPI FreeLibrary(HMODULE hLibModule)
     return TRUE;
 }
 
+// A .def file let a DLL export a C++ function under its plain name (MBEngine's
+// MBComRegisterServer, really ?MBComRegisterServer@@YA_NXZ). Here it only exists with its
+// Itanium name, _Z<len><name><parameters>: find the free function with exactly that
+// name among the module's own symbols. Several overloads would be ambiguous; the first wins.
+static void *find_cxx_free_function(const Module *m, const char *name)
+{
+    std::string lib = "lib" + strip_ext(m->dll) + ".dylib";
+    std::string prefix = "__Z" + std::to_string(strlen(name)) + name;
+    for (uint32_t i = 0; i < _dyld_image_count(); i++) {
+        const char *path = _dyld_get_image_name(i);
+        const char *slash = strrchr(path, '/');
+        if (strcasecmp(slash ? slash + 1 : path, lib.c_str()) != 0)
+            continue;
+        const mach_header_64 *mh = (const mach_header_64 *)_dyld_get_image_header(i);
+        intptr_t slide = _dyld_get_image_vmaddr_slide(i);
+        const symtab_command *symtab = 0;
+        const segment_command_64 *linkedit = 0;
+        const load_command *lc = (const load_command *)(mh + 1);
+        for (uint32_t c = 0; c < mh->ncmds; c++, lc = (const load_command *)((const char *)lc + lc->cmdsize)) {
+            if (lc->cmd == LC_SYMTAB)
+                symtab = (const symtab_command *)lc;
+            else if (lc->cmd == LC_SEGMENT_64 && !strcmp(((const segment_command_64 *)lc)->segname, SEG_LINKEDIT))
+                linkedit = (const segment_command_64 *)lc;
+        }
+        if (!symtab || !linkedit)
+            return 0;
+        const char *base = (const char *)(slide + linkedit->vmaddr - linkedit->fileoff);
+        const nlist_64 *syms = (const nlist_64 *)(base + symtab->symoff);
+        const char *strs = base + symtab->stroff;
+        for (uint32_t k = 0; k < symtab->nsyms; k++) {
+            const nlist_64 &s = syms[k];
+            if ((s.n_type & N_TYPE) != N_SECT || s.n_un.n_strx == 0)
+                continue;
+            const char *sym = strs + s.n_un.n_strx;
+            if (!strncmp(sym, prefix.c_str(), prefix.size()))
+                return (void *)(slide + s.n_value);
+        }
+        return 0;
+    }
+    return 0;
+}
+
 FARPROC WINAPI GetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 {
     Module *m = (Module *)hModule;
@@ -214,6 +258,8 @@ FARPROC WINAPI GetProcAddress(HMODULE hModule, LPCSTR lpProcName)
             n.erase(at);
         p = dlsym(dl, n.c_str());
     }
+    if (!p)
+        p = find_cxx_free_function(m, lpProcName);
     if (!p) {
         log("module", "GetProcAddress(%s, %s): not found\n", m->dll.c_str(), lpProcName);
         SetLastError(ERROR_PROC_NOT_FOUND);

@@ -22,7 +22,19 @@ _QI_DECL = ('long _QueryInterface(IMBUnknown *const &p);', QI, 1)
 # they are instantiated explicitly in a unit that does (on its last line).
 def _inst(*types):
     return ' '.join('template long MBComPtr<%s>::_QueryInterface(IMBUnknown *const &);' % t for t in types)
+# Two variables share the name kMBDirectorySeparator in the original: the char '\\'
+# (?kMBDirectorySeparator@@3DA, MBFileUtils) and a `const char *const` pointing to "\\"
+# (?kMBDirectorySeparator@@3PBDB at 0x10096c0c), which the decompilation declares but never
+# defined. Visual C++ names keep the type apart; Itanium names don't, so the port's
+# CMBWinFileSpec read the char as a pointer. Its header gets the string constant itself.
+_SEPARATOR = ('extern const char *kMBDirectorySeparator;',
+              'static const char *const kMBDirectorySeparator = "\\\\";', 1)
+# the same for kMBExtensionSeparator: the char '.' and a pointer to "." (0x10096c10)
+_EXTENSION = ('extern const char *kMBExtensionSeparator;',
+              'static const char *const kMBExtensionSeparator = ".";', 1)
+
 EDITS = {
+    'MBEngine/CMBWinFileSpec.h': [_SEPARATOR, _EXTENSION],
     'MBEngine/CMBAnim.h': [_QI_DECL,],
     'MBEngine/CMBFPSMonitor.h': [_QI_DECL,],
     'MBEngine/MBMilesSoundChannel.h': [_QI_DECL,],

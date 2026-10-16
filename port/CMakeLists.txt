@@ -37,6 +37,7 @@ set_target_properties(platform PROPERTIES C_VISIBILITY_PRESET default CXX_VISIBI
 # the platform sees the game's own headers (d3d7.h, ...) as the modules do: through the
 # overlay (written when flags.py generates modules.cmake below)
 target_compile_options(platform PRIVATE -ivfsoverlay ${CMAKE_CURRENT_SOURCE_DIR}/../out/port/overlay.yaml)
+target_compile_options(platform PRIVATE "SHELL:-Xclang -mconstructor-aliases")
 target_compile_options(platform PRIVATE -include ${CMAKE_CURRENT_SOURCE_DIR}/compat/prelude.h
   $<$<COMPILE_LANGUAGE:CXX>:-std=gnu++17>)
 target_link_libraries(platform PRIVATE SDL3::SDL3 "-framework CoreText" "-framework CoreGraphics" "-framework CoreFoundation")

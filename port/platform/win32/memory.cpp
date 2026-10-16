@@ -1,5 +1,7 @@
 // memory.cpp - Global/Local/Heap memory on malloc, Virtual memory on mmap, the
 // pointer probes, and the system memory and processor reports.
+#include <map>
+#include <mutex>
 #include "internal.h"
 
 #include <mach/mach.h>
@@ -132,6 +134,26 @@ static int prot_of(DWORD protect)
     }
 }
 
+// The reservations VirtualAlloc made ({base: size}): VirtualQuery reports a region's
+// size from them (the script VM's stack sizes its reservation that way), and
+// VirtualFree(MEM_RELEASE, 0) knows how much to unmap.
+static std::mutex s_res_mu;
+static std::map<uintptr_t, size_t> s_reservations;
+
+static bool reservation_of(uintptr_t a, uintptr_t *base, size_t *size)
+{
+    std::lock_guard<std::mutex> lock(s_res_mu);
+    auto it = s_reservations.upper_bound(a);
+    if (it == s_reservations.begin())
+        return false;
+    --it;
+    if (a >= it->first + it->second)
+        return false;
+    *base = it->first;
+    *size = it->second;
+    return true;
+}
+
 LPVOID WINAPI VirtualAlloc(LPVOID lpAddress, SIZE_T dwSize, DWORD flAllocationType, DWORD flProtect)
 {
     size_t page = (size_t)getpagesize();
@@ -151,6 +173,8 @@ LPVOID WINAPI VirtualAlloc(LPVOID lpAddress, SIZE_T dwSize, DWORD flAllocationTy
         SetLastError(ERROR_NOT_ENOUGH_MEMORY);
         return 0;
     }
+    std::lock_guard<std::mutex> lock(s_res_mu);
+    s_reservations[(uintptr_t)p] = n;
     return p;
 }
 
@@ -158,9 +182,14 @@ BOOL WINAPI VirtualFree(LPVOID lpAddress, SIZE_T dwSize, DWORD dwFreeType)
 {
     if (dwFreeType & MEM_DECOMMIT)
         return mprotect(lpAddress, dwSize, PROT_NONE) == 0;
-    // MEM_RELEASE passes size 0 for the whole reservation, which is not recorded;
-    // the address space is given back when its size is known.
-    if (dwSize)
+    // MEM_RELEASE passes size 0: the whole reservation
+    uintptr_t base;
+    size_t size;
+    if (reservation_of((uintptr_t)lpAddress, &base, &size) && base == (uintptr_t)lpAddress) {
+        munmap(lpAddress, size);
+        std::lock_guard<std::mutex> lock(s_res_mu);
+        s_reservations.erase(base);
+    } else if (dwSize)
         munmap(lpAddress, dwSize);
     return TRUE;
 }
@@ -174,6 +203,13 @@ SIZE_T WINAPI VirtualQuery(LPCVOID lpAddress, PMEMORY_BASIC_INFORMATION lpBuffer
     lpBuffer->BaseAddress = (PVOID)((uintptr_t)lpAddress & ~(uintptr_t)(page - 1));
     lpBuffer->AllocationBase = lpBuffer->BaseAddress;
     lpBuffer->RegionSize = page;
+    uintptr_t base;
+    size_t size;
+    if (reservation_of((uintptr_t)lpAddress, &base, &size)) {
+        // the region from the queried page to the end of its reservation
+        lpBuffer->AllocationBase = (PVOID)base;
+        lpBuffer->RegionSize = base + size - (uintptr_t)lpBuffer->BaseAddress;
+    }
     lpBuffer->State = MEM_COMMIT;
     lpBuffer->Protect = PAGE_READWRITE;
     lpBuffer->AllocationProtect = PAGE_READWRITE;
