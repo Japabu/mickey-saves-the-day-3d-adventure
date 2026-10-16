@@ -409,6 +409,28 @@ static float rs_float(const DWORD *rs, int s)
     return f;
 }
 
+// PORT_DX_TRACE=<n>: the first n draws, with their matrices and first vertices, go to
+// the log (where geometry goes when nothing shows).
+static void trace_draw(D3DPRIMITIVETYPE type, DWORD fvf, DWORD nverts, DWORD count, bool transformed,
+                       const D3DMATRIX &w, const D3DMATRIX &v, const D3DMATRIX &p, const CVert *cv, const SVert *sv)
+{
+    static int budget = getenv("PORT_DX_TRACE") ? atoi(getenv("PORT_DX_TRACE")) : 0;
+    if (budget <= 0)
+        return;
+    budget--;
+    DX_LOG("draw type %d fvf %#x verts %u count %u%s\n", (int)type, (unsigned)fvf, (unsigned)nverts, (unsigned)count,
+           transformed ? " (transformed)" : "");
+    const D3DMATRIX *m[3] = {&w, &v, &p};
+    const char *names[3] = {"world", "view", "proj"};
+    for (int k = 0; k < 3 && !transformed; k++)
+        DX_LOG("  %s %g %g %g %g | %g %g %g %g | %g %g %g %g | %g %g %g %g\n", names[k], m[k]->_11, m[k]->_12, m[k]->_13,
+               m[k]->_14, m[k]->_21, m[k]->_22, m[k]->_23, m[k]->_24, m[k]->_31, m[k]->_32, m[k]->_33, m[k]->_34, m[k]->_41,
+               m[k]->_42, m[k]->_43, m[k]->_44);
+    for (DWORD i = 0; i < nverts && i < 3; i++)
+        DX_LOG("  v%u clip %g %g %g %g code %#x screen %g %g %g rhw %g\n", (unsigned)i, cv[i].pos.x, cv[i].pos.y, cv[i].pos.z,
+               cv[i].pos.w, cv[i].code, sv[i].x, sv[i].y, sv[i].z, sv[i].rhw);
+}
+
 HRESULT Device::draw(D3DPRIMITIVETYPE type, DWORD fvf, const void *data, const _D3DDRAWPRIMITIVESTRIDEDDATA *sdata,
                      DWORD nverts, const WORD *idx, DWORD nidx, DWORD flags)
 {
@@ -547,6 +569,7 @@ HRESULT Device::draw(D3DPRIMITIVETYPE type, DWORD fvf, const void *data, const _
         if (!c.code)
             d.project(c, d.screen[i]);
     }
+    trace_draw(type, fvf, nverts, idx ? nidx : nverts, s.transformed, world, view, proj, d.verts.data(), d.screen.data());
 
     // ---- primitives
     DWORD count = idx ? nidx : nverts;

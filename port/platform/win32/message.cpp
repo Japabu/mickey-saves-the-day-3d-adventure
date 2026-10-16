@@ -6,6 +6,7 @@
 #include "user.h"
 
 #include <deque>
+#include <signal.h>
 #include <mutex>
 #include <vector>
 
@@ -180,10 +181,24 @@ static void text_message(Window *w, const char *utf8)
 
 static bool s_text_input_started;
 
+// SIGTERM (kill, a logout) closes the window as the close button does, so the game
+// shuts down and exits instead of dying in the middle of a frame.
+static volatile sig_atomic_t s_terminate;
+static void on_sigterm(int) { s_terminate = 1; }
+
 void pump_events()
 {
     if (GetCurrentThreadId() != s_main_thread && s_main_thread)
         return;
+    static bool s_sigterm_set = [] { signal(SIGTERM, on_sigterm); return true; }();
+    (void)s_sigterm_set;
+    if (s_terminate == 1) {
+        s_terminate = 2;
+        if (HWND m = main_window()) {
+            log("message", "SIGTERM: closing the window\n");
+            post(m, WM_CLOSE, 0, 0);
+        }
+    }
     if (!SDL_WasInit(SDL_INIT_VIDEO))
         return;
     SDL_Event e;
@@ -198,6 +213,7 @@ void pump_events()
         switch (e.type) {
         case SDL_EVENT_QUIT:
         case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+            log("message", "%s: WM_CLOSE\n", e.type == SDL_EVENT_QUIT ? "quit" : "close button");
             post((HWND)w, WM_CLOSE, 0, 0);
             break;
         case SDL_EVENT_WINDOW_FOCUS_GAINED:
@@ -418,6 +434,7 @@ BOOL WINAPI PostThreadMessageA(DWORD idThread, UINT Msg, WPARAM wParam, LPARAM l
 
 void WINAPI PostQuitMessage(int nExitCode)
 {
+    log("message", "PostQuitMessage(%d)\n", nExitCode);
     std::lock_guard<std::mutex> lock(s_mu);
     Queue &q = queue(GetCurrentThreadId());
     q.quit = true;

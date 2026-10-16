@@ -5,6 +5,7 @@ Each original binary becomes one macOS library (the executable for Steamboat.exe
 Its sources are the files of src/<dir>/; a file (source or header) under
 port/override/<same path> is used instead of the original, through a clang VFS overlay.
 """
+import glob
 import os
 import sys
 
@@ -239,9 +240,29 @@ def cmake(path):
             if deps_of:
                 props += ' OBJECT_DEPENDS ' + q(';'.join(deps_of))
             lines.append(f'set_source_files_properties({q(s)} TARGET_DIRECTORY {m} PROPERTIES {props})')
+    lines += tests_cmake(q)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w') as f:
         f.write('\n'.join(lines) + '\n')
+
+
+def tests_cmake(q):
+    """port_tests: the headless tests of port/tests/<Module>/*.cpp, each compiled as if it
+    were a source of that module (its includes, defines and flags), linked against the
+    game's libraries; port/tests/main.cpp runs them (see port/tests/test.h)."""
+    tests = os.path.join(PORT, 'tests')
+    srcs, props = [os.path.join(tests, 'main.cpp')], []
+    for m in sorted(MODULES):
+        for t in sorted(glob.glob(os.path.join(tests, m, '*.cpp'))):
+            cmd = command(m, os.path.join(SRC, MODULES[m][0], os.path.basename(t)))
+            srcs.append(t)
+            props.append(f'set_source_files_properties({q(t)} TARGET_DIRECTORY port_tests PROPERTIES '
+                         f'COMPILE_OPTIONS {q(";".join(cmd[1:-1]))})')
+    libs = [m for m in MODULES if m != 'Steamboat']
+    return ([f'add_executable(port_tests {" ".join(q(s) for s in srcs)})',
+             f'target_link_libraries(port_tests PRIVATE {" ".join(libs)} platform)',
+             f'set_source_files_properties({q(srcs[0])} TARGET_DIRECTORY port_tests PROPERTIES '
+             f'COMPILE_OPTIONS "-std=gnu++17")'] + props)
 
 
 if __name__ == '__main__' and len(sys.argv) == 3 and sys.argv[1] == 'cmake':

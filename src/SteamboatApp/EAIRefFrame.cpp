@@ -254,7 +254,9 @@ void EAIRefFrame::validateNewUpVec(const Vec3<float> &newUp)
     float d = up.dot(view);
     if (d < 0)
         d = -d;
-    if (d != 1.0) {
+    // only an up vector along the view (|d| == 1) turns the frame: the original skips the
+    // rotation unless the comparison with 1.0 is equal (fcomp; test ah, 0x40; je past it)
+    if (d == 1.0) {
         Vec3<float> axis = old.cross(up);
         atRotate((float)acos(old.dot(up)), axis);
         Up = up;
