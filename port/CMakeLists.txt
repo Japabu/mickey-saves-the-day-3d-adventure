@@ -18,6 +18,15 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 
+# optional sanitizer build, for precise crash reports from playtests:
+#   cmake -S port -B out/port/build-asan -G Ninja -DPORT_SANITIZE=address,undefined
+# (every target: the platform, the modules and the executable; default off)
+set(PORT_SANITIZE "" CACHE STRING "clang sanitizers for every target, e.g. address,undefined (empty: none)")
+if(PORT_SANITIZE)
+  add_compile_options(-fsanitize=${PORT_SANITIZE} -fno-omit-frame-pointer)
+  add_link_options(-fsanitize=${PORT_SANITIZE})
+endif()
+
 
 # Win32, DirectDraw/Direct3D 7, Miles, Bink and Smacker for the game
 file(GLOB_RECURSE PLATFORM_SOURCES CONFIGURE_DEPENDS platform/*.cpp platform/*.c)

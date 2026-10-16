@@ -238,6 +238,13 @@ BOOL WINAPI ShowWindow(HWND hWnd, int nCmdShow)
         if (show) {
             send(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(w->client_w, w->client_h));
             w->invalid = true;
+            if (!w->parent && nCmdShow != SW_SHOWNOACTIVATE && nCmdShow != SW_SHOWNA &&
+                nCmdShow != SW_SHOWMINNOACTIVE && nCmdShow != SW_MINIMIZE) {
+                // Showing a top-level window activates it (the game idles only while active).
+                send(hWnd, WM_ACTIVATEAPP, TRUE, 0);
+                send(hWnd, WM_ACTIVATE, WA_ACTIVE, 0);
+                send(hWnd, WM_SETFOCUS, 0, 0);
+            }
         }
     }
     if (w->sdl && nCmdShow == SW_MINIMIZE)

@@ -57,4 +57,8 @@ EDITS = {
         ('static unsigned long ghIMC;', 'static UINT_PTR ghIMC;', 1),
         ('ghIMC = (unsigned long)ImmAssociateContext(', 'ghIMC = (UINT_PTR)ImmAssociateContext(', 1),
     ],
+    # UniqueName's format has "%^", which Microsoft's printf printed as "^" and macOS leaves
+    # undefined: the same names without it
+    'MBEngine/scriptc.cpp': [('sprintf(name, "%ld\\"\\"\\"!@#$%^&*()", count++);',
+                              'sprintf(name, "%ld\\"\\"\\"!@#$^&*()", count++);', 1)],
 }

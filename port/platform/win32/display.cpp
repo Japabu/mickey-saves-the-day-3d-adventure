@@ -90,6 +90,7 @@ void display_show(Window *w)
         SDL_StartTextInput(w->sdl);
     }
     SDL_ShowWindow(w->sdl);
+    SDL_RaiseWindow(w->sdl);
 }
 
 void display_hide(Window *w)

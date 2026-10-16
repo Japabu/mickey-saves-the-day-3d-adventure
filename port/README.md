@@ -45,6 +45,9 @@ cmake -S port -B out/port/build -G Ninja            # configure (module table: p
 cmake --build out/port/build                        # or --target <module>
 ```
 
+For crash reports with exact locations, build a second tree with sanitizers:
+`cmake -S port -B out/port/build-asan -G Ninja -DPORT_SANITIZE=address,undefined`.
+
 How to point the game at your CD comes with the first running build.
 
 Not ported: the developers' tools (Piccolo script console, debugger, class browser),
