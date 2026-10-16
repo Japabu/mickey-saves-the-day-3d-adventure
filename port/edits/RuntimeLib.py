@@ -5,6 +5,18 @@
 # and the (int) casts of pointers stored in them are (intptr_t). Values that are
 # plain integers stay int.
 EDITS = {
+    # A point the planner places twice ends up a few 1e-7 off the first copy here (the
+    # original computed in the x87's wider precision and got the same point), and atan2 of
+    # that crumb is a quarter turn: a walk to where the actor already stands turned him
+    # sideways. Directions shorter than 1e-5 count as none, as an exact zero does.
+    'RuntimeLib/MfPath2.cpp': [
+        ('        dir = mPoints[1].translation() - mPoints[0].translation();\n'
+         '        mPoints[0].rotation() = dir.angle();',
+         '        dir = mPoints[1].translation() - mPoints[0].translation();\n'
+         '        mPoints[0].rotation() = dir.length() < 1e-5f ? 0.0f : dir.angle();', 1),
+        ('            if (dir.x() == 0 && dir.y() == 0)', '            if (dir.length() < 1e-5f)', 1),
+        ('        if (dir.x() == 0 && dir.y() == 0)', '        if (dir.length() < 1e-5f)', 1),
+    ],
     # message data: the request and result blocks between the actors and the planners
     'RuntimeLib/MfMsgData.h': [
         # MfLocoPlanReqData: locoSkill and skill carry the two floors, floor the loco

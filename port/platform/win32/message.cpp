@@ -156,12 +156,20 @@ static Window *event_window(SDL_WindowID id)
     return w;
 }
 
+static void record_input(const char *action, int a, int b);
+
 static void mouse_message(Window *w, UINT msg, float x, float y)
 {
     int cx, cy;
     display_to_client(w, x, y, &cx, &cy);
     s_mouse_x = cx;
     s_mouse_y = cy;
+    if (msg == WM_MOUSEMOVE)
+        record_input("move", cx, cy);
+    else if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONDBLCLK)
+        record_input("down", cx, cy);
+    else if (msg == WM_LBUTTONUP)
+        record_input("up", cx, cy);
     HWND target = s_capture ? s_capture : (HWND)w;
     post(target, msg, mouse_keys(), MAKELPARAM((short)cx, (short)cy));
 }
@@ -176,7 +184,10 @@ static void text_message(Window *w, const char *utf8)
         BOOL bad = FALSE;
         WideCharToMultiByte(CP_ACP, 0, &wbuf[i], 1, &c, 1, 0, &bad);
         if (!bad)
+        {
             post((HWND)w, WM_CHAR, (unsigned char)c, 1);
+            record_input("key", (unsigned char)c, 0);
+        }
     }
 }
 
@@ -184,8 +195,9 @@ static bool s_text_input_started;
 
 // PORT_INPUT="<ms> <action> [args]; ...": input played back for tests, at the given
 // milliseconds after the first message pump. Actions: "move x y", "click x y" (left
-// button, game coordinates), "key c" (a character, WM_KEYDOWN/WM_CHAR/WM_KEYUP). While a
-// script runs, the cursor is the script's, not the real mouse's.
+// button, game coordinates), "key c" (a character or its code, WM_KEYDOWN/WM_CHAR/WM_KEYUP). While a
+// script runs, the cursor is the script's, not the real mouse's. "down x y"/"up x y" press
+// and release the button separately (PORT_RECORD writes those).
 struct ScriptedInput {
     DWORD at;
     char action[8];
@@ -210,8 +222,8 @@ static void load_input_script()
         ScriptedInput in = {};
         char key[8] = {};
         if (sscanf(item.c_str(), " %u %7s %7s", &in.at, in.action, key) >= 2) {
-            if (!strcmp(in.action, "key"))
-                in.a = (unsigned char)key[0];
+            if (!strcmp(in.action, "key"))   // a character code, or the character itself
+                in.a = key[0] >= '0' && key[0] <= '9' && key[1] ? atoi(key) : (unsigned char)key[0];
             else
                 sscanf(item.c_str(), " %*u %*s %d %d", &in.a, &in.b);
             s_script.push_back(in);
@@ -221,6 +233,29 @@ static void load_input_script()
         pos = end + 1;
     }
     log("input", "PORT_INPUT: %zu actions\n", s_script.size());
+}
+
+// PORT_RECORD=<file>: the player's mouse and keyboard input is written to the file in
+// PORT_INPUT's format (milliseconds since the first message pump), so a playtest can be
+// replayed exactly: PORT_INPUT="$(cat file)". Mouse moves are kept every 50 ms at most.
+static FILE *s_record;
+static DWORD s_record_last_move;
+
+static void record_input(const char *action, int a, int b)
+{
+    if (!s_record)
+        return;
+    DWORD now = ticks() - s_script_start;
+    if (!strcmp(action, "move")) {
+        if (now - s_record_last_move < 50)
+            return;
+        s_record_last_move = now;
+    }
+    if (!strcmp(action, "key"))
+        fprintf(s_record, "%u key %d;\n", (unsigned)now, a);
+    else
+        fprintf(s_record, "%u %s %d %d;\n", (unsigned)now, action, a, b);
+    fflush(s_record);
 }
 
 static void play_input_script(Window *w)
@@ -246,6 +281,12 @@ static void play_input_script(Window *w)
         if (!strcmp(in.action, "click")) {
             post(h, WM_LBUTTONDOWN, MK_LBUTTON, xy);
             post(h, WM_LBUTTONUP, 0, xy);
+        } else if (!strcmp(in.action, "down")) {
+            key_state(VK_LBUTTON, true);
+            post(h, WM_LBUTTONDOWN, MK_LBUTTON, xy);
+        } else if (!strcmp(in.action, "up")) {
+            key_state(VK_LBUTTON, false);
+            post(h, WM_LBUTTONUP, 0, xy);
         }
     }
 }
@@ -259,7 +300,14 @@ void pump_events()
 {
     if (GetCurrentThreadId() != s_main_thread && s_main_thread)
         return;
-    static bool s_sigterm_set = [] { signal(SIGTERM, on_sigterm); load_input_script(); s_script_start = ticks(); return true; }();
+    static bool s_sigterm_set = [] {
+        signal(SIGTERM, on_sigterm);
+        load_input_script();
+        s_script_start = ticks();
+        if (const char *r = getenv("PORT_RECORD"))
+            s_record = fopen(r, "w");
+        return true;
+    }();
     (void)s_sigterm_set;
     play_input_script(event_window(0));
     if (s_terminate == 1) {

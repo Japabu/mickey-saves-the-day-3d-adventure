@@ -258,6 +258,16 @@ def tests_cmake(q):
             srcs.append(t)
             props.append(f'set_source_files_properties({q(t)} TARGET_DIRECTORY port_tests PROPERTIES '
                          f'COMPILE_OPTIONS {q(";".join(cmd[1:-1]))})')
+            # "// port-test-sources: a.cpp b.cpp": sources of the module compiled into the
+            # tests as well, for classes the module does not export
+            for line in open(t):
+                if line.startswith('// port-test-sources:'):
+                    for name in line.split(':', 1)[1].split():
+                        src = os.path.join(SRC, MODULES[m][0], name)
+                        if src not in srcs:
+                            srcs.append(src)
+                            props.append(f'set_source_files_properties({q(src)} TARGET_DIRECTORY port_tests '
+                                         f'PROPERTIES COMPILE_OPTIONS {q(";".join(command(m, src)[1:-1]))})')
     libs = [m for m in MODULES if m != 'Steamboat']
     return ([f'add_executable(port_tests {" ".join(q(s) for s in srcs)})',
              f'target_link_libraries(port_tests PRIVATE {" ".join(libs)} platform)',
