@@ -73,6 +73,8 @@ void display_show(Window *w)
         title.resize((size_t)nb);
         WideCharToMultiByte(CP_UTF8, 0, wt.data(), n, &title[0], nb, 0, 0);
         SDL_WindowFlags flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+        if (getenv("PORT_HIDDEN") && atoi(getenv("PORT_HIDDEN")))
+            flags |= SDL_WINDOW_HIDDEN;
         // The window is twice the game's size on a large display, and stays 4:3.
         w->sdl = SDL_CreateWindow(title.c_str(), cw * 2, ch * 2, flags);
         if (!w->sdl) {
@@ -95,6 +97,14 @@ void display_show(Window *w)
         s_window = w;
         SDL_HideCursor();  // the game draws its own cursor
         SDL_StartTextInput(w->sdl);
+    }
+    // PORT_HIDDEN=1 (tests): the window stays hidden and the game is told it is active,
+    // as a shown window with the focus would make it
+    static const bool hidden = getenv("PORT_HIDDEN") && atoi(getenv("PORT_HIDDEN"));
+    if (hidden) {
+        PostMessageA((HWND)w, WM_ACTIVATEAPP, TRUE, 0);
+        PostMessageA((HWND)w, WM_ACTIVATE, WA_ACTIVE, 0);
+        return;
     }
     SDL_ShowWindow(w->sdl);
     SDL_RaiseWindow(w->sdl);
@@ -196,6 +206,34 @@ using namespace win32;
 
 extern "C" {
 
+// PORT_SHOTS="<dir>:<ms>": every <ms> milliseconds the presented frame is saved as
+// <dir>/shot_<ms since start>.bmp, for tests that look at the picture.
+static void save_shot(const std::vector<uint32_t> &frame, int w, int h)
+{
+    static const char *spec = getenv("PORT_SHOTS");
+    if (!spec || !*spec)
+        return;
+    static std::string dir;
+    static DWORD every, start = ticks(), next;
+    if (dir.empty()) {
+        const char *colon = strrchr(spec, ':');
+        dir = colon ? std::string(spec, colon - spec) : std::string(spec);
+        every = colon ? (DWORD)atoi(colon + 1) : 1000;
+        next = start;
+    }
+    DWORD now = ticks();
+    if ((int)(now - next) < 0)
+        return;
+    next = now + every;
+    SDL_Surface *surface = SDL_CreateSurfaceFrom(w, h, SDL_PIXELFORMAT_XRGB8888, (void *)frame.data(), w * 4);
+    if (!surface)
+        return;
+    char path[1024];
+    snprintf(path, sizeof(path), "%s/shot_%06u.bmp", dir.c_str(), (unsigned)(now - start));
+    SDL_SaveBMP(surface, path);
+    SDL_DestroySurface(surface);
+}
+
 void port_present(const void *argb8888, int w, int h, int pitch)
 {
     {
@@ -206,6 +244,7 @@ void port_present(const void *argb8888, int w, int h, int pitch)
         s_frame_w = w;
         s_frame_h = h;
         s_frame_new = true;
+        save_shot(s_frame, w, h);
     }
     // Several presents can come per frame (dirty rectangles): show at most one per
     // display refresh here; the rest is shown by the next pump.

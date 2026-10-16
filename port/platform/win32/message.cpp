@@ -8,6 +8,7 @@
 #include <deque>
 #include <signal.h>
 #include <mutex>
+#include <string>
 #include <vector>
 
 namespace win32 {
@@ -181,6 +182,74 @@ static void text_message(Window *w, const char *utf8)
 
 static bool s_text_input_started;
 
+// PORT_INPUT="<ms> <action> [args]; ...": input played back for tests, at the given
+// milliseconds after the first message pump. Actions: "move x y", "click x y" (left
+// button, game coordinates), "key c" (a character, WM_KEYDOWN/WM_CHAR/WM_KEYUP). While a
+// script runs, the cursor is the script's, not the real mouse's.
+struct ScriptedInput {
+    DWORD at;
+    char action[8];
+    int a, b;
+};
+static std::vector<ScriptedInput> s_script;
+static size_t s_script_next;
+static DWORD s_script_start;
+static bool s_scripted_mouse;
+
+static void load_input_script()
+{
+    const char *e = getenv("PORT_INPUT");
+    if (!e || !*e)
+        return;
+    s_scripted_mouse = true;
+    std::string all = e;
+    size_t pos = 0;
+    while (pos < all.size()) {
+        size_t end = all.find(';', pos);
+        std::string item = all.substr(pos, end == std::string::npos ? std::string::npos : end - pos);
+        ScriptedInput in = {};
+        char key[8] = {};
+        if (sscanf(item.c_str(), " %u %7s %7s", &in.at, in.action, key) >= 2) {
+            if (!strcmp(in.action, "key"))
+                in.a = (unsigned char)key[0];
+            else
+                sscanf(item.c_str(), " %*u %*s %d %d", &in.a, &in.b);
+            s_script.push_back(in);
+        }
+        if (end == std::string::npos)
+            break;
+        pos = end + 1;
+    }
+    log("input", "PORT_INPUT: %zu actions\n", s_script.size());
+}
+
+static void play_input_script(Window *w)
+{
+    if (s_script_next >= s_script.size() || !w)
+        return;
+    DWORD now = ticks() - s_script_start;
+    while (s_script_next < s_script.size() && s_script[s_script_next].at <= now) {
+        const ScriptedInput &in = s_script[s_script_next++];
+        HWND h = (HWND)w;
+        log("input", "%u ms: %s %d %d\n", (unsigned)now, in.action, in.a, in.b);
+        if (!strcmp(in.action, "key")) {
+            WPARAM vk = in.a >= 'a' && in.a <= 'z' ? in.a - 32 : in.a;
+            post(h, WM_KEYDOWN, vk, 1);
+            post(h, WM_CHAR, in.a, 1);
+            post(h, WM_KEYUP, vk, 0xC0000001);
+            continue;
+        }
+        s_mouse_x = in.a;
+        s_mouse_y = in.b;
+        LPARAM xy = MAKELPARAM((short)in.a, (short)in.b);
+        post(h, WM_MOUSEMOVE, 0, xy);
+        if (!strcmp(in.action, "click")) {
+            post(h, WM_LBUTTONDOWN, MK_LBUTTON, xy);
+            post(h, WM_LBUTTONUP, 0, xy);
+        }
+    }
+}
+
 // SIGTERM (kill, a logout) closes the window as the close button does, so the game
 // shuts down and exits instead of dying in the middle of a frame.
 static volatile sig_atomic_t s_terminate;
@@ -190,8 +259,9 @@ void pump_events()
 {
     if (GetCurrentThreadId() != s_main_thread && s_main_thread)
         return;
-    static bool s_sigterm_set = [] { signal(SIGTERM, on_sigterm); return true; }();
+    static bool s_sigterm_set = [] { signal(SIGTERM, on_sigterm); load_input_script(); s_script_start = ticks(); return true; }();
     (void)s_sigterm_set;
+    play_input_script(event_window(0));
     if (s_terminate == 1) {
         s_terminate = 2;
         if (HWND m = main_window()) {
@@ -248,6 +318,8 @@ void pump_events()
             w->invalid = true;
             break;
         case SDL_EVENT_MOUSE_MOTION:
+            if (s_scripted_mouse)
+                break;
             mouse_message(w, WM_MOUSEMOVE, e.motion.x, e.motion.y);
             break;
         case SDL_EVENT_MOUSE_BUTTON_DOWN:
@@ -518,7 +590,7 @@ BOOL WINAPI GetCursorPos(LPPOINT lpPoint)
     // SDL's window state belongs to the main thread.
     HWND m = main_window();
     Window *w = m ? window(m) : 0;
-    if (w && w->sdl && (GetCurrentThreadId() == s_main_thread || !s_main_thread)) {
+    if (w && w->sdl && !s_scripted_mouse && (GetCurrentThreadId() == s_main_thread || !s_main_thread)) {
         float x, y;
         int cx, cy;
         SDL_GetMouseState(&x, &y);
