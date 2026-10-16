@@ -16,6 +16,7 @@
 
 #include <stdint.h>
 #include <atomic>
+#include <mutex>
 #include <vector>
 
 // Interface identifiers the game's headers do not declare (defined in ddraw.cpp).
@@ -23,6 +24,7 @@ extern "C" const GUID IID_IDirectDraw;
 extern "C" const GUID IID_IDirectDrawSurface7;
 extern "C" const GUID IID_IDirect3DHALDevice;
 extern "C" const GUID IID_IDirect3DTnLHalDevice;
+extern "C" const GUID IID_IDirect3DRGBDevice;
 
 namespace dx {
 
@@ -37,6 +39,11 @@ namespace dx {
         }                                                            \
         return DDERR_UNSUPPORTED;                                    \
     } while (0)
+
+// One lock for the whole layer (DDSCL_MULTITHREADED): the game's cursor thread blits
+// to the front buffer while the main thread renders and flips.
+std::recursive_mutex &layer_lock();
+#define DX_GUARD std::lock_guard<std::recursive_mutex> dx_guard_(::dx::layer_lock())
 
 // ---- pixel formats
 
@@ -274,9 +281,9 @@ struct DirectDraw : Object<IDirectDraw7> {
 };
 
 // Creates the Direct3D device that renders into target (d3d_device.cpp).
-HRESULT create_device(DirectDraw *dd, Surface *target, IDirect3DDevice7 **out);
-// The one device the enumeration reports.
-const D3DDEVICEDESC7 &device_desc();
+HRESULT create_device(DirectDraw *dd, Surface *target, bool hardware, IDirect3DDevice7 **out);
+// The devices the enumeration reports: the HAL one and the RGB (software) one.
+const D3DDEVICEDESC7 &device_desc(bool hardware);
 
 } // namespace dx
 

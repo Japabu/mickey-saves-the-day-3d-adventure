@@ -412,6 +412,7 @@ static float rs_float(const DWORD *rs, int s)
 HRESULT Device::draw(D3DPRIMITIVETYPE type, DWORD fvf, const void *data, const _D3DDRAWPRIMITIVESTRIDEDDATA *sdata,
                      DWORD nverts, const WORD *idx, DWORD nidx, DWORD flags)
 {
+    DX_GUARD;
     if (!nverts || (!data && !sdata))
         return D3D_OK;
     Streams s;

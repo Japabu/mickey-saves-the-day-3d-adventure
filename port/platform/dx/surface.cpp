@@ -7,6 +7,12 @@
 
 namespace dx {
 
+std::recursive_mutex &layer_lock()
+{
+    static std::recursive_mutex *m = new std::recursive_mutex; // never destroyed: threads may outlive statics
+    return *m;
+}
+
 // ---- pixel formats
 
 void PixFmt::set(const DDPIXELFORMAT &pf)
@@ -181,7 +187,7 @@ void present(Surface *s)
     int w = r.right - r.left, h = r.bottom - r.top;
     if (w <= 0 || h <= 0)
         return;
-    static std::vector<uint32_t> frame;
+    static std::vector<uint32_t> frame; // under the layer lock
     frame.resize((size_t)w * h);
     for (int y = 0; y < h; y++)
         row_to_argb(s->fmt, s->row(r.top + y) + r.left * s->fmt.bytes, &frame[(size_t)y * w], w, s->pal());
@@ -214,6 +220,7 @@ HRESULT Palette::Initialize(IDirectDraw *, DWORD, PALETTEENTRY *) { DX_UNSUPPORT
 
 HRESULT Palette::SetEntries(DWORD, DWORD base, DWORD n, PALETTEENTRY *e)
 {
+    DX_GUARD;
     if (!e || base > 256 || n > 256 - base)
         return DDERR_INVALIDPARAMS;
     memcpy(entries + base, e, n * sizeof(PALETTEENTRY));
@@ -426,6 +433,7 @@ HRESULT Surface::blit(const RECT &d, Surface *src, const RECT &sr, bool key)
 
 HRESULT Surface::Blt(RECT *dst, IDirectDrawSurface7 *isrc, RECT *srcRect, DWORD flags, DDBLTFX *fx)
 {
+    DX_GUARD;
     if (locks || dc)
         return DDERR_SURFACEBUSY;
     if (flags & DDBLT_COLORFILL)
@@ -456,6 +464,7 @@ HRESULT Surface::Blt(RECT *dst, IDirectDrawSurface7 *isrc, RECT *srcRect, DWORD 
 
 HRESULT Surface::BltFast(DWORD x, DWORD y, IDirectDrawSurface7 *isrc, RECT *srcRect, DWORD flags)
 {
+    DX_GUARD;
     if (locks || dc)
         return DDERR_SURFACEBUSY;
     Surface *src = static_cast<Surface *>(isrc);
@@ -474,6 +483,7 @@ HRESULT Surface::EnumOverlayZOrders(DWORD, void *, LPDDENUMSURFACESCALLBACK7) { 
 
 HRESULT Surface::Flip(IDirectDrawSurface7 *, DWORD)
 {
+    DX_GUARD;
     if (chain.empty())
         return DDERR_NOTFLIPPABLE;
     if (locks || dc)
@@ -530,6 +540,7 @@ HRESULT Surface::GetColorKey(DWORD which, DDCOLORKEY *k)
 
 HRESULT Surface::SetColorKey(DWORD which, DDCOLORKEY *k)
 {
+    DX_GUARD;
     DDCOLORKEY key = {};
     if (k) {
         key = *k;
@@ -553,6 +564,7 @@ HRESULT Surface::SetColorKey(DWORD which, DDCOLORKEY *k)
 // (555, 1555, 4444) get a 32-bit copy that ReleaseDC converts back.
 HRESULT Surface::GetDC(HDC *out)
 {
+    DX_GUARD;
     *out = 0;
     if (dc || locks)
         return DDERR_SURFACEBUSY;
@@ -580,6 +592,7 @@ HRESULT Surface::GetDC(HDC *out)
 
 HRESULT Surface::ReleaseDC(HDC h)
 {
+    DX_GUARD;
     if (!dc || h != dc)
         return DDERR_INVALIDPARAMS;
     port_gdi_release_surface_dc(dc);
@@ -631,6 +644,7 @@ HRESULT Surface::IsLost() { return DD_OK; }
 
 HRESULT Surface::Lock(RECT *r, DDSURFACEDESC2 *out, DWORD, HANDLE)
 {
+    DX_GUARD;
     if (!out)
         return DDERR_INVALIDPARAMS;
     GetSurfaceDesc(out);
@@ -642,6 +656,7 @@ HRESULT Surface::Lock(RECT *r, DDSURFACEDESC2 *out, DWORD, HANDLE)
 
 HRESULT Surface::Unlock(RECT *)
 {
+    DX_GUARD;
     if (!locks)
         return DDERR_NOTLOCKED;
     locks--;
@@ -665,6 +680,7 @@ HRESULT Surface::SetOverlayPosition(LONG, LONG) { DX_UNSUPPORTED("IDirectDrawSur
 
 HRESULT Surface::SetPalette(IDirectDrawPalette *p)
 {
+    DX_GUARD;
     if (p)
         p->AddRef();
     if (palette)

@@ -764,6 +764,7 @@ int WINAPI lstrlenA(LPCSTR lpString);
 #define GetEnvironmentVariable GetEnvironmentVariableA
 #define SetFileAttributes SetFileAttributesA
 #define WriteConsole WriteConsoleA
+#define WriteProfileString WriteProfileStringA
 #define lstrcat lstrcatA
 #define lstrcmp lstrcmpA
 #define lstrcmpi lstrcmpiA

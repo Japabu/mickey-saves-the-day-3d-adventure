@@ -13,6 +13,7 @@ DX_EXPORT const GUID IID_IDirectDrawSurface7 = {0x06675a80, 0x3b9b, 0x11d2, {0xb
 DX_EXPORT const GUID IID_IDirect3D7 = {0xf5049e77, 0x4861, 0x11d2, {0xa4, 0x07, 0x00, 0xa0, 0xc9, 0x06, 0x29, 0xa8}};
 DX_EXPORT const GUID IID_IDirect3DRefDevice = {0x50936643, 0x13e9, 0x11d1, {0x89, 0xaa, 0x00, 0xa0, 0xc9, 0x05, 0x41, 0x29}};
 DX_EXPORT const GUID IID_IDirect3DHALDevice = {0x84e63de0, 0x46aa, 0x11cf, {0x81, 0x6f, 0x00, 0x00, 0xc0, 0x20, 0x15, 0x6e}};
+DX_EXPORT const GUID IID_IDirect3DRGBDevice = {0xa4665c60, 0x2673, 0x11cf, {0xa3, 0x1a, 0x00, 0xaa, 0x00, 0xb9, 0x33, 0x56}};
 DX_EXPORT const GUID IID_IDirect3DTnLHalDevice = {0xf5049e78, 0x4861, 0x11d2, {0xa4, 0x07, 0x00, 0xa0, 0xc9, 0x06, 0x29, 0xa8}};
 
 namespace dx {
@@ -108,6 +109,27 @@ static DWORD placement(DWORD caps)
     return caps;
 }
 
+// Pixel formats a surface can have: 8-bit palettized, RGB(A) with 16, 24 or 32 bits (an
+// RGB format without masks gets the display's masks for its depth), z-buffers of 16 or
+// 32 bits.
+static bool valid_format(DDPIXELFORMAT &pf)
+{
+    DWORD bits = pf.dwRGBBitCount;
+    if (pf.dwFlags & DDPF_ZBUFFER)
+        return bits == 16 || bits == 32;
+    if (pf.dwFlags & DDPF_PALETTEINDEXED8)
+        return bits == 8;
+    if (!(pf.dwFlags & DDPF_RGB) || (bits != 16 && bits != 24 && bits != 32))
+        return false;
+    if (!pf.dwRBitMask && !pf.dwGBitMask && !pf.dwBBitMask) {
+        DDPIXELFORMAT d = display_format((int)bits);
+        pf.dwRBitMask = d.dwRBitMask;
+        pf.dwGBitMask = d.dwGBitMask;
+        pf.dwBBitMask = d.dwBBitMask;
+    }
+    return true;
+}
+
 HRESULT DirectDraw::CreateSurface(DDSURFACEDESC2 *in, IDirectDrawSurface7 **out, IUnknown *)
 {
     if (!in || !out)
@@ -155,6 +177,11 @@ HRESULT DirectDraw::CreateSurface(DDSURFACEDESC2 *in, IDirectDrawSurface7 **out,
             return DDERR_INVALIDPARAMS;
         d.ddpfPixelFormat = display_format(modeBpp);
         d.dwFlags |= DDSD_PIXELFORMAT;
+    }
+    if (!valid_format(d.ddpfPixelFormat)) {
+        DX_LOG("CreateSurface: unsupported pixel format (flags %#x, %u bits)\n", (unsigned)d.ddpfPixelFormat.dwFlags,
+               (unsigned)d.ddpfPixelFormat.dwRGBBitCount);
+        return DDERR_INVALIDPIXELFORMAT;
     }
     d.dwFlags |= DDSD_CAPS;
     d.ddsCaps.dwCaps = placement(caps);
@@ -302,6 +329,10 @@ HRESULT DirectDraw::SetCooperativeLevel(HWND h, DWORD flags)
 {
     hwnd = h;
     coopLevel = flags;
+    if ((flags & (DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE)) == (DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE))
+        port_set_fullscreen(1);
+    else if (flags & DDSCL_NORMAL)
+        port_set_fullscreen(0);
     return DD_OK;
 }
 

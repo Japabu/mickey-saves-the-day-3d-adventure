@@ -9,13 +9,13 @@ namespace dx {
 
 // ---- the device the enumeration reports
 
-static D3DDEVICEDESC7 make_desc()
+static D3DDEVICEDESC7 make_desc(bool hardware)
 {
     D3DDEVICEDESC7 d;
     memset(&d, 0, sizeof(d));
-    d.dwDevCaps = D3DDEVCAPS_HWRASTERIZATION | 0x00000010 /* FLOATTLVERTEX */ | 0x00000100 /* TEXTURESYSTEMMEMORY */
+    d.dwDevCaps = (hardware ? D3DDEVCAPS_HWRASTERIZATION | 0x00010000 /* HWTRANSFORMANDLIGHT */ : 0) | 0x00000010 /* FLOATTLVERTEX */ | 0x00000100 /* TEXTURESYSTEMMEMORY */
         | 0x00000200 /* TEXTUREVIDEOMEMORY */ | 0x00000400 /* DRAWPRIMTLVERTEX */ | 0x00000800 /* CANRENDERAFTERFLIP */
-        | 0x00002000 /* DRAWPRIMITIVES2 */ | 0x00010000 /* HWTRANSFORMANDLIGHT */;
+        | 0x00002000 /* DRAWPRIMITIVES2 */;
     D3DPRIMCAPS p;
     memset(&p, 0, sizeof(p));
     p.dwSize = sizeof(p);
@@ -49,15 +49,16 @@ static D3DDEVICEDESC7 make_desc()
     d.wMaxSimultaneousTextures = MAX_STAGES;
     d.dwMaxActiveLights = 8;
     d.dvMaxVertexW = 1e10f;
-    d.deviceGUID = IID_IDirect3DHALDevice;
+    d.deviceGUID = hardware ? IID_IDirect3DHALDevice : IID_IDirect3DRGBDevice;
     d.dwVertexProcessingCaps = 0x3f;
     return d;
 }
 
-const D3DDEVICEDESC7 &device_desc()
+// The game keeps a pointer to the enumerated description's GUID, so they are static.
+const D3DDEVICEDESC7 &device_desc(bool hardware)
 {
-    static const D3DDEVICEDESC7 desc = make_desc();
-    return desc;
+    static D3DDEVICEDESC7 hal = make_desc(true), rgb = make_desc(false);
+    return hardware ? hal : rgb;
 }
 
 // ---- IDirect3D7
@@ -70,17 +71,23 @@ HRESULT Direct3D::EnumDevices(LPD3DENUMDEVICESCALLBACK7 cb, void *ctx)
 {
     if (!cb)
         return DDERR_INVALIDPARAMS;
-    // the game keeps a pointer to the description's GUID, so it is static
-    static D3DDEVICEDESC7 desc = device_desc();
-    cb((char *)"Direct3D HAL", (char *)"Software rasterizer (port)", &desc, ctx);
+    // Both render with the software rasterizer. The game asks for the RGB (software)
+    // device when its back buffer is in system memory (the windowed screen) and for a
+    // hardware one otherwise, and it takes the first matching one: RGB comes first, as
+    // in DirectX 7's own list.
+    if (cb((char *)"Microsoft Direct3D RGB Software Emulation", (char *)"RGB Emulation",
+           const_cast<D3DDEVICEDESC7 *>(&device_desc(false)), ctx) == D3DENUMRET_CANCEL)
+        return D3D_OK;
+    cb((char *)"Microsoft Direct3D Hardware acceleration through Direct3D HAL", (char *)"Direct3D HAL",
+       const_cast<D3DDEVICEDESC7 *>(&device_desc(true)), ctx);
     return D3D_OK;
 }
 
-HRESULT Direct3D::CreateDevice(const GUID &, IDirectDrawSurface7 *surface, IDirect3DDevice7 **out)
+HRESULT Direct3D::CreateDevice(const GUID &guid, IDirectDrawSurface7 *surface, IDirect3DDevice7 **out)
 {
     if (!out || !surface)
         return DDERR_INVALIDPARAMS;
-    return create_device(dd, static_cast<Surface *>(surface), out);
+    return create_device(dd, static_cast<Surface *>(surface), guid != IID_IDirect3DRGBDevice, out);
 }
 
 HRESULT Direct3D::CreateVertexBuffer(struct _D3DVERTEXBUFFERDESC *, IDirect3DVertexBuffer7 **, DWORD) { DX_UNSUPPORTED("IDirect3D7::CreateVertexBuffer"); }
@@ -99,13 +106,16 @@ HRESULT Direct3D::EvictManagedTextures() { return D3D_OK; }
 
 // ---- the device
 
-HRESULT create_device(DirectDraw *dd, Surface *target, IDirect3DDevice7 **out)
+HRESULT create_device(DirectDraw *dd, Surface *target, bool hardware, IDirect3DDevice7 **out)
 {
-    if (!(target->desc.ddsCaps.dwCaps & DDSCAPS_3DDEVICE) || target->fmt.palette || target->fmt.bytes < 2) {
+    // any 16- to 32-bit surface will do (DDSCAPS_3DDEVICE is not required)
+    if (target->fmt.palette || target->fmt.bytes < 2 || target->fmt.zbuffer) {
         *out = 0;
         return DDERR_INVALIDPARAMS;
     }
-    *out = new Device(dd, target);
+    Device *d = new Device(dd, target);
+    d->hardware = hardware;
+    *out = d;
     return D3D_OK;
 }
 
@@ -191,7 +201,7 @@ HRESULT Device::GetCaps(_D3DDeviceDesc7 *d)
 {
     if (!d)
         return DDERR_INVALIDPARAMS;
-    *d = device_desc();
+    *d = device_desc(hardware);
     return D3D_OK;
 }
 
@@ -242,6 +252,7 @@ HRESULT Device::GetRenderTarget(IDirectDrawSurface7 **out)
 
 HRESULT Device::Clear(DWORD count, D3DRECT *rects, DWORD flags, D3DCOLOR color, D3DVALUE z, DWORD)
 {
+    DX_GUARD;
     RECT vp = {(LONG)viewport.dwX, (LONG)viewport.dwY, (LONG)(viewport.dwX + viewport.dwWidth),
                (LONG)(viewport.dwY + viewport.dwHeight)};
     Surface *zb = (flags & D3DCLEAR_ZBUFFER) ? zbuffer() : 0;
@@ -504,6 +515,7 @@ static Surface *next_mip(Surface *s)
 // Copies a texture (with its mip levels when no rectangle is given) into another one.
 HRESULT Device::Load(IDirectDrawSurface7 *idst, POINT *pt, IDirectDrawSurface7 *isrc, RECT *rect, DWORD)
 {
+    DX_GUARD;
     Surface *dst = static_cast<Surface *>(idst), *src = static_cast<Surface *>(isrc);
     if (!dst || !src)
         return DDERR_INVALIDPARAMS;
@@ -517,14 +529,17 @@ HRESULT Device::Load(IDirectDrawSurface7 *idst, POINT *pt, IDirectDrawSurface7 *
         dst->srcKey = src->srcKey;
         dst->hasSrcKey = true;
     }
-    if (rect) {
-        POINT p = pt ? *pt : POINT{0, 0};
-        RECT d = {p.x, p.y, p.x + (rect->right - rect->left), p.y + (rect->bottom - rect->top)};
-        return dst->blit(d, src, *rect, false);
-    }
-    for (; dst && src; dst = next_mip(dst), src = next_mip(src)) {
-        RECT d = {0, 0, dst->width(), dst->height()};
-        RECT s = {0, 0, src->width(), src->height()};
+    // every mip level both have, the rectangle and point halved per level (the game
+    // passes the whole top level's rectangle for its mipmapped textures)
+    RECT r = rect ? *rect : RECT{0, 0, src->width(), src->height()};
+    POINT p = pt ? *pt : POINT{0, 0};
+    for (int level = 0; dst && src; level++, dst = next_mip(dst), src = next_mip(src)) {
+        RECT s = {r.left >> level, r.top >> level, r.right >> level, r.bottom >> level};
+        if (s.right <= s.left)
+            s.right = s.left + 1;
+        if (s.bottom <= s.top)
+            s.bottom = s.top + 1;
+        RECT d = {p.x >> level, p.y >> level, (p.x >> level) + (s.right - s.left), (p.y >> level) + (s.bottom - s.top)};
         HRESULT hr = dst->blit(d, src, s, false);
         if (hr != DD_OK)
             return hr;

@@ -52,6 +52,11 @@ Port overrides and rules (SteamboatApp):
   `*(unsigned long *)&m_CList[k]`, and DX_DirectDrawSurface.cpp writes 32-bit pixels through
   `unsigned long`: 8 bytes each with a 64-bit long. Fixed by rewrite.py's 32-bit long (their
   overrides are gone).
+- String positions in `unsigned int` compared with `MBString::npos` (a 64-bit size_t here) never
+  match: CSBGridLockGameBoard and CSBLinkingLogsGameBoard (GetTokenList looped forever on its
+  last token; settings without `=` were cut at a wrapped position). Fixed in
+  port/edits/SteamboatApp.py (size_t). Positions in `int` or `unsigned int` compared with `-1`
+  are fine (the -1 converts to the same width), as are direct `find(...) != npos` tests.
 - The `throw (long)__LINE__` error codes (CSBInventory, SavedGameDB, SteamboatNode) are caught as
   `long`: harmless, the value fits.
 - The saved games and the saved-game database are written through the engine's preference files
@@ -376,8 +381,8 @@ unless said otherwise).
      `game->Start()`, then the message loop: `Idle()` whenever no message is waiting and the
      window is active; `IsQuitting()` ends it.
    - 64-bit: `SetWindowLong(hWnd, GWL_USERDATA, (LONG)game)` and WndProc's
-     `(IMBGameEngine *)GetWindowLong(...)` keep the engine pointer in a 32-bit window long; the
-     port needs a pointer-sized slot (SetWindowLongPtr semantics).
+     `(IMBGameEngine *)GetWindowLong(...)` kept the engine pointer in a 32-bit window long; fixed
+     in port/edits/Steamboat.py (Set/GetWindowLongPtr, GWLP_USERDATA).
 2. **SteamboatApp, OnMBEngineCreateScreen** (dllmain.cpp): requests screen 1, 640x480, 16 bit.
 3. **OnMBEngineStartup**: `SimpleNode::Startup`, creates the CSBNodeManager and adds node `MV`
    (the movie node; codes: MV movie, UI main menu, CP control panel, HK soup recipe, MP map,

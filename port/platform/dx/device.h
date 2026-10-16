@@ -38,6 +38,7 @@ struct Device : Object<IDirect3DDevice7> {
     };
     std::vector<Light> lights;
     D3DCLIPSTATUS clipStatus;
+    bool hardware = true; // created as the HAL device (else the RGB one)
     bool legacyModulateAlpha = false; // stage 0 alpha set by TEXTUREMAPBLEND MODULATE
 
     Device(DirectDraw *dd, Surface *target);
