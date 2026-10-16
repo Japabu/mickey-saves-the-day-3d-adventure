@@ -44,6 +44,9 @@ COMMON = [
     # -fms-compatibility drops __GNUC__, and the macOS SDK then declares va_list in a
     # way that clashes with clang's own
     '-fgnuc-version=4.2.1',
+    # below 19 clang drops the char16_t/char32_t keywords, which libc++ needs; this
+    # changes language features only (_MSC_VER stays the source's 1200, below)
+    '-fms-compatibility-version=19.00',
     '-fvisibility=hidden', '-fno-strict-aliasing', '-fwrapv', '-g', '-O1',
     '-include', os.path.join(PORT, 'compat', 'prelude.h'),
     '-isystem', os.path.join(PORT, 'compat', 'include'),
