@@ -29,4 +29,22 @@ EDITS = {
          '        char name[16];\n        sprintf(name, "SBSPbirdHigh%c", \'C\');\n', 1),
         ('sprintf(key, "song%d", mSongs.size() - 1);', 'sprintf(key, "song%d", (int)(mSongs.size() - 1));', 1),
     ],
+    # 64-bit: string positions kept in unsigned int are compared with MBString::npos, which
+    # is a 64-bit size_t here, so a failed find never matches: GetTokenList loops forever on
+    # its last token, and a setting without '=' is cut at a wrapped position. The positions
+    # become size_t.
+    'SteamboatApp/CSBGridLockGameBoard.cpp': [
+        ("unsigned int nPos = (*iSettings).find('=');", "size_t nPos = (*iSettings).find('=');", 1),
+        ('unsigned int nStart = strValue.find_first_of("0123456789");', 'size_t nStart = strValue.find_first_of("0123456789");', 1),
+        ('unsigned int nEnd = strValue.find_first_not_of("0123456789", nStart);', 'size_t nEnd = strValue.find_first_not_of("0123456789", nStart);', 1),
+        ('unsigned int nPos = 0;', 'size_t nPos = 0;', 1),
+        ('unsigned int nStart = 0;', 'size_t nStart = 0;', 1),
+    ],
+    'SteamboatApp/CSBLinkingLogsGameBoard.cpp': [
+        ("unsigned int nPos = strToken.find('=');", "size_t nPos = strToken.find('=');", 1),
+        ('unsigned int nStart = strType.find_first_of("0123456789");', 'size_t nStart = strType.find_first_of("0123456789");', 1),
+        ('unsigned int nEnd = strType.find_first_not_of("0123456789", nStart);', 'size_t nEnd = strType.find_first_not_of("0123456789", nStart);', 1),
+        ('unsigned int nPos = 0;', 'size_t nPos = 0;', 1),
+        ('unsigned int nStart = 0;', 'size_t nStart = 0;', 1),
+    ],
 }

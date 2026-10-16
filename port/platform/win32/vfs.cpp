@@ -287,35 +287,73 @@ static std::string cd_setting()
     return out;
 }
 
+// The CD is missing or not the game's: say so in a message box and quit, instead of
+// letting the game fail somewhere deep inside.
+static void cd_problem(const std::string &what)
+{
+    std::string text = what +
+                       "\n\nPoint MICKEY_CD at your Micky_auf_Ganovenjagd.iso (or at the folder of the "
+                       "copied or mounted CD), for example:\n\n  MICKEY_CD=/path/to/Micky_auf_Ganovenjagd.iso\n\n"
+                       "or write cd = <path> into " + overlay_dir() + "/port.ini.";
+    fprintf(stderr, "%s\n", text.c_str());
+    // The text goes through code page 1252 in MessageBoxA; keep it ASCII.
+    MessageBoxA(0, text.c_str(), "Micky auf Ganovenjagd", MB_OK | MB_ICONHAND);
+    _exit(1);
+}
+
 static void init_cd()
 {
     static std::once_flag once;
-    std::call_once(once, [] {
+    std::string problem;
+    std::call_once(once, [&problem] {
         std::string cd = cd_setting();
         if (cd.empty()) {
-            fprintf(stderr, "The game CD is not set: point MICKEY_CD (or cd = ... in %s/port.ini) at the "
-                            "CD's .iso file or its directory.\n", overlay_dir().c_str());
+            problem = "The game CD is not set.";
             return;
         }
         if (cd[0] == '~' && getenv("HOME"))
             cd = std::string(getenv("HOME")) + cd.substr(1);
         struct stat st;
         if (::stat(cd.c_str(), &st) != 0) {
-            fprintf(stderr, "The game CD %s does not exist.\n", cd.c_str());
+            problem = "The game CD " + cd + " does not exist.";
             return;
         }
         if (S_ISDIR(st.st_mode)) {
             s_cd_dir = cd;
         } else {
+            char magic[2] = {0, 0};
+            if (FILE *f = fopen(cd.c_str(), "rb")) {
+                fread(magic, 1, 2, f);
+                fclose(f);
+            }
+            if (magic[0] == 'P' && magic[1] == 'K') {
+                problem = cd + " is a zip archive: unpack it first (double-click it in the Finder), then use the "
+                               ".iso file inside.";
+                return;
+            }
             s_iso = new Iso;
             if (!s_iso->open(cd.c_str())) {
-                fprintf(stderr, "%s is not an ISO 9660 image.\n", cd.c_str());
                 delete s_iso;
                 s_iso = 0;
+                problem = cd + " is not a CD image (ISO 9660).";
+                return;
             }
+        }
+        // The game's CD has the installer's tree: setup\hd\binaries and setup\cd.
+        Path probe = {"setup", "hd", "binaries"};
+        std::string host;
+        bool ok = s_iso ? s_iso->find(probe) != 0 : host_resolve(s_cd_dir, probe, host);
+        if (!ok) {
+            problem = cd + " does not look like the Micky auf Ganovenjagd CD (no setup\\hd\\binaries on it).";
+            delete s_iso;
+            s_iso = 0;
+            s_cd_dir.clear();
+            return;
         }
         log("vfs", "CD: %s (%s)\n", cd.c_str(), s_iso ? "image" : "directory");
     });
+    if (!problem.empty())
+        cd_problem(problem);
 }
 
 // ---------------------------------------------------------------------------------------
