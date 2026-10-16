@@ -248,6 +248,11 @@ FARPROC WINAPI GetProcAddress(HMODULE hModule, LPCSTR lpProcName)
     }
     void *dl = m->dl ? m->dl : RTLD_DEFAULT;
     void *p = dlsym(dl, lpProcName);
+    std::string plain = lpProcName;    // _Name@N (stdcall) and _Name (cdecl): the C name
+    if (!plain.empty() && plain[0] == '_')
+        plain.erase(0, 1);
+    if (plain.rfind('@') != std::string::npos && plain.rfind('@') > 0)
+        plain.erase(plain.rfind('@'));
     if (!p) {
         // _Name@N (stdcall) and _Name (cdecl) as exported from the C name.
         std::string n = lpProcName;
@@ -259,7 +264,7 @@ FARPROC WINAPI GetProcAddress(HMODULE hModule, LPCSTR lpProcName)
         p = dlsym(dl, n.c_str());
     }
     if (!p)
-        p = find_cxx_free_function(m, lpProcName);
+        p = find_cxx_free_function(m, plain.c_str());
     if (!p) {
         log("module", "GetProcAddress(%s, %s): not found\n", m->dll.c_str(), lpProcName);
         SetLastError(ERROR_PROC_NOT_FOUND);

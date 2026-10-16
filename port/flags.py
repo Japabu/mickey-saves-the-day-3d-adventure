@@ -47,7 +47,9 @@ COMMON = [
     # below 19 clang drops the char16_t/char32_t keywords, which libc++ needs; this
     # changes language features only (_MSC_VER stays the source's 1200, below)
     '-fms-compatibility-version=19.00',
-    '-fvisibility=hidden', '-fno-strict-aliasing', '-fwrapv', '-g', '-O1',
+    # functions and variables hidden, types (vtables, RTTI) visible, as across Windows
+    # DLLs: dynamic_cast and exceptions compare type_info across the game's libraries
+    '-fvisibility-ms-compat', '-fno-strict-aliasing', '-fwrapv', '-g', '-O1',
     # `&Temporary(...)` (a Microsoft extension the source uses): the temporary lives to
     # the end of the full expression
     '-Wno-address-of-temporary',

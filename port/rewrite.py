@@ -37,6 +37,9 @@ Rules:
 - `#undef CreateFont` and the other Win32 names the prelude maps to their A versions
   for every unit (so that all copies of a class agree on its member names): the
   mapping stays.
+- Calls of fopen, freopen and rename: the C runtime's file functions on the game's
+  virtual file system (port_fopen & co., port/platform/port.h, declared in
+  compat/include/port_crt.h).
 - `extern "C" static` (flex output): a linkage on a static function, which clang
   rejects; the function is static.
 - `class ostream;` and the other old iostream classes at file scope: in the port they
@@ -90,6 +93,7 @@ RULES = [
     (re.compile(r'\blong(\s+(?:__stdcall|CALLBACK|WINAPI)\s+[\w:]*Proc\w*\s*\()'), r'LRESULT\1'),
     (re.compile(r'\bunsigned\s+long(\s+(?:__cdecl\s+)?_beginthread\s*\()'), r'uintptr_t\1'),
     (re.compile(r'\bextern\s+"C"\s+static\b'), r'static'),
+    (re.compile(r'(?<![\w.>:~])(fopen|freopen|rename)(\s*\()'), r'port_\1\2'),
     (re.compile(r'^([ \t]*)#[ \t]*undef[ \t]+(CreateFont|DrawText|FindResource|GetMessage|GetObject|GetProfileString|'
                 r'IsDialogMessage|LoadBitmap|LoadString|PlaySound|PostThreadMessage|RegisterClass|'
                 r'WriteProfileString|GetClassName|SendMessage)\b', re.M),
@@ -273,7 +277,7 @@ def drop_duplicate_overloads(before, after):
 # files no rule touches
 KEEP = {'SteamboatApp/ios.h', 'SteamboatApp/ostream.h'}
 # a cheap first test before the regular expressions
-NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern', 'MBGUID', '_beginthread', 'undef', 'data4', 'L"')
+NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern', 'MBGUID', '_beginthread', 'undef', 'fopen', 'rename', 'data4', 'L"')
 
 
 def rewrite(text, rel=None):

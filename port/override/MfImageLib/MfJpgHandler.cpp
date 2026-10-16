@@ -32,7 +32,7 @@ static void JpgOutputMessage(j_common_ptr cinfo);
 MfImageError MfJpgHandler::Handle(MfImageOp op, MfImageParams &params)
 {
     if (op == MfImageRead) {
-        FILE *file = fopen(params.path, "rb");
+        FILE *file = port_fopen(params.path, "rb");
         if (!file)
             return MfImageCantOpen;
 
@@ -69,7 +69,7 @@ MfImageError MfJpgHandler::Handle(MfImageOp op, MfImageParams &params)
         if ((format & 0xff00) != 0x800 || bits != 8)
             return MfImageBadFile;
 
-        FILE *file = fopen(params.path, "wb");
+        FILE *file = port_fopen(params.path, "wb");
         if (!file)
             return MfImageCantOpen;
 

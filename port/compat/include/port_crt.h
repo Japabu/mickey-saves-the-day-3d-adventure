@@ -73,7 +73,12 @@ void _makepath(char *path, const char *drive, const char *dir, const char *fname
 // malloc.h
 #define _alloca alloca
 
-// stdio.h
+// stdio.h: the game's file functions on its virtual file system (platform/win32/crtfs.cpp;
+// port/rewrite.py maps the source's fopen, freopen and rename calls onto them)
+FILE *port_fopen(const char *path, const char *mode);
+FILE *port_freopen(const char *path, const char *mode, FILE *stream);
+int port_rename(const char *from, const char *to);
+int port_host_path(const char *path, int for_write, char *out, size_t outsize);
 static inline FILE *_fdopen(int fd, const char *mode) { return fdopen(fd, mode); }
 
 // ctype.h: Microsoft's character class masks, for iswctype() (whose masks on macOS are

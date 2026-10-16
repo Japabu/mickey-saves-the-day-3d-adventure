@@ -8,7 +8,7 @@ extern "C" void __cdecl MBDebugStr(const char *fmt, ...)
     // Truncates log.txt once per run, before the first message is logged.
     static struct LogFileDeleter {
         // 0x100010e0 ??0LogFileDeleter@?1??MBDebugStr@@9@QAE@XZ
-        LogFileDeleter(void) { fclose(fopen("log.txt", "w")); }
+        LogFileDeleter(void) { fclose(port_fopen("log.txt", "w")); }
     } logDeleter;
 
     char buffer[512];
@@ -26,7 +26,7 @@ extern "C" void __cdecl MBDebugStr(const char *fmt, ...)
         if (len > (int)sizeof buffer - 1)
             len = sizeof buffer - 1;
         OutputDebugString(buffer);
-        FILE *f = fopen("log.txt", "a");
+        FILE *f = port_fopen("log.txt", "a");
         fwrite(buffer, 1, len, f);
         fclose(f);
         criticalSection.Leave();
