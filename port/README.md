@@ -40,11 +40,12 @@ where this bites; fixes go into overrides with a comment.
 Requirements: Xcode command-line tools, Homebrew `cmake`, `ninja`, `sdl3`, `ffmpeg`.
 
 ```
-python3 port/tools/census.py          # how many source files compile, per module
+python3 port/tools/census.py                        # how many source files compile, per module
+cmake -S port -B out/port/build -G Ninja            # configure (module table: port/flags.py)
+cmake --build out/port/build                        # or --target <module>
 ```
 
-The full build (CMake) and how to point the game at your CD come with the first
-linking build.
+How to point the game at your CD comes with the first running build.
 
 Not ported: the developers' tools (Piccolo script console, debugger, class browser),
 which use MFC and are not part of the game.
