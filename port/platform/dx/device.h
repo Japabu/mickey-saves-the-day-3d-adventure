@@ -38,10 +38,15 @@ struct Device : Object<IDirect3DDevice7> {
     };
     std::vector<Light> lights;
     D3DCLIPSTATUS clipStatus;
+    bool legacyModulateAlpha = false; // stage 0 alpha set by TEXTUREMAPBLEND MODULATE
 
     Device(DirectDraw *dd, Surface *target);
     ~Device();
+    void texture_map_blend(DWORD mode);
     Surface *zbuffer() const; // the z-buffer attached to the render target, if any
+    // All drawing (pipeline.cpp): interleaved vertices in data, or strided ones in sdata.
+    HRESULT draw(D3DPRIMITIVETYPE type, DWORD fvf, const void *data, const _D3DDRAWPRIMITIVESTRIDEDDATA *sdata, DWORD nverts,
+                 const WORD *idx, DWORD nidx, DWORD flags);
 
     HRESULT __stdcall QueryInterface(REFIID, void **) override;
     HRESULT __stdcall GetCaps(_D3DDeviceDesc7 *) override;

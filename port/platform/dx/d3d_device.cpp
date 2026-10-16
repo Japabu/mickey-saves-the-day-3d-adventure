@@ -370,7 +370,45 @@ HRESULT Device::SetRenderState(D3DRENDERSTATETYPE s, DWORD v)
     if ((unsigned)s >= RS_COUNT)
         return DDERR_INVALIDPARAMS;
     rs[s] = v;
+    if (s == D3DRENDERSTATE_TEXTUREMAPBLEND)
+        texture_map_blend(v);
     return D3D_OK;
+}
+
+// The DirectX 5 texture blend as stage 0 operations, as the DirectX 7 runtime maps it.
+void Device::texture_map_blend(DWORD mode)
+{
+    DWORD *t = tss[0];
+    t[D3DTSS_COLORARG1] = t[D3DTSS_ALPHAARG1] = D3DTA_TEXTURE;
+    t[D3DTSS_COLORARG2] = t[D3DTSS_ALPHAARG2] = D3DTA_DIFFUSE;
+    legacyModulateAlpha = false;
+    switch (mode) {
+    case D3DTBLEND_DECAL:
+    case D3DTBLEND_COPY:
+        t[D3DTSS_COLOROP] = D3DTOP_SELECTARG1;
+        t[D3DTSS_ALPHAOP] = D3DTOP_SELECTARG1;
+        break;
+    case D3DTBLEND_MODULATE:
+        t[D3DTSS_COLOROP] = D3DTOP_MODULATE;
+        t[D3DTSS_ALPHAOP] = D3DTOP_SELECTARG1;
+        legacyModulateAlpha = true; // the texture's alpha if it has one, else the diffuse alpha
+        break;
+    case D3DTBLEND_MODULATEALPHA:
+        t[D3DTSS_COLOROP] = D3DTOP_MODULATE;
+        t[D3DTSS_ALPHAOP] = D3DTOP_MODULATE;
+        break;
+    case D3DTBLEND_DECALALPHA:
+        t[D3DTSS_COLOROP] = D3DTOP_BLENDTEXTUREALPHA;
+        t[D3DTSS_ALPHAOP] = D3DTOP_SELECTARG2;
+        break;
+    case D3DTBLEND_ADD:
+        t[D3DTSS_COLOROP] = D3DTOP_ADD;
+        t[D3DTSS_ALPHAOP] = D3DTOP_SELECTARG2;
+        break;
+    default:
+        DX_LOG("TEXTUREMAPBLEND %u is not implemented\n", (unsigned)mode);
+        break;
+    }
 }
 
 HRESULT Device::GetRenderState(D3DRENDERSTATETYPE s, DWORD *v)
@@ -436,6 +474,8 @@ HRESULT Device::SetTextureStageState(DWORD stage, D3DTEXTURESTAGESTATETYPE s, DW
     if (stage >= MAX_STAGES || (unsigned)s >= TSS_COUNT)
         return DDERR_INVALIDPARAMS;
     tss[stage][s] = v;
+    if (stage == 0 && (s == D3DTSS_ALPHAOP || s == D3DTSS_ALPHAARG1 || s == D3DTSS_ALPHAARG2))
+        legacyModulateAlpha = false;
     if (s == D3DTSS_ADDRESS)
         tss[stage][D3DTSS_ADDRESSU] = tss[stage][D3DTSS_ADDRESSV] = v;
     return D3D_OK;
@@ -495,40 +535,5 @@ HRESULT Device::Load(IDirectDrawSurface7 *idst, POINT *pt, IDirectDrawSurface7 *
 HRESULT Device::SetClipPlane(DWORD, D3DVALUE *) { DX_UNSUPPORTED("IDirect3DDevice7::SetClipPlane"); }
 HRESULT Device::GetClipPlane(DWORD, D3DVALUE *) { DX_UNSUPPORTED("IDirect3DDevice7::GetClipPlane"); }
 HRESULT Device::GetInfo(DWORD, void *, DWORD) { DX_UNSUPPORTED("IDirect3DDevice7::GetInfo"); }
-
-// ---- drawing (the pipeline is not written yet: accepted and dropped)
-
-static void draw_not_rendered()
-{
-    static bool once;
-    if (!once) {
-        once = true;
-        DX_LOG("Direct3D drawing is not implemented yet; primitives are dropped\n");
-    }
-}
-
-HRESULT Device::DrawPrimitive(D3DPRIMITIVETYPE, DWORD, void *, DWORD, DWORD)
-{
-    draw_not_rendered();
-    return D3D_OK;
-}
-
-HRESULT Device::DrawIndexedPrimitive(D3DPRIMITIVETYPE, DWORD, void *, DWORD, WORD *, DWORD, DWORD)
-{
-    draw_not_rendered();
-    return D3D_OK;
-}
-
-HRESULT Device::DrawPrimitiveStrided(D3DPRIMITIVETYPE, DWORD, _D3DDRAWPRIMITIVESTRIDEDDATA *, DWORD, DWORD)
-{
-    draw_not_rendered();
-    return D3D_OK;
-}
-
-HRESULT Device::DrawIndexedPrimitiveStrided(D3DPRIMITIVETYPE, DWORD, _D3DDRAWPRIMITIVESTRIDEDDATA *, DWORD, WORD *, DWORD, DWORD)
-{
-    draw_not_rendered();
-    return D3D_OK;
-}
 
 } // namespace dx
