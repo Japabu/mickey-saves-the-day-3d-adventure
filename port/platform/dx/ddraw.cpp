@@ -36,8 +36,12 @@ static void mode_desc(DDSURFACEDESC2 *d, int w, int h, int bpp)
     d->ddpfPixelFormat = display_format(bpp);
 }
 
+// The most recently created DirectDraw object: its display mode is the display's.
+static DirectDraw *s_current;
+
 DirectDraw::DirectDraw()
 {
+    s_current = this;
     d3d.dd = this;
     dd1.dd = this;
     modeW = GetSystemMetrics(SM_CXSCREEN);
@@ -45,6 +49,12 @@ DirectDraw::DirectDraw()
     if (modeW <= 0 || modeH <= 0)
         modeW = 1024, modeH = 768;
     modeBpp = 32;
+}
+
+DirectDraw::~DirectDraw()
+{
+    if (s_current == this)
+        s_current = 0;
 }
 
 HRESULT DirectDraw::QueryInterface(REFIID iid, void **out)
@@ -366,6 +376,13 @@ HRESULT DirectDraw1::WaitForVerticalBlank(DWORD f, HANDLE e) { return dd->WaitFo
 } // namespace dx
 
 // ---- entry points (ddraw.dll)
+
+// The display's bits per pixel for GDI (GetDeviceCaps(BITSPIXEL)): the DirectDraw
+// mode, or the desktop's 32 while no DirectDraw object exists.
+DX_EXPORT int port_display_bpp(void)
+{
+    return dx::s_current ? dx::s_current->modeBpp : 32;
+}
 
 static const char DRIVER_DESC[] = "Primary Display Driver";
 static const char DRIVER_NAME[] = "display";

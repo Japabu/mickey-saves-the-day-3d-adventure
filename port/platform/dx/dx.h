@@ -240,6 +240,7 @@ struct DirectDraw : Object<IDirectDraw7> {
     Surface *primary = 0;      // not a reference; cleared by the primary's destructor
 
     DirectDraw();
+    ~DirectDraw();
     bool fullscreen() const { return (coopLevel & DDSCL_FULLSCREEN) != 0; }
 
     HRESULT __stdcall QueryInterface(REFIID, void **) override;

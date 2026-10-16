@@ -49,6 +49,13 @@ struct TexCache {
 TexCache *texture_cache(Surface *s);
 void free_texture_cache(TexCache *c);
 
+struct StageState;
+
+// Samples a stage's texture at (u, v) with the screen derivatives of u and v for the
+// mip level. With key set, texels matching the colour key do not count; *keyed says
+// the sample fell on them.
+f4 sample(const StageState &s, float u, float v, float dudx, float dvdx, float dudy, float dvdy, bool key, bool *keyed);
+
 // The state of one texture stage, as the pixel loop needs it.
 struct StageState {
     DWORD colorop, carg1, carg2, alphaop, aarg1, aarg2;

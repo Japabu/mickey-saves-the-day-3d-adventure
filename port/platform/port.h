@@ -21,6 +21,9 @@ void port_wait_vblank(void);
 // (RGB 565), 24 or 32 (BGR order as in DIBs). Release it before the pixels go away.
 HDC port_gdi_surface_dc(void *pixels, int w, int h, int pitch, int bpp, const PALETTEENTRY *palette);
 void port_gdi_release_surface_dc(HDC hdc);
+// The display's bits per pixel (DirectDraw layer): the current DirectDraw mode, so
+// GetDeviceCaps(BITSPIXEL) agrees with it.
+int port_display_bpp(void);
 
 // Modules: called by each library's attach stub (port/flags.py) before its DllMain.
 HINSTANCE port_module_attach(const char *dllname, const void *anchor);
