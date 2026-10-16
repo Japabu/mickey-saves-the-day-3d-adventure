@@ -1913,3 +1913,9 @@ void MfSpace::GetProtoActorNames(MfStringList &names)
 }
 
 // 0x10092850 ??_EMfSpace@@UAEPAXI@Z (compiler-generated vector deleting destructor)
+
+// Not claimed: in the original this member is folded with an identical function
+// (1000def0); the port needs its own definition.
+void MfSpace::DefaultMsgHandler(MfMsg &)
+{
+}

@@ -820,13 +820,13 @@ long MfProperty::StreamType() const
 }
 
 // Old-format streams (version < 100) store properties differently.
-extern bool IsOldStreamFormat(MfStream &s);
+extern bool IsOldProtoNodeFormat(MfStream &s);
 extern MfStreamError ReadOldProperty(MfStream &s, MfProperty *p);
 
 // 0x1000f980 ?ReadFromStream@MfProperty@@UAE?AW4MfStreamError@@AAVMfStream@@@Z
 MfStreamError MfProperty::ReadFromStream(MfStream &s)
 {
-    if (IsOldStreamFormat(s))
+    if (IsOldProtoNodeFormat(s))
         return ReadOldProperty(s, this);
     s >> name;
     value = (MfTypedValue *)s.ReadObject(fn_1000f440);

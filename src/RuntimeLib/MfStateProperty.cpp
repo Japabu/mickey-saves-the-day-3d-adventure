@@ -108,3 +108,15 @@ void *MfStatePropertyList::Remove(MfDblListItem *&pli, void *item, int keep)
     }
     return removed;
 }
+
+// Not claimed: in the original this member is folded with an identical function
+// (1008a940, MfTransPropList::Clear); the port needs its own definition.
+void MfStatePropertyList::Clear()
+{
+    if (mOwnsItems == 1) {
+        MfDblListItem *pli;
+        for (MfStateProperty *p = (MfStateProperty *)GetFirst(pli); p; p = (MfStateProperty *)GetNext(pli))
+            delete p;
+    }
+    MfDblList::Clear();
+}

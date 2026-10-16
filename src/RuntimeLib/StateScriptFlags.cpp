@@ -24,3 +24,5 @@ StateScriptFlags & StateScriptFlags::operator=(StateScriptFlags const & rhs)
     field_0 = rhs.field_0;
     return *this;
 }
+
+int StateScriptFlags::iFlags;

@@ -38,9 +38,9 @@
 void MfReportError(MfString actorName, int code, ...);
 // where an actor can stand near target: within the distances and (when
 // useAngles is set) the angles around it; goal gets the place in the
-// floor's frame (10057d30, unnamed)
-MfFloor *ApproachGoal(MfTransform2 &goal, MfLiveActor *actor, MfActor *target, float minDistance,
-                      float &maxDistance, int useAngles, float fromAngle, float toAngle);
+// floor's frame (10057d30, MfLocoPlanner.cpp)
+MfFloor *FindPlace(MfTransform2 &place, MfLiveActor *actor, MfApiActor *target, float minDistance,
+                   float *maxDistance, int useAngles, float angleFrom, float angleTo);
 
 // Inline members of the exported MfCameraActivity this object emits:
 // 0x10013560 ?Type@MfCameraActivity@@UAEHXZ
@@ -135,7 +135,7 @@ int MfApiActor::RequestLocoPlan(const MfAiActor *aiTarget, const MfString &skill
     // the planner chooses the goal itself; the place found here only proves
     // that there is a floor to walk to
     MfTransform2 place;
-    MfFloor *floor = ApproachGoal(place, this, (MfActor *)aiTarget, minDistance, maxDistance, 1, fromAngle, toAngle);
+    MfFloor *floor = FindPlace(place, this, (MfApiActor *)aiTarget, minDistance, &maxDistance, 1, fromAngle, toAngle);
     if (!floor)
         return -1;
     return MfLiveActor::RequestLocoPlan(id, loco, endSkill, goal, floor, 1, 1, 1, (MfLiveActor *)aiTarget,

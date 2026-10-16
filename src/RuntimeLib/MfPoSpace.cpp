@@ -624,3 +624,10 @@ MfString MfPoSpace::InitConstants()
     s << "global " << "MF_FOG_EXP2" << " = " << 2 << ";";
     return s;
 }
+
+// Not claimed: in the original this member is folded with an identical function
+// (10078d10, MfPoLibrary's MfPoActivity::FilloutPropertyNameList); the port needs its own definition.
+void MfPoSpace::FilloutPropertyNameList(MfStringList *list)
+{
+    MfScDataObject::FilloutPropertyNameList(list, pttPropTokens);
+}

@@ -116,14 +116,14 @@ protected:
 };
 
 // size 4; vtable: Read, Write, StreamType (pure), WriteAsObject, 7 pure
-// virtuals (names unknown; slot 7 (+0x1c) clears the set)
+// virtuals (slot 7 (+0x1c) is DeleteAll, as in MfPropertySet.h; the others unknown here)
 class __declspec(dllexport) MfPropertySet : public MfStreamObject {
 public:
     MfPropertySet() {}
     virtual int v4() = 0;
     virtual int v5() = 0;
     virtual int v6() = 0;
-    virtual void Clear() = 0;
+    virtual void DeleteAll() = 0;
     virtual int v8() = 0;
     virtual int v9() = 0;
     virtual int v10() = 0;
@@ -142,7 +142,7 @@ public:
     virtual int v4();
     virtual int v5();
     virtual int v6();
-    virtual void Clear();
+    virtual void DeleteAll();
     virtual int v8();
     virtual int v9();
     virtual int v10();

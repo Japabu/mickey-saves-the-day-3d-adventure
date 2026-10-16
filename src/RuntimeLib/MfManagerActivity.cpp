@@ -447,3 +447,10 @@ void MfManagerActivity::PrepareForExecution()
 }
 
 // 0x10043b40 ??_EMfManagerActivity@@UAEPAXI@Z (compiler-generated vector deleting destructor)
+
+// Not claimed: in the original this member is folded with an identical function
+// (10006ca0); the port needs its own definition.
+int MfManagerActivity::IsManagerActivity()
+{
+    return 1;
+}

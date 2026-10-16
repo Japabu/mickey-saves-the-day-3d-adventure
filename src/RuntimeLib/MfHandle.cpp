@@ -164,3 +164,10 @@ void MfHandle::SetTargetXforms(MfLiveActor *actor)
 }
 
 // 0x1002ed20 ??_EMfHandle@@UAEPAXI@Z (compiler-generated vector deleting destructor)
+
+// Not claimed: in the original this member is folded with an identical function
+// (1001fc00); the port needs its own definition.
+MfActorNodeType MfHandle::GetNodeType()
+{
+    return (MfActorNodeType)1;
+}

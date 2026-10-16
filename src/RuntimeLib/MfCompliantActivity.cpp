@@ -176,3 +176,10 @@ void MfCompliantActivity::PrepareForExecution()
 }
 
 // 0x100082c0 ??_EMfCompliantActivity@@UAEPAXI@Z (compiler-generated vector deleting destructor)
+
+// Not claimed: in the original this member is folded with an identical function
+// (1001fc00); the port needs its own definition.
+int MfCompliantActivity::HasMotion()
+{
+    return 1;
+}

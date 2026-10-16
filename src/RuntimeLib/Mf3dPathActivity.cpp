@@ -526,3 +526,19 @@ MfStreamError Mf3dPathActivity::ReadFromStream(MfStream &stream)
 }
 
 // 0x10008cd0 ??_EMf3dPathActivity@@UAEPAXI@Z (compiler-generated vector deleting destructor)
+
+// Not claimed: in the original this member is folded with an identical function
+// (10006ca0); the port needs its own definition.
+int Mf3dPathActivity::WillFinish()
+{
+    return 1;
+}
+
+// Not claimed: in the original this member is folded with an identical function
+// (1000c180, MfLocoActivity::setSkill); the port needs its own definition.
+void Mf3dPathActivity::setSkill(MfSkill *skill)
+{
+    MfAtomicActivity::setSkill(skill);
+    if (skill->Type() == MfLocoSkill::TYPE)
+        mLastSampleTime = ((MfLocoSkill *)skill)->BestMatchIndex(mActor);
+}

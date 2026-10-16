@@ -282,3 +282,10 @@ int MfCameraNode::AddRef()
 {
     return 1;
 }
+
+// Not claimed: in the original this member is folded with an identical function
+// (1001fc00); the port needs its own definition.
+int MfCameraNode::Release()
+{
+    return 1;
+}

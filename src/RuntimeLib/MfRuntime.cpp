@@ -31,6 +31,7 @@
 #include "MfSoundManager.h"
 #include "MfWorld.h"
 #include "MfJoystick.h"
+#include "MfPoJoystick.h"
 #include "MfLogger.h"
 #include "MfAiApplication.h"
 #include "MfScPiccolo.h"
@@ -288,8 +289,6 @@ MfAiWorld *MfRuntime::GetWorld()
     return g_world;
 }
 
-// makes the Piccolo objects of the joysticks (1006e100)
-void InitPiccoloJoysticks();
 
 // 0x10004060 ?EnumJoysticks@@YGHPAUDIDEVICEINSTANCEA@@PAX@Z
 // DirectInput's device callback: the first two joysticks found.
@@ -309,7 +308,7 @@ int MfRuntime::InitializeJoysticks(void *instance, void *window)
     gJoysticks[1] = new MfJoystick(2);
     gJoysticks[0]->SetWindow((HWND)window);
     gJoysticks[1]->SetWindow((HWND)window);
-    InitPiccoloJoysticks();
+    MfPoJoystick::Initialize();
     IDirectInputA *directInput;
     HRESULT result = DirectInputCreateA((HINSTANCE)instance, 0x500, &directInput, 0);
     if (!result) {

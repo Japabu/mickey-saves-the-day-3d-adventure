@@ -307,3 +307,10 @@ MfStreamError MfManipActivity::ReadFromStream(MfStream &stream)
 }
 
 // 0x100087f0 ??_EMfManipActivity@@UAEPAXI@Z (compiler-generated vector deleting destructor)
+
+// Not claimed: in the original this member is folded with an identical function
+// (10006ca0); the port needs its own definition.
+int MfManipActivity::HasMotion()
+{
+    return 1;
+}

@@ -5,8 +5,9 @@
 #include "MfStringValue.h"
 
 // The pre-version-100 material format (read elsewhere in MfActorLib).
-extern bool MfIsOldFormat(MfStream &);
-extern MfStreamError MfReadOldMaterial(MfStream &, MfMaterial *);
+// the old-format reader (MfProtoNode.cpp)
+extern bool IsOldProtoNodeFormat(MfStream &);
+extern MfStreamError ReadOldMaterial(MfStream &, MfMaterial &);
 
 // 0x1000c050 ??4MfTexture@@QAEAAU0@ABU0@@Z
 MfTexture &MfTexture::operator=(const MfTexture &t)
@@ -115,8 +116,8 @@ int MfMaterial::StreamSize() const
 // 0x1000c700 ?ReadFromStream@MfMaterial@@UAE?AW4MfStreamError@@AAVMfStream@@@Z
 MfStreamError MfMaterial::ReadFromStream(MfStream &s)
 {
-    if (MfIsOldFormat(s))
-        return MfReadOldMaterial(s, this);
+    if (IsOldProtoNodeFormat(s))
+        return ReadOldMaterial(s, *this);
     s >> m_shading;
     s >> m_ambient >> m_diffuse >> m_specular >> m_emissive;
     s >> m_shininess;

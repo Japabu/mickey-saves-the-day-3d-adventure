@@ -668,3 +668,9 @@ void *MfFSMList::Remove(void *item, int keep)
     }
     return removed;
 }
+
+// Not claimed: in the original this member is folded with an identical function
+// (100649d0, ??1MfMsgTypeName); the port needs its own definition.
+MfFSMEvent::~MfFSMEvent()
+{
+}

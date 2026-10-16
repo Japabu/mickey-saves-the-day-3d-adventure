@@ -28,6 +28,14 @@ void *MfDblList::GetLast(MfDblListItem *&pli) const
     return pli ? pli->pData : 0;
 }
 
+// 0x100049a0 ?GetPrev@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z (folded with MfIntList::Prev and MfStringList::Prev, MfIntList.cpp)
+void *MfDblList::GetPrev(MfDblListItem *&pli) const
+{
+    if (pli)
+        pli = pli->GetPrev();
+    return pli ? pli->GetData() : 0;
+}
+
 // 0x100021e0 ??0MfDblList@@AAE@ABV0@@Z
 MfDblList::MfDblList(const MfDblList &)
 {

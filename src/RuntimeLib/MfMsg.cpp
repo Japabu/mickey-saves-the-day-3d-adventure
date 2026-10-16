@@ -7,6 +7,7 @@
 #include "MfLiveActor.h"
 #include "MfScDataHandle.h"
 #include "MfSkeletonTraversal.h"
+#include "MfGCPath.h"
 
 // guards the reference counts of the message data blocks (owned by the
 // message dispatcher, which deletes it)
@@ -299,10 +300,9 @@ MfManipGCResultData::MfManipGCResultData(int requestID, int status, int a3, int 
 
 // 0x10064190 ??_GMfManipGCResultData@@UAEPAXI@Z (folded with MfLocoPlanResultData's)
 
-// a manipulation plan (only its destructor is needed here)
-class MfManipPlan {
-public:
-    ~MfManipPlan();
+// a manipulation plan: a grasp/collision-free path (its destructor is the one of
+// MfGCPath, folded with it in the original, 10032590)
+class MfManipPlan : public MfGCPath {
 };
 
 // 0x100644a0 ?FreeContents@MfManipGCResultData@@UAEXXZ

@@ -48,3 +48,13 @@ MfLiveActor *MfLiveActorList::Remove(MfLiveActor *actor, int keep)
 // Also matched by this code:
 // piccoloconsole.dll 0x10010e00 ??1MfLiveActorList@@UAE@XZ
 // piccoloconsole.dll 0x1001bc00 ??1MfLiveActorList@@UAE@XZ
+
+// Not claimed: in the original this member is folded with an identical function
+// (1008a920, MfTransPropList::Contains); the port needs its own definition.
+int MfLiveActorList::Contains(MfLiveActor *actor)
+{
+    int found = 0;
+    if (MfDblList::Find(actor))
+        found = 1;
+    return found;
+}

@@ -45,7 +45,7 @@ public:
 };
 
 // finds the place next to the target (10057d30)
-static MfFloor *FindPlace(MfTransform2 &place, MfLiveActor *actor, MfApiActor *target, float minDistance,
+MfFloor *FindPlace(MfTransform2 &place, MfLiveActor *actor, MfApiActor *target, float minDistance,
                           float *maxDistance, int useAngles, float angleFrom, float angleTo);
 
 #define PI 3.1415927f
@@ -484,7 +484,7 @@ MfLocoPlanResult *MfLocoPlanner::Plan(MfLiveActor *actor, int target, float orig
 // is set, else around the direction to the actor): the floor under it, 0 if
 // there is none. place gets the floor position and the heading towards the
 // target.
-static MfFloor *FindPlace(MfTransform2 &place, MfLiveActor *actor, MfApiActor *target, float minDistance,
+MfFloor *FindPlace(MfTransform2 &place, MfLiveActor *actor, MfApiActor *target, float minDistance,
                           float *maxDistance, int useAngles, float angleFrom, float angleTo)
 {
     if (!useAngles) {

@@ -754,3 +754,9 @@ MfStreamError MfManipHand::ReadFromStream(MfStream &stream)
 }
 
 // 0x100462f0 ??_EMfManipSkill@@UAEPAXI@Z (compiler-generated vector deleting destructor)
+
+// Not claimed: in the original this member is folded with an identical function
+// (100228e0); the port needs its own definition.
+void MfManipSkill::normalize()
+{
+}

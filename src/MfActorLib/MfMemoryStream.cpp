@@ -1,6 +1,7 @@
 // MfActorLib.dll 0x1001a5a0-0x1001a7b0: MfMemoryStream.
 #include <string.h>
 #include "MfMemoryStream.h"
+#include "MfTriangleSet.h"
 
 // 0x1001a5a0 ??0MfMemoryStream@@QAE@XZ
 MfMemoryStream::MfMemoryStream()
@@ -75,6 +76,13 @@ MfStreamError MfMemoryStream::WriteBytes(unsigned long n, const void *p)
 MfStreamError MfMemoryStream::Flush()
 {
     return status;
+}
+
+// 0x1001a770 ?GetNumVertices@MfTriangleSet@@QAEHXZ (folded with Flush: the member at +0x14;
+// not in MfTriangleSet.cpp, where the original calls it out of line)
+int MfTriangleSet::GetNumVertices()
+{
+    return mNumVertices;
 }
 
 // 0x1001a780 ?Seek@MfMemoryStream@@UAE?AW4MfStreamError@@H@Z

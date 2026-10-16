@@ -1,6 +1,5 @@
 // MfIndex (mfutil.dll 0x10004410-0x10004760)
-// GetKey/GetData of MfIndex are not in this address range (not located yet); they are
-// declared in MfIndex.h but not defined here.
+// GetKey/GetData of MfIndex are folded with MfDictionary's (0x10002dd0, 0x10002de0).
 #include <stdlib.h>
 #include "MfIndex_unit.h"
 
@@ -111,4 +110,16 @@ MfHTErrorCode MfIndex::Search(void *pKey, void **ppItem, int *piBucket, int *piS
         *ppPrev = pNode;
     }
     return MFHT_EC_NOT_IN_TABLE;
+}
+
+// 0x10002dd0 ?GetKey@MfIndex@@MAEPAXPAX@Z (folded with MfDictionary::GetKey)
+void *MfIndex::GetKey(void *pItem)
+{
+    return ((MfIndexEntry *)pItem)->GetKeyPointer();
+}
+
+// 0x10002de0 ?GetData@MfIndex@@MAEPAXPAX@Z (folded with MfDictionary::GetData)
+void *MfIndex::GetData(void *pItem)
+{
+    return ((MfIndexEntry *)pItem)->GetData();
 }

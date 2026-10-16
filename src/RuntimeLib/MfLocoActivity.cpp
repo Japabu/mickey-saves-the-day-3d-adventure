@@ -708,3 +708,10 @@ MfAiPath2 *MfLocoActivity::GetCopy2DPath()
 }
 
 // 0x10007190 ??_EMfLocoActivity@@UAEPAXI@Z (compiler-generated vector deleting destructor)
+
+// Not claimed: in the original this member is folded with an identical function
+// (10006ca0); the port needs its own definition.
+int MfLocoActivity::WillFinish()
+{
+    return 1;
+}

@@ -501,7 +501,7 @@ void MfSkill::InitRenderMaterials()
 }
 
 // 0x10051bf0 ?CreateSkill@@YAPAVMfStreamObject@@XZ (original (unnamed): creates the objects of the stream type)
-static MfStreamObject *CreateSkill()
+MfStreamObject *CreateSkill()
 {
     return new MfSkill;
 }
@@ -1074,4 +1074,17 @@ MfProtoSkill *ConvertSkillSubclassData(const MfProtoSkill &proto)
     skill->UseSubclassData(proto);
     skill->ComputeLastTime();
     return skill;
+}
+
+// Not claimed: in the original this member is folded with an identical function
+// (1007dfb0); the port needs its own definition.
+void MfSkill::SetRadius(float)
+{
+}
+
+// Not claimed: in the original this member is folded with an identical function
+// (1000de60); the port needs its own definition.
+unsigned long MfSkill::firstTime() const
+{
+    return 0;
 }

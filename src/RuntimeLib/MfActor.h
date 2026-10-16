@@ -85,7 +85,7 @@ public:
     virtual int DeactivateBehavior(const MfString &);
     virtual int LoadBehavior(const MfString &, int);
     virtual int UnloadBehavior(const MfString &);
-    virtual int GetCurStateName(MfString, MfString &, MfString &);
+    virtual int GetCurStateName(MfString, MfString &, MfString &) = 0;
     virtual int AttachTarget(const MfAiActor *, const MfString &, const MfString &, int) { return 0; }
     virtual int DetachTarget(const MfAiActor *, int);
     virtual void SetActorAttributes(int);
@@ -117,7 +117,7 @@ public:
     virtual int StartTimer(int, const MfString &, int, int);
     virtual int StartTimer(int, MfScDataHandle *, int, int);
     virtual int StopTimer(int);
-    virtual MfAiActor *GetLastSender();
+    virtual MfAiActor *GetLastSender() = 0;
     virtual int GetLastEventID();
     virtual const MfString &GetLastMessage();
     virtual MfAiActivity *GetLastActivity();

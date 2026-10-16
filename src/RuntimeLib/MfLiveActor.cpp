@@ -525,7 +525,7 @@ void MfLiveActor::GoLive(int)
     if (mHFSM && mControlMode == 3) {
         MfMsg msg(1, 0, 0);
         mHFSM->CatchMsg(msg);
-        mHFSM->Start();
+        mHFSM->UpdateActive();
     }
     if (mControlMode == 3 && (mController || (mHFSM && mHFSM->mActive)))
         SetControlMode(1);
@@ -3777,3 +3777,43 @@ void MfLiveActor::SetController(MfAiController *controller)
 }
 
 // 0x1003dec0 ??_EMfStringList@@WBA@AEPAXI@Z (adjustor thunk of the local MfStringList vtable copy)
+
+// Not claimed: in the original this member is folded with an identical function
+// (10003390, inline in the class and emitted with MfRuntime); the port needs its own definition.
+MfString MfLiveActor::GetName()
+{
+    return InstanceName();
+}
+
+// Not claimed: in the original this member is folded with an identical function
+// (10003580, MfActor::AttachTarget); the port needs its own definition.
+int MfLiveActor::changeTexture(const MfString &, int, const MfString &, const MfString &)
+{
+    return 0;
+}
+
+// Not claimed: in the original this member is folded with an identical function
+// (1007dfb0); the port needs its own definition.
+void MfLiveActor::ShowActionMenu(MfAiRenderView *)
+{
+}
+
+// Not claimed: in the original this member is folded with an identical function
+// (1007dfb0); the port needs its own definition.
+void MfLiveActor::HandleJoystickEvent(int)
+{
+}
+
+// Not claimed: in the original this member is folded with an identical function
+// (1000def0); the port needs its own definition.
+void MfLiveActor::RespondToApproach(MfLiveActor *)
+{
+}
+
+// Not claimed: in the original this member is folded with an identical function
+// (1000def0); the port needs its own definition.
+void MfLiveActor::RespondToRetreat(MfLiveActor *)
+{
+}
+
+MfLiveActor *MfLiveActor::plaPendingOptionTarget;

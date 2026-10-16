@@ -1501,3 +1501,481 @@ MfAiActivity * MfActor::CreateGestureActivity(MfString const &, int, int)
 {
     return 0;
 }
+
+// ---- members without a unit of their own -----------------------------------
+// In the original these are inline members of the exported class, emitted with
+// it in the MfActor_1 unit (MfActor_1.cpp, its own declaration of the class),
+// and the empty virtuals are folded with the stubs above (xor eax, eax / ret n,
+// see the vtable at 100b1dcc). This unit's MfActor.h declares them out of line,
+// so they are defined here; they are not claimed.
+
+int MfActor::usePlaybackActors;
+
+const MfString &MfActor::Name()
+{
+    if (mPrototype)
+        return mPrototype->sName;
+    return mName;
+}
+
+const MfString &MfActor::InstanceName()
+{
+    if (mInstanceName == NULL_STRING) {
+        if (mPrototype)
+            mInstanceName = MfString(Name()) + MfString(mInstanceIndex);
+        else
+            mInstanceName = MfString(mInstanceIndex);
+    }
+    return mInstanceName;
+}
+
+const MfString &MfActor::GetClassName()
+{
+    if (mPrototype)
+        return mPrototype->sName;
+    return mName;
+}
+
+MfString MfActor::GetInstanceName()
+{
+    return InstanceName();
+}
+
+MfAiSkill *MfActor::GetSkill(const MfString &name)
+{
+    return getSkill(name);
+}
+
+// The original returns a reference to a temporary copy of NULL_STRING that it has
+// already destroyed; an empty string that stays alive serves the callers the same.
+const MfString &MfActor::GetLastMessage()
+{
+    static MfString empty;
+    return empty;
+}
+
+MfDblList *MfActor::Filter()
+{
+    return &mFilter;
+}
+
+int MfActor::DeactivateBehavior(const MfString &)
+{
+    return 0;
+}
+
+int MfActor::LoadBehavior(const MfString &, int)
+{
+    return 0;
+}
+
+int MfActor::UnloadBehavior(const MfString &)
+{
+    return 0;
+}
+
+int MfActor::DetachTarget(const MfAiActor *, int)
+{
+    return 0;
+}
+
+int MfActor::AddActivity(const MfAiActivity *)
+{
+    return 0;
+}
+
+int MfActor::SetActivity(const MfAiActivity *)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::GetRootActivity()
+{
+    return 0;
+}
+
+int MfActor::RemoveActivity(const MfAiActivity *, int)
+{
+    return 0;
+}
+
+int MfActor::RemoveActivity(int, int)
+{
+    return 0;
+}
+
+int MfActor::SendMessage(const MfAiActor *, const MfString &)
+{
+    return 0;
+}
+
+int MfActor::StopTimer(int)
+{
+    return 0;
+}
+
+int MfActor::GetLastEventID()
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::GetLastActivity()
+{
+    return 0;
+}
+
+const MfCollisionData * MfActor::GetLastCollisionInfo()
+{
+    return 0;
+}
+
+const MfProximityData * MfActor::GetLastProximityInfo()
+{
+    return 0;
+}
+
+const MfPickData * MfActor::GetLastPickInfo()
+{
+    return 0;
+}
+
+const MfContourFailDownData * MfActor::GetLastContourFailDownInfo()
+{
+    return 0;
+}
+
+int MfActor::RequestLocoPlan(const MfString &, const MfString &, const MfVector3 &, int)
+{
+    return 0;
+}
+
+int MfActor::RequestLocoPlan(const MfString &, const MfString &, const MfVector3 &, const MfVector3 &, int)
+{
+    return 0;
+}
+
+int MfActor::RequestLocoPlan(const MfAiActor *, const MfString &, const MfString &, float, float, float, float, int)
+{
+    return 0;
+}
+
+int MfActor::RequestGraspPlan(const MfAiActor *, const MfString &, const MfString &, const MfString &, const MfString &, int, float, float, const MfString &, const MfVector3 &, int)
+{
+    return 0;
+}
+
+int MfActor::RequestPlacePlan(const MfAiActor *, const MfVector3 &, const MfString &, const MfString &, const MfString &, const MfString &, const MfVector3 &, const MfVector3 &, int)
+{
+    return 0;
+}
+
+int MfActor::RequestPlacePlan(const MfAiActor *, const MfTransform3 &, const MfString &, const MfString &, const MfString &, const MfString &, const MfVector3 &, const MfVector3 &, int)
+{
+    return 0;
+}
+
+int MfActor::RequestSitPlan(const MfAiActor *, const MfString &, const MfString &, const MfString &, const MfString &, int)
+{
+    return 0;
+}
+
+int MfActor::RequestPosePlan(const MfAiActor *, const MfString &, int)
+{
+    return 0;
+}
+
+int MfActor::RequestUngraspPlan(const MfAiActor *, const MfString &, int)
+{
+    return 0;
+}
+
+int MfActor::SampleAttachSkill(const MfTransform3 &, const MfString &, unsigned long)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateComplyActivity(const MfAiActor *, const MfString &, const MfString &, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateOrientActivity(const MfString &, const MfVector3 &, int, const MfAiActor *, const MfString &, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateOrientActivity(const MfString &, const MfVector3 &, int, const MfVector3 &, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateCameraActivity(const MfString &, const MfAiActor *, const MfString &, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateCameraActivity(const MfString &, const MfAiActor *, const MfString &, int, const MfVector3 *, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateCameraActivity(const MfString &, const MfAiActor *, const MfString &, const MfAiActorNode *, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateCameraActivity(const MfString &, const MfDblList &, int, const MfVector3 *, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateRandomActivity(int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateSequentialActivity(int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateLocoActivity(const MfString &, float, float, float, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateLocoActivity(const MfString &, float, float, float, float, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateLocoActivity(const MfString &, const MfVector3 &, float, float, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateLocoActivity(const MfString &, const MfAiPath2 *, float, float, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::Create3dPathActivity(const MfString &, float, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::Create3dPathActivity(const MfString &, float, float, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::Create3dPathActivity(const MfString &, const MfVector3 &, const MfTransform3 &, const MfTransform3 &, float, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::Create3dPathActivity(const MfString &, const MfVector3 &, const MfVector3 &, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::Create3dPathActivity(const MfString &, MfTransform3 *, int, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::Create3dPathActivity(const MfString &, unsigned long, MfTransform3 *, int, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::Create3dPathActivity(const MfString &, const MfTransform3 &, const MfTransform3 &, const MfTransform3 &, const MfTransform3 &, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::Create3dPathActivity(const MfString &, unsigned long, const MfTransform3 &, const MfTransform3 &, const MfTransform3 &, const MfTransform3 &, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::Create3dPathActivity(const MfString &, const MfAiActor *, const MfString &, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::Create3dPathActivity(const MfString &, unsigned long, const MfAiActor *, const MfString &, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreateAttachActivity(const MfTransform3 &, const MfString &, int, int)
+{
+    return 0;
+}
+
+MfAiActivity * MfActor::CreatePluginActivity(const MfAiActivitySpec *, int, int)
+{
+    return 0;
+}
+
+int MfActor::GetLastLocoFailureInfo()
+{
+    return 0;
+}
+
+int MfActor::GetLastManipFailureInfo()
+{
+    return 0;
+}
+
+MfISoundResource * MfActor::PlaySound(const MfString &, MfAiActorNode *)
+{
+    return 0;
+}
+
+int MfActor::ChangeTexture(const MfString &, int, const MfString &, const MfString &)
+{
+    return 0;
+}
+
+int MfActor::GetLastOptionID()
+{
+    return 0;
+}
+
+MfScDataHandle * MfActor::GetPiccoloHandle()
+{
+    return 0;
+}
+
+MfAiController * MfActor::GetController()
+{
+    return 0;
+}
+
+int MfActor::SetAnchorNodeStop(MfAiActorNode *)
+{
+    return 0;
+}
+
+MfAiActorNode * MfActor::GetAnchorNodeStop()
+{
+    return 0;
+}
+
+MfAiActor * MfActor::OwnerActor()
+{
+    return 0;
+}
+
+void MfActor::ClearActivity()
+{
+    return;
+}
+
+void MfActor::EnableBehavior(int)
+{
+    return;
+}
+
+void MfActor::FacePoint(const MfVector3 &)
+{
+    return;
+}
+
+void MfActor::UndoSample()
+{
+    return;
+}
+
+void MfActor::HandleLButtonDown(MfPickData *)
+{
+    return;
+}
+
+void MfActor::HandleLButtonUp(MfPickData *)
+{
+    return;
+}
+
+void MfActor::HandleRButtonDown(MfPickData *)
+{
+    return;
+}
+
+void MfActor::HandleRButtonUp(MfPickData *)
+{
+    return;
+}
+
+void MfActor::HandleMouseMove(MfPickData *)
+{
+    return;
+}
+
+void MfActor::SetOptionTarget(const MfAiActor *)
+{
+    return;
+}
+
+void MfActor::SyncTraceUnderHip()
+{
+    return;
+}
+
+void MfActor::SetPlannedActivityOptions(int, int)
+{
+    return;
+}
+
+void MfActor::SetController(MfAiController *)
+{
+    return;
+}
+
+void MfActor::HandleKeyboardEvent(unsigned int, unsigned int)
+{
+    return;
+}
+
+void MfActor::HandleKeyboardDownEvent(unsigned int, unsigned int)
+{
+    return;
+}
+
+void MfActor::HandleKeyboardUpEvent(unsigned int, unsigned int)
+{
+    return;
+}
+
+void MfActor::HandleKeyboardRepeatEvent(unsigned int, unsigned int)
+{
+    return;
+}
+
+int MfActor::SendEvent(const MfAiActor *, const MfString &, unsigned long)
+{
+    return 0;
+}
+
+int MfActor::SendEvent(const MfAiActor *, MfScDataHandle *, unsigned long)
+{
+    return -5;
+}
+
+int MfActor::StartTimer(int, const MfString &, int, int)
+{
+    return 0;
+}
+
+int MfActor::StartTimer(int, MfScDataHandle *, int, int)
+{
+    return -5;
+}
+
+int MfActor::RequestTouchPlan(const MfAiActor *, const MfString &, const MfString &, const MfString &, const MfString &, int, float, float, const MfString &, const MfVector3 &, int)
+{
+    return -1;
+}
+

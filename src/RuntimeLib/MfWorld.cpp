@@ -971,3 +971,21 @@ int MfWorld::GetInstances(MfProtoActor *proto, MfDblList &instances)
     }
     return 0;
 }
+
+// Not claimed: in the original this member is folded with an identical function
+// (1007f9e0, MfActor::ActivateBehavior); the port needs its own definition.
+int MfWorld::LoadActorGroup(const MfString &)
+{
+    return 0;
+}
+
+// Not claimed: in the original this member is folded with an identical function
+// (1007fa30, MfActor::CreateHoldActivity); the port needs its own definition.
+int MfWorld::SaveActorGroup(const MfAiActor *, const MfString &)
+{
+    return 0;
+}
+
+// the class's static members (zero in the original's data, iUniqueNumber 1)
+int MfWorld::enableNetwork;
+int MfWorld::iUniqueNumber = 1;

@@ -84,7 +84,6 @@ public:
     // the script source of the part at path
     MfString GetScript(MfString path);                      // 10080870
 
-    void Start();
     // takes a behaviour the compiler loaded (10080b80)
     void AddMachine(MfFiniteStateMachine *machine);
     void SetSpaceHandle(MfScDataHandle *space);

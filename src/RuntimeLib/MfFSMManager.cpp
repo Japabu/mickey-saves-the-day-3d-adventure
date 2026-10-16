@@ -608,3 +608,11 @@ int MfFSMManager::LoadBehavior(MfString name, int compile, int activate)
         mLastLoaded->mb4 = 0;
     return (int)mLastLoaded;
 }
+
+// Not claimed: in the original this member is folded with an identical function
+// (10080ad0, claimed in MfActorLib as MfProtoSkill::SetInterpolate); the port needs
+// its own definition.
+void MfFSMManager::Enable(int on)
+{
+    m48 = on;
+}

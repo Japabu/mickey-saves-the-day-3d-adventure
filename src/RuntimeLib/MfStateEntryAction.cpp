@@ -124,3 +124,12 @@ int MfStateEntryAction::HasScript()
 {
     return mSource.Length() > 3;
 }
+
+// Not claimed: in the original this member is folded with an identical function
+// (1008b9c0, MfTransTriggeredBy::Unload); the port needs its own definition.
+void MfStateEntryAction::Unload()
+{
+    if (mFunction)
+        mFunction->Release();
+    mFunction = 0;
+}

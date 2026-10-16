@@ -1431,3 +1431,9 @@ int MfRayColInterface::Cast(MfAiColNode *node, MfAiColReport *report)
     hooks->RemoveHook(MF_HOOK_COL_QUERY, RejectBackFace, data);
     return hit;
 }
+
+// Not claimed: in the original this member is folded with an identical function
+// (1001fbf0, MfCameraNode::GetInterfaceName); the port needs its own definition.
+void MfColNode::GetInterfaceName(char *, int, int &, int &)
+{
+}

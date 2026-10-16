@@ -24,7 +24,7 @@
 #include <float.h>
 
 // The reader of the old actor file format (user format below 100).
-bool IsOldActorFormat(MfStream *s);
+bool IsOldProtoNodeFormat(MfStream &s);
 MfStreamError ReadOldActorFormat(MfStream *s, MfProtoActor *actor);
 
 int const MfProtoActor::fileType = 'MFPA';
@@ -697,7 +697,7 @@ MfStreamError MfProtoActor::ReadFromStream(MfStream &s)
 {
     if (s.userFormat == 0)
         s >> s.userFormat;
-    if (IsOldActorFormat(&s))
+    if (IsOldProtoNodeFormat(s))
         return ReadOldActorFormat(&s, this);
     s >> userVersion >> sName;
     MfProtoNode *root = new MfProtoNode;

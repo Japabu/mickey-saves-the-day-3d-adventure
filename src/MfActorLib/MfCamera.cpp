@@ -43,7 +43,7 @@ MfCamera &MfCamera::operator=(const MfCamera &c)
     m_fov = c.m_fov;
     m_near = c.m_near;
     m_far = c.m_far;
-    m_properties.Clear();
+    m_properties.DeleteAll();
     m_properties.Copy(c.m_properties);
     return *this;
 }
@@ -78,6 +78,12 @@ MfStreamError MfCamera::WriteToStream(MfStream &s) const
     s << m_name << m_type << *(int *)&m_fov << *(int *)&m_near << *(int *)&m_far
       << m_properties;
     return s.Status();
+}
+
+// ?StreamSize@MfCamera@@UBEHXZ (= MfArrayValue's etc., 0x1000c6f0: returns 0)
+int MfCamera::StreamSize() const
+{
+    return 0;
 }
 
 // 0x10005070 ??0MfOrientedBox@@QAE@XZ (compiler-generated)

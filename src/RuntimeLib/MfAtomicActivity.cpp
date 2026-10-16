@@ -463,3 +463,10 @@ MfStreamError MfAtomicActivity::ReadFromStream(MfStream &stream)
     }
     return stream.Status();
 }
+
+// Not claimed: in the original this member is folded with an identical function
+// (10006ca0); the port needs its own definition.
+int MfAtomicActivity::WillFinish()
+{
+    return 1;
+}
