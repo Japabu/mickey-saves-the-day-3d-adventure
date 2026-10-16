@@ -139,7 +139,7 @@ void CMBWinFile::Clone(IMBStream **target)
 bool CMBWinFile::Write(const void *ptr, unsigned long nBytes)
 {
     if (mFile && ptr) {
-        unsigned long bytesWritten;
+        DWORD bytesWritten;
         if (WriteFile(mFile, ptr, nBytes, &bytesWritten, 0) && bytesWritten == nBytes)
             return true;
         SetLastError(kIMBStreamWriteError);
@@ -153,7 +153,7 @@ bool CMBWinFile::Write(const void *ptr, unsigned long nBytes)
 bool CMBWinFile::Read(void *ptr, unsigned long &nBytes)
 {
     if (mFile && ptr) {
-        unsigned long bytesRead;
+        DWORD bytesRead;
         BOOL ok = ReadFile(mFile, ptr, nBytes, &bytesRead, 0);
         nBytes = bytesRead;
         if (ok) {

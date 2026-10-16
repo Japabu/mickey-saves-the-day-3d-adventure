@@ -15,7 +15,9 @@ BOOL CALLBACK LocalPrintAbortProc(HDC hdc, int error)
     return TRUE;
 }
 
-extern "C" static HDC GetDefaultPrinterDC(MBPrintOrientation orientation);
+extern "C" {
+static HDC GetDefaultPrinterDC(MBPrintOrientation orientation);
+}
 
 // 0x10041b50 _MBPrintSurfaceOneCopy
 extern "C" long MBPrintSurfaceOneCopy(IMBSurface *surface, MBPrintOrientation orientation)
@@ -95,7 +97,8 @@ extern "C" long MBPrintSurfaceOneCopy(IMBSurface *surface, MBPrintOrientation or
 }
 
 // EQUIV 0x10041ed0 _GetDefaultPrinterDC: reviewed: the original calls MBComPtr<IMBEventManager>::CreateObject out of line, VC6 inlines it (Release, MBComCreateInstance, _QueryInterface, Release); nothing else differs. Was: inline budget: the original calls MBComPtr<IMBEventManager>::CreateObject out of line, ours inlines it (the guid ctor does too, 89%) (90% similar)
-extern "C" static HDC GetDefaultPrinterDC(MBPrintOrientation orientation)
+extern "C" {
+static HDC GetDefaultPrinterDC(MBPrintOrientation orientation)
 {
     MBComPtr<IMBEventManager> eventManager;
     eventManager.CreateObject(MBIID_CMBEventManager);
@@ -131,6 +134,7 @@ extern "C" static HDC GetDefaultPrinterDC(MBPrintOrientation orientation)
     ResetDC(pd.hDC, devMode);
     GlobalFree(pd.hDevMode);
     return pd.hDC;
+}
 }
 
 // 0x10042020 _MBIsPrinterConnected

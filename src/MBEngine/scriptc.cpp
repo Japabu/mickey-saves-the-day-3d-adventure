@@ -2118,7 +2118,8 @@ int yylex()
  *	EOB_ACT_CONTINUE_SCAN - continue scanning from current position
  *	EOB_ACT_END_OF_FILE - end of file
  */
-extern "C" static int yy_get_next_buffer()
+extern "C" {
+static int yy_get_next_buffer()
 {
     register char *dest = yy_current_buffer->yy_ch_buf;
     register char *source = yytext_ptr;
@@ -2218,10 +2219,12 @@ extern "C" static int yy_get_next_buffer()
 
     return ret_val;
 }
+}
 
 // 0x10032a30 _yy_get_previous_state
 /* yy_get_previous_state - get the state just before the EOB char was reached */
-extern "C" static yy_state_type yy_get_previous_state()
+extern "C" {
+static yy_state_type yy_get_previous_state()
 {
     register yy_state_type yy_current_state;
     register char *yy_cp;
@@ -2244,6 +2247,7 @@ extern "C" static yy_state_type yy_get_previous_state()
 
     return yy_current_state;
 }
+}
 
 // 0x10032b10 _yy_try_NUL_trans
 /* yy_try_NUL_trans - try to make a transition on the NUL character
@@ -2251,7 +2255,8 @@ extern "C" static yy_state_type yy_get_previous_state()
  * synopsis
  *	next_state = yy_try_NUL_trans( current_state );
  */
-extern "C" static yy_state_type yy_try_NUL_trans(yy_state_type yy_current_state)
+extern "C" {
+static yy_state_type yy_try_NUL_trans(yy_state_type yy_current_state)
 {
     register int yy_is_jam;
     register char *yy_cp = yy_c_buf_p;
@@ -2271,9 +2276,11 @@ extern "C" static yy_state_type yy_try_NUL_trans(yy_state_type yy_current_state)
 
     return yy_is_jam ? 0 : yy_current_state;
 }
+}
 
 // 0x10032bd0 _yyinput
-extern "C" static int yyinput()
+extern "C" {
+static int yyinput()
 {
     int c;
 
@@ -2319,6 +2326,7 @@ extern "C" static int yyinput()
     yy_hold_char = *++yy_c_buf_p;
 
     return c;
+}
 }
 
 // 0x10032cc0 ?yyrestart@@YAXPAU_iobuf@@@Z

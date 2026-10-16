@@ -23,8 +23,8 @@ bool MBGetCurrentDirectory(IMBFileSpec **path)
 bool MBGetDesktopDirectory(IMBFileSpec **out)
 {
     HKEY key;
-    unsigned long dataSize;
-    unsigned long dataType;
+    DWORD dataSize;
+    DWORD dataType;
     char path[260];
 
     *out = 0;

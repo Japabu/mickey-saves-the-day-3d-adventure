@@ -1429,8 +1429,9 @@ bool AnimLowMemHandler(unsigned long sizeRequest)
     return result;
 }
 
+extern "C" {
 // 0x1001dc10 SetBit
-extern "C" static void SetBit(unsigned long &bitField, unsigned long bit, bool value)
+static void SetBit(unsigned long &bitField, unsigned long bit, bool value)
 {
     if (value)
         bitField |= bit;
@@ -1439,9 +1440,10 @@ extern "C" static void SetBit(unsigned long &bitField, unsigned long bit, bool v
 }
 
 // 0x1001dc30 TestBit
-extern "C" static bool TestBit(unsigned long bitField, unsigned long bit)
+static bool TestBit(unsigned long bitField, unsigned long bit)
 {
     return (bitField & bit) != 0;
+}
 }
 
 // 0x1001dc50 ?Scale@CMBAnim@@UAEXMMM@Z

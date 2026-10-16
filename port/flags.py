@@ -48,6 +48,9 @@ COMMON = [
     # changes language features only (_MSC_VER stays the source's 1200, below)
     '-fms-compatibility-version=19.00',
     '-fvisibility=hidden', '-fno-strict-aliasing', '-fwrapv', '-g', '-O1',
+    # `&Temporary(...)` (a Microsoft extension the source uses): the temporary lives to
+    # the end of the full expression
+    '-Wno-address-of-temporary',
     '-include', os.path.join(PORT, 'compat', 'prelude.h'),
     '-isystem', os.path.join(PORT, 'compat', 'include'),
     '-D_WIN32', '-DWIN32', '-D_X86_', '-D_M_IX86=500', '-D_MSC_VER=1200', '-DPORT_MACOS',
