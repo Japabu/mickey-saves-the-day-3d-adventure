@@ -64,6 +64,9 @@ std::string current_dir();
 // A full Windows path for a relative one (current directory, drive, . and ..).
 std::string full_path(const char *winpath);
 bool set_current_dir(const char *winpath);
+// The directory the process was started in (its own working directory is then the
+// overlay, crtfs.cpp).
+std::string &launch_dir();
 
 // True if the calling thread's message queue (or the SDL event pump) has input
 // (message.cpp).

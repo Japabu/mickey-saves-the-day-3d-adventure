@@ -54,6 +54,9 @@ bool open_read(const Path &p, Reader &r);
 // The host path of the file in the overlay (creating the directories). With copy, the
 // CD's version is copied there first if the overlay has none.
 bool overlay_path(const Path &p, std::string &host, bool copy);
+// The host path of an existing file or directory, if it has one: the overlay's, or the
+// CD's when the CD is a directory (false for a file inside an ISO image).
+bool host_file(const Path &p, std::string &host);
 // Creates a directory in the overlay.
 bool make_dir(const Path &p);
 

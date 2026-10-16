@@ -38,16 +38,22 @@ ENTRY = re.compile(r'^\s+\d+ \| (.*)$', re.M)
 
 
 def shape(entry):
-    """What makes a slot: the function's name, its number of parameters and its
-    destructor kind (the spelling of the types differs harmlessly between copies:
-    a typedef here, an incomplete class there)."""
+    """What makes a slot: the function's name, its parameters' base type names and its
+    destructor kind (not the full spelling of the types, which differs harmlessly
+    between copies: a typedef here, a reference there)."""
     m = re.search(r'(~?[A-Za-z_]\w*|operator\s*[^\s(]+)\s*\((.*)\)', entry)
     if not m:
         return entry
     params = m.group(2).split(')')[0]
     arity = 0 if not params.strip() or params.strip() == 'void' else params.count(',') + 1
+    # the parameters' base type names (overloads of one arity differ by them; const,
+    # pointer and reference marks are left out)
+    alias = {'HWND__': 'HWND', '_TREEITEM': 'HTREEITEM', 'HINSTANCE__': 'HINSTANCE', 'HDC__': 'HDC'}
+    types = ','.join(alias.get(n, n) for n in (
+        re.sub(r'\b(const|volatile|struct|class|enum|unsigned|signed)\b|[*&\s]', '', t).split('::')[-1]
+        for t in params.split(','))) if arity else ''
     kind = ' '.join(re.findall(r'\[(complete|deleting|pure)\]', entry))
-    return f'{m.group(1)}/{arity} {kind}'.strip()
+    return f'{m.group(1)}/{arity}({types}) {kind}'.strip()
 
 
 # names the decompilation gave slots whose function it did not know
@@ -58,7 +64,9 @@ def slot(entry):
     """A slot as other modules see it: placeholders match anything."""
     if PLACEHOLDER.match(entry):
         return '?'
-    return re.sub(r' ?pure', '', re.sub(r'^.*?(?=/)', '', entry))
+    # across modules a slot is its parameter count (the types are each copy's spelling;
+    # what crosses the boundary is the slot position and the call)
+    return re.sub(r' ?pure', '', re.sub(r'\(.*\)', '', re.sub(r'^.*?(?=/)', '', entry)))
 
 
 def same(a, b, prefix=False):

@@ -4,6 +4,7 @@
 #define PORT_PLATFORM_PORT_H
 
 #include <windows.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,6 +28,26 @@ void port_gdi_release_surface_dc(HDC hdc);
 // The display's bits per pixel (DirectDraw layer): the current DirectDraw mode, so
 // GetDeviceCaps(BITSPIXEL) agrees with it.
 int port_display_bpp(void);
+
+// The C runtime's file functions on the game's virtual file system (win32/crtfs.cpp):
+// game paths (C:\..., backslashes, any case, relative to the game's current directory)
+// resolve to the CD or the overlay; host paths (starting with '/') pass through.
+// port_host_path gives a host path for a game path (for_write 0: an existing file, a CD
+// file inside the ISO is copied to a cache first; 1: the overlay's path; 2: the overlay's
+// path with the CD's contents copied there first).
+struct stat;
+FILE *port_fopen(const char *path, const char *mode);
+FILE *port_freopen(const char *path, const char *mode, FILE *stream);
+int port_open(const char *path, int flags, int mode);
+int port_stat(const char *path, struct stat *st);
+int port_access(const char *path, int mode);
+int port_remove(const char *path);
+int port_rename(const char *from, const char *to);
+int port_mkdir(const char *path);
+int port_rmdir(const char *path);
+int port_chdir(const char *path);
+char *port_getcwd(char *buf, size_t size);
+int port_host_path(const char *path, int for_write, char *out, size_t outsize);
 
 // Modules: called by each library's attach stub (port/flags.py) before its DllMain.
 HINSTANCE port_module_attach(const char *dllname, const void *anchor);

@@ -313,6 +313,10 @@ static void init_cd()
         }
         if (cd[0] == '~' && getenv("HOME"))
             cd = std::string(getenv("HOME")) + cd.substr(1);
+        // A relative path is taken from where the game was started (the process itself
+        // works in the overlay directory, crtfs.cpp).
+        if (cd[0] != '/' && !launch_dir().empty())
+            cd = launch_dir() + "/" + cd;
         struct stat st;
         if (::stat(cd.c_str(), &st) != 0) {
             problem = "The game CD " + cd + " does not exist.";
@@ -588,6 +592,16 @@ bool overlay_path(const Path &p, std::string &host, bool copy)
 }
 
 bool make_dir(const Path &p) { return mkdirs(overlay_host(p)); }
+
+bool host_file(const Path &path, std::string &host)
+{
+    Path p = path;
+    if (host_resolve(overlay_dir(), p, host))
+        return true;
+    init_cd();
+    p = path;
+    return !s_cd_dir.empty() && host_resolve(s_cd_dir, p, host);
+}
 
 // install_defaults() is in defaults.cpp.
 

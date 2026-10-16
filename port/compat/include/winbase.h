@@ -539,6 +539,7 @@ BOOL WINAPI CloseHandle(HANDLE hObject);
 LONG WINAPI CompareFileTime(const FILETIME *lpFileTime1, const FILETIME *lpFileTime2);
 int WINAPI CompareStringA(LCID Locale, DWORD dwCmpFlags, LPCSTR lpString1, int cchCount1, LPCSTR lpString2, int cchCount2);
 int WINAPI CompareStringW(LCID Locale, DWORD dwCmpFlags, LPCWSTR lpString1, int cchCount1, LPCWSTR lpString2, int cchCount2);
+BOOL WINAPI MoveFileA(LPCSTR lpExistingFileName, LPCSTR lpNewFileName);
 BOOL WINAPI CopyFileA(LPCSTR lpExistingFileName, LPCSTR lpNewFileName, BOOL bFailIfExists);
 BOOL WINAPI CreateDirectoryA(LPCSTR lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes);
 HANDLE WINAPI CreateEventA(LPSECURITY_ATTRIBUTES lpEventAttributes, BOOL bManualReset, BOOL bInitialState, LPCSTR lpName);
@@ -727,6 +728,7 @@ int WINAPI lstrlenA(LPCSTR lpString);
 // The ANSI names.
 #define CompareString CompareStringA
 #define CopyFile CopyFileA
+#define MoveFile MoveFileA
 #define CreateDirectory CreateDirectoryA
 #define CreateEvent CreateEventA
 #define CreateFile CreateFileA
