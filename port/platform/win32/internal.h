@@ -57,19 +57,17 @@ void release(Object *o);
 // errno to a Win32 error code.
 DWORD error_from_errno(int e);
 
-// Paths. The game sees Windows paths under a virtual drive (C:\MICKEY\ is the game
-// directory); host() resolves one to a file on the Mac:
-//  - for reading: the writable overlay, then the CD's setup/hd and setup/cd trees,
-//    every component matched without regard to case;
-//  - for writing (create = true): the overlay, creating its directories.
-// Returns false if no such file exists (for reading).
-bool host_path(const char *winpath, std::string &out, bool create);
-// The overlay directory (~/Library/Application Support/<game>/), created on first use.
+// Paths: see vfs.h. The overlay directory (~/Library/Application Support/<game>/), created on first use.
 const std::string &overlay_dir();
 // The game's current directory, as a Windows path ending in a backslash.
 std::string current_dir();
 // A full Windows path for a relative one (current directory, drive, . and ..).
 std::string full_path(const char *winpath);
+bool set_current_dir(const char *winpath);
+
+// True if the calling thread's message queue (or the SDL event pump) has input
+// (message.cpp).
+bool messages_pending();
 
 // Milliseconds since the process started (GetTickCount, timeGetTime).
 DWORD ticks();

@@ -589,6 +589,7 @@ DWORD WINAPI GetFileAttributesA(LPCSTR lpFileName);
 BOOL WINAPI GetFileInformationByHandle(HANDLE hFile, LPBY_HANDLE_FILE_INFORMATION lpFileInformation);
 BOOL WINAPI GetFileTime(HANDLE hFile, LPFILETIME lpCreationTime, LPFILETIME lpLastAccessTime, LPFILETIME lpLastWriteTime);
 DWORD WINAPI GetFileType(HANDLE hFile);
+DWORD WINAPI GetFileSize(HANDLE hFile, LPDWORD lpFileSizeHigh);
 DWORD WINAPI GetFullPathNameA(LPCSTR lpFileName, DWORD nBufferLength, LPSTR lpBuffer, LPSTR *lpFilePart);
 DWORD WINAPI GetLastError(void);
 void WINAPI GetLocalTime(LPSYSTEMTIME lpSystemTime);
@@ -665,6 +666,8 @@ BOOL WINAPI ReadConsoleA(HANDLE hConsoleInput, LPVOID lpBuffer, DWORD nNumberOfC
 BOOL WINAPI ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead,
                      LPOVERLAPPED lpOverlapped);
 BOOL WINAPI ReleaseMutex(HANDLE hMutex);
+HANDLE WINAPI CreateSemaphoreA(LPSECURITY_ATTRIBUTES lpSemaphoreAttributes, LONG lInitialCount, LONG lMaximumCount, LPCSTR lpName);
+BOOL WINAPI ReleaseSemaphore(HANDLE hSemaphore, LONG lReleaseCount, LPLONG lpPreviousCount);
 BOOL WINAPI RemoveDirectoryA(LPCSTR lpPathName);
 BOOL WINAPI ResetEvent(HANDLE hEvent);
 DWORD WINAPI ResumeThread(HANDLE hThread);
@@ -722,6 +725,7 @@ int WINAPI lstrlenA(LPCSTR lpString);
 #define CreateFile CreateFileA
 #define CreateFileMapping CreateFileMappingA
 #define CreateMutex CreateMutexA
+#define CreateSemaphore CreateSemaphoreA
 #define CreateProcess CreateProcessA
 #define DeleteFile DeleteFileA
 #define EnumSystemLocales EnumSystemLocalesA

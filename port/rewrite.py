@@ -135,6 +135,22 @@ FILE_RULES = {
          r'\1(const char *)\2)'),
     ],
 }
+# Exact text edits, for changes that are specific to a few lines (each old text must
+# occur exactly `count` times in the file, or the rewrite stops with an error, so a
+# change in src/ cannot silently skip one). Loaded from port/edits/<dir>.py, each of
+# which defines EDITS = {path under src/: [(old, new, count), ...]}.
+def load_edits():
+    import glob
+    import runpy
+    out = {}
+    for f in sorted(glob.glob(os.path.join(PORT, 'edits', '*.py'))):
+        for rel, edits in runpy.run_path(f)['EDITS'].items():
+            out.setdefault(rel, []).extend(edits)
+    return out
+
+
+EDITS = load_edits()
+
 # rules for every file of one directory under src/
 DIR_RULES = {
     # an MBString temporary passed straight to a function: the functions take
@@ -152,12 +168,21 @@ NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWN
 
 def rewrite(text, rel=None):
     """The rewritten text, or None when no rule applies (rel: the path under src/)."""
+    edits = EDITS.get(rel, [])
     rules = FILE_RULES.get(rel, []) + [r for d, rs in DIR_RULES.items() if rel and rel.startswith(d) for r in rs]
-    if not rules and not any(n in text for n in NEEDLES):
+    if not rules and not edits and not any(n in text for n in NEEDLES):
         return None
     out = text
     for pat, rep in RULES + rules:
         out = pat.sub(rep, out)
+    for old, new, count in edits:
+        found = out.count(old)
+        if found != count:
+            raise SystemExit('port/rewrite.py: %s: %r occurs %d times, the edit expects %d'
+                             % (rel, old, found, count))
+        if old.count('\n') != new.count('\n'):
+            raise SystemExit('port/rewrite.py: %s: the edit of %r changes the line count' % (rel, old))
+        out = out.replace(old, new)
     return out if out != text else None
 
 

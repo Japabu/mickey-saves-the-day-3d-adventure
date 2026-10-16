@@ -49,6 +49,11 @@ typedef struct tagBITMAPINFO {
     RGBQUAD bmiColors[1];
 } BITMAPINFO, *LPBITMAPINFO, *PBITMAPINFO;
 
+// the .bmp file layout (MfImageLib reads these structs straight from the file)
+_Static_assert(sizeof(BITMAPFILEHEADER) == 14, "BITMAPFILEHEADER is 14 bytes on disk");
+_Static_assert(sizeof(BITMAPINFOHEADER) == 40, "BITMAPINFOHEADER is 40 bytes on disk");
+_Static_assert(sizeof(RGBQUAD) == 4, "RGBQUAD is 4 bytes on disk");
+
 typedef struct tagBITMAP {
     LONG bmType;
     LONG bmWidth;
