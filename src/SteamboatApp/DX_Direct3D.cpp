@@ -6,7 +6,7 @@
 #define THIS_FILE "D:\\tugboat\\code\\SDK\\Scene\\DirectX\\DXDirect3D.cpp"
 
 // TODO 0x1012e230 ?EnumD3DDevicesCallback@Direct3D@DX@@KGJPAD0PAU_D3DDeviceDesc7@@PAX@Z: 58% - reconstruction; the flag computations and the desktop-mode search differ in register use and order
-long __stdcall DX::Direct3D::EnumD3DDevicesCallback(char *description, char *name, D3DDEVICEDESC7 *desc, void *context)
+HRESULT __stdcall DX::Direct3D::EnumD3DDevicesCallback(char *description, char *name, D3DDEVICEDESC7 *desc, void *context)
 {
     if (!description || !name || !context)
         return D3DENUMRET_OK;
@@ -220,7 +220,7 @@ void DX::Direct3D::EnumZBufferFormats()
 }
 
 // 0x1012f470 ?EnumZBufferFormatsCallback@Direct3D@DX@@KGJPAU_DDPIXELFORMAT@@PAX@Z
-long __stdcall DX::Direct3D::EnumZBufferFormatsCallback(DDPIXELFORMAT *format, void *context)
+HRESULT __stdcall DX::Direct3D::EnumZBufferFormatsCallback(DDPIXELFORMAT *format, void *context)
 {
     DX::Direct3D *direct3D = (DX::Direct3D *)context;
     direct3D->m_aD3DZBufferFormat.Add(*format);

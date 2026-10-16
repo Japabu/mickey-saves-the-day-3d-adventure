@@ -51,6 +51,9 @@ COMMON = [
     # `&Temporary(...)` (a Microsoft extension the source uses): the temporary lives to
     # the end of the full expression
     '-Wno-address-of-temporary',
+    # braced initialisers narrowing a 64-bit `long` into 32-bit Windows fields
+    # (RECT r = { 0, 0, rect.Width(), ... }): VC6 had no such rule
+    '-Wno-c++11-narrowing',
     '-include', os.path.join(PORT, 'compat', 'prelude.h'),
     '-isystem', os.path.join(PORT, 'compat', 'include'),
     '-D_WIN32', '-DWIN32', '-D_X86_', '-D_M_IX86=500', '-D_MSC_VER=1200', '-DPORT_MACOS',

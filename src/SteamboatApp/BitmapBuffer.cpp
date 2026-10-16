@@ -412,9 +412,9 @@ bool BitmapBuffer::BuildZLUT()
     }
     DX::Device *device = ((DXGfx::ViewD3D *)RenderManager::GetInstance()->GetView(0))->GetDevice();
     if (device->BeginScene() >= 0) {
-        unsigned long oldZEnable;
-        unsigned long oldZWrite;
-        unsigned long oldZFunc;
+        DWORD oldZEnable;
+        DWORD oldZWrite;
+        DWORD oldZFunc;
         device->GetRenderState(D3DRENDERSTATE_ZENABLE, &oldZEnable);
         device->SetRenderState(D3DRENDERSTATE_ZENABLE, TRUE);
         device->GetRenderState(D3DRENDERSTATE_ZWRITEENABLE, &oldZWrite);

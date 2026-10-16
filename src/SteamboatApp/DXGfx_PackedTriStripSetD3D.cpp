@@ -68,7 +68,7 @@ Graph::NodeTraverser::Response DXGfx::PackedTriStripSetD3D::Render(Gfx::RenderTr
         return Graph::NodeTraverser::Terminate;
     if (m_EnvironmentMapping)
         ApplySphereMap(view->GetCamera(), m_TCoords.length() - 1);
-    unsigned long zWrite, zFunc;
+    DWORD zWrite, zFunc;
     int i;
     if (traverser->GetMultiTexture() == 0 && traverser->GetMultiTexturePass() > 0) {
         int pass = traverser->GetMultiTexturePass();

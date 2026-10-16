@@ -3,9 +3,6 @@
 template <class T0> class MBAllocator;
 class IMBFileSpec;
 class IMBResourceFile;
-class MBAllocator;
-namespace std { class basic_string; }
-namespace std { struct char_traits; }
 
 class DatabaseMgr {
 public:

@@ -95,7 +95,7 @@ Graph::NodeTraverser::Response DXGfx::IndexedTriangleSetD3D::Render(Gfx::RenderT
         Gfx::VertexClusterAttribute::HandleClusterStack(this, traverser->GetFrameTime());
     if (m_EnvironmentMapping)
         ApplySphereMap(view->GetCamera(), m_TCoords.length() - 1);
-    unsigned long zWrite, zFunc;
+    DWORD zWrite, zFunc;
     if (traverser->GetMultiTexture() == 0 && traverser->GetMultiTexturePass() > 0) {
         int pass = traverser->GetMultiTexturePass();
         device->GetRenderState(D3DRENDERSTATE_ZFUNC, &zFunc);

@@ -81,7 +81,7 @@ public:
     long SetRenderState(D3DRENDERSTATETYPE, unsigned long);
     long SetRenderState();
     long ResetRenderState();
-    long GetRenderState(D3DRENDERSTATETYPE, unsigned long *);
+    long GetRenderState(D3DRENDERSTATETYPE, DWORD *);
     long SetTextureStageState(int, D3DTEXTURESTAGESTATETYPE, unsigned long);
     long SetTextureStageState();
     long ResetTextureStageState();
@@ -93,7 +93,7 @@ public:
     void FindSurfaceDesc(struct _DDSURFACEDESC2 *, int, int, int, int);
 protected:
     void EnumTextureFormats();
-    static long __stdcall EnumTextureFormatsCallback(DDPIXELFORMAT *, void *);
+    static HRESULT __stdcall EnumTextureFormatsCallback(DDPIXELFORMAT *, void *);
 private:
     int GetDDErrorString(long, char *, unsigned long);
 public:

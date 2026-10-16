@@ -328,7 +328,7 @@ long DX::Device::SetTextureStageState(int stage, D3DTEXTURESTAGESTATETYPE type, 
 }
 
 // 0x100cae30 ?GetRenderState@Device@DX@@QAEJW4_D3DRENDERSTATETYPE@@PAK@Z
-long DX::Device::GetRenderState(D3DRENDERSTATETYPE state, unsigned long *value)
+long DX::Device::GetRenderState(D3DRENDERSTATETYPE state, DWORD *value)
 {
     return m_IDirect3DDevice7->GetRenderState(state, value);
 }
@@ -385,7 +385,7 @@ void DX::Device::EnumTextureFormats()
 }
 
 // TODO 0x100cb120 ?EnumTextureFormatsCallback@Device@DX@@KGJPAU_DDPIXELFORMAT@@PAX@Z: 61% - reconstruction; the original mixes inlined and out-of-line ValList lookups and its bit-count loops differ
-long __stdcall DX::Device::EnumTextureFormatsCallback(DDPIXELFORMAT *format, void *context)
+HRESULT __stdcall DX::Device::EnumTextureFormatsCallback(DDPIXELFORMAT *format, void *context)
 {
     DX::Device *device = (DX::Device *)context;
     device->m_aD3DTextureFormatInfo.Add(new D3DTextureFormatInfo);

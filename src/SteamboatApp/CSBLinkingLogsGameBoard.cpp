@@ -30,11 +30,11 @@ CSBLinkingLogsGameBoard::CSBLinkingLogsGameBoard(SBLinkingLogsNode *pNode)
     else
         m_fDifficulty = LL_DIFF_HARD;
     // the parsers of the tile type attributes
-    m_mapParserFunction["anim"] = ParseName;
-    m_mapParserFunction["walkable"] = ParseWalkable;
-    m_mapParserFunction["type"] = ParseType;
-    m_mapParserFunction["time"] = ParseTimeout;
-    m_mapParserFunction["velocity"] = ParseVelocity;
+    m_mapParserFunction["anim"] = &CSBLinkingLogsGameBoard::ParseName;
+    m_mapParserFunction["walkable"] = &CSBLinkingLogsGameBoard::ParseWalkable;
+    m_mapParserFunction["type"] = &CSBLinkingLogsGameBoard::ParseType;
+    m_mapParserFunction["time"] = &CSBLinkingLogsGameBoard::ParseTimeout;
+    m_mapParserFunction["velocity"] = &CSBLinkingLogsGameBoard::ParseVelocity;
     // the property bits of the type names
     m_mapTileType["default"] = CLinkingLogsTile::kInvalidType;
     m_mapTileType["up"] = CLinkingLogsTile::kUp;

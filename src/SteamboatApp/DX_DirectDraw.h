@@ -115,7 +115,7 @@ public:
     long FlipToGDISurface() { return m_IDirectDraw7->FlipToGDISurface(); }
 protected:
     IDirectDraw7 *GetCOMInterface() { return m_IDirectDraw7; }
-    static long __stdcall EnumDisplayModesCallback(DDSURFACEDESC2 *, void *);
+    static HRESULT __stdcall EnumDisplayModesCallback(DDSURFACEDESC2 *, void *);
     static int __stdcall DirectDrawEnumCallback(GUID *, char *, char *, void *);
     static int __stdcall DirectDrawEnumCallbackEx(GUID *, char *, char *, void *, HMONITOR);
     void CopyDriverInfo(IDirectDraw7 *, GUID *);

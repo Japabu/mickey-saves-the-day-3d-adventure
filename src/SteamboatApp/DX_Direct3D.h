@@ -38,8 +38,8 @@ public:
     }
 protected:
     void EnumZBufferFormats();
-    static long __stdcall EnumZBufferFormatsCallback(DDPIXELFORMAT *, void *);
-    static long __stdcall EnumD3DDevicesCallback(char *, char *, D3DDEVICEDESC7 *, void *);
+    static HRESULT __stdcall EnumZBufferFormatsCallback(DDPIXELFORMAT *, void *);
+    static HRESULT __stdcall EnumD3DDevicesCallback(char *, char *, D3DDEVICEDESC7 *, void *);
 private:
     IDirect3D7 *m_IDirect3D7;
     ValList<DDPIXELFORMAT> m_aD3DZBufferFormat;

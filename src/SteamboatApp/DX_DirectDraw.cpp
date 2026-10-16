@@ -272,7 +272,7 @@ int __stdcall DX::DirectDraw::DirectDrawEnumCallbackEx(GUID *guid, char *descrip
 }
 
 // 0x100cf7d0 ?EnumDisplayModesCallback@DirectDraw@DX@@KGJPAU_DDSURFACEDESC2@@PAX@Z
-long __stdcall DX::DirectDraw::EnumDisplayModesCallback(DDSURFACEDESC2 *desc, void *context)
+HRESULT __stdcall DX::DirectDraw::EnumDisplayModesCallback(DDSURFACEDESC2 *desc, void *context)
 {
     if (!desc || !context)
         return DDENUMRET_OK;
