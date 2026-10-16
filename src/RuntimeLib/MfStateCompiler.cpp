@@ -19,6 +19,8 @@ void SetParseCompiler(MfStateCompiler *compiler);           // 1009cc80
 int yyparse();                                              // 1009cc90
 
 MfStateCompiler *gStateCompiler;
+// the message types (made and deleted with the compiler)
+MfMsgTypeTable *g_msgTypes;
 
 // 0x10084df0 ??0MfStateCompiler@@QAE@XZ
 MfStateCompiler::MfStateCompiler()

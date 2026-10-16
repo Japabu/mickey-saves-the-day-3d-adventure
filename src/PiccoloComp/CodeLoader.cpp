@@ -1,6 +1,9 @@
 // PiccoloComp.dll unit CodeLoader (0x10005ad0-0x10006af2), part of MfPcCodeLoader.cpp
 #include "CodeLoader_unit.h"
 
+// the path list separator (a const char * in .rdata, read by UpdateFilesInDirectoryPath)
+const char *g_pcPathSeparator = ";";
+
 // 0x10005ad0 ??0MfPcCodeLoader@@QAE@XZ (inline, dllexport class)
 // 0x10005ae0 ??4MfPcCodeLoader@@QAEAAV0@ABV0@@Z (compiler-generated)
 

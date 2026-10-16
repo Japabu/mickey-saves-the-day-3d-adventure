@@ -9,9 +9,9 @@
 #include "MfSkeletonTraversal.h"
 #include "MfGCPath.h"
 
-// guards the reference counts of the message data blocks (owned by the
-// message dispatcher, which deletes it)
-extern CRITICAL_SECTION gMsgDataLock;
+// guards the reference counts of the message data blocks: the message
+// dispatcher's queue lock (MfMsgDispatcher.cpp, 100f5880)
+extern CRITICAL_SECTION gQueueLock;
 
 // 0x10063d10 ??0MfMsg@@QAE@XZ
 MfMsg::MfMsg()
@@ -115,11 +115,11 @@ MfMsg::MfMsg(int id, int arg1, int arg2, MfRootObj *from, MfRootObj *to)
 MfMsg::~MfMsg()
 {
     if (mData) {
-        EnterCriticalSection(&gMsgDataLock);
+        EnterCriticalSection(&gQueueLock);
         InterlockedDecrement(&mData->mRefCount);
         if (mData->mRefCount == 0)
             delete mData;
-        LeaveCriticalSection(&gMsgDataLock);
+        LeaveCriticalSection(&gQueueLock);
     }
 }
 

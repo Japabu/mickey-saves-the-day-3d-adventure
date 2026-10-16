@@ -39,6 +39,8 @@
 #include "MfStringList.h"
 #include "MfTransform3.h"
 
+// the world (MfWorld's constructor sets it, the destructor clears it)
+MfWorld *g_world;
 extern __declspec(dllimport) MfAiWorld *g_paiWorld;
 extern __declspec(dllimport) MfAiAppWorld *g_paiAppWorld;
 
