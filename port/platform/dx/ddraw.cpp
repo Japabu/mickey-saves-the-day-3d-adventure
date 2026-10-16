@@ -150,7 +150,7 @@ HRESULT DirectDraw::CreateSurface(DDSURFACEDESC2 *in, IDirectDrawSurface7 **out,
     d.ddsCaps.dwCaps = placement(caps);
     if ((caps & DDSCAPS_MIPMAP) && (caps & DDSCAPS_COMPLEX)) {
         int levels = 1;
-        while ((d.dwWidth >> levels) && (d.dwHeight >> levels))
+        while ((d.dwWidth >> levels) || (d.dwHeight >> levels))
             levels++;
         if ((d.dwFlags & DDSD_MIPMAPCOUNT) && d.dwMipMapCount && (int)d.dwMipMapCount < levels)
             levels = (int)d.dwMipMapCount;
@@ -159,8 +159,8 @@ HRESULT DirectDraw::CreateSurface(DDSURFACEDESC2 *in, IDirectDrawSurface7 **out,
         Surface *top = new Surface(this, d), *prev = top;
         for (int i = 1; i < levels; i++) {
             DDSURFACEDESC2 m = d;
-            m.dwWidth = d.dwWidth >> i;
-            m.dwHeight = d.dwHeight >> i;
+            m.dwWidth = d.dwWidth >> i ? d.dwWidth >> i : 1;
+            m.dwHeight = d.dwHeight >> i ? d.dwHeight >> i : 1;
             m.dwMipMapCount = levels - i;
             m.ddsCaps.dwCaps2 |= 0x00010000; // DDSCAPS2_MIPMAPSUBLEVEL
             Surface *s = new Surface(this, m);
