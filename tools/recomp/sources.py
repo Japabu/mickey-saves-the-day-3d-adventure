@@ -68,14 +68,15 @@ def options(path):
     """cl options for a source file: the most specific line of src/options.txt."""
     global _OPTIONS
     if _OPTIONS is None:
-        _OPTIONS = []
+        table = []          # filled before it is published: callers may run in threads
         for line in open(os.path.join(SRC, 'options.txt')):
             t = line.split('#', 1)[0].split()
             if not t:
                 continue
             binary, rest = t[0], t[1:]
             sub = rest.pop(0) if rest and rest[0].endswith('/') else ''
-            _OPTIONS.append((binary.lower(), sub, rest))
+            table.append((binary.lower(), sub, rest))
+        _OPTIONS = table
     d, binary = binary_of(path)
     if binary is None:
         raise SystemExit(f'{path}: not in the directory of an original binary')
