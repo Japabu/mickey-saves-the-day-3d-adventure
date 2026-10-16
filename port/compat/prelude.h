@@ -65,6 +65,13 @@ template <class V> inline typename V::value_type *port_begin(V &v) { return v.em
 template <class V> inline typename V::value_type *port_end(V &v) { return v.empty() ? 0 : &v[0] + v.size(); }
 #endif
 
+// The source's classes have members named like Win32 functions that <windows.h> maps
+// onto their ANSI versions; the original binaries carry the mapped names
+// (?GetClassNameA@MfActor@@...), and every unit saw <windows.h>. The mapping is made
+// here for every unit, so that all of them agree on the member names.
+#define GetClassName GetClassNameA
+#define SendMessage SendMessageA
+
 // Structured exception handling does not exist on macOS: a __try block is a try block,
 // and its handler catches what RaiseException throws (platform); the filter expression
 // is dropped.
