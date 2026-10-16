@@ -217,7 +217,9 @@ void Actor::FindVertexClusterAttributes(Gfx::Node *node)
     for (int i = 0; i < search.GetPaths().length(); i++) {
         Gfx::IndexedTriangleSet *triangleSet = StdBaseCast(search.GetPaths()[i].GetTop(), (Gfx::IndexedTriangleSet *)0);
         mIndexedTriangleSetVector.push_back(triangleSet);
-        triangleSet->SetEnvironmentMapping(true);
+        // each part reports the screen rectangle it drew in (UpdateScreenRect): the original's
+        // inlined store of 1 to Shape::mCalculateScreenRect (+0x140)
+        triangleSet->SetCalculateScreenRect(true);
         for (int j = 0; j < triangleSet->CountAttributes(); j++) {
             Gfx::VertexClusterAttribute *cluster =
                 StdBaseCast(StdBaseCast(triangleSet->GetAttribute(j), (Gfx::Attribute *)0), (Gfx::VertexClusterAttribute *)0);

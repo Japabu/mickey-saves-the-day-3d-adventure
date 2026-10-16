@@ -443,6 +443,10 @@ HRESULT Device::SetClipStatus(D3DCLIPSTATUS *c)
 HRESULT Device::GetClipStatus(D3DCLIPSTATUS *c)
 {
     *c = clipStatus;
+    static int budget = getenv("PORT_DX_TRACE") ? atoi(getenv("PORT_DX_TRACE")) : 0;
+    if (budget > 0 && budget--)
+        DX_LOG("GetClipStatus flags %#x extents x %g..%g y %g..%g\n", (unsigned)c->dwFlags, c->minx, c->maxx, c->miny,
+               c->maxy);
     return D3D_OK;
 }
 
