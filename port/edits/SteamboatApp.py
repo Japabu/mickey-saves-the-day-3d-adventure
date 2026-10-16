@@ -1,5 +1,11 @@
 # SteamboatApp edits for the port (see port/rewrite.py, EDITS).
 EDITS = {
+    # e[verify(i)]: Visual C++ calls verify (which may reallocate e) before it loads e;
+    # C++17 loads e first, so the store went to the old (on the first call null) array.
+    'SteamboatApp/Vec.h': [
+        ('    void setValueVerify(int i, const T &t) { e[verify(i)] = t; }',
+         '    void setValueVerify(int i, const T &t) { int k = verify(i); e[k] = t; }', 1),
+    ],
     # msvcirt's flush/setprecision/setw, statically linked into the DLL and written on
     # msvcirt's own ios/ostream layout (SteamboatApp/ios.h, ostream.h). The port's
     # iostreams are the standard ones, whose manipulators serve; the file compiles empty.

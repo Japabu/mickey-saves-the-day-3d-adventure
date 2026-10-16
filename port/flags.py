@@ -84,7 +84,12 @@ def sources(module):
     overlay, see overlay())."""
     import sources as recomp_sources
     return [p for p in recomp_sources.source_files([MODULES[module][0] + '/'])
-            if not os.path.basename(p).startswith('zz_')]
+            if not os.path.basename(p).startswith('zz_') and os.path.relpath(p, SRC) not in NOT_IN_GAME]
+
+
+# Sources of the libraries' own distributions that the game's DLLs never contained:
+# libpng's test program (its main and its use of the iCCP reader the game left out).
+NOT_IN_GAME = {'SteamboatApp/libpng/pngtest.c'}
 
 
 _OVERLAY = None

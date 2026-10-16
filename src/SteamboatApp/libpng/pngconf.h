@@ -509,6 +509,10 @@
 #  define PNG_READ_hIST_SUPPORTED
 #  define PNG_hIST_SUPPORTED
 #endif
+/* The game's build did not read iCCP chunks: png_read_info goes from sRGB straight to sPLT
+   (0x1011f360), while png_info keeps its iCCP fields (png_create_struct's 0x128). The
+   textures carry truncated Photoshop profiles, which this libpng's reader cannot survive. */
+#define PNG_NO_READ_iCCP
 #ifndef PNG_NO_READ_iCCP
 #  define PNG_READ_iCCP_SUPPORTED
 #  define PNG_iCCP_SUPPORTED
