@@ -2,10 +2,16 @@
 // "quick" API for sounds loaded from memory (MBMilesSoundEngine, CMBMilesSoundManager)
 // and file streams (the background music of SteamboatNode, MBMilesStreamingSoundEngine).
 //
-// A voice is an SDL audio stream bound to the output device. SDL asks for data through
-// the stream's get-callback; the voice hands out decoded float stereo from its sound
-// (decoded whole at load) or from its file (decoded as it plays), looping as told. The
-// stream is locked while the callback runs, so the game's calls lock it too.
+// A voice is an SDL audio stream bound to the output device; SDL mixes them on its audio
+// thread, which must never wait: a late voice delays them all (the glitches of a stalled
+// mixer). So:
+// - a sound loaded from memory (decoded whole at load) is handed out through the stream's
+//   get-callback, a copy from memory; the game's calls take the SDL stream lock for the
+//   few instructions they change, which is also what the callback runs under;
+// - a file stream is decoded by a thread of its own that keeps about 3/4 s queued in the
+//   SDL stream, so file reads, MP3 decoding and the rewinds of a loop never happen on the
+//   audio thread; the game's calls and that thread share the voice's own mutex.
+// When a voice runs dry SDL plays silence for it (no stale buffer repeats).
 //
 // Behaviour the game relies on:
 // - loop counts: 0 plays forever, n plays n times; AIL_sample_loop_count is the number of
@@ -20,8 +26,11 @@
 //   where Bink and Smacker played through Miles.
 #include "media.h"
 
+#include <chrono>
+#include <condition_variable>
 #include <mutex>
 #include <string.h>
+#include <thread>
 
 #pragma GCC visibility push(hidden)
 
@@ -43,22 +52,62 @@ struct Voice {
 
     ~Voice()
     {
+        if (feeder.joinable()) {
+            {
+                std::lock_guard<std::mutex> l(mu);
+                quit = true;
+            }
+            cv.notify_all();
+            feeder.join();
+        }
         if (stream)
             SDL_DestroyAudioStream(stream);  // unbinds; no callback runs after this
         delete media;
     }
 
+    // A file stream (media set) gets its decoding thread, a sound the get-callback.
     bool init(int r)
     {
         rate = speed = r > 0 ? r : 22050;
         SDL_AudioSpec spec = media::float_spec(rate);
-        stream = SDL_CreateAudioStream(&spec, 0);
+        // the output side in the same format until the device sets its own on binding: a
+        // stream without one refuses data, and a stream is fed before it is bound
+        stream = SDL_CreateAudioStream(&spec, &spec);
         if (!stream) {
             set_error(std::string("SDL_CreateAudioStream: ") + SDL_GetError());
             return false;
         }
-        SDL_SetAudioStreamGetCallback(stream, feed, this);
+        if (media)
+            feeder = std::thread([this] { feed_loop(); });
+        else
+            SDL_SetAudioStreamGetCallback(stream, feed, this);
         return true;
+    }
+
+    // The decoding thread of a file stream: tops the SDL stream up to 3/4 s, in chunks.
+    void feed_loop()
+    {
+        std::unique_lock<std::mutex> l(mu);
+        while (!quit) {
+            if (rewind_pending) {
+                rewind_pending = false;
+                media->rewind();
+            }
+            if (state == Playing && !fed_all && queued_frames() < rate * 3 / 4) {
+                if (fed_some && bound && queued_frames() == 0)
+                    MEDIA_LOG("miles: stream ran dry (decoding fell behind)\n");
+                fed_some = true;
+                enum { CHUNK = 4096 };
+                scratch.resize((size_t)CHUNK * media::CHANNELS);
+                int got = produce(scratch.data(), CHUNK);
+                if (got > 0)
+                    SDL_PutAudioStreamData(stream, scratch.data(), (int)(got * (int)sizeof(float) * media::CHANNELS));
+                if (fed_all)
+                    SDL_FlushAudioStream(stream);
+                continue;
+            }
+            cv.wait_for(l, std::chrono::milliseconds(20));
+        }
     }
 
     void bind(bool on)
@@ -104,8 +153,9 @@ struct Voice {
     {
         SDL_ClearAudioStream(stream);
         if (media) {
+            fed_some = false;
             if (pos || fed_all)
-                media->rewind();
+                rewind_pending = true;  // done by the decoding thread
             pending.clear();
             pending_at = 0;
             pos = 0;
@@ -127,6 +177,11 @@ struct Voice {
     void set_volume(int volume, int pan)
     {
         float v = (volume < 0 ? 0 : volume > 127 ? 127 : volume) / 127.0f;
+        if (media) {
+            // a stream is always centred; the gain applies to what is queued too
+            SDL_SetAudioStreamGain(stream, v);
+            return;
+        }
         if (pan < 0)
             pan = 0;
         if (pan > 127)
@@ -253,6 +308,11 @@ struct Voice {
     bool fed_all = false;
     State state = Idle;
     float gain_l = 1, gain_r = 1;
+    // file streams: the decoding thread and what it shares with the game's calls
+    std::thread feeder;
+    std::mutex mu;
+    std::condition_variable cv;
+    bool quit = false, rewind_pending = false, fed_some = false;
 };
 
 // A sound of the quick API: the game reads `handle` (the HSAMPLE) out of AUDIO_TYPE.
@@ -265,10 +325,26 @@ Quick *quick(HAUDIO a) { return (Quick *)a; }
 Voice *sample(HSAMPLE s) { return (Voice *)s; }
 Voice *stream_voice(HSTREAM s) { return (Voice *)s; }
 
+// The game's side of a voice: a file stream's mutex (and a wake-up for its thread when
+// done), a sound's SDL stream lock.
 struct Lock {
-    explicit Lock(Voice *v) : s(v->stream) { SDL_LockAudioStream(s); }
-    ~Lock() { SDL_UnlockAudioStream(s); }
-    SDL_AudioStream *s;
+    explicit Lock(Voice *v) : v(v)
+    {
+        if (v->media)
+            v->mu.lock();
+        else
+            SDL_LockAudioStream(v->stream);
+    }
+    ~Lock()
+    {
+        if (v->media) {
+            v->mu.unlock();
+            v->cv.notify_all();
+        } else {
+            SDL_UnlockAudioStream(v->stream);
+        }
+    }
+    Voice *v;
 };
 
 }  // namespace

@@ -39,6 +39,8 @@ private:
     void lead_audio();          // reads ahead until the sound is half a second ahead
     void drop_packets();
     double seconds_queued() const;
+    void push_sound();   // pcm into the sound stream
+    double now() const;  // seconds into the movie
     Media *m = 0;
     std::deque<AVPacket *> video;
     SDL_AudioStream *sound = 0;
@@ -47,6 +49,9 @@ private:
     AVRational fps{10, 1};
     bool running = false, eof = false;
     uint64_t start_ns = 0;
+    int64_t pushed = 0;                  // sound frames handed to SDL since the start
+    mutable uint64_t sound_end_ns = 0;   // when the sound was heard to the end
+    mutable double sound_end_t = 0;
     std::string name;
 };
 

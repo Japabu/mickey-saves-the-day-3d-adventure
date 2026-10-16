@@ -7,8 +7,10 @@
 
 namespace media {
 
-// How far the sound is decoded ahead of the picture.
-static const double SOUND_LEAD = 0.5;
+// How far the sound is decoded ahead of what is heard. The sound is fed from the game's
+// thread (with the pictures), so this is how long that thread may stall before the sound
+// runs dry (SDL then plays silence, and the clock below waits with it).
+static const double SOUND_LEAD = 1.0;
 // Pictures read ahead while looking for sound, at most.
 static const size_t MAX_QUEUED = 64;
 
@@ -38,7 +40,7 @@ bool Movie::open(HANDLE handle, const char *what)
     frame = av_frame_alloc();
     if (m->audio && audio_device()) {
         SDL_AudioSpec spec = float_spec(m->rate);
-        sound = SDL_CreateAudioStream(&spec, 0);
+        sound = SDL_CreateAudioStream(&spec, &spec);  // fed before binding (see miles.cpp)
     }
     MEDIA_LOG("%s: %dx%d, %d frames at %d/%d fps, %s\n", what, w, h, count, fps.num, fps.den,
               sound ? "with sound" : "silent");
@@ -73,7 +75,7 @@ bool Movie::fill(bool want_video)
             pcm.clear();
             m->decode_audio(0, pcm);
             if (!pcm.empty())
-                SDL_PutAudioStreamData(sound, pcm.data(), (int)(pcm.size() * sizeof(float)));
+                push_sound();
             SDL_FlushAudioStream(sound);
         }
         return false;
@@ -86,7 +88,7 @@ bool Movie::fill(bool want_video)
         pcm.clear();
         m->decode_audio(pkt, pcm);
         if (!pcm.empty())
-            SDL_PutAudioStreamData(sound, pcm.data(), (int)(pcm.size() * sizeof(float)));
+            push_sound();
     }
     av_packet_free(&pkt);
     return true;
@@ -94,6 +96,8 @@ bool Movie::fill(bool want_video)
 
 void Movie::lead_audio()
 {
+    if (sound && running && !eof && seconds_queued() == 0)
+        MEDIA_LOG("%s: the sound ran dry (the game's thread stalled for over %.1f s)\n", name.c_str(), SOUND_LEAD);
     while (sound && !eof && video.size() < MAX_QUEUED && seconds_queued() < SOUND_LEAD)
         fill(false);
 }
@@ -132,12 +136,40 @@ void Movie::start()
         SDL_BindAudioStream(audio_device(), sound);
 }
 
+void Movie::push_sound()
+{
+    if (pcm.empty())
+        return;
+    SDL_PutAudioStreamData(sound, pcm.data(), (int)(pcm.size() * sizeof(float)));
+    pushed += (int64_t)(pcm.size() / CHANNELS);
+}
+
+// The movie's time: what has been heard of its sound, so that the pictures wait when the
+// sound was starved and both stay together; the wall clock for a silent movie, and after
+// the sound has ended.
+double Movie::now() const
+{
+    double wall = (SDL_GetTicksNS() - start_ns) / 1e9;
+    if (!sound)
+        return wall;
+    int q = SDL_GetAudioStreamQueued(sound);
+    int64_t queued = q > 0 ? q / (int64_t)(sizeof(float) * CHANNELS) : 0;
+    double heard = (double)(pushed - queued) / m->rate;
+    if (eof && queued == 0) {
+        if (!sound_end_ns) {
+            sound_end_ns = SDL_GetTicksNS();
+            sound_end_t = heard;
+        }
+        return sound_end_t + (SDL_GetTicksNS() - sound_end_ns) / 1e9;
+    }
+    return heard;
+}
+
 bool Movie::due(int index) const
 {
     if (!running)
         return true;
-    double t = (SDL_GetTicksNS() - start_ns) / 1e9;
-    return t * fps.num >= (double)index * fps.den;
+    return now() * fps.num >= (double)index * fps.den;
 }
 
 void Movie::rewind()
@@ -151,6 +183,8 @@ void Movie::rewind()
         eof = false;
     decoded = -1;
     running = false;
+    pushed = 0;
+    sound_end_ns = 0;
 }
 
 void blit_frame(AVFrame *src, AVPixelFormat fmt, int dw, int dh, uint8_t *dest, int pitch, int rows, int x,
