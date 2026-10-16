@@ -51,6 +51,9 @@ COMMON = [
     # functions and variables hidden, types (vtables, RTTI) visible, as across Windows
     # DLLs: dynamic_cast and exceptions compare type_info across the game's libraries
     '-fvisibility-ms-compat', '-fno-strict-aliasing', '-fwrapv', '-g', '-O1',
+    # every float operation rounds on its own, as on the x87: no fused multiply-add
+    # (port/difftest compares the game's math with the original's bit for bit)
+    '-ffp-contract=off',
     # `&Temporary(...)` (a Microsoft extension the source uses): the temporary lives to
     # the end of the full expression
     '-Wno-address-of-temporary',

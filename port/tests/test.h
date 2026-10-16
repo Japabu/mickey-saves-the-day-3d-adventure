@@ -21,6 +21,44 @@ struct Register {
 };
 }  // namespace port_test
 
+// PROBE(name) { ... }: the port's side of a differential test (port/difftest): it gets
+// the input bytes the test generated (in) and appends its results (out); the harness runs
+// the original function on the same input in an emulator and compares.
+// port_tests --probe name reads one hex line per case and writes one per result.
+#include <stdint.h>
+#include <string.h>
+#include <vector>
+namespace port_test {
+typedef void (*ProbeFn)(const std::vector<uint8_t> &in, std::vector<uint8_t> &out);
+struct Probe {
+    const char *name;
+    ProbeFn run;
+    Probe *next;
+};
+void add_probe(Probe *p);
+struct RegisterProbe {
+    Probe p;
+    RegisterProbe(const char *name, ProbeFn run) : p{name, run, 0} { add_probe(&p); }
+};
+// reads a value of type T at offset off of the input
+template <class T> T get(const std::vector<uint8_t> &in, size_t off)
+{
+    T v;
+    memcpy(&v, in.data() + off, sizeof(T));
+    return v;
+}
+template <class T> void put(std::vector<uint8_t> &out, const T &v)
+{
+    const uint8_t *b = (const uint8_t *)&v;
+    out.insert(out.end(), b, b + sizeof(T));
+}
+}  // namespace port_test
+
+#define PROBE(name)                                                                              \
+    static void port_probe_##name(const std::vector<uint8_t> &in, std::vector<uint8_t> &out);   \
+    static port_test::RegisterProbe port_probe_reg_##name(#name, port_probe_##name);           \
+    static void port_probe_##name(const std::vector<uint8_t> &in, std::vector<uint8_t> &out)
+
 #define TEST(name)                                                                \
     static void port_test_##name();                                               \
     static port_test::Register port_test_reg_##name(#name, port_test_##name);     \

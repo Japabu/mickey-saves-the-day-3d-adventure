@@ -20,7 +20,7 @@ manifests in `tools/manifest/` list to its place (`orig/binaries/`, `tools/msvc/
 directories are git-ignored: never commit them.
 
 `setup.sh` checks that the imports are complete, checks for Wine (runs the original
-compilers) and Python 3, creates a project-local Python environment with `capstone`,
+compilers) and Python 3, creates a project-local Python environment with `capstone` and `unicorn`,
 creates the Wine prefix in `out/wine`, extracts PDB types to `out/types/` and checks
 that one known function still matches. It installs no host software. On
 Debian/Ubuntu, Wine with 32-bit support is

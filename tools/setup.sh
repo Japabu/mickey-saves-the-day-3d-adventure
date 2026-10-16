@@ -43,6 +43,8 @@ fi
 PYTHON="$ROOT/.venv/bin/python"
 export PYTHON
 "$PYTHON" -c 'import capstone' 2>/dev/null || "$PYTHON" -m pip install capstone
+# unicorn: the x86 emulator that runs original functions for port/difftest
+"$PYTHON" -c 'import unicorn' 2>/dev/null || "$PYTHON" -m pip install 'unicorn==2.1.4'
 
 echo "== Wine prefix (first run takes a minute)"
 mkdir -p "$ROOT/out"
