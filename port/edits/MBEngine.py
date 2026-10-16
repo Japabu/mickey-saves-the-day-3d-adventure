@@ -42,4 +42,19 @@ EDITS = {
     # header's interfaces have no GetGUID, so it names IMBWinFile's GUID
     'MBEngine/CMBSmackerMovie.h': [('long _QueryInterface(IMBStream *const &p);',
                                     QIS.replace('T::GetGUID()', 'MBIID_IMBWinFile'), 1)],
+    # Pointers carried in an unsigned long (32 bits there, as the game's long is here):
+    # the Miles driver handle handed to Bink (CMBBinkMovie.h includes no Windows header,
+    # hence the compiler's own pointer-sized type), and the input context mbi18n keeps.
+    'MBEngine/CMBBinkMovie.h': [
+        ('typedef BINKSNDOPEN (__stdcall *BINKSNDSYSOPEN)(unsigned long);',
+         'typedef BINKSNDOPEN (__stdcall *BINKSNDSYSOPEN)(__UINTPTR_TYPE__);', 1),
+        ('BinkSetSoundSystem(BINKSNDSYSOPEN open, unsigned long param);',
+         'BinkSetSoundSystem(BINKSNDSYSOPEN open, __UINTPTR_TYPE__ param);', 1),
+        ('BinkOpenMiles(unsigned long param);', 'BinkOpenMiles(__UINTPTR_TYPE__ param);', 1),
+    ],
+    'MBEngine/CMBBinkMovie.cpp': [('(unsigned long)digitalDriver', '(__UINTPTR_TYPE__)digitalDriver', 1)],
+    'MBEngine/mbi18n.cpp': [
+        ('static unsigned long ghIMC;', 'static UINT_PTR ghIMC;', 1),
+        ('ghIMC = (unsigned long)ImmAssociateContext(', 'ghIMC = (UINT_PTR)ImmAssociateContext(', 1),
+    ],
 }

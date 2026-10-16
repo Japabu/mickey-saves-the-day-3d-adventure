@@ -12,8 +12,8 @@
 
 // RuntimeLib.dll
 struct MfStringRep {
-    long m_unk0;   // +0
-    long m_unk4;   // +4
+    int m_unk0;   // +0
+    int m_unk4;   // +4
     int m_length;  // +8
 };
 
@@ -31,7 +31,7 @@ private:
 
 class MFIMPORT MfLock {
 public:
-    int Lock(long timeout = -1);
+    int Lock(int timeout = -1);
     void Unlock();
 private:
     void *m_handle;
@@ -46,14 +46,14 @@ class MfAiClassInfo;
 
 class PICAPI MfScDataHandle {
 public:
-    int IsType(unsigned long type) const { return m_flags & type; }
+    int IsType(unsigned int type) const { return m_flags & type; }
     MfScData *GetData() const { return (m_flags & 0xfc0) ? m_data : 0; }
 private:
     unsigned short m_refCount; // +0
     unsigned short m_flags;    // +2
     union {                    // +4
         float m_float;
-        long m_long;
+        int m_long;
         MfScData *m_data;
     };
 };
@@ -94,13 +94,13 @@ public:
     unsigned int MemoryUsage();               // 0x10009350
 private:
     int m_codeSize;            // +0x04
-    long m_unk08;              // +0x08
-    long m_unk0c;              // +0x0c
-    long m_unk10;              // +0x10
-    long m_unk14;              // +0x14
-    long m_unk18;              // +0x18
+    int m_unk08;              // +0x08
+    int m_unk0c;              // +0x0c
+    int m_unk10;              // +0x10
+    int m_unk14;              // +0x14
+    int m_unk18;              // +0x18
     int m_numCodeLevelInfo;    // +0x1c
-    long m_unk20;              // +0x20
+    int m_unk20;              // +0x20
     int m_numConstUsageInfo;   // +0x24
 };
 

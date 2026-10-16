@@ -83,7 +83,7 @@ HRESULT Direct3D::CreateDevice(const GUID &, IDirectDrawSurface7 *surface, IDire
     return create_device(dd, static_cast<Surface *>(surface), out);
 }
 
-HRESULT Direct3D::CreateVertexBuffer(struct _D3DVERTEXBUFFERDESC *, IDirect3DVertexBuffer7 **, unsigned long) { DX_UNSUPPORTED("IDirect3D7::CreateVertexBuffer"); }
+HRESULT Direct3D::CreateVertexBuffer(struct _D3DVERTEXBUFFERDESC *, IDirect3DVertexBuffer7 **, DWORD) { DX_UNSUPPORTED("IDirect3D7::CreateVertexBuffer"); }
 
 HRESULT Direct3D::EnumZBufferFormats(const GUID &, LPD3DENUMPIXELFORMATSCALLBACK cb, void *ctx)
 {

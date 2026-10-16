@@ -151,7 +151,7 @@ public:
     MfScDataHandle *m_reg3;         // +0x2c
     MfScVariableStack *m_varStack;  // +0x30
     uintptr_t *m_stackBase;         // PORT: uintptr_t; +0x34
-    long m_stackSize;               // +0x38
+    int m_stackSize;               // +0x38
     MfScVmStack *m_stack;           // +0x3c
     MfScVmException *m_exception;   // +0x40
     int m_artnSet;                  // +0x44

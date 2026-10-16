@@ -58,7 +58,7 @@ private:
 
 class __declspec(dllexport) MfScVmFrame {
 public:
-    long m_data[5]; // 0x14 bytes, layout unknown
+    int m_data[5]; // 0x14 bytes, layout unknown
 };
 
 // Partial: more inline members follow at 0x10001af0+ (next unit), including a

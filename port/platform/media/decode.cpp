@@ -265,15 +265,15 @@ AVRational Media::frame_rate() const
     return r;
 }
 
-long Media::frame_count() const
+int Media::frame_count() const
 {
     if (video_index < 0)
         return 0;
     AVStream *st = fmt->streams[video_index];
     if (st->nb_frames > 0)
-        return (long)st->nb_frames;
+        return (int)st->nb_frames;
     if (st->duration > 0)
-        return (long)st->duration;  // the RAD demuxers count the duration in frames
+        return (int)st->duration;  // the RAD demuxers count the duration in frames
     return 0;
 }
 

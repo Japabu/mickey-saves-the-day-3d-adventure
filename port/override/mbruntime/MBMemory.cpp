@@ -2,6 +2,7 @@
 // The muffin heap: low-memory handlers and the debug heap (MBmalloc_debug and
 // friends), which wraps every block in a header and guard bytes and keeps all
 // live blocks in a list for leak and damage reports.
+#include <stdint.h>
 #include "MBRuntime.h"
 #include <map>
 
@@ -26,18 +27,18 @@ void __cdecl MBmemclr(void *dest, unsigned int cnt);
 bool __cdecl MBCheckHeap(void);
 }
 
-typedef bool (__cdecl *MBLowMemoryHandler)(unsigned long sizeNeeded);
+typedef bool (__cdecl *MBLowMemoryHandler)(unsigned int sizeNeeded);
 
 // Debug block: header, 16 guard bytes, the user block, 16 guard bytes.
 struct alignas(16) MBDebugHeapHeader {   // PORT: 16-byte user blocks, as malloc gives (the header is 56 bytes on LP64)
-    long dummy;
-    long id;                    // 'MBDN'
-    unsigned long size;         // user block size
+    int dummy;
+    int id;                    // 'MBDN'
+    unsigned int size;         // user block size
     MBDebugHeapHeader *prev;
     MBDebugHeapHeader *next;
-    unsigned long index;        // allocation number
-    unsigned long filenameIndex;    // key into sFilenameMap (the file name pointer)
-    unsigned long line;
+    unsigned int index;        // allocation number
+    unsigned int filenameIndex;    // key into sFilenameMap (the file name pointer)
+    unsigned int line;
 };
 
 enum {
@@ -51,7 +52,7 @@ enum {
     kMBMaxLeaksPrinted = 100
 };
 
-typedef std::map<unsigned long, std::string> MBFilenameMap;
+typedef std::map<unsigned int, std::string> MBFilenameMap;
 
 static CMBCriticalSection *sCritSec;
 static bool sCheckHeap;
@@ -63,7 +64,7 @@ static bool sForceReleaseAlloc;
 // 0x10001fc0 _MBAddLowMemoryHandler
 extern "C" bool __cdecl MBAddLowMemoryHandler(MBLowMemoryHandler handler)
 {
-    for (long i = 0; i < kMBMaxLowMemHandlers; i++) {
+    for (int i = 0; i < kMBMaxLowMemHandlers; i++) {
         if (loMemHandlers[i] == 0) {
             loMemHandlers[i] = handler;
             return true;
@@ -75,7 +76,7 @@ extern "C" bool __cdecl MBAddLowMemoryHandler(MBLowMemoryHandler handler)
 // 0x10001ff0 _MBRemoveLowMemoryHandler
 extern "C" bool __cdecl MBRemoveLowMemoryHandler(MBLowMemoryHandler handler)
 {
-    for (long i = 0; i < kMBMaxLowMemHandlers; i++) {
+    for (int i = 0; i < kMBMaxLowMemHandlers; i++) {
         if (loMemHandlers[i] == handler) {
             loMemHandlers[i] = 0;
             return true;
@@ -85,10 +86,10 @@ extern "C" bool __cdecl MBRemoveLowMemoryHandler(MBLowMemoryHandler handler)
 }
 
 // 0x10002020 ?InvokeLowMemHandlers@@YA_NK@Z
-bool InvokeLowMemHandlers(unsigned long sizeNeeded)
+bool InvokeLowMemHandlers(unsigned int sizeNeeded)
 {
     bool freed = false;
-    for (long i = 0; i < kMBMaxLowMemHandlers; i++) {
+    for (int i = 0; i < kMBMaxLowMemHandlers; i++) {
         if (loMemHandlers[i])
             freed = freed || loMemHandlers[i](sizeNeeded);
     }
@@ -100,7 +101,7 @@ void MBDebugHeapLogPointerOrigin(MBDebugHeapHeader *ptr)
 {
     if (ptr && ptr->filenameIndex && sFilenameMap) {
         MBFilenameMap::iterator it = sFilenameMap->find(ptr->filenameIndex);
-        MBDebugStr("%s(%lu)", (*it).second.c_str(), ptr->line);   // PORT: %lu for unsigned long
+        MBDebugStr("%s(%u)", (*it).second.c_str(), ptr->line);   // PORT: %lu for unsigned long
     }
 }
 
@@ -108,7 +109,7 @@ void MBDebugHeapLogPointerOrigin(MBDebugHeapHeader *ptr)
 void MBDebugHeapDumpLeaks(void)
 {
     CMBCriticalSectionLock lock(*sCritSec);
-    long count = 0;
+    int count = 0;
     MBDebugHeapHeader *header = sRoot.next;
     if (header != &sRoot) {
         MBDebugStr("\n********************************************************\n*\n"
@@ -118,14 +119,14 @@ void MBDebugHeapDumpLeaks(void)
             if (count < kMBMaxLeaksPrinted) {
                 MBDebugHeapLogPointerOrigin(header);
                 // PORT: %lu for the unsigned longs, %p for the pointer
-                MBDebugStr(": ERROR: MBDebugHeap: %lu bytes leaked!\n     %p (index %lu)\n",
+                MBDebugStr(": ERROR: MBDebugHeap: %u bytes leaked!\n     %p (index %u)\n",
                            header->size, (char *)header + kMBDebugHeapUserOffset, header->index);
             }
             header = header->next;
             count++;
         } while (header != &sRoot);
         if (count > kMBMaxLeaksPrinted)
-            MBDebugStr("WARNING: Leak count exceeds 100...only first 100 leaks printed.  Total leaks: %ld.\n", count);   // PORT: %ld for long
+            MBDebugStr("WARNING: Leak count exceeds 100...only first 100 leaks printed.  Total leaks: %d.\n", count);
         MBDebugStr("\n********************************************************\n");
     }
 }
@@ -157,9 +158,9 @@ void MBDebugHeapInit(void)
 }
 
 // 0x10002400 ?MBDebugHeapInitHeader@@YAJPAXKPBDJ@Z
-long MBDebugHeapInitHeader(void *ptr, unsigned long requestSize, const char *file, long line)
+int MBDebugHeapInitHeader(void *ptr, unsigned int requestSize, const char *file, int line)
 {
-    static long sIndex = 1;
+    static int sIndex = 1;
     static bool sInited = false;
 
     if (!sInited) {
@@ -171,7 +172,7 @@ long MBDebugHeapInitHeader(void *ptr, unsigned long requestSize, const char *fil
     header->id = kMBDebugHeapID;
     header->index = sIndex++;
     header->size = requestSize;
-    header->filenameIndex = (unsigned long)file;
+    header->filenameIndex = (unsigned int)(uintptr_t)file;   // PORT: a key, not dereferenced
     header->line = line;
 
     CMBCriticalSectionLock lock(*sCritSec);
@@ -180,7 +181,7 @@ long MBDebugHeapInitHeader(void *ptr, unsigned long requestSize, const char *fil
     sRoot.prev = header;
     header->next = &sRoot;
     sForceReleaseAlloc = true;
-    sFilenameMap->insert(std::pair<unsigned long, std::string>(header->filenameIndex, std::string(file)));
+    sFilenameMap->insert(std::pair<unsigned int, std::string>(header->filenameIndex, std::string(file)));
     sForceReleaseAlloc = false;
     return 1;
 }
@@ -206,8 +207,8 @@ MBDebugHeapHeader *MBDebugHeapCheckHeaderValid(void *ptr)
         MBDebugBreak();
         return 0;
     }
-    unsigned long size = header->size;
-    unsigned long count;
+    unsigned int size = header->size;
+    unsigned int count;
     unsigned char *p;
 
     // a freed block is filled with kMBDebugHeapFreedFill
@@ -215,7 +216,7 @@ MBDebugHeapHeader *MBDebugHeapCheckHeaderValid(void *ptr)
         if (*p++ != kMBDebugHeapFreedFill)
             break;
     }
-    if (count == (unsigned long)-1 && size != 0) {
+    if (count == (unsigned int)-1 && size != 0) {
         MBDebugHeapLogPointerOrigin(header);
         MBDebugStr(": WARN: MBDebugHeap: Pointer %p was already deleted! (I think).\n", ptr);   // PORT: %p
         MBDebugBreak();
@@ -225,7 +226,7 @@ MBDebugHeapHeader *MBDebugHeapCheckHeaderValid(void *ptr)
         if (*p++ != kMBDebugHeapGuardFill)
             break;
     }
-    if (count != (unsigned long)-1) {
+    if (count != (unsigned int)-1) {
         MBDebugHeapLogPointerOrigin(header);
         MBDebugStr(": ERROR: MBDebugHeap: Damage to front of pointer block %p!.\n", ptr);   // PORT: %p
         MBDebugBreak();
@@ -235,7 +236,7 @@ MBDebugHeapHeader *MBDebugHeapCheckHeaderValid(void *ptr)
         if (*p++ != kMBDebugHeapGuardFill)
             break;
     }
-    if (count != (unsigned long)-1) {
+    if (count != (unsigned int)-1) {
         MBDebugHeapLogPointerOrigin(header);
         MBDebugStr(": ERROR: MBDebugHeap: Damage to end of pointer block %p!.\n", ptr);   // PORT: %p
         MBDebugBreak();
@@ -276,7 +277,7 @@ extern "C" void *__cdecl MBmalloc_debug(unsigned int cb, const char *file, int l
         return MBmalloc_release(cb);
     if (sCheckHeap)
         MBCheckHeap();
-    unsigned long total = cb + kMBDebugHeapOverhead;
+    unsigned int total = cb + kMBDebugHeapOverhead;
     void *block = MBmalloc_release(total);
     if (!block) {
         MBDebugStr("ERROR: MBmalloc_debug: OUT OF MEMORY!\n");
@@ -337,9 +338,9 @@ extern "C" void *__cdecl MBrealloc_debug(void *ptr, unsigned int sizeReq, const 
     if (sizeReq > header->size)
         MBmemset(newUserPtr + header->size, kMBDebugHeapGuardFill, sizeReq - header->size);
     safeHeader.size = sizeReq;
-    safeHeader.filenameIndex = (unsigned long)file;
+    safeHeader.filenameIndex = (unsigned int)(uintptr_t)file;   // PORT: a key, not dereferenced
     safeHeader.line = line;
-    sFilenameMap->insert(std::pair<unsigned long, std::string>(safeHeader.filenameIndex, std::string(file)));
+    sFilenameMap->insert(std::pair<unsigned int, std::string>(safeHeader.filenameIndex, std::string(file)));
     MBmemcpy(block, &safeHeader, sizeof(safeHeader));
     MBmemset(block + sizeof(MBDebugHeapHeader), kMBDebugHeapGuardFill, kMBDebugHeapGuardSize);
     MBmemset(block + kMBDebugHeapUserOffset + sizeReq, kMBDebugHeapGuardFill, kMBDebugHeapGuardSize);

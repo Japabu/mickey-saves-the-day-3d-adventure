@@ -21,4 +21,23 @@ EDITS = {
         ('unsigned long ScriptManager::AddRef()\n{\n    return ++_mRefCnt;\n}\n',
          '#if 0 // port: defined by ScriptHelpNode.cpp (MBEngine/ScriptHelpNode.cpp)\n{\n    return ++_mRefCnt;\n#endif\n', 1),
     ],
+    # The cursor thread: Terminate waits on the result of _beginthread, which Visual C++
+    # returned as the thread's handle; here _beginthread gives a thread number. The thread
+    # is made with CreateThread (a handle Terminate can wait on and closes), and it leaves
+    # through ExitThread, which marks the handle signalled (_endthread would skip that).
+    'SteamboatApp/CMBCursor.cpp': [
+        ('        sThread = (void *)_beginthread(CursorThread, 0, 0);\n',
+         '        sThread = CreateThread(0, 0, [](LPVOID p) -> DWORD { CursorThread(p); return 0; }, 0, 0, 0);\n', 1),
+        ('    _endthread();\n', '    ExitThread(0);\n', 1),
+        ('        WaitForSingleObject(sThread, INFINITE);\n',
+         '        WaitForSingleObject(sThread, INFINITE); CloseHandle(sThread);\n', 1),
+    ],
+    # "SBSPbirdHigh" and a letter are 14 bytes with the terminator, in a 10-byte buffer (the
+    # original overran its stack too; the macOS fortified sprintf aborts). The song key's
+    # count is a size_t (8 bytes) printed with %d.
+    'SteamboatApp/SBSongbirdNode.cpp': [
+        ('        char name[10];\n        sprintf(name, "SBSPbirdHigh%c", \'C\');\n',
+         '        char name[16];\n        sprintf(name, "SBSPbirdHigh%c", \'C\');\n', 1),
+        ('sprintf(key, "song%d", mSongs.size() - 1);', 'sprintf(key, "song%d", (int)(mSongs.size() - 1));', 1),
+    ],
 }

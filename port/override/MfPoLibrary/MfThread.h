@@ -12,7 +12,7 @@ protected:
 private:
     // PORT: the member types of mfutil's MfThread (src/mfutil/MfThread.h), so
     // MfScThread::mVmEnv is at the real offset (+64 on 64-bit)
-    unsigned long field_4;                                  // dwThreadId
+    unsigned int field_4;                                  // dwThreadId
     int field_8;                                            // iFlags
     MfThread *field_c;                                      // pThread
     void *field_10;                                         // hThread

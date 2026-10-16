@@ -32,7 +32,7 @@ MfScVmEnv::MfScVmEnv()
       m_exception(0), m_artnSet(0), m_artnValue(0), m_messageThread(0), m_interrupted(0),
       m_executing(0), m_id(0), m_accumTime(0)
 {
-    unsigned long committed;
+    unsigned int committed;
     m_stack = new MfScVmStack(MfScVmStack::PageSize() << 5, 1, MfScVmStack::PageSize() << 4,
                               (void **)&m_stackBase, &committed);
     m_sp = (MfScDataHandle **)&m_stackBase[committed / sizeof(*m_stackBase) - 1]; // PORT: was committed / 4

@@ -23,11 +23,11 @@ struct SmackMovie {
     HANDLE owned = 0;
     // SmackToBuffer's destination
     uint8_t *buf = 0;
-    unsigned long left = 0, top = 0, pitch = 0, rows = 0, flags = 0;
+    unsigned int left = 0, top = 0, pitch = 0, rows = 0, flags = 0;
 };
 
 struct Blitter {
-    unsigned long flags;
+    unsigned int flags;
     uint16_t pal16[256];
 };
 
@@ -43,7 +43,7 @@ uint16_t pack16(const uint8_t *rgb, bool is565)
 // Decodes the frame FrameNum names and takes over its palette.
 void make_current(SmackMovie *s)
 {
-    if (!s->movie.decode((long)s->pub.FrameNum))
+    if (!s->movie.decode((int)s->pub.FrameNum))
         return;
     AVFrame *f = s->movie.frame;
     if (f->format != AV_PIX_FMT_PAL8 || !f->data[1])
@@ -72,7 +72,7 @@ void restart(SmackMovie *s)
 
 extern "C" {
 
-SmackTag *__stdcall SmackOpen(const char *name, unsigned long flags, unsigned long extrabuf)
+SmackTag *__stdcall SmackOpen(const char *name, unsigned int flags, unsigned int extrabuf)
 {
     (void)extrabuf;
     if (!name)
@@ -94,10 +94,10 @@ SmackTag *__stdcall SmackOpen(const char *name, unsigned long flags, unsigned lo
     }
     AVRational r = s->movie.rate();
     s->pub.Version = 0x324b4d53;  // "SMK2"
-    s->pub.Width = (unsigned long)s->movie.width();
-    s->pub.Height = (unsigned long)s->movie.height();
-    s->pub.Frames = (unsigned long)(s->movie.frames() > 0 ? s->movie.frames() : 1);
-    s->pub.MSPerFrame = (unsigned long)(1000LL * r.den / r.num);
+    s->pub.Width = (unsigned int)s->movie.width();
+    s->pub.Height = (unsigned int)s->movie.height();
+    s->pub.Frames = (unsigned int)(s->movie.frames() > 0 ? s->movie.frames() : 1);
+    s->pub.MSPerFrame = (unsigned int)(1000LL * r.den / r.num);
     s->pub.FrameNum = 0;
     make_current(s);
     s->pub.NewPalette = 1;
@@ -115,15 +115,15 @@ void __stdcall SmackClose(SmackTag *smk)
         CloseHandle(owned);
 }
 
-unsigned long __stdcall SmackWait(SmackTag *smk)
+unsigned int __stdcall SmackWait(SmackTag *smk)
 {
     if (!smk || !smack(smk)->movie.started())
         return 0;
-    return smack(smk)->movie.due((long)smk->FrameNum) ? 0 : 1;
+    return smack(smk)->movie.due((int)smk->FrameNum) ? 0 : 1;
 }
 
-void __stdcall SmackToBuffer(SmackTag *smk, unsigned long left, unsigned long top, unsigned long pitch,
-                             unsigned long destheight, void *buf, unsigned long flags)
+void __stdcall SmackToBuffer(SmackTag *smk, unsigned int left, unsigned int top, unsigned int pitch,
+                             unsigned int destheight, void *buf, unsigned int flags)
 {
     if (!smk)
         return;
@@ -136,7 +136,7 @@ void __stdcall SmackToBuffer(SmackTag *smk, unsigned long left, unsigned long to
     s->flags = flags;
 }
 
-unsigned long __stdcall SmackDoFrame(SmackTag *smk)
+unsigned int __stdcall SmackDoFrame(SmackTag *smk)
 {
     if (!smk)
         return 0;
@@ -146,24 +146,24 @@ unsigned long __stdcall SmackDoFrame(SmackTag *smk)
     AVFrame *f = s->movie.frame;
     if (!s->buf || s->movie.decoded < 0 || f->format != AV_PIX_FMT_PAL8)
         return 0;
-    unsigned long kind = s->flags & SMACKBUFFERMASK;
+    unsigned int kind = s->flags & SMACKBUFFERMASK;
     uint16_t pal16[256];
     if (kind)
         for (int i = 0; i < 256; i++)
             pal16[i] = pack16(&smk->Palette[i * 3], kind == SMACKBUFFER565);
-    long bpp = kind ? 2 : 1;
-    for (long y = 0; y < f->height && s->top + y < s->rows; y++) {
+    int bpp = kind ? 2 : 1;
+    for (int y = 0; y < f->height && s->top + y < s->rows; y++) {
         const uint8_t *src = f->data[0] + y * f->linesize[0];
         uint8_t *dst = s->buf + (s->top + y) * s->pitch + s->left * bpp;
-        long n = f->width;
-        if ((long)(s->left + n) * bpp > (long)s->pitch)
-            n = (long)s->pitch / bpp - (long)s->left;
+        int n = f->width;
+        if ((int)(s->left + n) * bpp > (int)s->pitch)
+            n = (int)s->pitch / bpp - (int)s->left;
         if (n <= 0)
             break;
         if (!kind)
             memcpy(dst, src, (size_t)n);
         else
-            for (long x = 0; x < n; x++)
+            for (int x = 0; x < n; x++)
                 ((uint16_t *)dst)[x] = pal16[src[x]];
     }
     smk->NewPalette = 0;
@@ -183,7 +183,7 @@ void __stdcall SmackNextFrame(SmackTag *smk)
     make_current(s);
 }
 
-void __stdcall SmackGoto(SmackTag *smk, unsigned long frame)
+void __stdcall SmackGoto(SmackTag *smk, unsigned int frame)
 {
     if (!smk)
         return;
@@ -202,13 +202,13 @@ unsigned char __stdcall SmackSoundUseMSS(void *dd)
     return 1;
 }
 
-unsigned long __stdcall SmackUseMMX(unsigned long flag)
+unsigned int __stdcall SmackUseMMX(unsigned int flag)
 {
     (void)flag;
     return 0;
 }
 
-_SMACKBLIT *__stdcall SmackBlitOpen(unsigned long flags)
+_SMACKBLIT *__stdcall SmackBlitOpen(unsigned int flags)
 {
     Blitter *b = new Blitter();
     b->flags = flags;
@@ -218,7 +218,7 @@ _SMACKBLIT *__stdcall SmackBlitOpen(unsigned long flags)
 
 void __stdcall SmackBlitClose(_SMACKBLIT *sblit) { delete (Blitter *)sblit; }
 
-void __stdcall SmackBlitSetPalette(_SMACKBLIT *sblit, void *palette, unsigned long paltype)
+void __stdcall SmackBlitSetPalette(_SMACKBLIT *sblit, void *palette, unsigned int paltype)
 {
     (void)paltype;
     if (!sblit || !palette)
@@ -228,18 +228,18 @@ void __stdcall SmackBlitSetPalette(_SMACKBLIT *sblit, void *palette, unsigned lo
         b->pal16[i] = pack16((const uint8_t *)palette + i * 3, (b->flags & SMACKBUFFERMASK) == SMACKBUFFER565);
 }
 
-void __stdcall SmackBlit(_SMACKBLIT *sblit, void *dest, unsigned long destpitch, unsigned long destx,
-                         unsigned long desty, void *src, unsigned long srcpitch, unsigned long srcx,
-                         unsigned long srcy, unsigned long srcw, unsigned long srch)
+void __stdcall SmackBlit(_SMACKBLIT *sblit, void *dest, unsigned int destpitch, unsigned int destx,
+                         unsigned int desty, void *src, unsigned int srcpitch, unsigned int srcx,
+                         unsigned int srcy, unsigned int srcw, unsigned int srch)
 {
     if (!sblit || !dest || !src)
         return;
     Blitter *b = (Blitter *)sblit;
-    unsigned long scale = (b->flags & (SMACKBLIT2X | SMACKBLIT2XSMOOTH)) ? 2 : 1;
-    for (unsigned long y = 0; y < srch * scale; y++) {
+    unsigned int scale = (b->flags & (SMACKBLIT2X | SMACKBLIT2XSMOOTH)) ? 2 : 1;
+    for (unsigned int y = 0; y < srch * scale; y++) {
         const uint8_t *s = (const uint8_t *)src + (srcy + y / scale) * srcpitch + srcx;
         uint16_t *d = (uint16_t *)((uint8_t *)dest + (desty + y) * destpitch) + destx;
-        for (unsigned long x = 0; x < srcw * scale; x++)
+        for (unsigned int x = 0; x < srcw * scale; x++)
             d[x] = b->pal16[s[x / scale]];
     }
 }

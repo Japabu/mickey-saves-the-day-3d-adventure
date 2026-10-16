@@ -19,7 +19,7 @@ struct MfPdbStepContext {
 // What MfAiPdbBreakpointManager::GetBreakpointInfo reports about a planted
 // breakpoint.
 struct MfPdbBreakpointInfo {
-    unsigned long data;
+    unsigned int data;
     unsigned char bytecode;         // the bytecode the breakpoint replaced
     void *entry;
 };

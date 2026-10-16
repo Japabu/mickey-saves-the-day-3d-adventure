@@ -7,7 +7,7 @@ namespace media {
 
 static SDL_AudioDeviceID s_device;
 static bool s_tried;
-static long s_master = 127;
+static int s_master = 127;
 
 SDL_AudioDeviceID audio_device()
 {
@@ -39,13 +39,13 @@ void audio_shutdown()
     s_tried = false;
 }
 
-void set_master_volume(long volume)
+void set_master_volume(int volume)
 {
     s_master = volume < 0 ? 0 : volume > 127 ? 127 : volume;
     if (s_device)
         SDL_SetAudioDeviceGain(s_device, s_master / 127.0f);
 }
 
-long master_volume() { return s_master; }
+int master_volume() { return s_master; }
 
 }  // namespace media

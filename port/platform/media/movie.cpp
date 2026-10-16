@@ -40,7 +40,7 @@ bool Movie::open(HANDLE handle, const char *what)
         SDL_AudioSpec spec = float_spec(m->rate);
         sound = SDL_CreateAudioStream(&spec, 0);
     }
-    MEDIA_LOG("%s: %ldx%ld, %ld frames at %d/%d fps, %s\n", what, w, h, count, fps.num, fps.den,
+    MEDIA_LOG("%s: %dx%d, %d frames at %d/%d fps, %s\n", what, w, h, count, fps.num, fps.den,
               sound ? "with sound" : "silent");
     return true;
 }
@@ -98,7 +98,7 @@ void Movie::lead_audio()
         fill(false);
 }
 
-bool Movie::decode(long index)
+bool Movie::decode(int index)
 {
     if (index < decoded) {
         // Back to the start; the clock and sound are the caller's business (rewind()).
@@ -132,7 +132,7 @@ void Movie::start()
         SDL_BindAudioStream(audio_device(), sound);
 }
 
-bool Movie::due(long index) const
+bool Movie::due(int index) const
 {
     if (!running)
         return true;
@@ -153,8 +153,8 @@ void Movie::rewind()
     running = false;
 }
 
-void blit_frame(AVFrame *src, AVPixelFormat fmt, int dw, int dh, uint8_t *dest, long pitch, long rows, long x,
-                long y)
+void blit_frame(AVFrame *src, AVPixelFormat fmt, int dw, int dh, uint8_t *dest, int pitch, int rows, int x,
+                int y)
 {
     if (!src || !dest || dw <= 0 || dh <= 0)
         return;
@@ -164,7 +164,7 @@ void blit_frame(AVFrame *src, AVPixelFormat fmt, int dw, int dh, uint8_t *dest, 
                                      dw == src->width ? SWS_BILINEAR : SWS_POINT, 0, 0, 0);
     if (!sws)
         return;
-    long rowbytes = (long)dw * bpp;
+    int rowbytes = (int)dw * bpp;
     if (x >= 0 && y >= 0 && y + dh <= rows && x * bpp + rowbytes <= pitch) {
         uint8_t *dst[4] = {dest + y * pitch + x * bpp, 0, 0, 0};
         int dstride[4] = {(int)pitch, 0, 0, 0};
@@ -175,10 +175,10 @@ void blit_frame(AVFrame *src, AVPixelFormat fmt, int dw, int dh, uint8_t *dest, 
         uint8_t *dst[4] = {tmp.data(), 0, 0, 0};
         int dstride[4] = {(int)rowbytes, 0, 0, 0};
         sws_scale(sws, src->data, src->linesize, 0, src->height, dst, dstride);
-        long n = rowbytes;
+        int n = rowbytes;
         if (x * bpp + n > pitch)
             n = pitch - x * bpp;
-        for (long r = 0; r < dh && y + r < rows && n > 0; r++)
+        for (int r = 0; r < dh && y + r < rows && n > 0; r++)
             if (y + r >= 0)
                 memcpy(dest + (y + r) * pitch + x * bpp, &tmp[(size_t)r * rowbytes], (size_t)n);
     }

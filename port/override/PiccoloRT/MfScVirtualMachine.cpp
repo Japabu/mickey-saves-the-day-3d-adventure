@@ -175,7 +175,7 @@ inline MfScDataHandle *Constant(MfScVmEnv *env, int n)
 }
 
 // 0x1001b2b0 ?HasType@@YAHPAVMfScDataHandle@@K@Z
-inline int HasType(MfScDataHandle *h, unsigned long type)
+inline int HasType(MfScDataHandle *h, unsigned int type)
 {
     return h->GetType() & type;
 }

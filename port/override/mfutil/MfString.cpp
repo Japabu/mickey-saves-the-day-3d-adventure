@@ -448,7 +448,7 @@ int MfString::bLocaleSet = 0;
 
 // 0x1000dc30 ?FormatInt@MfString@@QAEXJH@Z (original ?FormatInt@MfString@@QAEXJH@Z:) n with thousands separators, right
 // aligned in width characters
-void MfString::FormatInt(long n, int width)
+void MfString::FormatInt(int n, int width)
 {
     char groups[10][32];
     int count;
@@ -471,16 +471,16 @@ void MfString::FormatInt(long n, int width)
     for (int i = 1; i < grouping; i++)
         divisor *= 10;
 
-    long v = n;
+    int v = n;
     if (v < 0)
         v = -v;
     count = 0;
     total = 0;
     while (v > 0) {
         if (v < divisor)
-            sprintf(groups[count], "%ld", v % divisor);   // PORT: %ld for long
+            sprintf(groups[count], "%d", v % divisor);
         else
-            sprintf(groups[count], "%0*ld", grouping, v % divisor);   // PORT: %ld for long
+            sprintf(groups[count], "%0*d", grouping, v % divisor);
         total += strlen(groups[count]);
         count++;
         v /= divisor;
@@ -629,9 +629,9 @@ int MfString::operator>=(const char *s) const
 }
 
 // 0x1000e1f0 ?Hash@MfString@@QBEKH@Z
-unsigned long MfString::Hash(int size) const
+unsigned int MfString::Hash(int size) const
 {
-    unsigned long h = 0;
+    unsigned int h = 0;
     const char *p = mfsr->m_str;
     for (int i = mfsr->m_length; i > 0; i--) {
         int c = *p;

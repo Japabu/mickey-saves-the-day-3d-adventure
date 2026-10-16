@@ -75,10 +75,10 @@ struct Voice {
     }
 
     // Frames SDL has been given but not played yet.
-    long queued_frames() const
+    int queued_frames() const
     {
         int q = SDL_GetAudioStreamQueued(stream);
-        return q > 0 ? q / (long)(sizeof(float) * media::CHANNELS) : 0;
+        return q > 0 ? q / (int)(sizeof(float) * media::CHANNELS) : 0;
     }
 
     State status()
@@ -88,19 +88,19 @@ struct Voice {
         return state;
     }
 
-    long length_frames() const { return (long)(pcm.size() / media::CHANNELS); }
+    int length_frames() const { return (int)(pcm.size() / media::CHANNELS); }
 
     // Position of what is being heard, in frames from the start of the sound.
-    long heard_frames() const
+    int heard_frames() const
     {
-        long p = pos - queued_frames();
-        long len = length_frames();
+        int p = pos - queued_frames();
+        int len = length_frames();
         if (p < 0 && len > 0)
             p += len;  // the queue reaches back over a loop
         return p < 0 ? 0 : p;
     }
 
-    void start(long loop_count)
+    void start(int loop_count)
     {
         SDL_ClearAudioStream(stream);
         if (media) {
@@ -124,7 +124,7 @@ struct Voice {
         pos = 0;
     }
 
-    void set_volume(long volume, long pan)
+    void set_volume(int volume, int pan)
     {
         float v = (volume < 0 ? 0 : volume > 127 ? 127 : volume) / 127.0f;
         if (pan < 0)
@@ -135,7 +135,7 @@ struct Voice {
         gain_r = v * (pan >= 64 ? 1.0f : pan / 64.0f);
     }
 
-    void set_speed(long s)
+    void set_speed(int s)
     {
         if (s <= 0)
             return;
@@ -149,17 +149,17 @@ struct Voice {
     }
 
     // Fills up to `frames` frames; returns how many it produced.
-    long produce(float *out, long frames)
+    int produce(float *out, int frames)
     {
-        long done = 0;
+        int done = 0;
         while (done < frames && !fed_all) {
             if (!media) {
-                long len = length_frames();
+                int len = length_frames();
                 if (!len) {
                     fed_all = true;
                     break;
                 }
-                long n = len - pos < frames - done ? len - pos : frames - done;
+                int n = len - pos < frames - done ? len - pos : frames - done;
                 if (n > 0) {
                     memcpy(out + done * media::CHANNELS, &pcm[(size_t)pos * media::CHANNELS],
                            (size_t)n * media::CHANNELS * sizeof(float));
@@ -178,7 +178,7 @@ struct Voice {
                     break;
                 continue;
             }
-            long n = (long)avail < frames - done ? (long)avail : frames - done;
+            int n = (int)avail < frames - done ? (int)avail : frames - done;
             memcpy(out + done * media::CHANNELS, &pending[pending_at], (size_t)n * media::CHANNELS * sizeof(float));
             pending_at += (size_t)n * media::CHANNELS;
             pos += n;
@@ -226,15 +226,15 @@ struct Voice {
         Voice *v = (Voice *)userdata;
         if (v->state != Playing || additional <= 0)
             return;
-        long frames = additional / (long)(sizeof(float) * media::CHANNELS) + 1;
+        int frames = additional / (int)(sizeof(float) * media::CHANNELS) + 1;
         v->scratch.resize((size_t)frames * media::CHANNELS);
-        long got = v->produce(v->scratch.data(), frames);
-        for (long i = 0; i < got; i++) {
+        int got = v->produce(v->scratch.data(), frames);
+        for (int i = 0; i < got; i++) {
             v->scratch[(size_t)i * 2] *= v->gain_l;
             v->scratch[(size_t)i * 2 + 1] *= v->gain_r;
         }
         if (got > 0)
-            SDL_PutAudioStreamData(s, v->scratch.data(), (int)(got * (long)sizeof(float) * media::CHANNELS));
+            SDL_PutAudioStreamData(s, v->scratch.data(), (int)(got * (int)sizeof(float) * media::CHANNELS));
         if (v->fed_all)
             SDL_FlushAudioStream(s);  // the resampler's tail too, so the queue runs empty
     }
@@ -242,14 +242,14 @@ struct Voice {
     SDL_AudioStream *stream = 0;
     bool bound = false;
     int rate = 22050;
-    long speed = 22050;
+    int speed = 22050;
     std::vector<float> pcm;          // a whole sound
     media::Media *media = 0;         // or a file
     std::vector<float> pending;      // decoded from the file, not handed out yet
     size_t pending_at = 0;
     std::vector<float> scratch;
-    long pos = 0;                    // frames handed out since the start of the pass
-    long loops = 1;                  // passes left, the current one included; 0 = forever
+    int pos = 0;                    // frames handed out since the start of the pass
+    int loops = 1;                  // passes left, the current one included; 0 = forever
     bool fed_all = false;
     State state = Idle;
     float gain_l = 1, gain_r = 1;
@@ -277,8 +277,8 @@ struct Lock {
 
 extern "C" {
 
-long __stdcall AIL_quick_startup(long use_digital, long use_MIDI, unsigned long output_rate, long output_bits,
-                                 long output_channels)
+int __stdcall AIL_quick_startup(int use_digital, int use_MIDI, unsigned int output_rate, int output_bits,
+                                 int output_channels)
 {
     (void)use_MIDI;
     (void)output_rate;
@@ -312,7 +312,7 @@ void __stdcall AIL_quick_handles(_DIG_DRIVER **pdig, _MDI_DRIVER **pmdi, _DLSDEV
         *pdls = 0;
 }
 
-long __stdcall AIL_set_preference(unsigned long number, long value)
+int __stdcall AIL_set_preference(unsigned int number, int value)
 {
     (void)number;
     (void)value;  // driver choices (DirectSound or waveOut) mean nothing here
@@ -321,20 +321,20 @@ long __stdcall AIL_set_preference(unsigned long number, long value)
 
 HWND__ *__stdcall AIL_HWND(void) { return s_hwnd; }
 
-long __stdcall AIL_set_DirectSound_HWND(_DIG_DRIVER *dig, HWND__ *wnd)
+int __stdcall AIL_set_DirectSound_HWND(_DIG_DRIVER *dig, HWND__ *wnd)
 {
     (void)dig;
     s_hwnd = wnd;
     return 1;
 }
 
-void __stdcall AIL_set_digital_master_volume(_DIG_DRIVER *dig, long master_volume)
+void __stdcall AIL_set_digital_master_volume(_DIG_DRIVER *dig, int master_volume)
 {
     (void)dig;
     media::set_master_volume(master_volume);
 }
 
-long __stdcall AIL_digital_master_volume(_DIG_DRIVER *dig)
+int __stdcall AIL_digital_master_volume(_DIG_DRIVER *dig)
 {
     (void)dig;
     return media::master_volume();
@@ -342,7 +342,7 @@ long __stdcall AIL_digital_master_volume(_DIG_DRIVER *dig)
 
 char *__stdcall AIL_last_error() { return (char *)s_error.c_str(); }
 
-HAUDIO __stdcall AIL_quick_load_mem(const void *mem, unsigned long size)
+HAUDIO __stdcall AIL_quick_load_mem(const void *mem, unsigned int size)
 {
     if (!mem || !size) {
         set_error("AIL_quick_load_mem: no data");
@@ -356,19 +356,19 @@ HAUDIO __stdcall AIL_quick_load_mem(const void *mem, unsigned long size)
         return 0;
     }
     memset(&q->pub, 0, sizeof q->pub);
-    q->pub.data = (const unsigned long *)mem;
-    q->pub.size = (long)size;
+    q->pub.data = (const unsigned int *)mem;
+    q->pub.size = (int)size;
     q->pub.type = 1;  // digital
     q->pub.handle = &q->voice;
     q->pub.status = QSTAT_LOADED;
     q->pub.speed = rate;
     q->pub.volume = 127;
     q->pub.extravol = 64;
-    q->pub.milliseconds = (long)(q->voice.length_frames() * 1000LL / rate);
+    q->pub.milliseconds = (int)(q->voice.length_frames() * 1000LL / rate);
     return &q->pub;
 }
 
-long __stdcall AIL_quick_play(HAUDIO audio, unsigned long loop_count)
+int __stdcall AIL_quick_play(HAUDIO audio, unsigned int loop_count)
 {
     if (!audio)
         return 0;
@@ -377,7 +377,7 @@ long __stdcall AIL_quick_play(HAUDIO audio, unsigned long loop_count)
         Lock l(&v);
         if (v.pos == 0 || v.pos >= v.length_frames())
             v.set_speed(v.rate);  // a fresh start plays at the sound's own rate
-        v.start((long)loop_count);
+        v.start((int)loop_count);
     }
     v.bind(true);
     audio->status = QSTAT_PLAYING;
@@ -394,7 +394,7 @@ void __stdcall AIL_quick_halt(HAUDIO audio)
     audio->status = QSTAT_DONE;
 }
 
-long __stdcall AIL_quick_status(HAUDIO audio)
+int __stdcall AIL_quick_status(HAUDIO audio)
 {
     if (!audio)
         return QSTAT_DONE;
@@ -411,7 +411,7 @@ long __stdcall AIL_quick_status(HAUDIO audio)
 
 void __stdcall AIL_quick_unload(HAUDIO audio) { delete quick(audio); }
 
-void __stdcall AIL_quick_set_volume(HAUDIO audio, long volume, long extravol)
+void __stdcall AIL_quick_set_volume(HAUDIO audio, int volume, int extravol)
 {
     if (!audio)
         return;
@@ -422,7 +422,7 @@ void __stdcall AIL_quick_set_volume(HAUDIO audio, long volume, long extravol)
     audio->extravol = extravol;
 }
 
-void __stdcall AIL_quick_set_speed(HAUDIO audio, long speed)
+void __stdcall AIL_quick_set_speed(HAUDIO audio, int speed)
 {
     if (!audio)
         return;
@@ -432,22 +432,22 @@ void __stdcall AIL_quick_set_speed(HAUDIO audio, long speed)
     audio->speed = speed;
 }
 
-long __stdcall AIL_quick_ms_position(HAUDIO audio)
+int __stdcall AIL_quick_ms_position(HAUDIO audio)
 {
     if (!audio)
         return 0;
     Voice &v = quick(audio)->voice;
     Lock l(&v);
-    return (long)(v.heard_frames() * 1000LL / v.rate);
+    return (int)(v.heard_frames() * 1000LL / v.rate);
 }
 
-void __stdcall AIL_quick_set_ms_position(HAUDIO audio, long milliseconds)
+void __stdcall AIL_quick_set_ms_position(HAUDIO audio, int milliseconds)
 {
     if (!audio)
         return;
     Voice &v = quick(audio)->voice;
     Lock l(&v);
-    long p = (long)((long long)milliseconds * v.rate / 1000);
+    int p = (int)((long long)milliseconds * v.rate / 1000);
     if (p < 0)
         p = 0;
     if (p > v.length_frames())
@@ -456,11 +456,11 @@ void __stdcall AIL_quick_set_ms_position(HAUDIO audio, long milliseconds)
     v.pos = p;
 }
 
-unsigned long __stdcall AIL_sample_playback_rate(HSAMPLE S) { return S ? (unsigned long)sample(S)->speed : 0; }
+unsigned int __stdcall AIL_sample_playback_rate(HSAMPLE S) { return S ? (unsigned int)sample(S)->speed : 0; }
 
-long __stdcall AIL_sample_loop_count(HSAMPLE S) { return S ? sample(S)->loops : 0; }
+int __stdcall AIL_sample_loop_count(HSAMPLE S) { return S ? sample(S)->loops : 0; }
 
-HSTREAM __stdcall AIL_open_stream(_DIG_DRIVER *dig, const char *filename, long stream_mem)
+HSTREAM __stdcall AIL_open_stream(_DIG_DRIVER *dig, const char *filename, int stream_mem)
 {
     (void)stream_mem;
     if (!dig || !filename) {
@@ -491,13 +491,13 @@ void __stdcall AIL_start_stream(HSTREAM stream)
     Voice *v = stream_voice(stream);
     {
         Lock l(v);
-        long loops = v->loops;
+        int loops = v->loops;
         v->start(loops);
     }
     v->bind(true);
 }
 
-void __stdcall AIL_pause_stream(HSTREAM stream, long onoff)
+void __stdcall AIL_pause_stream(HSTREAM stream, int onoff)
 {
     if (!stream)
         return;
@@ -514,7 +514,7 @@ void __stdcall AIL_pause_stream(HSTREAM stream, long onoff)
     v->bind(!onoff);  // unbound, the stream keeps what it holds for the resume
 }
 
-long __stdcall AIL_stream_status(HSTREAM stream)
+int __stdcall AIL_stream_status(HSTREAM stream)
 {
     if (!stream)
         return -1;
@@ -527,7 +527,7 @@ long __stdcall AIL_stream_status(HSTREAM stream)
     }
 }
 
-void __stdcall AIL_set_stream_volume(HSTREAM stream, long volume)
+void __stdcall AIL_set_stream_volume(HSTREAM stream, int volume)
 {
     if (!stream)
         return;
@@ -536,7 +536,7 @@ void __stdcall AIL_set_stream_volume(HSTREAM stream, long volume)
     v->set_volume(volume, 64);
 }
 
-void __stdcall AIL_set_stream_loop_count(HSTREAM stream, long count)
+void __stdcall AIL_set_stream_loop_count(HSTREAM stream, int count)
 {
     if (!stream)
         return;
@@ -545,7 +545,7 @@ void __stdcall AIL_set_stream_loop_count(HSTREAM stream, long count)
     v->loops = count;
 }
 
-long __stdcall AIL_auto_service_stream(HSTREAM stream, long onoff)
+int __stdcall AIL_auto_service_stream(HSTREAM stream, int onoff)
 {
     (void)stream;
     (void)onoff;  // SDL's callback always services the stream

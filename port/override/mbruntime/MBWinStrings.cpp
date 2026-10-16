@@ -20,19 +20,19 @@ extern "C" char *__cdecl MBstrcat(char *strDestination, const char *strSource)
 }
 
 // 0x10001d50 _MBstrcmp
-extern "C" long __cdecl MBstrcmp(const char *string1, const char *string2)
+extern "C" int __cdecl MBstrcmp(const char *string1, const char *string2)
 {
 	return strcmp(string1, string2);
 }
 
 // 0x10001d90 _MBstricmp
-extern "C" long __cdecl MBstricmp(const char *string1, const char *string2)
+extern "C" int __cdecl MBstricmp(const char *string1, const char *string2)
 {
 	return _stricmp(string1, string2);
 }
 
 // 0x10001db0 _MBstrlen
-extern "C" unsigned long __cdecl MBstrlen(const char *string)
+extern "C" unsigned int __cdecl MBstrlen(const char *string)
 {
 	return strlen(string);
 }
@@ -56,13 +56,13 @@ extern "C" char *__cdecl MBstrrchr(const char *string, int c)
 }
 
 // 0x10001e30 _MBstrspn
-extern "C" unsigned long __cdecl MBstrspn(const char *string, const char *strCharSet)
+extern "C" unsigned int __cdecl MBstrspn(const char *string, const char *strCharSet)
 {
 	return strspn(string, strCharSet);
 }
 
 // 0x10001e50 _MBstrcspn
-extern "C" unsigned long __cdecl MBstrcspn(const char *string, const char *strCharSet)
+extern "C" unsigned int __cdecl MBstrcspn(const char *string, const char *strCharSet)
 {
 	return strcspn(string, strCharSet);
 }

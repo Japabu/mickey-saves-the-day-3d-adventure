@@ -10,7 +10,7 @@
 #include <map>
 
 extern "C" {
-__declspec(dllimport) void *__cdecl MBmalloc_release(unsigned long size);
+__declspec(dllimport) void *__cdecl MBmalloc_release(unsigned int size);
 __declspec(dllimport) void __cdecl MBfree_release(void *ptr);
 __declspec(dllimport) void __cdecl MBDebugStr(const char *fmt, ...);
 }
@@ -64,9 +64,9 @@ inline bool operator<(const MBGUID &guid1, const MBGUID &guid2)
 
 class IMBUnknown {
 public:
-    virtual long QueryInterface(const MBGUID &iid, void **obj) = 0;
-    virtual unsigned long AddRef(void) = 0;
-    virtual unsigned long Release(void) = 0;
+    virtual int QueryInterface(const MBGUID &iid, void **obj) = 0;
+    virtual unsigned int AddRef(void) = 0;
+    virtual unsigned int Release(void) = 0;
 };
 
 typedef IMBUnknown *(__cdecl *MBClassFactoryFunc)(void);
@@ -74,9 +74,9 @@ typedef IMBUnknown *(__cdecl *MBClassFactoryFunc)(void);
 // No construct/destroy: the original instantiates std::_Construct for the map's pair.
 template <class T> class MBAllocator : public std::allocator<T> {
 public:
-    T *allocate(unsigned long n, const void *) { return (T *)MBmalloc_release(n * sizeof(T)); }
-    char *_Charalloc(unsigned long n) { return (char *)MBmalloc_release(n); }
-    void deallocate(void *p, unsigned long) { if (p) MBfree_release(p); }
+    T *allocate(unsigned int n, const void *) { return (T *)MBmalloc_release(n * sizeof(T)); }
+    char *_Charalloc(unsigned int n) { return (char *)MBmalloc_release(n); }
+    void deallocate(void *p, unsigned int) { if (p) MBfree_release(p); }
     MBAllocator() {} template <class U> MBAllocator(const MBAllocator<U> &) {} template <class U> struct rebind { typedef MBAllocator<U> other; }; T *allocate(size_t n) { return (T *)MBmalloc_release(n * sizeof(T)); } };
 
 template <class T> class MBList : public std::list<T, MBAllocator<T> > {

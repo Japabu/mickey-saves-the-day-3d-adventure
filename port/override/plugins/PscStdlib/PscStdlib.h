@@ -177,7 +177,7 @@ private:
     // PORT: the members of the real class (src/mfutil/MfThread.h) in place of
     // char m_pad[0x20], so MfScThread::mVmEnv is at the real offset (+64 on 64-bit)
     void *m_vtbl;
-    unsigned long m_threadId;
+    unsigned int m_threadId;
     int m_flags;
     MfThread *m_thread;
     void *m_handle;
@@ -214,12 +214,12 @@ public:
         kContainer = 0x7c0,
         kData = 0xfc0
     };
-    static MfScDataHandle *__cdecl CreateData(int); static MfScDataHandle *CreateData(long v) { return CreateData((int)v); } static MfScDataHandle *CreateData(unsigned long v) { return CreateData((int)v); }
+    static MfScDataHandle *__cdecl CreateData(int);
     static MfScDataHandle *__cdecl CreateData(float);
     static MfScDataHandle *__cdecl CreateData(const MfString &, int);
     static MfScDataHandle *__cdecl CreateData(MfScDataObject *);
     static MfScDataHandle *__cdecl CreateData(MfScMethod, const MfString &, int);
-    int IsType(unsigned long type) const { return m_flags & type; }
+    int IsType(unsigned int type) const { return m_flags & type; }
     int IsVisiting() const { return m_flags & 4; }
     void SetVisiting() { m_flags |= 4; }
     void ResetVisiting() { m_flags &= ~4; }
@@ -237,7 +237,7 @@ private:
     unsigned short m_flags;     // +2
     union {                     // +4
         float m_float;
-        long m_long;
+        int m_long;
         MfScData *m_data;
     };
 };

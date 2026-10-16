@@ -41,7 +41,7 @@ class IMBWinFile;
 class IMBWorld;
 struct MBGUID;
 class IMBUnknown;
-extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
+extern "C" int MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 #include "../MBEngine/MBComPtr.h"
 
 // MBSoundData: size 0x8
@@ -50,18 +50,18 @@ class MBSoundData {
 public:
 public:
     MBSoundData(const MBSoundData &soundData);
-    MBSoundData(unsigned char *soundData, unsigned long dataSize);
+    MBSoundData(unsigned char *soundData, unsigned int dataSize);
     ~MBSoundData();
     unsigned char *GetSoundData() const;
-    unsigned long GetDataSize() const;
+    unsigned int GetDataSize() const;
 protected:
     unsigned char *mSoundData;                           // +0x0000 size 0x4
-    unsigned long mDataSize;                             // +0x0004 size 0x4
+    unsigned int mDataSize;                             // +0x0004 size 0x4
 public:
     // void *__vecDelDtor(unsigned int);                 // compiler-generated
 };
 
-extern "C" __declspec(dllimport) void *__cdecl MBmalloc_release(unsigned long size);
+extern "C" __declspec(dllimport) void *__cdecl MBmalloc_release(unsigned int size);
 extern "C" __declspec(dllimport) void __cdecl MBfree_release(void *ptr);
-extern "C" __declspec(dllimport) void __cdecl MBmemcpy(void *dest, const void *src, unsigned long cnt);
+extern "C" __declspec(dllimport) void __cdecl MBmemcpy(void *dest, const void *src, unsigned int cnt);
 

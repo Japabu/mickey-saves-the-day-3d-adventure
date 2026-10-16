@@ -8,13 +8,13 @@
 typedef std::basic_string<char, std::char_traits<char>, MBAllocator<char> > MBString;
 extern "C" __declspec(dllimport) void __cdecl MBsystem(MBString command);
 
-typedef long (__cdecl *MBComServerFunc)(void);
+typedef int (__cdecl *MBComServerFunc)(void);
 
 MBList<HINSTANCE> gLoadedLibraryList;   // server DLLs, in load order
 LONG gRefCount;   // PORT: LONG, not unsigned long (64 bits here), for the 32-bit Interlocked calls; MBComInitialize calls minus MBComUninitialize calls
 
 // 0x100010c0 _MBComLoadServer
-extern "C" long __cdecl MBComLoadServer(const char *server)
+extern "C" int __cdecl MBComLoadServer(const char *server)
 {
     if (gRefCount <= 0) {
         MBDebugStr("Error in MBComLoadServer: MBComInitialize has not been called.");
@@ -34,7 +34,7 @@ extern "C" long __cdecl MBComLoadServer(const char *server)
 }
 
 // 0x10001170 _MBComInitialize
-extern "C" long __cdecl MBComInitialize(void)
+extern "C" int __cdecl MBComInitialize(void)
 {
     if (gRefCount)
         InterlockedIncrement((LPLONG)&gRefCount);
@@ -44,7 +44,7 @@ extern "C" long __cdecl MBComInitialize(void)
 }
 
 // 0x10001190 _MBComUninitialize
-extern "C" long __cdecl MBComUninitialize(void)
+extern "C" int __cdecl MBComUninitialize(void)
 {
     InterlockedDecrement((LPLONG)&gRefCount);
     if (gRefCount == 0) {
@@ -62,21 +62,21 @@ extern "C" long __cdecl MBComUninitialize(void)
 }
 
 // 0x10001220 _MBComRegisterClassObject
-extern "C" long __cdecl MBComRegisterClassObject(const MBGUID &guid, MBClassFactoryFunc func)
+extern "C" int __cdecl MBComRegisterClassObject(const MBGUID &guid, MBClassFactoryFunc func)
 {
     MBComFactory::AddFactory(guid, func);
     return 0;
 }
 
 // 0x10001240 _MBComUnregisterClassObject
-extern "C" long __cdecl MBComUnregisterClassObject(const MBGUID &guid, MBClassFactoryFunc func)
+extern "C" int __cdecl MBComUnregisterClassObject(const MBGUID &guid, MBClassFactoryFunc func)
 {
     MBComFactory::RemoveFactory(guid, func);
     return 0;
 }
 
 // 0x10001260 _MBComCreateInstance
-extern "C" long __cdecl MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown)
+extern "C" int __cdecl MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown)
 {
     IMBUnknown *p = MBComFactory::Make(guid);
     *unknown = p;
@@ -84,7 +84,7 @@ extern "C" long __cdecl MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &gu
 }
 
 // 0x10001290 _MBComGetClassObject
-extern "C" long __cdecl MBComGetClassObject(const MBGUID &guid, MBClassFactoryFunc *func)
+extern "C" int __cdecl MBComGetClassObject(const MBGUID &guid, MBClassFactoryFunc *func)
 {
     MBClassFactoryFunc p = MBComFactory::FindFactory(guid);
     *func = p;

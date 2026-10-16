@@ -69,7 +69,7 @@ public:
     // PORT: the members of the real MfThread (src/mfutil/MfThread.h) in place of
     // char m_pad[0x20], so m_env (MfScThread::mVmEnv) is at the real offset (+64 on 64-bit)
     void *m_vtbl;
-    unsigned long m_threadId;
+    unsigned int m_threadId;
     int m_flags;
     MfThread *m_thread;
     void *m_handle;

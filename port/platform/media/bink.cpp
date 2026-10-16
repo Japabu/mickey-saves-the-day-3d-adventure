@@ -26,7 +26,7 @@ struct BinkMovie {
 
 BinkMovie *bink(BINK *b) { return (BinkMovie *)b; }
 
-long __stdcall no_sound_open(BINKSND *, unsigned long, long) { return 0; }
+int __stdcall no_sound_open(BINKSND *, unsigned int, int) { return 0; }
 
 void reset_frame(BinkMovie *b)
 {
@@ -40,7 +40,7 @@ void reset_frame(BinkMovie *b)
 
 extern "C" {
 
-BINK *__stdcall BinkOpen(const char *name, unsigned long flags)
+BINK *__stdcall BinkOpen(const char *name, unsigned int flags)
 {
     if (!name) {
         s_error = "no file";
@@ -64,13 +64,13 @@ BINK *__stdcall BinkOpen(const char *name, unsigned long flags)
         return 0;
     }
     AVRational r = b->movie.rate();
-    b->pub.Width = (unsigned long)b->movie.width();
-    b->pub.Height = (unsigned long)b->movie.height();
-    b->pub.Frames = (unsigned long)(b->movie.frames() > 0 ? b->movie.frames() : 1);
+    b->pub.Width = (unsigned int)b->movie.width();
+    b->pub.Height = (unsigned int)b->movie.height();
+    b->pub.Frames = (unsigned int)(b->movie.frames() > 0 ? b->movie.frames() : 1);
     b->pub.FrameNum = 1;
     b->pub.LastFrameNum = 0;
-    b->pub.FrameRate = (unsigned long)r.num;
-    b->pub.FrameRateDiv = (unsigned long)r.den;
+    b->pub.FrameRate = (unsigned int)r.num;
+    b->pub.FrameRateDiv = (unsigned int)r.den;
     return &b->pub;
 }
 
@@ -87,24 +87,24 @@ void __stdcall BinkClose(BINK *bnk)
         CloseHandle(owned);
 }
 
-long __stdcall BinkWait(BINK *bnk)
+int __stdcall BinkWait(BINK *bnk)
 {
     if (!bnk)
         return 0;
     BinkMovie *b = bink(bnk);
     if (!b->movie.started())
         return 0;
-    return b->movie.due((long)bnk->FrameNum - 1) ? 0 : 1;
+    return b->movie.due((int)bnk->FrameNum - 1) ? 0 : 1;
 }
 
-long __stdcall BinkDoFrame(BINK *bnk)
+int __stdcall BinkDoFrame(BINK *bnk)
 {
     if (!bnk)
         return 0;
     BinkMovie *b = bink(bnk);
     if (!b->movie.started())
         b->movie.start();
-    b->movie.decode((long)bnk->FrameNum - 1);
+    b->movie.decode((int)bnk->FrameNum - 1);
     bnk->LastFrameNum = bnk->FrameNum;
     return 0;
 }
@@ -119,7 +119,7 @@ void __stdcall BinkNextFrame(BINK *bnk)
         bnk->FrameNum++;
 }
 
-void __stdcall BinkGoto(BINK *bnk, unsigned long frame, long flags)
+void __stdcall BinkGoto(BINK *bnk, unsigned int frame, int flags)
 {
     (void)flags;
     if (!bnk)
@@ -130,8 +130,8 @@ void __stdcall BinkGoto(BINK *bnk, unsigned long frame, long flags)
         bnk->FrameNum = frame > bnk->Frames ? bnk->Frames : frame;  // decoded on the next BinkDoFrame
 }
 
-long __stdcall BinkCopyToBuffer(BINK *bnk, void *dest, long destpitch, unsigned long destheight, unsigned long destx,
-                                unsigned long desty, unsigned long flags)
+int __stdcall BinkCopyToBuffer(BINK *bnk, void *dest, int destpitch, unsigned int destheight, unsigned int destx,
+                                unsigned int desty, unsigned int flags)
 {
     if (!bnk || !dest)
         return 0;
@@ -144,23 +144,23 @@ long __stdcall BinkCopyToBuffer(BINK *bnk, void *dest, long destpitch, unsigned 
     case BINKSURFACE555: fmt = AV_PIX_FMT_RGB555LE; break;
     case BINKSURFACE565: fmt = AV_PIX_FMT_RGB565LE; break;
     default:
-        MEDIA_LOG("BinkCopyToBuffer: surface type %lu is not implemented\n", flags & BINKSURFACEMASK);
+        MEDIA_LOG("BinkCopyToBuffer: surface type %u is not implemented\n", flags & BINKSURFACEMASK);
         return 0;
     }
     int scale = (flags & 0x70000000) == BINKCOPY2XWH ? 2 : 1;
     media::blit_frame(b->movie.frame, fmt, (int)bnk->Width * scale, (int)bnk->Height * scale, (uint8_t *)dest,
-                      destpitch, (long)destheight, (long)destx, (long)desty);
+                      destpitch, (int)destheight, (int)destx, (int)desty);
     return 0;
 }
 
-long __stdcall BinkSetSoundSystem(BINKSNDSYSOPEN open, unsigned long param)
+int __stdcall BinkSetSoundSystem(BINKSNDSYSOPEN open, UINT_PTR param)
 {
     (void)open;
     (void)param;  // the sound always goes to the audio device
     return 1;
 }
 
-BINKSNDOPEN __stdcall BinkOpenMiles(unsigned long param)
+BINKSNDOPEN __stdcall BinkOpenMiles(UINT_PTR param)
 {
     (void)param;
     return no_sound_open;

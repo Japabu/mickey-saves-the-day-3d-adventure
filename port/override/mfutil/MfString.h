@@ -173,7 +173,7 @@ public:
     operator char *() const;
     operator const char *() const;
     operator int() const { return atoi(mfsr->m_str); }
-    operator long() const { return atol(mfsr->m_str); }
+    // port: the same as the int declaration above
     operator float() const;
     operator double() const;
     operator unsigned int() const;
@@ -194,7 +194,7 @@ public:
     int __cdecl Format(char *const fmt, ...);
     int FormatTime(char *const fmt, const MfTime &t);
     int FormatTime(char *const fmt, const MfSystemTime &t);
-    void FormatInt(long n, int width);
+    void FormatInt(int n, int width);
 
     int operator==(const MfString &s) const;
     int operator==(const unsigned short *s) const;   // PORT: 16-bit wide characters (wchar_t is 4 bytes here)
@@ -216,7 +216,7 @@ public:
     int operator>=(const MfString &s) const;
     int operator>=(const unsigned short *s) const;   // PORT: 16-bit wide characters (wchar_t is 4 bytes here)
     int operator>=(const char *s) const;
-    unsigned long Hash(int size) const;
+    unsigned int Hash(int size) const;
     int HaveCharactersInSet(const MfString &set, int start) const;
     int ContainsSubString(const MfString &sub, int start) const;
     int CaseContainsSubString(const MfString &sub, int start) const;

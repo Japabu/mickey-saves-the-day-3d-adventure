@@ -1,5 +1,6 @@
 // PORT: the VS_FIXEDFILEINFO signature scan steps in 32-bit DWORDs (unsigned long is 8 bytes here).
 // MfVersionResource (mfutil.dll 0x10011470-0x100116e0).
+#include <stdint.h>
 #include <windows.h>
 #include <string.h>
 #include "MfVersionResource.h"
@@ -51,20 +52,20 @@ void MfVersionResource::BindToAddress(void *pData)
     while (*pFixed != VS_FFI_SIGNATURE)
         pFixed++;
     unsigned char *pChild = (unsigned char *)pFixed + BLOCK_VALUELENGTH(pData);
-    while ((unsigned long)pChild & 3)
+    while ((uintptr_t)pChild & 3)
         pChild++;
 
     for (; pChild < BLOCK_END(pData); pChild = BLOCK_END(pChild)) {
         if (_wcsicmp(L"StringFileInfo", BLOCK_KEY(pChild)) != 0)
             continue;
         unsigned char *pTable = (unsigned char *)BLOCK_KEY(pChild) + (wcslen(BLOCK_KEY(pChild)) + 1) * 2;
-        while ((unsigned long)pTable & 3)
+        while ((uintptr_t)pTable & 3)
             pTable++;
         for (; pTable < BLOCK_END(pChild); pTable = BLOCK_END(pTable)) {
             if (_wcsicmp(L"040904b0", BLOCK_KEY(pTable)) == 0 ||
                 _wcsicmp(L"040904e4", BLOCK_KEY(pTable)) == 0) {
                 unsigned char *pString = (unsigned char *)BLOCK_KEY(pTable) + (wcslen(BLOCK_KEY(pTable)) + 1) * 2;
-                while ((unsigned long)pString & 3)
+                while ((uintptr_t)pString & 3)
                     pString++;
                 pFirst = pString;
                 pEnd = BLOCK_END(pTable);
@@ -75,7 +76,7 @@ void MfVersionResource::BindToAddress(void *pData)
 }
 
 // EQUIV 0x10011620 ?GetString@MfVersionResource@@QAEPAGPAGPAK@Z: reviewed: the value length is read into si instead of cx
-unsigned short *MfVersionResource::GetString(unsigned short *name, unsigned long *pLength)
+unsigned short *MfVersionResource::GetString(unsigned short *name, unsigned int *pLength)
 {
     *pLength = 0;
     unsigned char *pString = pFirst;
@@ -86,16 +87,16 @@ unsigned short *MfVersionResource::GetString(unsigned short *name, unsigned long
                 if (BLOCK_VALUELENGTH(pString) <= 0)
                     return 0;
                 unsigned char *pValue = (unsigned char *)BLOCK_KEY(pString) + (wcslen(BLOCK_KEY(pString)) + 1) * 2;
-                while ((unsigned long)pValue & 3)
+                while ((uintptr_t)pValue & 3)
                     pValue++;
                 return (unsigned short *)pValue;
             }
             unsigned char *pNext = (unsigned char *)BLOCK_KEY(pString) + (wcslen(BLOCK_KEY(pString)) + 1) * 2;
-            while ((unsigned long)pNext & 3)
+            while ((uintptr_t)pNext & 3)
                 pNext++;
             if (BLOCK_VALUELENGTH(pString) > 0) {
                 pNext += BLOCK_VALUELENGTH(pString) * 2;
-                while ((unsigned long)pNext & 3)
+                while ((uintptr_t)pNext & 3)
                     pNext++;
             }
             pString = pNext;

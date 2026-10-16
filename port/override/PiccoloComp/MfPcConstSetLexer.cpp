@@ -496,12 +496,12 @@ YY_USER_ACTION
 	YY_BREAK
 case 5:
 YY_USER_ACTION
-	{ unsigned long v = strtoul(yytext, 0, 16); yylval.ival = v > 0xffffffffUL ? -1 : (int)v; } // PORT: saturate at 32 bits
+	{ unsigned int v = strtoul(yytext, 0, 16); yylval.ival = v > 0xffffffffU ? -1 : (int)v; } // PORT: saturate at 32 bits
 	return CSTOK_INTEGER;
 	YY_BREAK
 case 6:
 YY_USER_ACTION
-	{ unsigned long v = strtoul(yytext, 0, 8); yylval.ival = v > 0xffffffffUL ? -1 : (int)v; } // PORT: saturate at 32 bits
+	{ unsigned int v = strtoul(yytext, 0, 8); yylval.ival = v > 0xffffffffU ? -1 : (int)v; } // PORT: saturate at 32 bits
 	return CSTOK_INTEGER;
 	YY_BREAK
 case 7:

@@ -29,8 +29,8 @@ namespace media {
 SDL_AudioDeviceID audio_device();
 void audio_shutdown();
 // Master volume, 0..127 (Miles' digital master volume): the device gain.
-void set_master_volume(long volume);
-long master_volume();
+void set_master_volume(int volume);
+int master_volume();
 
 // Decoded audio is always interleaved 32-bit float stereo, at the file's own rate.
 enum { CHANNELS = 2 };
@@ -72,7 +72,7 @@ public:
     bool decode_video(const AVPacket *pkt, AVFrame *frame);
     // Video frame rate as a fraction (frames per second = num / den).
     AVRational frame_rate() const;
-    long frame_count() const;
+    int frame_count() const;
 
 private:
     Media() {}

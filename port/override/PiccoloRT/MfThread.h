@@ -16,11 +16,11 @@ protected:
 public:
     MfThread(int);
     int AssignWork(MfThreadWork *);
-    int PostThreadMessageA(unsigned int, unsigned int, long);
+    int PostThreadMessageA(unsigned int, unsigned int, int);
     static MfThread * __cdecl GetThread();
     static void __cdecl ReleaseTls();
     unsigned int GetState() const { return mState; }
-    unsigned long GetId() const;
+    unsigned int GetId() const;
     void * GetHandle() const;
     void ModState(int);
     void Resume();
@@ -29,11 +29,11 @@ public:
 private:
     static void __cdecl ThreadInit(void *);
     void SetState(int);
-    static unsigned long iThreadDataIndex;
+    static unsigned int iThreadDataIndex;
 public:
     // PORT: the member types of mfutil's MfThread (src/mfutil/MfThread.h), so the
     // object is as big as the real one (64 bytes) and MfScThread::mVmEnv lands at +64
-    unsigned long field_4;          // dwThreadId
+    unsigned int field_4;          // dwThreadId
     int field_8;                    // iFlags
     MfThread *field_c;              // pThread
     void *mHandle;                  // +0x10 the thread's handle

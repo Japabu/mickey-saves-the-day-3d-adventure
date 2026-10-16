@@ -197,7 +197,7 @@ struct Direct3D : IDirect3D7 {
     ULONG __stdcall Release() override;
     HRESULT __stdcall EnumDevices(LPD3DENUMDEVICESCALLBACK7, void *) override;
     HRESULT __stdcall CreateDevice(const GUID &, IDirectDrawSurface7 *, IDirect3DDevice7 **) override;
-    HRESULT __stdcall CreateVertexBuffer(struct _D3DVERTEXBUFFERDESC *, IDirect3DVertexBuffer7 **, unsigned long) override;
+    HRESULT __stdcall CreateVertexBuffer(struct _D3DVERTEXBUFFERDESC *, IDirect3DVertexBuffer7 **, DWORD) override;
     HRESULT __stdcall EnumZBufferFormats(const GUID &, LPD3DENUMPIXELFORMATSCALLBACK, void *) override;
     HRESULT __stdcall EvictManagedTextures() override;
 };

@@ -273,8 +273,8 @@ class __declspec(dllimport) MfTime {
 public:
     MfTime(const struct timeb &tb) { m_seconds = tb.time; m_milli = tb.millitm; }
     ~MfTime() {}
-    long m_seconds;
-    long m_milli;
+    int m_seconds;
+    int m_milli;
 };
 
 __declspec(dllimport) ostream &operator<<(ostream &os, const MfString &s);
@@ -293,7 +293,7 @@ class MfDirectory;
 // One entry of an MfDirectory (size 0x144).
 class __declspec(dllimport) MfDirectoryFileInfo {
 public:
-    unsigned long QueryAttributes() const { return m_fd.dwFileAttributes; }
+    unsigned int QueryAttributes() const { return m_fd.dwFileAttributes; }
     MfString GetFileName() const;
     MfString GetFilePath() const;
 private:
@@ -404,11 +404,11 @@ typedef MfScDataHandle *(MfScData::*MfScMethod)(MfScDataHandle *, int, MfScDataH
 // +0 reference count, +2 type flags, +4 value
 class __declspec(dllimport) MfScDataHandle {
 public:
-    static MfScDataHandle *CreateData(int); static MfScDataHandle *CreateData(long v) { return CreateData((int)v); } static MfScDataHandle *CreateData(unsigned long v) { return CreateData((int)v); }
+    static MfScDataHandle *CreateData(int);
     static MfScDataHandle *CreateData(const MfString &, int);
     static MfScDataHandle *CreateData(MfScDataObject *);
     static MfScDataHandle *CreateData(MfScMethod, const MfString &, int);
-    int IsType(unsigned long type) const { return m_flags & type; }
+    int IsType(unsigned int type) const { return m_flags & type; }
     MfScData *GetData() const { return (m_flags & 0xfc0) ? m_data : 0; }
     void SetInt(int i) { m_long = i; }
     unsigned short Release() { return m_refCount > 0 ? --m_refCount : m_refCount; }
@@ -417,7 +417,7 @@ public:
     unsigned short m_flags;
     union {
         MfScData *m_data;
-        long m_long;
+        int m_long;
     };
 };
 
@@ -439,7 +439,7 @@ public:
     // PORT: the members of the real MfThread (src/mfutil/MfThread.h) in place of
     // char m_pad[0x20], so m_env (MfScThread::mVmEnv) is at the real offset (+64 on 64-bit)
     void *m_vtbl;
-    unsigned long m_threadId;
+    unsigned int m_threadId;
     int m_flags;
     MfThread *m_thread;
     void *m_handle;

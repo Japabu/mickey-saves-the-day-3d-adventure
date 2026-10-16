@@ -19,11 +19,11 @@ extern "C" void __cdecl MBDebugStr(const char *fmt, ...)
         // arm64 puts variadic arguments); len is clamped to what fits in buffer
         va_list ap;
         va_start(ap, fmt);
-        long len = vsnprintf(buffer, sizeof buffer, fmt, ap);
+        int len = vsnprintf(buffer, sizeof buffer, fmt, ap);
         va_end(ap);
         if (len < 0)
             len = 0;
-        if (len > (long)sizeof buffer - 1)
+        if (len > (int)sizeof buffer - 1)
             len = sizeof buffer - 1;
         OutputDebugString(buffer);
         FILE *f = fopen("log.txt", "a");

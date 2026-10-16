@@ -28,15 +28,15 @@ extern __declspec(dllimport) MfNullString NULL_STRING;
 
 MfCriticalSection MfScDataHandle::csGCGuard;
 MfScHandleHeap *MfScDataHandle::aphhp[3];          // 0x10034f90
-unsigned long MfScDataHandle::dwGCTick;
+unsigned int MfScDataHandle::dwGCTick;
 MfThread *MfScDataHandle::ptGCThread;
 MfScGCWork *MfScDataHandle::pgcwWork;
 MfThread *MfScDataHandle::ptGCTimerThread;
 MfScGCTimerWork *MfScDataHandle::pgctwWork;
-long MfScDataHandle::lGCTimeOut;
-unsigned long MfScDataHandle::udwHints;
-long MfScDataHandle::lDisableGC;
-long MfScDataHandle::lGCrunning;                   // 0x10034fbc
+int MfScDataHandle::lGCTimeOut;
+unsigned int MfScDataHandle::udwHints;
+int MfScDataHandle::lDisableGC;
+int MfScDataHandle::lGCrunning;                   // 0x10034fbc
 
 // 0x10005140 ??0MfScDataHandle@@QAE@XZ
 MfScDataHandle::MfScDataHandle()
@@ -498,8 +498,8 @@ int __cdecl MfScDataHandle::GarbageCollectNotContainer(MfScHandleHeap *heap, int
             MfScDataHandle *minimum = first + MfScVmStack::PageSize();
             if (handle < minimum)
                 handle = minimum;
-            unsigned long decommitted;
-            unsigned long size = heap->m_stack->CommittedEnd() - (char *)handle;
+            unsigned int decommitted;
+            unsigned int size = heap->m_stack->CommittedEnd() - (char *)handle;
             heap->m_stack->Decommit(size, &decommitted);
             if (decommitted > 0) {
                 released = decommitted / sizeof(MfScDataHandle);
@@ -640,8 +640,8 @@ int __cdecl MfScDataHandle::GarbageCollectContainer(MfScHandleHeap *heap, int he
             MfScDataHandle *minimum = first + MfScVmStack::PageSize();
             if (handle < minimum)
                 handle = minimum;
-            unsigned long decommitted;
-            unsigned long size = heap->m_stack->CommittedEnd() - (char *)handle;
+            unsigned int decommitted;
+            unsigned int size = heap->m_stack->CommittedEnd() - (char *)handle;
             heap->m_stack->Decommit(size, &decommitted);
             if (decommitted > 0) {
                 released = decommitted / sizeof(MfScDataHandle);
