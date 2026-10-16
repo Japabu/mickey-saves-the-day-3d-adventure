@@ -27,6 +27,22 @@ Nothing here changes `src/`: the decompilation stays byte-verifiable by
 - **Real decompilation bugs found while porting are fixed in `src/`**, and
   `tools/msvc/check.sh` must stay clean for the directory.
 
+## Improvements
+
+The port plays like the original except for these deliberate improvements. The
+decompiled code in `src/` stays as the original was; each improvement is new code in
+`port/improve/<module>/` or `platform/`, hooked in by `port/edits/improvements.py`.
+
+- **Sharper 3D.** The 3D characters and objects are drawn at `MICKEY_SCALE` times the
+  game's 640x480 (default 3); the painted backgrounds keep their resolution
+  (`platform/dx`, the sharp copies of the surfaces).
+- **An honest cursor** (`port/improve/SteamboatApp/cursor.cpp`): the plain glove means
+  "walk there", the pointing hand "do something" (pick up, use, play a sound), and a
+  new cursor, the glove with a speech bubble, "Mickey says something" (explains a
+  painted spot, talks to a character). The original never looked at the 3D scene
+  before a click and gave several explain spots the plain glove; on the inventory bar
+  the pointing hand now shows only over the buttons and the items usable in the scene.
+
 ## 64-bit
 
 macOS runs only 64-bit code; the game was written for 32-bit Windows. The Windows type
@@ -91,6 +107,7 @@ over.
 | `MICKEY_WINDOWED=1` | play in a window instead of full screen |
 | `MICKEY_SCREEN_W`, `MICKEY_SCREEN_H` | the desktop size the game sees (default 640 x 480) |
 | `MICKEY_SMOOTH=1` | smooth (linear) scaling of the picture instead of sharp pixels |
+| `MICKEY_SCALE=n` | the 3D characters are drawn at n times the game's 640x480 (default 3; 1 is the original resolution); the painted backgrounds keep theirs |
 | `MICKEY_TEXT_AA=1` | anti-aliased text |
 | `MICKEY_LANG` | the CD's language, German unless set (`eng`, ...) |
 | `PORT_LOG` | diagnostics on stderr: `1` for all, or channel names, for example `PORT_LOG=vfs,module,resource`. Channels: `vfs` `module` `resource` `registry` `window` `process` `dx` `media` `stub` `exception` `debug` `debugstring` `defaults` |

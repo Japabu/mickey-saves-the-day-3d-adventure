@@ -216,6 +216,15 @@ def dllmain_stub(module):
     return path
 
 
+# Improvements over the original game: port/improve/<module>/*.cpp, hooked into the
+# decompiled code by port/edits/improvements.py.
+IMPROVE = os.path.join(PORT, 'improve')
+
+
+def improvements(module):
+    return sorted(glob.glob(os.path.join(IMPROVE, module, '*.cpp')))
+
+
 def cmake(path):
     """Write the CMake description of the modules: one target per module, with every
     source file's own flags (include directories and src/options.txt defines)."""
@@ -228,6 +237,7 @@ def cmake(path):
             srcs = srcs + [dllmain_stub(m)]
         else:
             srcs = srcs + [os.path.join(PORT, 'launcher', 'main.cpp')]    # main() -> WinMain
+        srcs = srcs + improvements(m)
         kind = 'add_executable' if m == 'Steamboat' else 'add_library'
         lines.append(f'{kind}({m}{"" if m == "Steamboat" else " SHARED"} ' + ' '.join(q(s) for s in srcs) + ')')
         lines.append(f'target_link_libraries({m} PRIVATE ' + ' '.join(deps + ['platform']) + ')')
@@ -237,7 +247,9 @@ def cmake(path):
         mine = os.path.join(SRC, d) + os.sep
         deps_of = sorted(dst for src, dst in overlay_map().items() if src.startswith(mine))
         for s in srcs:
-            cmd = command(m, s)
+            # an improvement compiles as if it were a source of its module (its includes,
+            # defines and flags)
+            cmd = command(m, s if not s.startswith(IMPROVE) else os.path.join(SRC, d, os.path.basename(s)))[:-1] + [s]
             opts = cmd[1:-1]                    # everything but the compiler and the file
             props = 'COMPILE_OPTIONS ' + q(';'.join(opts))
             if deps_of:
