@@ -7,6 +7,7 @@
 #include "../port.h"
 
 #include <mutex>
+#include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
@@ -148,10 +149,12 @@ void display_from_client(Window *w, int cx, int cy, float *x, float *y)
         SDL_RenderCoordinatesToWindow(s_renderer, (float)cx, (float)cy, x, y);
 }
 
-// Shows the latest frame, if there is a new one.
+// Shows the latest frame, if there is a new one. Only the main thread draws (SDL's
+// renderer belongs to it); frames presented by other threads (the game's cursor thread)
+// are shown by the main thread's next message pump.
 static void show_frame()
 {
-    if (!s_renderer)
+    if (!s_renderer || !pthread_main_np())
         return;
     std::lock_guard<std::mutex> lock(s_frame_mu);
     if (!s_frame_new)
@@ -210,7 +213,7 @@ void port_set_fullscreen(int fullscreen)
 
 void port_wait_vblank(void)
 {
-    if (s_frame_new) {
+    if (s_frame_new && pthread_main_np()) {
         s_last_present = ticks();
         show_frame();  // presents with vsync
         return;

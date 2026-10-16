@@ -130,3 +130,20 @@ EDITS = {
 }
 assert not set(EDITS) & set(LINALG_INLINES)
 EDITS.update(LINALG_INLINES)
+
+# mfutil's inline MfDblList::GetCurrent (src/mfutil/MfDblList.h), for the vtables of
+# the lists derived here; in the unit views MfDblListItem is incomplete, so the body
+# reads its first member (pData, +0) directly.
+GETCURRENT = {
+    'MfActorLib/MfDblList.h': ('    virtual void *GetCurrent(MfDblListItem *&pli) const;\n',
+                               '    virtual void *GetCurrent(MfDblListItem *&pli) const { return pli ? pli->pData : 0; }'
+                               '    // PORT: mfutil\'s inline\n', 1),
+    'MfActorLib/MfActorRecordList_unit.h': ('    virtual void *GetCurrent(MfDblListItem *&) const;\n',
+                                            '    virtual void *GetCurrent(MfDblListItem *&pli) const { return pli ? *(void **)pli : 0; }'
+                                            '    // PORT: mfutil\'s inline (pData)\n', 1),
+    'MfActorLib/MfAnimEventList_unit.h': ('    virtual void *GetCurrent(MfDblListItem *&) const;\n',
+                                          '    virtual void *GetCurrent(MfDblListItem *&pli) const { return pli ? *(void **)pli : 0; }'
+                                          '    // PORT: mfutil\'s inline (pData)\n', 1),
+}
+for _path, _edit in GETCURRENT.items():
+    EDITS.setdefault(_path, []).append(_edit)

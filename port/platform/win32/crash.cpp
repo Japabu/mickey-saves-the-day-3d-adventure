@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <typeinfo>
+#include <sys/ucontext.h>
 #include <unistd.h>
 
 #pragma GCC visibility push(hidden)
@@ -68,7 +69,7 @@ const char *signal_name(int sig)
 
 volatile sig_atomic_t s_in_handler;
 
-void on_signal(int sig, siginfo_t *si, void *)
+void on_signal(int sig, siginfo_t *si, void *uc)
 {
     if (s_in_handler++) {
         // A crash inside the report: give up quietly.
@@ -82,6 +83,15 @@ void on_signal(int sig, siginfo_t *si, void *)
     fprintf(stderr, "%s at address %p, thread %llu%s\n", signal_name(sig), si ? si->si_addr : 0, (unsigned long long)tid,
             pthread_main_np() ? " (main)" : "");
     fprintf(stderr, "Backtrace (library, offset in library, function):\n");
+    // The faulting instruction and its caller (from the registers), then the stack walk
+    // above the signal frame.
+    if (uc) {
+        ucontext_t *ctx = (ucontext_t *)uc;
+        void *at[2] = {(void *)ctx->uc_mcontext->__ss.__pc, (void *)ctx->uc_mcontext->__ss.__lr};
+        fprintf(stderr, "  at:\n");
+        print_frames(at, 2, 0);
+        fprintf(stderr, "  stack:\n");
+    }
     print_backtrace(2);
     fprintf(stderr, "==== please send this text with your report ====\n");
     fflush(stderr);
