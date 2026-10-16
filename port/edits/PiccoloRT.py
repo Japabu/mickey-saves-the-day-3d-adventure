@@ -52,19 +52,43 @@ EDITS = {
         ('    unsigned char * GetBytecodes() const;\n',
          '    unsigned char * GetBytecodes() const { return mBytecodes; }    // PORT: the inline of MfScBytecodeRoutine_unit.h\n', 1),
     ],
-    'PiccoloRT/MfScClassInfo.h': [
-        ('class MfSortedList;\n', '#include "MfSortedList.h"    // PORT: for the constructor below\n', 1),
-        ('    MfScClassInfo(LiiExemplar);\n    MfScClassInfo(const MfString &name);\n',
-         '    MfScClassInfo(LiiExemplar) : m_items(0) {}    // PORT: the inline of MfScClassInfo_unit.h\n'
-         '    MfScClassInfo(const MfString &name) : m_name(name) { m_items = new MfSortedList; }    // PORT: same\n', 1),
-        ('    virtual MfString GetKey() const;\n',
-         '    virtual MfString GetKey() const { return m_name; }    // PORT: the inline of MfScClassInfo_unit.h\n', 2),
+    # exported out of line (see the top): the object of MfScClassInfo
+    'PiccoloRT/MfScClassInfo_unit.h': [
+        ('    virtual ~MfScClassInfoText() {}\n', '    virtual ~MfScClassInfoText();' + OUT + '\n', 1),
+        ('    MfScClassInfo(LiiExemplar) : m_items(0) {}\n'
+         '    MfScClassInfo(const MfString &name) : m_name(name) { m_items = new MfSortedList; }\n',
+         '    MfScClassInfo(LiiExemplar);' + OUT + '\n    MfScClassInfo(const MfString &name);' + OUT + '\n', 1),
+        ('    virtual MfString GetKey() const { return m_name; }\n', '    virtual MfString GetKey() const;' + OUT + '\n', 2),
     ],
+    'PiccoloRT/MfScClassInfo.cpp': [
+        ('// 0x10002920 ??1MfScClassInfoText@@UAE@XZ (inline, header)\n',
+         'MfScClassInfoText::~MfScClassInfoText() {}' + OUT + '\n', 1),
+        ('// 0x10002cf0 ?GetKey@MfScClassInfo@@UBE?AVMfString@@XZ (inline, header; = MfScClassInfo::GetKey)\n',
+         'MfString MfScClassInfo::GetKey() const { return m_name; } MfString MfScClassInfoItem::GetKey() const { return m_name; }' + OUT + '\n', 1),
+        ('// 0x10003240 ??0MfScClassInfo@@QAE@ABVMfString@@@Z (inline, header)\n',
+         'MfScClassInfo::MfScClassInfo(const MfString &name) : m_name(name) { m_items = new MfSortedList; }' + OUT + '\n', 1),
+        ('// 0x10003310 ??0MfScClassInfo@@QAE@VLiiExemplar@@@Z (inline, header)\n',
+         'MfScClassInfo::MfScClassInfo(LiiExemplar) : m_items(0) {}' + OUT + '\n', 1),
+    ],
+    # the object of MfScBytecodeRoutine
+    'PiccoloRT/MfScBytecodeRoutine_unit.h': [
+        ('    virtual MfString GetClassName() { return MfString("Object"); }\n', '    virtual MfString GetClassName();' + OUT + '\n', 1),
+        ('    virtual MfScPropTokenTable *GetPropTokenTable() { return 0; }\n', '    virtual MfScPropTokenTable *GetPropTokenTable();' + OUT + '\n', 1),
+        ('    virtual MfScPropertyExtList *GetPropertyExtensions() { return 0; }\n', '    virtual MfScPropertyExtList *GetPropertyExtensions();' + OUT + '\n', 1),
+    ],
+    'PiccoloRT/MfScBytecodeRoutine.cpp': [
+        ('void MfScDataObject::FilloutPropertyNameList(MfStringList *) {}\n',
+         'void MfScDataObject::FilloutPropertyNameList(MfStringList *) {}'
+         ' MfString MfScDataObject::GetClassName() { return MfString("Object"); }'
+         ' MfScPropTokenTable *MfScDataObject::GetPropTokenTable() { return 0; }'
+         ' MfScPropertyExtList *MfScDataObject::GetPropertyExtensions() { return 0; }' + OUT + '\n', 1),
+    ],
+    # the object of MfScConsoleManager
     'PiccoloRT/MfScConsoleManager_unit.h': [
-        ('    MfScClassInfo(LiiExemplar);\n    MfScClassInfo(const MfString &name);\n',
-         '    MfScClassInfo(LiiExemplar) : m_items(0) {}    // PORT: the inline of MfScClassInfo_unit.h\n'
-         '    MfScClassInfo(const MfString &name) : m_name(name) { m_items = new MfSortedList; }    // PORT: same\n', 1),
-        ('    virtual MfString GetKey() const;\n',
-         '    virtual MfString GetKey() const { return m_name; }    // PORT: the inline of MfScClassInfo_unit.h\n', 2),
+        ('    virtual ~MfScHandleDict() { Clear(); }\n', '    virtual ~MfScHandleDict();' + OUT + '\n', 1),
+    ],
+    'PiccoloRT/MfScConsoleManager.cpp': [
+        ('// 0x10003d20 ??1MfScHandleDict@@UAE@XZ (inline, header)\n',
+         'MfScHandleDict::~MfScHandleDict() { Clear(); }' + OUT + '\n', 1),
     ],
 }

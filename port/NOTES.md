@@ -435,3 +435,59 @@ the `resources\universal\GD.mbd`-style paths (DOS separators, CD and HD roots), 
 resource reader, the `PLUGINS` directory (or an environment variable for it), Smacker for the
 bumper movie, and the `bk` database for the CD check.
 
+
+## DirectDraw and Direct3D at startup (port/platform/dx)
+
+What the game asks of DirectDraw/Direct3D 7 from launch to the first frames, traced through
+the source; the software layer in port/platform/dx answers it as described.
+
+- **Screen** (MBEngine, CMBDirectDrawScreenManager::RequestScreen): engine.ini on the CD has
+  `EnableDirect3D = 1`, `Fullscreen = 1`, `DDEnumCallback = DDDeviceSelectionCallback`
+  (SteamboatApp's export, used only by the windowed path; it picks the NULL-GUID driver), so
+  screen 1 is a CMBDirect3DScreen of 640x480x16.
+  - Full screen: DirectDrawCreateEx(NULL), SetCooperativeLevel(EXCLUSIVE | FULLSCREEN |
+    MULTITHREADED), SetDisplayMode(640, 480, 16), a PRIMARY | FLIP | COMPLEX | 3DDEVICE chain
+    with one back buffer (GetAttachedSurface(BACKBUFFER)), both colour-filled. The back
+    buffer is in video memory, so the game runs Direct3D on the hardware device.
+  - Windowed (MICKEY_WINDOWED): the depth is GetDeviceCaps(BITSPIXEL) (port_display_bpp: 32
+    while no full-screen mode is set), DirectDrawEnumerateExA(callback, &guid, 7), NORMAL |
+    MULTITHREADED, a primary of the desktop's size with a clipper on the window, and a
+    640x480 OFFSCREENPLAIN | 3DDEVICE | SYSTEMMEMORY back buffer. Each frame blits
+    (0,0,639,479) of the back buffer to the window's client rectangle in screen
+    coordinates (GetClientRect + ClientToScreen); DisplayD3D::Flip blits (0,0,640,480) to
+    (0,0) of the primary. Both land in the right place only while the window's client
+    area is at the desktop origin: the window layer keeps it there.
+- **SteamboatNode::CreateDisplay**: a back buffer with DDSCAPS_SYSTEMMEMORY (windowed, or
+  `ForceSoftware = 1`) makes it "emulation": DX::Direct3D::PickDriver then takes only
+  devices without D3DDEVCAPS_HWRASTERIZATION, otherwise only devices with it, the first one
+  of the kind that matches in enumeration order. EnumDevices therefore reports two devices,
+  both the same software renderer: "RGB Emulation" (IID_IDirect3DRGBDevice, no
+  HWRASTERIZATION) first, as DirectX 7 does, then "Direct3D HAL". A device is kept only
+  with DDCAPS2_CANRENDERWINDOWED on the DirectDraw driver, a z-buffer depth, perspective
+  textures, D3DTEXOPCAPS 0x1000 and (hardware only) at least 12 MB of texture memory
+  (GetAvailableVidMem: 64 MB).
+- **DX::Direct3D::Create** reuses the screen's IDirectDraw7 (CopyDriverInfo:
+  GetDeviceIdentifier, GetCaps, EnumDisplayModes), QueryInterface(IID_IDirect3D7),
+  EnumDevices, EnumZBufferFormats: the z-buffer takes the first format, 16 bits (the
+  background z images are 16-bit values, BitmapBuffer::LoadZbufferSurface). CanMIPMap is
+  DDCAPS_COLORKEY on the driver.
+- **DX::Device::Create** (ViewD3D::Create): a ZBUFFER surface (VIDEOMEMORY on the hardware
+  device, which checks it got it; SYSTEMMEMORY in emulation) attached to the back buffer,
+  CreateDevice(guid, back buffer), EnumTextureFormats. FindSurfaceDesc takes 4444 for alpha
+  textures, 565 for DC-drawn ones (OWNDC) and 8-bit palettized for the rest when offered
+  (565 otherwise).
+- **Textures** (DX::TextureMap::LoadTexture): a system-memory source loaded from PNG
+  (4-channel PNGs only into 4444; palettized ones into P8 or 565), a destination with
+  TEXTURE | ALLOCONLOAD | VIDEOMEMORY (SYSTEMMEMORY in emulation), mipmapped with
+  MIPMAP | COMPLEX and DDSD_MIPMAPCOUNT, an empty palette for P8, then
+  IDirect3DDevice7::Load(dst, (0,0), src, top-level rectangle): Load copies every mip
+  level, with the rectangle halved per level, and the source palette.
+- **First frames** (BitmapBuffer): background surfaces in system memory filled through
+  GetDC + CreateDIBitmap + StretchBlt (HALFTONE); the background z image copied into the
+  back buffer's z-buffer by Lock/memcpy (16-bit); BuildZLUT draws 256x256 one-pixel
+  pre-transformed triangles with ZFUNC ALWAYS and reads the z-buffer back (the layer gives
+  exactly z * 65535 per pixel, monotonic). The cursor (CMBCursor) runs on its own thread:
+  WaitForVerticalBlank, a Blt from the front buffer into a scratch surface and a keyed Blt
+  of the cursor onto the front buffer; the layer serializes all drawing under one lock.
+- Surfaces are never lost: IsLost returns DD_OK, so the games' Restore paths (DDReLoadBitmap,
+  the -8 broadcast) never run.
