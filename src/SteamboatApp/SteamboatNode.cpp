@@ -806,8 +806,8 @@ void SteamboatNode::OnStart()
     DDSCAPS2 ddsCaps2;
     memset(&ddsCaps2, 0, sizeof(ddsCaps2));
     ddsCaps2.dwCaps = DDSCAPS_TEXTURE;
-    unsigned long dwTotal;
-    unsigned long dwFree;
+    DWORD dwTotal;
+    DWORD dwFree;
     dxScreen->GetDirectDraw7()->GetAvailableVidMem(&ddsCaps2, &dwTotal, &dwFree);
     screen->Release();
     screenMgr->Release();

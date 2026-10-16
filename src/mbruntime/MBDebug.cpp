@@ -1,7 +1,7 @@
 #include "MBRuntime.h"
 
 extern "C" void __cdecl MBDebugStr(const char *fmt, ...);
-extern "C" void __cdecl MBAssertBox(const char *failedCond, const char *msg, const char *file, long line);
+extern "C" void __cdecl MBAssertBox(const char *failedCond, const char *msg, const char *file, int line);
 
 // What a failed assertion does (MBSetAssertBehavior).
 enum {
@@ -15,7 +15,7 @@ enum {
 static unsigned long gBehavior = kMBAssertBox;    // 2 in the binary
 
 // 0x10001f50 _MBSetAssertBehavior
-extern "C" unsigned long __cdecl MBSetAssertBehavior(unsigned long behavior)
+extern "C" unsigned long __cdecl MBSetAssertBehavior(unsigned int behavior)
 {
     unsigned long old = gBehavior;
     gBehavior = behavior;
@@ -23,7 +23,7 @@ extern "C" unsigned long __cdecl MBSetAssertBehavior(unsigned long behavior)
 }
 
 // 0x10001f60 _MBHandleAssert
-extern "C" void __cdecl MBHandleAssert(const char *failedCond, const char *msg, const char *file, long line)
+extern "C" void __cdecl MBHandleAssert(const char *failedCond, const char *msg, const char *file, int line)
 {
     if (gBehavior != kMBAssertIgnore) {
         MBDebugStr("WARN: Assertion failed!\n      Msg : %s\n      Cond: %s\n      File: %s, line %d\n",

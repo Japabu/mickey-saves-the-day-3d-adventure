@@ -1,7 +1,7 @@
 #include "MBWinStdlib.h"
 
 // 0x10001b90 _MBsleep
-extern "C" void __cdecl MBsleep(unsigned long ms)
+extern "C" void __cdecl MBsleep(unsigned int ms)
 {
     Sleep(ms);
 }
@@ -13,7 +13,7 @@ extern "C" void __cdecl MBatexit(void (__cdecl *func)(void))
 }
 
 // 0x10001bb0 _MBexit
-extern "C" void __cdecl MBexit(long status)
+extern "C" void __cdecl MBexit(int status)
 {
     exit(status);
 }
@@ -57,7 +57,7 @@ extern "C" long __cdecl MBrand(void)
 }
 
 // 0x10001c50 _MBrandom
-extern "C" long __cdecl MBrandom(long first, long last)
+extern "C" long __cdecl MBrandom(int first, int last)
 {
     if (first >= last)
         return first;
@@ -65,7 +65,7 @@ extern "C" long __cdecl MBrandom(long first, long last)
 }
 
 // 0x10001c80 _MBsrand
-extern "C" void __cdecl MBsrand(unsigned long seed)
+extern "C" void __cdecl MBsrand(unsigned int seed)
 {
     srand(seed);
 }

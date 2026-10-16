@@ -20,9 +20,9 @@
 #include <string>
 
 extern "C" {
-void *__cdecl MBmalloc_release(unsigned long size);
+void *__cdecl MBmalloc_release(unsigned int size);
 void __cdecl MBfree_release(void *ptr);
-void *__cdecl MBrealloc_release(void *ptr, unsigned long size);
+void *__cdecl MBrealloc_release(void *ptr, unsigned int size);
 }
 
 template <class T> class MBAllocator : public std::allocator<T> {

@@ -19,9 +19,9 @@ inline void __cdecl operator delete(void *p)
 extern "C" {
 void __cdecl MBDebugStr(const char *fmt, ...);
 void __cdecl MBatexit(void (__cdecl *func)(void));
-void __cdecl MBmemcpy(void *dest, const void *src, unsigned long cnt);
-void __cdecl MBmemset(void *dest, unsigned char fill, unsigned long cnt);
-void __cdecl MBmemclr(void *dest, unsigned long cnt);
+void __cdecl MBmemcpy(void *dest, const void *src, unsigned int cnt);
+void __cdecl MBmemset(void *dest, unsigned char fill, unsigned int cnt);
+void __cdecl MBmemclr(void *dest, unsigned int cnt);
 bool __cdecl MBCheckHeap(void);
 }
 
@@ -268,7 +268,7 @@ extern "C" bool __cdecl MBCheckHeapOnAlloc(bool doCheck)
 }
 
 // 0x100027a0 _MBmalloc_debug
-extern "C" void *__cdecl MBmalloc_debug(unsigned long cb, const char *file, long line)
+extern "C" void *__cdecl MBmalloc_debug(unsigned int cb, const char *file, int line)
 {
     if (sForceReleaseAlloc)
         return MBmalloc_release(cb);
@@ -315,7 +315,7 @@ extern "C" void __cdecl MBfree_debug(void *ptr)
 }
 
 // 0x100028e0 _MBrealloc_debug
-extern "C" void *__cdecl MBrealloc_debug(void *ptr, unsigned long sizeReq, const char *file, long line)
+extern "C" void *__cdecl MBrealloc_debug(void *ptr, unsigned int sizeReq, const char *file, int line)
 {
     if (sForceReleaseAlloc)
         return MBrealloc_release(ptr, sizeReq);

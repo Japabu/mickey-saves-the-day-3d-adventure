@@ -7,7 +7,7 @@ extern "C" char *__cdecl MBstrcpy(char *strDestination, const char *strSource)
 }
 
 // 0x10001cf0 _MBstrncpy
-extern "C" char *__cdecl MBstrncpy(char *strDestination, const char *strSource, unsigned long count)
+extern "C" char *__cdecl MBstrncpy(char *strDestination, const char *strSource, unsigned int count)
 {
 	return strncpy(strDestination, strSource, count);
 }
@@ -43,13 +43,13 @@ extern "C" char *__cdecl MBstrstr(const char *string, const char *strCharSet)
 }
 
 // 0x10001df0 _MBstrchr
-extern "C" char *__cdecl MBstrchr(const char *string, long c)
+extern "C" char *__cdecl MBstrchr(const char *string, int c)
 {
 	return strchr(string, c);
 }
 
 // 0x10001e10 _MBstrrchr
-extern "C" char *__cdecl MBstrrchr(const char *string, long c)
+extern "C" char *__cdecl MBstrrchr(const char *string, int c)
 {
 	return strrchr(string, c);
 }
@@ -73,7 +73,7 @@ extern "C" char *__cdecl MBstrpbrk(const char *string, const char *strCharSet)
 }
 
 // 0x10001e90 _MBstrset
-extern "C" char *__cdecl MBstrset(char *string, long c)
+extern "C" char *__cdecl MBstrset(char *string, int c)
 {
 	return _strset(string, c);
 }

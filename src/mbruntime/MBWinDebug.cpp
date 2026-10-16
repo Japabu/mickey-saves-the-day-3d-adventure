@@ -30,7 +30,7 @@ extern "C" void __cdecl MBDebugBreak(void)
 }
 
 // 0x10001130 _MBAssertBox
-extern "C" void __cdecl MBAssertBox(const char *failedCond, const char *msg, const char *file, long line)
+extern "C" void __cdecl MBAssertBox(const char *failedCond, const char *msg, const char *file, int line)
 {
     char temp[16];
     MBString str("Assert failed!\n\nMessage: ");

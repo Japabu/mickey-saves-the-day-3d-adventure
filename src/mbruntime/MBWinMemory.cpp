@@ -1,7 +1,7 @@
 #include "MBWinMemory.h"
 
 // 0x10001a60 _MBmalloc_release
-extern "C" void *__cdecl MBmalloc_release(unsigned long size)
+extern "C" void *__cdecl MBmalloc_release(unsigned int size)
 {
     if (size == 0)
         size = 4;
@@ -18,7 +18,7 @@ extern "C" void __cdecl MBfree_release(void *ptr)
 }
 
 // 0x10001ab0 _MBrealloc_release
-extern "C" void *__cdecl MBrealloc_release(void *ptr, unsigned long size)
+extern "C" void *__cdecl MBrealloc_release(void *ptr, unsigned int size)
 {
     if (size == 0)
         size = 4;
@@ -29,25 +29,25 @@ extern "C" void *__cdecl MBrealloc_release(void *ptr, unsigned long size)
 }
 
 // 0x10001b00 _MBmemcpy
-extern "C" void __cdecl MBmemcpy(void *dest, const void *src, unsigned long cnt)
+extern "C" void __cdecl MBmemcpy(void *dest, const void *src, unsigned int cnt)
 {
     memcpy(dest, src, cnt);
 }
 
 // 0x10001b20 _MBmemmove
-extern "C" void __cdecl MBmemmove(void *dest, const void *src, unsigned long cnt)
+extern "C" void __cdecl MBmemmove(void *dest, const void *src, unsigned int cnt)
 {
     memmove(dest, src, cnt);
 }
 
 // 0x10001b40 _MBmemset
-extern "C" void __cdecl MBmemset(void *dest, unsigned char fill, unsigned long cnt)
+extern "C" void __cdecl MBmemset(void *dest, unsigned char fill, unsigned int cnt)
 {
     memset(dest, fill, cnt);
 }
 
 // 0x10001b70 _MBmemclr
-extern "C" void __cdecl MBmemclr(void *dest, unsigned long cnt)
+extern "C" void __cdecl MBmemclr(void *dest, unsigned int cnt)
 {
     memset(dest, 0, cnt);
 }
