@@ -74,6 +74,8 @@ bool messages_pending();
 
 // Milliseconds since the process started (GetTickCount, timeGetTime).
 DWORD ticks();
+void advance_frame();   // PORT_DETERMINISTIC: one pass of the game loop (time.cpp)
+bool virtual_clock();
 
 }  // namespace win32
 

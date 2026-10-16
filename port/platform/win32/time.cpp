@@ -1,7 +1,10 @@
 // time.cpp - clocks, system time, FILETIME conversions and the time zone.
 #include "internal.h"
 
+#include <atomic>
 #include <mach/mach_time.h>
+#include <pthread.h>
+#include <stdlib.h>
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
@@ -18,7 +21,37 @@ static uint64_t now_ns()
 
 static const uint64_t s_start_ns = now_ns();
 
-DWORD ticks() { return (DWORD)((now_ns() - s_start_ns) / 1000000); }
+// PORT_DETERMINISTIC=1 (replays, tests): the game's clocks are virtual. They advance by a
+// 60th of a second per pass of the game's message loop (advance_frame, from PeekMessage
+// finding nothing to do) and by what the main thread's Sleep asks for, so a replayed session runs the same
+// whatever the speed of the machine, or a debugger stopping it. A loop that only polls a
+// clock gets a millisecond per 10000 polls.
+static const bool s_virtual = getenv("PORT_DETERMINISTIC") && atoi(getenv("PORT_DETERMINISTIC"));
+static std::atomic<uint64_t> s_virtual_ns{0};
+static std::atomic<uint32_t> s_polls{0};
+
+bool virtual_clock() { return s_virtual; }
+
+static uint64_t elapsed_ns()
+{
+    if (!s_virtual)
+        return now_ns() - s_start_ns;
+    if (++s_polls >= 10000) {
+        s_polls = 0;
+        s_virtual_ns += 1000000;
+    }
+    return s_virtual_ns;
+}
+
+void advance_frame()
+{
+    if (s_virtual) {
+        s_polls = 0;
+        s_virtual_ns += 1000000000ULL / 60;
+    }
+}
+
+DWORD ticks() { return (DWORD)(elapsed_ns() / 1000000); }
 
 // 100-ns intervals between 1601-01-01 and 1970-01-01.
 static const ULONGLONG EPOCH_DIFF = 116444736000000000ULL;
@@ -79,12 +112,19 @@ BOOL WINAPI QueryPerformanceFrequency(LARGE_INTEGER *f)
 
 BOOL WINAPI QueryPerformanceCounter(LARGE_INTEGER *c)
 {
-    c->QuadPart = (LONGLONG)((now_ns() - s_start_ns) / 1000);
+    c->QuadPart = (LONGLONG)(elapsed_ns() / 1000);
     return TRUE;
 }
 
 void WINAPI Sleep(DWORD ms)
 {
+    // the game's loop sleeping: virtual time passes instead (other threads, the script's
+    // collector or the walk planners, sleep for real: they wait for each other)
+    if (s_virtual && pthread_main_np()) {
+        s_virtual_ns += (uint64_t)ms * 1000000;
+        sched_yield();
+        return;
+    }
     if (ms == 0) {
         sched_yield();
         return;

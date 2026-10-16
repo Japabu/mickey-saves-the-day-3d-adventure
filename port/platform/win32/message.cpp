@@ -479,7 +479,11 @@ BOOL WINAPI PeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFi
 {
     if (!s_main_thread)
         s_main_thread = GetCurrentThreadId();
-    return next_message(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, (wRemoveMsg & PM_REMOVE) != 0);
+    BOOL got = next_message(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, (wRemoveMsg & PM_REMOVE) != 0);
+    // nothing to do: the game loop idles a frame (the virtual clock's step)
+    if (!got && GetCurrentThreadId() == s_main_thread)
+        advance_frame();
+    return got;
 }
 
 BOOL WINAPI GetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
