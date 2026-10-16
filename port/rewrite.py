@@ -34,6 +34,9 @@ Rules:
   literal is UTF-16, u"...".
 - A redeclaration of `unsigned long _beginthread(...)`: the result is the thread's
   handle, uintptr_t (compat/include/port_crt.h).
+- `#undef CreateFont` and the other Win32 names the prelude maps to their A versions
+  for every unit (so that all copies of a class agree on its member names): the
+  mapping stays.
 - `extern "C" static` (flex output): a linkage on a static function, which clang
   rejects; the function is static.
 - `class ostream;` and the other old iostream classes at file scope: in the port they
@@ -87,6 +90,10 @@ RULES = [
     (re.compile(r'\blong(\s+(?:__stdcall|CALLBACK|WINAPI)\s+[\w:]*Proc\w*\s*\()'), r'LRESULT\1'),
     (re.compile(r'\bunsigned\s+long(\s+(?:__cdecl\s+)?_beginthread\s*\()'), r'uintptr_t\1'),
     (re.compile(r'\bextern\s+"C"\s+static\b'), r'static'),
+    (re.compile(r'^([ \t]*)#[ \t]*undef[ \t]+(CreateFont|DrawText|FindResource|GetMessage|GetObject|GetProfileString|'
+                r'IsDialogMessage|LoadBitmap|LoadString|PlaySound|PostThreadMessage|RegisterClass|'
+                r'WriteProfileString|GetClassName|SendMessage)\b', re.M),
+     r'\1/* port: kept #define \2 \2A (prelude.h) */'),
     (re.compile(r'(struct\s+MBGUID\s*\{\s*\n\s*)unsigned\s+long(\s+data1\s*;)'), r'\1port_u32\2'),
     (re.compile(r'\(const\s+unsigned\s+long\s*\*\)(\s*(?:\w+\s*\.\s*)?data4\b)'), r'(const port_u32 *)\1'),
     (re.compile(r'\(((?:const\s+)?(?:unsigned\s+short|WCHAR)\s*\*)\)L"'), r'(\1)u"'),
@@ -266,7 +273,7 @@ def drop_duplicate_overloads(before, after):
 # files no rule touches
 KEEP = {'SteamboatApp/ios.h', 'SteamboatApp/ostream.h'}
 # a cheap first test before the regular expressions
-NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern', 'MBGUID', '_beginthread', 'data4', 'L"')
+NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern', 'MBGUID', '_beginthread', 'undef', 'data4', 'L"')
 
 
 def rewrite(text, rel=None):

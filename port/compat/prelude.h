@@ -68,9 +68,24 @@ template <class V> inline typename V::value_type *port_end(V &v) { return v.empt
 // The source's classes have members named like Win32 functions that <windows.h> maps
 // onto their ANSI versions; the original binaries carry the mapped names
 // (?GetClassNameA@MfActor@@...), and every unit saw <windows.h>. The mapping is made
-// here for every unit, so that all of them agree on the member names.
+// here for every unit, so that all of them agree on the member names (and on the
+// vtable slots of virtual ones: an overrider spelled without the A would not override).
+// The names are those the source uses as member functions.
 #define GetClassName GetClassNameA
 #define SendMessage SendMessageA
+#define CreateFont CreateFontA
+#define DrawText DrawTextA
+#define FindResource FindResourceA
+#define GetMessage GetMessageA
+#define GetObject GetObjectA
+#define GetProfileString GetProfileStringA
+#define IsDialogMessage IsDialogMessageA
+#define LoadBitmap LoadBitmapA
+#define LoadString LoadStringA
+#define PlaySound PlaySoundA
+#define PostThreadMessage PostThreadMessageA
+#define RegisterClass RegisterClassA
+#define WriteProfileString WriteProfileStringA
 
 // Structured exception handling does not exist on macOS: a __try block is a try block,
 // and its handler catches what RaiseException throws (platform); the filter expression
