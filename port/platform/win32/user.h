@@ -50,6 +50,7 @@ void display_title(Window *w);
 // SDL window coordinates to the game's client coordinates.
 void display_to_client(Window *w, float x, float y, int *cx, int *cy);
 void display_from_client(Window *w, int cx, int cy, float *x, float *y);
+void display_pump();  // shows a frame presented since the last pump
 int display_width();   // the "screen": the game's display mode, else the desktop
 int display_height();
 // message.cpp

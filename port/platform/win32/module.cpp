@@ -89,6 +89,28 @@ static std::string default_winpath(const std::string &dll)
     return "C:\\setup\\hd\\binaries\\" + dll;
 }
 
+// The Windows system DLLs the game looks up (ddraw.dll for DirectDrawEnumerateExA, ...)
+// are the platform library itself.
+static Module *system_module(const std::string &dll)
+{
+    static const char *names[] = {"ddraw", "d3dim", "d3dim700", "dinput", "dsound", "kernel32", "user32", "gdi32",
+                                  "advapi32", "winmm", "shell32", "ole32", "comctl32", "comdlg32", "imm32"};
+    std::string want = strip_ext(dll);
+    for (const char *n : names) {
+        if (strcasecmp(n, want.c_str()))
+            continue;
+        Module *m = new Module;
+        m->dll = dll;
+        m->winpath = "C:\\WINDOWS\\SYSTEM\\" + dll;
+        Dl_info info;
+        if (dladdr((const void *)&system_module, &info) && info.dli_fname)
+            m->dl = dlopen(info.dli_fname, RTLD_NOLOAD | RTLD_LAZY);
+        modules().push_back(m);
+        return m;
+    }
+    return 0;
+}
+
 }  // namespace win32
 
 using namespace win32;
@@ -129,6 +151,8 @@ HMODULE WINAPI LoadLibraryA(LPCSTR lpLibFileName)
         m->refs++;
         return (HMODULE)m;
     }
+    if (Module *m = system_module(dll))
+        return (HMODULE)m;
     std::string name = strip_ext(dll);
     std::string path = find_dylib(lib_dir(), name);
     if (path.empty())
@@ -206,6 +230,8 @@ HMODULE WINAPI GetModuleHandleA(LPCSTR lpModuleName)
     if (dll.find('.') == std::string::npos)
         dll += ".dll";
     Module *m = find_module(dll);
+    if (!m)
+        m = system_module(dll);
     if (!m)
         SetLastError(ERROR_MOD_NOT_FOUND);
     return (HMODULE)m;

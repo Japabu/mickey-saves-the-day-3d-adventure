@@ -20,11 +20,23 @@ target_include_directories(platform SYSTEM PRIVATE compat/include)
 target_compile_options(platform PRIVATE -include ${CMAKE_CURRENT_SOURCE_DIR}/compat/prelude.h
   $<$<COMPILE_LANGUAGE:CXX>:-std=gnu++17>)
 target_link_libraries(platform PRIVATE SDL3::SDL3)
+# FFmpeg decodes Bink, Smacker and the sounds (platform/media)
+find_path(FFMPEG_INCLUDE_DIR libavformat/avformat.h REQUIRED)
+target_include_directories(platform SYSTEM PRIVATE ${FFMPEG_INCLUDE_DIR})
+foreach(lib avformat avcodec avutil swresample swscale)
+  find_library(FFMPEG_${lib} ${lib} REQUIRED)
+  target_link_libraries(platform PRIVATE ${FFMPEG_${lib}})
+endforeach()
 
 # the modules, from port/flags.py
 execute_process(
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/flags.py cmake ${CMAKE_BINARY_DIR}/modules.cmake
   COMMAND_ERROR_IS_FATAL ANY)
+# the overlay (overrides, rewrite rules, verified edits) is generated at configure
+# time: any change to its inputs reconfigures
+file(GLOB_RECURSE PORT_OVERLAY_INPUTS CONFIGURE_DEPENDS
+  ${CMAKE_CURRENT_SOURCE_DIR}/override/* ${CMAKE_CURRENT_SOURCE_DIR}/edits/*.py)
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-  ${CMAKE_CURRENT_SOURCE_DIR}/flags.py ${CMAKE_CURRENT_SOURCE_DIR}/../src/options.txt)
+  ${CMAKE_CURRENT_SOURCE_DIR}/flags.py ${CMAKE_CURRENT_SOURCE_DIR}/rewrite.py
+  ${CMAKE_CURRENT_SOURCE_DIR}/../src/options.txt ${PORT_OVERLAY_INPUTS})
 include(${CMAKE_BINARY_DIR}/modules.cmake)

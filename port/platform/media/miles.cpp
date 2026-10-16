@@ -235,6 +235,8 @@ struct Voice {
         }
         if (got > 0)
             SDL_PutAudioStreamData(s, v->scratch.data(), (int)(got * (long)sizeof(float) * media::CHANNELS));
+        if (v->fed_all)
+            SDL_FlushAudioStream(s);  // the resampler's tail too, so the queue runs empty
     }
 
     SDL_AudioStream *stream = 0;

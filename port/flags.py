@@ -58,6 +58,10 @@ COMMON = [
     '-isystem', os.path.join(PORT, 'compat', 'include'),
     '-D_WIN32', '-DWIN32', '-D_X86_', '-D_M_IX86=500', '-D_MSC_VER=1200', '-DPORT_MACOS',
 ]
+# Modules whose original exported its whole C interface through a .def file rather
+# than __declspec(dllexport): everything they define is exported
+DEFAULT_VISIBILITY = {'zlib'}
+
 # src/options.txt options the port does not use: libpng's MMX code is x86 assembly,
 # so the port builds its portable C path
 PORT_DROP_OPTIONS = {'/DPNG_USE_PNGVCRD'}
@@ -90,7 +94,17 @@ def overlay():
     return _OVERLAY
 
 
+_MAP = None
+
+
+def overlay_map():
+    """{src path: port version} for every overlaid file (written by overlay())."""
+    overlay()
+    return _MAP
+
+
 def _write_overlay():
+    global _MAP
     import json
     sys.path.insert(0, PORT)
     import rewrite
@@ -101,6 +115,7 @@ def _write_overlay():
             if f.startswith('.') or f.endswith('.md'):
                 continue
             mapped[os.path.join(SRC, os.path.relpath(os.path.join(base, f), top))] = os.path.join(base, f)
+    _MAP = mapped
     roots = {}
     for src, dst in mapped.items():
         roots.setdefault(os.path.dirname(src), []).append(
@@ -124,6 +139,8 @@ def command(module, path, extra=()):
     cc = CXX if path.endswith('.cpp') else CC
     inc = ['-ivfsoverlay', overlay(), '-iquote', os.path.dirname(path), '-iquote', d]
     opts = sources_options(path) if path.startswith(SRC + os.sep) else []   # generated files have none
+    if module in DEFAULT_VISIBILITY:
+        opts = opts + ['-fvisibility=default']
     return cc + COMMON + inc + opts + list(extra) + [path]
 
 
@@ -193,11 +210,18 @@ def cmake(path):
         kind = 'add_executable' if m == 'Steamboat' else 'add_library'
         lines.append(f'{kind}({m}{"" if m == "Steamboat" else " SHARED"} ' + ' '.join(q(s) for s in srcs) + ')')
         lines.append(f'target_link_libraries({m} PRIVATE ' + ' '.join(deps + ['platform']) + ')')
+        # clang's dependency files name the src/ path of an overlaid file, whose time
+        # never changes: the module's objects also depend on every port version of a
+        # file in its directory (overrides and rewritten copies), so a change rebuilds
+        mine = os.path.join(SRC, d) + os.sep
+        deps_of = sorted(dst for src, dst in overlay_map().items() if src.startswith(mine))
         for s in srcs:
             cmd = command(m, s)
             opts = cmd[1:-1]                    # everything but the compiler and the file
-            lines.append(f'set_source_files_properties({q(s)} TARGET_DIRECTORY {m} PROPERTIES COMPILE_OPTIONS '
-                         + q(';'.join(opts)) + ')')
+            props = 'COMPILE_OPTIONS ' + q(';'.join(opts))
+            if deps_of:
+                props += ' OBJECT_DEPENDS ' + q(';'.join(deps_of))
+            lines.append(f'set_source_files_properties({q(s)} TARGET_DIRECTORY {m} PROPERTIES {props})')
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w') as f:
         f.write('\n'.join(lines) + '\n')
