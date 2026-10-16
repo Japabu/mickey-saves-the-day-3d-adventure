@@ -84,7 +84,9 @@ void display_show(Window *w)
             if (!s_renderer)
                 fprintf(stderr, "SDL_CreateRenderer: %s\n", SDL_GetError());
             else
-                SDL_SetRenderVSync(s_renderer, 1);
+                // no vsync wait: presenting blocks the game's thread (its message loop
+                // presents), and Metal blocks for long while the window is covered
+                SDL_SetRenderVSync(s_renderer, 0);
         }
         if (s_renderer)
             SDL_SetRenderLogicalPresentation(s_renderer, cw, ch, SDL_LOGICAL_PRESENTATION_LETTERBOX);
@@ -159,6 +161,16 @@ static void show_frame()
     std::lock_guard<std::mutex> lock(s_frame_mu);
     if (!s_frame_new)
         return;
+    // nothing to show while the window can't be seen: keep the frame for later
+    if (s_window && s_window->sdl &&
+        (SDL_GetWindowFlags(s_window->sdl) & (SDL_WINDOW_OCCLUDED | SDL_WINDOW_MINIMIZED | SDL_WINDOW_HIDDEN)))
+        return;
+    // at most one present per 60 Hz refresh; a newer frame waits for the next pump
+    static Uint64 s_last;
+    Uint64 now = SDL_GetTicksNS();
+    if (now - s_last < 16000000)
+        return;
+    s_last = now;
     s_frame_new = false;
     if (!s_texture || s_tex_w != s_frame_w || s_tex_h != s_frame_h) {
         if (s_texture)

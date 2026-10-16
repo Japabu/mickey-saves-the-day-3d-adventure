@@ -205,11 +205,22 @@ void pump_events()
             post((HWND)w, WM_ACTIVATE, WA_ACTIVE, 0);
             post((HWND)w, WM_SETFOCUS, 0, 0);
             break;
-        case SDL_EVENT_WINDOW_FOCUS_LOST:
+        case SDL_EVENT_WINDOW_FOCUS_LOST: {
+            // The game pauses while it is not the active application, as on Windows.
+            // A window started from a terminal loses and regains focus erratically on
+            // macOS, so by default the port keeps it running in the background;
+            // MICKEY_PAUSE_IN_BACKGROUND=1 restores the original behaviour.
+            static const bool pause = [] {
+                const char *e = getenv("MICKEY_PAUSE_IN_BACKGROUND");
+                return e && *e && strcmp(e, "0") != 0;
+            }();
+            if (!pause)
+                break;
             post((HWND)w, WM_ACTIVATE, WA_INACTIVE, 0);
             post((HWND)w, WM_ACTIVATEAPP, FALSE, 0);
             post((HWND)w, WM_KILLFOCUS, 0, 0);
             break;
+        }
         case SDL_EVENT_WINDOW_MINIMIZED:
             post((HWND)w, WM_SIZE, SIZE_MINIMIZED, 0);
             break;

@@ -113,10 +113,14 @@ void __stdcall BinkNextFrame(BINK *bnk)
 {
     if (!bnk)
         return;
-    if (bnk->FrameNum >= bnk->Frames)
+    if (bnk->FrameNum >= bnk->Frames) {
+        MEDIA_LOG("bink: past the last frame (%u), back to the first\n", bnk->Frames);
         reset_frame(bink(bnk));
-    else
+    } else {
         bnk->FrameNum++;
+        if (bnk->FrameNum % 50 == 0 || bnk->FrameNum == bnk->Frames)
+            MEDIA_LOG("bink: frame %u of %u\n", bnk->FrameNum, bnk->Frames);
+    }
 }
 
 void __stdcall BinkGoto(BINK *bnk, unsigned int frame, int flags)

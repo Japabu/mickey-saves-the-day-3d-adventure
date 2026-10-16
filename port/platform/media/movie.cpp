@@ -162,6 +162,21 @@ double Movie::now() const
         }
         return sound_end_t + (SDL_GetTicksNS() - sound_end_ns) / 1e9;
     }
+    // Starved before the end: the sound is only fed when a frame is decoded, and a frame
+    // only when it is due, so a clock that waits for the sound would wait forever. The
+    // time goes on from where the sound stopped until decoding refills it.
+    if (!eof && queued == 0 && running) {
+        if (!starve_ns) {
+            starve_ns = SDL_GetTicksNS();
+            starve_t = heard;
+        }
+        return starve_t + (SDL_GetTicksNS() - starve_ns) / 1e9;
+    }
+    if (starve_ns) {
+        if (heard < starve_t + (SDL_GetTicksNS() - starve_ns) / 1e9 - 0.05)
+            return starve_t + (SDL_GetTicksNS() - starve_ns) / 1e9;  // let the sound catch up
+        starve_ns = 0;
+    }
     return heard;
 }
 

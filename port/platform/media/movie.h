@@ -51,6 +51,8 @@ private:
     uint64_t start_ns = 0;
     int64_t pushed = 0;                  // sound frames handed to SDL since the start
     mutable uint64_t sound_end_ns = 0;   // when the sound was heard to the end
+    mutable uint64_t starve_ns = 0;   // when the sound ran dry before the end (0: it hasn't)
+    mutable double starve_t = 0;      // the movie time at that moment
     mutable double sound_end_t = 0;
     std::string name;
 };
