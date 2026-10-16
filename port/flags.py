@@ -2,8 +2,8 @@
 module table through `python3 port/flags.py cmake`) and by port/tools.
 
 Each original binary becomes one macOS library (the executable for Steamboat.exe).
-Its sources are the files of src/<dir>/, minus what the port replaces: a file under
-port/override/<same path> is compiled instead of the original.
+Its sources are the files of src/<dir>/; a file (source or header) under
+port/override/<same path> is used instead of the original, through a clang VFS overlay.
 """
 import os
 import sys
@@ -41,38 +41,66 @@ MODULES = {
 COMMON = [
     '-target', 'arm64-apple-macos13',
     '-fms-extensions', '-fms-compatibility', '-fdelayed-template-parsing',
+    # -fms-compatibility drops __GNUC__, and the macOS SDK then declares va_list in a
+    # way that clashes with clang's own
+    '-fgnuc-version=4.2.1',
     '-fvisibility=hidden', '-fno-strict-aliasing', '-fwrapv', '-g', '-O1',
     '-include', os.path.join(PORT, 'compat', 'prelude.h'),
     '-isystem', os.path.join(PORT, 'compat', 'include'),
     '-D_WIN32', '-DWIN32', '-D_X86_', '-D_M_IX86=500', '-D_MSC_VER=1200', '-DPORT_MACOS',
 ]
+# src/options.txt options the port does not use: libpng's MMX code is x86 assembly,
+# so the port builds its portable C path
+PORT_DROP_OPTIONS = {'/DPNG_USE_PNGVCRD'}
 CXX = ['clang++', '-std=gnu++14', '-fno-sized-deallocation']
 CC = ['clang', '-std=gnu99']
 
 
 def sources(module):
-    """The source files of a module, with port overrides substituted."""
+    """The source files of a module (their src/ paths: overrides apply through the
+    overlay, see overlay())."""
     import sources as recomp_sources
-    d = os.path.join(SRC, MODULES[module][0])
-    out = []
-    for p in recomp_sources.source_files([MODULES[module][0] + '/']):
-        if os.path.basename(p).startswith('zz_'):
-            continue
-        rel = os.path.relpath(p, SRC)
-        over = os.path.join(PORT, 'override', rel)
-        out.append(over if os.path.isfile(over) else p)
-    return out
+    return [p for p in recomp_sources.source_files([MODULES[module][0] + '/'])
+            if not os.path.basename(p).startswith('zz_')]
+
+
+def overlay():
+    """A clang VFS overlay that maps every src/ file with a copy under port/override/
+    (same relative path) onto that copy, headers included: clang then compiles and
+    includes the copy wherever the original is named. Written to out/port/overlay.yaml."""
+    import json
+    top = os.path.join(PORT, 'override')
+    roots = {}
+    for base, _, files in os.walk(top):
+        for f in files:
+            if f.startswith('.') or f.endswith('.md'):
+                continue
+            rel = os.path.relpath(os.path.join(base, f), top)
+            d = os.path.dirname(os.path.join(SRC, rel))
+            roots.setdefault(d, []).append({'type': 'file', 'name': f,
+                                            'external-contents': os.path.join(base, f)})
+    data = {'version': 0, 'case-sensitive': 'false', 'fallthrough': True,
+            'roots': [{'type': 'directory', 'name': d, 'contents': c} for d, c in sorted(roots.items())]}
+    path = os.path.join(ROOT, 'out', 'port', 'overlay.yaml')
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    text = json.dumps(data, indent=1)
+    if not os.path.isfile(path) or open(path).read() != text:
+        with open(path, 'w') as f:
+            f.write(text)
+    return path
 
 
 def command(module, path, extra=()):
-    """The clang command line for one source file of a module."""
+    """The clang command line for one source file (its src/ path) of a module."""
     d = os.path.join(SRC, MODULES[module][0])
-    rel = os.path.relpath(path, os.path.join(PORT, 'override')) if path.startswith(os.path.join(PORT, 'override')) else None
-    origdir = os.path.dirname(os.path.join(SRC, rel)) if rel else os.path.dirname(path)
     cc = CXX if path.endswith('.cpp') else CC
-    inc = ['-iquote', os.path.dirname(path), '-iquote', origdir, '-iquote', d]
-    opts = sources_options(path if not rel else os.path.join(SRC, rel))
-    return cc + COMMON + inc + opts + list(extra) + [path]
+    inc = ['-ivfsoverlay', overlay(), '-iquote', os.path.dirname(path), '-iquote', d]
+    return cc + COMMON + inc + sources_options(path) + list(extra) + [path]
+
+
+# options.txt options the port leaves out: libpng's MMX filters (pngvcrd.c, x86 inline
+# assembly) are replaced by its portable C path.
+PORT_DROP_OPTIONS = {'/DPNG_USE_PNGVCRD'}
 
 
 def sources_options(path):
@@ -81,6 +109,8 @@ def sources_options(path):
     out = []
     d = os.path.dirname(path)
     for o in recomp_sources.options(path):
+        if o in PORT_DROP_OPTIONS:
+            continue
         if o.startswith('/D'):
             out.append('-D' + o[2:])
         elif o.startswith('/I'):
