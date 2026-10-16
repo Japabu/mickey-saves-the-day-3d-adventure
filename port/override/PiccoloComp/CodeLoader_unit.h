@@ -21,10 +21,10 @@ class MfString;
 // constructor and CopyOnWrite are imported, not inline (0x10005f60).
 class __declspec(dllimport) MfStringRef {
 public:
-    MfStringRef(int);
-    virtual ~MfStringRef();
-    MfStringRef *CopyOnWrite();
-    int ReadFromFile(const MfString &);
+    MfStringRef(int n) : m_count(0) { m_maxLength = n + nNumPadChars; m_str = new char[m_maxLength + 1]; m_str[0] = 0; m_length = 0; }    // PORT: mfutil's inline
+    virtual ~MfStringRef() { delete[] m_str; }    // PORT: mfutil's inline
+    MfStringRef *CopyOnWrite() { return new MfStringRef(*this); }    // PORT: mfutil's inline
+    int ReadFromFile(const MfString &); MfStringRef(const MfStringRef &o) : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(o); } void MakeCopy(const MfStringRef &); static int nNumPadChars;    // PORT: mfutil's, for the inlines above
     char *m_str;        // +4
     int m_length;       // +8
     int m_maxLength;    // +0xc
@@ -178,8 +178,8 @@ public:
 
 class __declspec(dllimport) MfDirectoryFileInfo {
 public:
-    MfString GetFileName() const;
-    MfString GetFilePath() const;
+    MfString GetFileName() const { return MfString(m_fd.cFileName); }    // PORT: mfutil's inline
+    MfString GetFilePath() const; WIN32_FIND_DATAA m_fd;    // PORT: mfutil's first member (+0), for GetFileName
 };
 
 // a list of MfDirectoryFileInfo *, with its own cursor (kept in memory at +0x18 in

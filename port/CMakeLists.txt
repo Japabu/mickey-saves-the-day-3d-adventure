@@ -54,8 +54,12 @@ execute_process(
   COMMAND_ERROR_IS_FATAL ANY)
 # the overlay (overrides, rewrite rules, verified edits) is generated at configure
 # time: any change to its inputs reconfigures
+# (the src/ files too: a rewritten copy is regenerated only when configuring, so an edit
+# to its src/ original must reconfigure, or the build compiles the stale copy)
 file(GLOB_RECURSE PORT_OVERLAY_INPUTS CONFIGURE_DEPENDS
-  ${CMAKE_CURRENT_SOURCE_DIR}/override/* ${CMAKE_CURRENT_SOURCE_DIR}/edits/*.py)
+  ${CMAKE_CURRENT_SOURCE_DIR}/override/* ${CMAKE_CURRENT_SOURCE_DIR}/edits/*.py
+  ${CMAKE_CURRENT_SOURCE_DIR}/../src/*.c ${CMAKE_CURRENT_SOURCE_DIR}/../src/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../src/*.h)
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   ${CMAKE_CURRENT_SOURCE_DIR}/flags.py ${CMAKE_CURRENT_SOURCE_DIR}/rewrite.py
   ${CMAKE_CURRENT_SOURCE_DIR}/../src/options.txt ${PORT_OVERLAY_INPUTS})

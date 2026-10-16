@@ -42,7 +42,7 @@ public:
         pData[0] = 0;
         nLength = 0;
     }
-    MfStringRef(const MfStringRef &);
+    MfStringRef(const MfStringRef &o) : pData(0), nLength(0), nAlloc(0), nRefs(0) { MakeCopy(o); } void MakeCopy(const MfStringRef &);    // PORT: mfutil's inline
     virtual ~MfStringRef() { delete pData; }
     MfStringRef *CopyOnWrite() { return new MfStringRef(*this); }
     void NoLeadingWhiteSpace();
@@ -221,9 +221,9 @@ class __declspec(dllimport) MfCallBack {
 public:
     MfCallBack() {}
     virtual ~MfCallBack() {}
-    virtual int CallBack(void *);
-    virtual int CallBack(void *, void *);
-    virtual int CallBack(void *, void *, void *);
+    virtual int CallBack(void *) { return 0; }    // PORT: mfutil's inline
+    virtual int CallBack(void *, void *) { return 0; }    // PORT: mfutil's inline
+    virtual int CallBack(void *, void *, void *) { return 0; }    // PORT: mfutil's inline
 };
 
 class MfListItemInterface {
@@ -294,7 +294,7 @@ class MfDirectory;
 class __declspec(dllimport) MfDirectoryFileInfo {
 public:
     unsigned int QueryAttributes() const { return m_fd.dwFileAttributes; }
-    MfString GetFileName() const;
+    MfString GetFileName() const { return MfString(m_fd.cFileName); }    // PORT: mfutil's inline
     MfString GetFilePath() const;
 private:
     WIN32_FIND_DATAA m_fd;

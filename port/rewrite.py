@@ -30,8 +30,6 @@ Rules:
   long)`: WPARAM, LPARAM and LRESULT are pointer-sized here (they were 32 bits).
 - MBGUID (MBEngine, SteamboatApp, Steamboat): data1 is `unsigned long`, and data4 is
   compared through `(const unsigned long *)`: both are the 32-bit Windows long, port_u32.
-- MBHashString (mbruntime) returns the 32-bit hash as `unsigned long`, which the
-  callers compare with int members: it returns port_u32.
 - A wide literal cast to the game's 16-bit characters, `(unsigned short *)L"..."`: the
   literal is UTF-16, u"...".
 - A redeclaration of `unsigned long _beginthread(...)`: the result is the thread's
@@ -90,7 +88,6 @@ RULES = [
     (re.compile(r'\bunsigned\s+long(\s+(?:__cdecl\s+)?_beginthread\s*\()'), r'uintptr_t\1'),
     (re.compile(r'\bextern\s+"C"\s+static\b'), r'static'),
     (re.compile(r'(struct\s+MBGUID\s*\{\s*\n\s*)unsigned\s+long(\s+data1\s*;)'), r'\1port_u32\2'),
-    (re.compile(r'\bunsigned\s+long(\s+(?:__cdecl\s+)?MBHashString\s*\()'), r'port_u32\1'),
     (re.compile(r'\(const\s+unsigned\s+long\s*\*\)(\s*(?:\w+\s*\.\s*)?data4\b)'), r'(const port_u32 *)\1'),
     (re.compile(r'\(((?:const\s+)?(?:unsigned\s+short|WCHAR)\s*\*)\)L"'), r'(\1)u"'),
     (re.compile(r'^class\s+(type_info)\s*;[ \t]*$', re.M),
@@ -269,7 +266,7 @@ def drop_duplicate_overloads(before, after):
 # files no rule touches
 KEEP = {'SteamboatApp/ios.h', 'SteamboatApp/ostream.h'}
 # a cheap first test before the regular expressions
-NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern', 'MBGUID', 'MBHashString', '_beginthread', 'data4', 'L"')
+NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern', 'MBGUID', '_beginthread', 'data4', 'L"')
 
 
 def rewrite(text, rel=None):

@@ -6,11 +6,16 @@
 # are come out hidden), so the views that declare them without a body get the
 # exporter's body (src/mfutil/*.h).
 #
-# PiccoloRT's own class-info classes: the original emitted their inline members once,
-# in the MfScClassInfo object (MfScClassInfo_unit.h), and the other objects called
-# them there. Their views declare them without a body (in VC5 an inline body would
-# be inlined into the calling functions and change their code), so the port gives
-# these views the bodies of MfScClassInfo_unit.h and MfScBytecodeRoutine_unit.h.
+# PiccoloRT's own inline members that other modules import (MfScClassInfo's
+# constructors and GetKey, MfScClassInfoItem::GetKey, MfScClassInfoText's destructor,
+# MfScDataObject's GetClassName/GetPropTokenTable/GetPropertyExtensions, MfScHandleDict's
+# destructor, with the vtables that follow them): the original emitted and exported
+# them from one object each (the one whose unit view has their bodies). The port does
+# the same: in that object's view they become declarations, and the object defines them
+# out of line on the line of their claim, so they are emitted once, exported. The
+# other views keep their inline bodies or declarations; MfScBytecodeRoutine::
+# GetBytecodes, which only PiccoloRT calls, gets its body in the view without one.
+OUT = "    // PORT: out of line, so it is emitted and exported as in the original"
 MFUTIL = "    // PORT: mfutil's inline"
 
 EDITS = {
