@@ -70,6 +70,9 @@ LINALG_INLINES = {
     ],
 }
 
+# MfListValue's last member: MfPoLibrary's MfDblListItem *pliCursor (see MfListValue.h)
+LISTVALUE_CURSOR_VIEW = ('    int m_1c;\n', '    void *m_1c;     // PORT: pointer-sized, MfPoLibrary\'s list cursor\n', 1)
+
 EDITS = {
     'MfActorLib/MfStream.cpp': [
         ('MfStream &MfStream::operator>>(long &i)\n'
@@ -132,12 +135,19 @@ EDITS = {
          '    int m_pos;                  // 0x30\n',
          '    unsigned long m_bufferSize; // PORT: unsigned long, as in MfFile.h\n'
          '    unsigned long m_pos;        // PORT: unsigned long, as in MfFile.h\n', 1),
+        LISTVALUE_CURSOR_VIEW,
     ],
     'MfActorLib/MfCopyFolder.h': [
         ('    char m_data[0xc];\n', '    char *m_data[3];    // PORT: three MfStrings (one pointer each)\n', 1),
     ],
     'MfActorLib/MfFSMSpaceToBhvr_unit.h': [TYPEDVALUE_VIEW],
-    'MfActorLib/MfListValue_unit.h': [TYPEDVALUE_VIEW],
+    'MfActorLib/MfListValue_unit.h': [TYPEDVALUE_VIEW, LISTVALUE_CURSOR_VIEW],
+    # MfPoLibrary reads this member as its MfDblListItem *pliCursor: it must be
+    # pointer-sized so every MfActorLib constructor clears all 8 bytes
+    'MfActorLib/MfListValue.h': [
+        ('    int flags;  // +0x1c (cleared by the constructors, otherwise unused)\n',
+         '    void *flags;  // PORT: pointer-sized (MfPoLibrary\'s list cursor); cleared by the constructors\n', 1),
+    ],
     # the base (vptr, long m_flags, unsigned long m_time) is 0x18 bytes, not 0xc; the
     # record is the 0xc8 bytes from mFlags on
     'MfActorLib/MfJointKeyframe.cpp': [

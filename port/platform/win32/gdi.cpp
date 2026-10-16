@@ -692,6 +692,10 @@ BOOL WINAPI RestoreDC(HDC hdc, int n)
     return TRUE;
 }
 
+// The depth of the display mode, which a window DC reports, as on Windows. The DirectDraw
+// layer overrides this with its current mode; this default is its desktop mode.
+__attribute__((weak)) int port_display_bpp(void) { return 32; }
+
 int WINAPI GetDeviceCaps(HDC hdc, int index)
 {
     DC *d = dc_of(hdc);
@@ -699,7 +703,10 @@ int WINAPI GetDeviceCaps(HDC hdc, int index)
     switch (index) {
     case HORZRES: return p && d->kind != DC::Memory ? p->w : display_width();
     case VERTRES: return p && d->kind != DC::Memory ? p->h : display_height();
-    case BITSPIXEL: return p && d->kind != DC::Window ? p->bpp : 32;
+    case BITSPIXEL:
+        if (p && d->kind != DC::Window)
+            return p->bpp;
+        return port_display_bpp();
     case PLANES: return 1;
     case NUMCOLORS: return -1;
     case LOGPIXELSX:
@@ -975,6 +982,43 @@ int WINAPI GetDIBits(HDC hdc, HBITMAP hbm, UINT start, UINT cLines, LPVOID lpvBi
         memcpy(colors, b->px.pal, sizeof(RGBQUAD) << dst.bpp);
     }
     return lines;
+}
+
+// A .bmp file as a bitmap (LoadImage with LR_LOADFROMFILE): with LR_CREATEDIBSECTION a DIB
+// section in the file's own depth and row order (the game reads bmBits itself), else a
+// bitmap in the screen's format.
+HBITMAP port_load_bitmap_file(const char *path, UINT flags)
+{
+    HANDLE f = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
+    if (f == INVALID_HANDLE_VALUE)
+        return 0;
+    DWORD size = GetFileSize(f, 0), got = 0;
+    std::vector<uint8_t> data(size);
+    BOOL ok = size > sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) && ReadFile(f, data.data(), size, &got, 0) && got == size;
+    CloseHandle(f);
+    if (!ok || data[0] != 'B' || data[1] != 'M')
+        return 0;
+    const BITMAPFILEHEADER *fh = (const BITMAPFILEHEADER *)data.data();
+    const BITMAPINFO *bmi = (const BITMAPINFO *)(data.data() + sizeof(BITMAPFILEHEADER));
+    const BITMAPINFOHEADER &h = bmi->bmiHeader;
+    int rows = h.biHeight < 0 ? -h.biHeight : h.biHeight;
+    size_t bytes = (size_t)pitch_of(h.biWidth, h.biBitCount) * (size_t)rows;
+    if (h.biCompression != BI_RGB && h.biCompression != BI_BITFIELDS)
+        return 0;
+    if (fh->bfOffBits > size || size - fh->bfOffBits < bytes)
+        return 0;
+    const uint8_t *bits = data.data() + fh->bfOffBits;
+    if (flags & LR_CREATEDIBSECTION) {
+        void *dst = 0;
+        HBITMAP hb = CreateDIBSection(0, bmi, DIB_RGB_COLORS, &dst, 0, 0);
+        if (hb && dst)
+            memcpy(dst, bits, bytes);
+        return hb;
+    }
+    HDC screen = GetDC(0);
+    HBITMAP hb = CreateDIBitmap(screen, &h, CBM_INIT, bits, bmi, DIB_RGB_COLORS);
+    ReleaseDC(0, screen);
+    return hb;
 }
 
 // ---------------------------------------------------------------------------------------

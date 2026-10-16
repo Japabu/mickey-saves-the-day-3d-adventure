@@ -513,6 +513,8 @@ UINT WINAPI GetDriveTypeA(LPCSTR lpRootPathName)
     char d = (char)tolower((unsigned char)lpRootPathName[0]);
     if (d == 'c' || lpRootPathName[0] == '\\')
         return DRIVE_FIXED;
+    if (d == 'd')
+        return DRIVE_CDROM;  // the CD root (vfs.h), for code that looks for a CD drive
     return DRIVE_NO_ROOT_DIR;
 }
 
@@ -543,6 +545,16 @@ HANDLE WINAPI FindFirstFileA(LPCSTR lpFileName, LPWIN32_FIND_DATAA lpFindFileDat
         delete f;
         fail(ERROR_PATH_NOT_FOUND);
         return INVALID_HANDLE_VALUE;
+    } else if (!p.empty()) {
+        // A directory other than the root lists itself and its parent first, as on Windows
+        // (an empty directory still has a first entry).
+        vfs::Entry dot, dotdot;
+        dot.name = ".";
+        dot.dir = true;
+        dotdot.name = "..";
+        dotdot.dir = true;
+        f->entries.insert(f->entries.begin(), dotdot);
+        f->entries.insert(f->entries.begin(), dot);
     }
     if (!find_next(f, lpFindFileData)) {
         delete f;

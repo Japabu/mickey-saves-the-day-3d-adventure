@@ -332,8 +332,9 @@ bool parse(const char *winpath, Path &out)
     Path base;
     size_t i = 0;
     if (s.size() >= 2 && s[1] == ':') {
+        // C: is the game's drive, D: the CD drive: both show the CD (with the overlay).
         char d = (char)tolower((unsigned char)s[0]);
-        if (d != 'c')
+        if (d != 'c' && d != 'd')
             return false;
         i = 2;
         if (i >= s.size() || s[i] != '\\') {
@@ -550,87 +551,7 @@ bool overlay_path(const Path &p, std::string &host, bool copy)
 
 bool make_dir(const Path &p) { return mkdirs(overlay_host(p)); }
 
-// steamboat.ini's [directories] with hd and cd as the installer would have written them
-// (the shipped copy names cd relative to the CD root and leaves hd out).
-static std::string set_directories(const std::string &text)
-{
-    std::string out;
-    bool in_dirs = false;
-    size_t i = 0;
-    while (i < text.size()) {
-        size_t eol = text.find('\n', i);
-        if (eol == std::string::npos)
-            eol = text.size();
-        std::string line = text.substr(i, eol - i);
-        i = eol + 1;
-        std::string t = trim(line);
-        if (!t.empty() && t[0] == '[') {
-            in_dirs = same(t, "[directories]");
-            out += line + "\n";
-            if (in_dirs)
-                out += "hd       = C:\\setup\\hd\r\ncd       = C:\\setup\\cd\r\n";
-            continue;
-        }
-        if (in_dirs) {
-            size_t eq = t.find('=');
-            std::string key = eq == std::string::npos ? "" : trim(t.substr(0, eq));
-            if (same(key, "hd") || same(key, "cd"))
-                continue;
-        }
-        out += line + "\n";
-    }
-    return out;
-}
-
-void install_defaults()
-{
-    // The installer copied the configuration files from resources\universal\ini to the
-    // binaries directory and wrote steamboat.ini's directories for the install location.
-    static const char *files[] = {"engine.ini", "steamboat.ini"};
-    for (const char *name : files) {
-        Path dst = {"setup", "hd", "binaries", name};
-        Entry e;
-        Path probe = dst;
-        if (stat(probe, e) && e.from_overlay)
-            continue;
-        Path src = {"setup", "hd", "resources", "universal", "ini", name};
-        Reader r;
-        if (!open_read(src, r))
-            continue;
-        std::string text;
-        char buf[4096];
-        uint64_t off = 0;
-        for (;;) {
-            ssize_t n = pread(r.fd, buf, sizeof(buf), (off_t)(r.base + off));
-            if (n <= 0)
-                break;
-            if (r.iso && off + (uint64_t)n > r.size)
-                n = (ssize_t)(r.size - off);
-            text.append(buf, (size_t)n);
-            off += (uint64_t)n;
-            if (r.iso && off >= r.size)
-                break;
-        }
-        ::close(r.fd);
-        if (!strcmp(name, "steamboat.ini"))
-            text = set_directories(text);
-        if (!strcmp(name, "engine.ini") && getenv("MICKEY_WINDOWED")) {
-            size_t at = text.find("\nFullscreen");
-            if (at != std::string::npos) {
-                size_t eq = text.find('=', at), eol = text.find('\n', at + 1);
-                text.replace(eq + 1, eol - eq - 1, " 0\r");
-            }
-        }
-        std::string host;
-        if (overlay_path(dst, host, false)) {
-            FILE *f = fopen(host.c_str(), "wb");
-            if (f) {
-                fwrite(text.data(), 1, text.size(), f);
-                fclose(f);
-            }
-        }
-    }
-}
+// install_defaults() is in defaults.cpp.
 
 }  // namespace vfs
 

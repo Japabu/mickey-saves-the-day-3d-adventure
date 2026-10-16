@@ -220,8 +220,11 @@ bool Gfx::TextureAttribute::WantTexturing() const
     return want;
 }
 
+// the run-time type of Gfx::TextureAttribute (values from the original's data section)
+StdBase::TypeInfo const Gfx::TextureAttribute::s_TypeInfo = { "Gfx::TextureAttribute", &Gfx::Attribute::s_TypeInfo };
 int const Gfx::TextureAttribute::Version = 4;
 std::stack<Gfx::TextureAttribute const *, std::vector<Gfx::TextureAttribute const *, std::allocator<Gfx::TextureAttribute const *> > > Gfx::TextureAttribute::s_Stack[8];
+Graph::NodeContext<Gfx::TextureAttribute, bool> *Gfx::TextureAttribute::m_TextureAttributeEnableContext = 0;
 
 // 0x100f8ed0 _$E38
 // 0x100f8ee0 _$E34

@@ -383,6 +383,8 @@ void Gfx::PackedVertexShape::Clear()
     m_TCoords.setLength(0);
 }
 
+// the run-time type of Gfx::PackedVertexShape (values from the original's data section)
+StdBase::TypeInfo const Gfx::PackedVertexShape::s_TypeInfo = { "Gfx::PackedVertexShape", &Gfx::Shape::s_TypeInfo };
 // defined after the code: the original loads them from memory
 short const Gfx::PackedVertexShape::NormalMask = 0x001f;
 short const Gfx::PackedVertexShape::ColorMask = 0x03e0;

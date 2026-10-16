@@ -25,8 +25,13 @@ int WINAPI LoadStringA(HINSTANCE, UINT uID, LPSTR lpBuffer, int cchBufferMax)
     return 0;
 }
 
-HANDLE WINAPI LoadImageA(HINSTANCE, LPCSTR name, UINT type, int, int, UINT)
+// gdi.cpp: a .bmp file as a bitmap or DIB section
+HBITMAP port_load_bitmap_file(const char *path, UINT flags);
+
+HANDLE WINAPI LoadImageA(HINSTANCE, LPCSTR name, UINT type, int, int, UINT flags)
 {
+    if (type == IMAGE_BITMAP && (flags & LR_LOADFROMFILE) && !IS_INTRESOURCE(name))
+        return port_load_bitmap_file(name, flags);
     win32::log("resource", "LoadImage(%s, %u): not available\n", IS_INTRESOURCE(name) ? "#id" : name, type);
     return 0;
 }

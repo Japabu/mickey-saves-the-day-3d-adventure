@@ -25,6 +25,9 @@
 // 0x1000c110 _$E6 (atexit(_$E4))
 MfStringRef MfString::mfsrNullInitializer("");
 
+// the empty-string token of the operators taking MfNullString (exported data, no constructor)
+MfNullString NULL_STRING;
+
 // 0x1000c150 _$E12 (original _$E12:) calls _$E9 and _$E11; 0x1000c180 _$E10 (empty destructor)
 // 0x1000c160 _$E9 (empty constructor)
 // 0x1000c170 _$E11 (atexit(_$E10))

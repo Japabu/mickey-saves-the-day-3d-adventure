@@ -66,7 +66,9 @@ DEFAULT_VISIBILITY = {'zlib', 'mbruntime'}
 # so the port builds its portable C path
 PORT_DROP_OPTIONS = {'/DPNG_USE_PNGVCRD'}
 CXX = ['clang++', '-std=gnu++14', '-fno-sized-deallocation']
-CC = ['clang', '-std=gnu99']
+# -fms-compatibility leaves __STDC__ undefined in C: the SDK's sys/cdefs.h then takes
+# its K&R branch and every __DARWIN_ALIAS(fopen) etc. links against "_x"
+CC = ['clang', '-std=gnu99', '-D__STDC__=1', '-Wno-builtin-macro-redefined']
 
 
 def sources(module):
