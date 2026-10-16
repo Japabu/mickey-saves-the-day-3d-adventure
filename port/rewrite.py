@@ -40,6 +40,9 @@ Rules:
 - Calls of fopen, freopen and rename: the C runtime's file functions on the game's
   virtual file system (port_fopen & co., port/platform/port.h, declared in
   compat/include/port_crt.h).
+- MBComPtr (MBEngine's 41 views without one) gets its copy assignment through
+  operator=(T *): the implicit one copied the pointer without AddRef, so objects held by
+  two MBComPtrs (CMBResourceTree's map) were freed early.
 - `extern "C" static` (flex output): a linkage on a static function, which clang
   rejects; the function is static.
 - `class ostream;` and the other old iostream classes at file scope: in the port they
@@ -93,6 +96,7 @@ RULES = [
     (re.compile(r'\blong(\s+(?:__stdcall|CALLBACK|WINAPI)\s+[\w:]*Proc\w*\s*\()'), r'LRESULT\1'),
     (re.compile(r'\bunsigned\s+long(\s+(?:__cdecl\s+)?_beginthread\s*\()'), r'uintptr_t\1'),
     (re.compile(r'\bextern\s+"C"\s+static\b'), r'static'),
+    (re.compile(r'template\s*<\s*class\s+\w+\s*>\s*class\s+MBComPtr\s*\{.*?\n\};', re.S), lambda m: _mbcomptr_assign(m)),
     (re.compile(r'(?<![\w.>:~])(fopen|freopen|rename)(\s*\()'), r'port_\1\2'),
     (re.compile(r'^([ \t]*)#[ \t]*undef[ \t]+(CreateFont|DrawText|FindResource|GetMessage|GetObject|GetProfileString|'
                 r'IsDialogMessage|LoadBitmap|LoadString|PlaySound|PostThreadMessage|RegisterClass|'
@@ -175,6 +179,15 @@ def load_edits():
 
 EDITS = load_edits()
 
+# Units that only emit inline members of exported classes from a unit view of their
+# own (the original's COMDATs): in the port such a view's layout differs from the real
+# class (layoutcensus.py), and its inline copies could win at link time over the real
+# ones. They compile empty; the inline members are emitted where they are used.
+EMPTY_UNITS = ['MfActorLib/MfAnimEvent.cpp', 'MfActorLib/MfFSMSpaceToBhvr.cpp', 'MfActorLib/MfProtoActor.cpp', 'PiccoloRT/MfScDataHandle.cpp', 'PiccoloRT/MfScVmEnv.cpp', 'RuntimeLib/MfActor_1.cpp', 'RuntimeLib/MfLocoPlanCache.cpp']
+for _u in EMPTY_UNITS:
+    FILE_RULES.setdefault(_u, []).append(
+        (re.compile(r'^#include "(\w+_unit\.h)"', re.M), r'/* port: #include "\1", see rewrite.EMPTY_UNITS */'))
+
 # rules for every file of one directory under src/
 DIR_RULES = {
     # an MBString temporary passed straight to a function: the functions take
@@ -184,6 +197,16 @@ DIR_RULES = {
          r'\1port_lvalue(MBString(\2))'),
     ],
 }
+def _mbcomptr_assign(m):
+    """MBComPtr views without a copy assignment: the implicit one copies the pointer
+    without AddRef (the original's assigned through operator=(T *))."""
+    body = m.group(0)
+    if re.search(r'operator\s*=\s*\(\s*const\s+MBComPtr', body):
+        return body
+    return re.sub(r'(\{\s*\npublic:)', r'\1 MBComPtr &operator=(const MBComPtr &p) { return *this = p.mInterface; }',
+                  body, count=1)
+
+
 # --- the 32-bit Windows integer model -------------------------------------------------
 # The game was written for 32-bit Windows, where long is 32 bits; on macOS it is 64.
 # The source's long and unsigned long become int and unsigned int, and the l suffix
@@ -277,7 +300,7 @@ def drop_duplicate_overloads(before, after):
 # files no rule touches
 KEEP = {'SteamboatApp/ios.h', 'SteamboatApp/ostream.h'}
 # a cheap first test before the regular expressions
-NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern', 'MBGUID', '_beginthread', 'undef', 'fopen', 'rename', 'data4', 'L"')
+NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern', 'MBGUID', 'MBComPtr', '_beginthread', 'undef', 'fopen', 'rename', 'data4', 'L"')
 
 
 def rewrite(text, rel=None):

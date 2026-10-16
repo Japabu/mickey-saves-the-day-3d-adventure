@@ -7,4 +7,9 @@ EDITS = {
         ('    virtual void FilloutPropertyNameList(MfStringList *, void *); // vftable+0x2c\n',
          '    virtual class MfScPropTokenTable *GetPropTokenTable(); // vftable+0x2c\n', 1),
     ],
+    # DatabaseMgr::Database (MBEngine's SimpleNode.cpp and SteamboatApp's copy): the
+    # resource file pointer, then the reference count that AddDBRef counts
+    'SteamboatApp/DatabaseMgr.h': [
+        ('        int field_0;\n        int field_4;\n', '        void *field_0;\n        int field_4;\n', 1),
+    ],
 }
