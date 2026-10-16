@@ -108,6 +108,7 @@ protected:
 };
 
 // Three-component versions without the loop.
+template <>
 inline FixedVec<float, 3> &FixedVec<float, 3>::multScal(float s)
 {
     e[0] *= s;

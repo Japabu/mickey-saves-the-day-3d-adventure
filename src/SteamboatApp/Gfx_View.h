@@ -8,7 +8,6 @@ namespace Gfx { class Camera; }
 namespace Gfx { class Light; }
 namespace Gfx { class Node; }
 namespace Gfx { class RenderTraverser; }
-class Vec3;
 
 namespace Gfx {
 // A window onto a scene: the camera, the scene root, the render traverser
