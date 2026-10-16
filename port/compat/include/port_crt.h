@@ -5,6 +5,7 @@
 #ifndef PORT_CRT_H
 #define PORT_CRT_H
 #include <stddef.h>
+#include <stdint.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -94,8 +95,8 @@ static inline double _copysign(double x, double y) { return copysign(x, y); }
 static inline double _hypot(double x, double y) { return hypot(x, y); }
 
 // process.h
-// the result is a thread number (not a handle): the game only tests it against -1
-unsigned int _beginthread(void (*start)(void *), unsigned stack, void *arg);
+// the result is the thread's Win32 handle (a HANDLE as uintptr_t), -1 on failure
+uintptr_t _beginthread(void (*start)(void *), unsigned stack, void *arg);
 void _endthread(void);
 
 #ifdef __cplusplus

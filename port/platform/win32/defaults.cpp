@@ -87,7 +87,7 @@ static std::string set_directories(const std::string &text)
     return out;
 }
 
-// MICKEY_WINDOWED=1: engine.ini's Fullscreen = 0.
+// MICKEY_WINDOWED (not 0) on first start: engine.ini's Fullscreen = 0.
 static void set_windowed(std::string &text)
 {
     size_t at = text.find("\nFullscreen");
@@ -121,7 +121,8 @@ void install_defaults()
             continue;
         if (same(f.name, "steamboat.ini"))
             text = set_directories(text);
-        if (same(f.name, "engine.ini") && getenv("MICKEY_WINDOWED"))
+        const char *windowed = getenv("MICKEY_WINDOWED");
+        if (same(f.name, "engine.ini") && windowed && *windowed && *windowed != '0')
             set_windowed(text);
         std::string host;
         if (!overlay_path(dst, host, false))

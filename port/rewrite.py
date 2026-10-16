@@ -34,6 +34,8 @@ Rules:
   callers compare with int members: it returns port_u32.
 - A wide literal cast to the game's 16-bit characters, `(unsigned short *)L"..."`: the
   literal is UTF-16, u"...".
+- A redeclaration of `unsigned long _beginthread(...)`: the result is the thread's
+  handle, uintptr_t (compat/include/port_crt.h).
 - `extern "C" static` (flex output): a linkage on a static function, which clang
   rejects; the function is static.
 - `class ostream;` and the other old iostream classes at file scope: in the port they
@@ -85,6 +87,7 @@ RULES = [
     (re.compile(r'(\(\s*(?:HWND__\s*\*|HWND)\s*\w*\s*,\s*(?:unsigned\s+int|UINT)\s*\w*\s*,\s*)unsigned\s+int\b'),
      r'\1WPARAM'),
     (re.compile(r'\blong(\s+(?:__stdcall|CALLBACK|WINAPI)\s+[\w:]*Proc\w*\s*\()'), r'LRESULT\1'),
+    (re.compile(r'\bunsigned\s+long(\s+(?:__cdecl\s+)?_beginthread\s*\()'), r'uintptr_t\1'),
     (re.compile(r'\bextern\s+"C"\s+static\b'), r'static'),
     (re.compile(r'(struct\s+MBGUID\s*\{\s*\n\s*)unsigned\s+long(\s+data1\s*;)'), r'\1port_u32\2'),
     (re.compile(r'\bunsigned\s+long(\s+(?:__cdecl\s+)?MBHashString\s*\()'), r'port_u32\1'),
@@ -266,7 +269,7 @@ def drop_duplicate_overloads(before, after):
 # files no rule touches
 KEEP = {'SteamboatApp/ios.h', 'SteamboatApp/ostream.h'}
 # a cheap first test before the regular expressions
-NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern', 'MBGUID', 'MBHashString', 'data4', 'L"')
+NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern', 'MBGUID', 'MBHashString', '_beginthread', 'data4', 'L"')
 
 
 def rewrite(text, rel=None):

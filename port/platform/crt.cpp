@@ -3,8 +3,8 @@
 #include <port_crt.h>
 #include <eh.h>
 #include <ctype.h>
-#include <limits.h>
-#include <pthread.h>
+#include <windows.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -154,13 +154,15 @@ void _makepath(char *path, const char *drive, const char *dir, const char *fname
     }
 }
 
-// _beginthread: a detached thread; the result is -1 on failure.
+// _beginthread: a Win32 thread (platform/win32/thread.cpp); the result is its handle,
+// which the game waits on (MfThread, CMBCursor). As in the Microsoft runtime the handle
+// is the thread's own; it is not closed here (one per game thread). -1 on failure.
 struct ThreadStart {
     void (*start)(void *);
     void *arg;
 };
 
-static void *RunThread(void *p)
+static DWORD WINAPI RunThread(LPVOID p)
 {
     ThreadStart s = *(ThreadStart *)p;
     free(p);
@@ -168,30 +170,23 @@ static void *RunThread(void *p)
     return 0;
 }
 
-unsigned int _beginthread(void (*start)(void *), unsigned stack, void *arg)
+uintptr_t _beginthread(void (*start)(void *), unsigned stack, void *arg)
 {
     ThreadStart *s = (ThreadStart *)malloc(sizeof *s);
     s->start = start;
     s->arg = arg;
-    pthread_attr_t attr;
-    pthread_attr_init(&attr);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-    if (stack)
-        pthread_attr_setstacksize(&attr, stack < PTHREAD_STACK_MIN ? PTHREAD_STACK_MIN : stack);
-    pthread_t thread;
-    int err = pthread_create(&thread, &attr, RunThread, s);
-    pthread_attr_destroy(&attr);
-    if (err) {
+    HANDLE thread = CreateThread(0, stack, RunThread, s, 0, 0);
+    if (!thread) {
         free(s);
-        return (unsigned int)-1;
+        return (uintptr_t)-1;
     }
-    static unsigned int sThreads;
-    return __atomic_add_fetch(&sThreads, 1, __ATOMIC_RELAXED);
+    return (uintptr_t)thread;
 }
 
+// the thread's handle is signalled, as when its function returns
 void _endthread(void)
 {
-    pthread_exit(0);
+    ExitThread(0);
 }
 
 } // extern "C"
