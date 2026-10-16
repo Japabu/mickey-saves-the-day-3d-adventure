@@ -1,0 +1,9 @@
+# plugins/PscCompiler.dll: statically linked library and linker-generated functions.
+# produced by: python3 tools/recomp/libmatch.py run plugins/PscCompiler.dll
+# linker 5.10, libraries from vc5; mode blind (byte match, no PDB)
+# libraries: tools/msvc/vc5/lib/msvcrt.lib, tools/msvc/vc5/lib/msvcprt.lib, tools/msvc/vc5/lib/msvcirt.lib
+# columns: va size kind source name   (kinds: lib, crt-module, ilt, import;
+#   crt-module lines end with '# reason'; functions not listed are game code)
+10001050    205 lib        msvcrt.lib(crtdll.obj) __CRT_INIT@12
+10001120    173 lib        msvcrt.lib(crtdll.obj) __DllMainCRTStartup@12
+100011d0      6 import     MSVCRT.dll _initterm

@@ -1,0 +1,27 @@
+# MfImageLib.dll: statically linked library and linker-generated functions.
+# produced by: python3 tools/recomp/libmatch.py run MfImageLib.dll
+# linker 5.10, libraries from vc5; mode blind (byte match, no PDB)
+# libraries: tools/msvc/vc5/lib/msvcrt.lib, tools/msvc/vc5/lib/msvcprt.lib, tools/msvc/vc5/lib/msvcirt.lib
+# columns: va size kind source name   (kinds: lib, crt-module, ilt, import;
+#   crt-module lines end with '# reason'; functions not listed are game code)
+10015d20     48 lib        msvcrt.lib(atonexit.obj) __onexit
+10015d50     21 lib        msvcrt.lib(atonexit.obj) _atexit
+10015d70      6 import     MSVCRT.dll ??3@YAXPAX@Z
+10015d76      6 import     MSVCRT.dll ??2@YAPAXI@Z
+10015d7c      6 import     MSVCRT.dll fread
+10015d90      6 import     MSVCRT.dll _ftol
+10015d96      6 import     MSVCRT.dll __CxxFrameHandler
+10015da0     30 lib        msvcrt.lib(ti_inst.obj) ??_Gtype_info@@UAEPAXI@Z
+10015dc0     12 import     MSVCRT.dll fwrite + _except_handler3
+10015dd0    205 lib        msvcrt.lib(crtdll.obj) __CRT_INIT@12
+10015ea0    173 lib        msvcrt.lib(crtdll.obj) __DllMainCRTStartup@12
+10015f50      6 import     MSVCRT.dll fflush
+10015f56      6 import     MSVCRT.dll exit
+10015f5c      6 import     MSVCRT.dll sprintf
+10015f62      6 import     MSVCRT.dll sscanf
+10015f68      6 import     MSVCRT.dll getenv
+10015f6e      6 import     MSVCRT.dll malloc
+10015f74      6 import     MSVCRT.dll free
+10015f7a      6 import     MSVCRT.dll __dllonexit
+10015f80      6 import     MSVCRT.dll ??1type_info@@UAE@XZ
+10015f86      6 import     MSVCRT.dll _initterm

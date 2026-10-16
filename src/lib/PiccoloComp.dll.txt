@@ -1,0 +1,32 @@
+# PiccoloComp.dll: statically linked library and linker-generated functions.
+# produced by: python3 tools/recomp/libmatch.py run PiccoloComp.dll
+# linker 5.10, libraries from vc5; mode blind (byte match, no PDB)
+# libraries: tools/msvc/vc5/lib/msvcrt.lib, tools/msvc/vc5/lib/msvcprt.lib, tools/msvc/vc5/lib/msvcirt.lib
+# columns: va size kind source name   (kinds: lib, crt-module, ilt, import;
+#   crt-module lines end with '# reason'; functions not listed are game code)
+100079c0      6 import     mfutil.dll ??1MfString@@QAE@XZ
+100177e0     48 import     PiccoloRT.dll ?Clear@MfScHandleList@@UAEXXZ + ?Delete@MfScHandleList@@UAEPAXAAPAVMfDblListItem@@@Z + ?DeleteLast@MfScHandleList@@UAEPAXXZ + ?DeleteFirst@MfScHandleList@@UAEPAXXZ + ?Insert@MfScHandleList@@UAEXPAXW4EnumListPosition@MfDblList@@PAVMfDblListItem@@@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAX@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXAAVMfCallBack@@@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXAAVMfListItemInterface@@@Z
+10017810     48 import     mfutil.dll ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXPAV2@H@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXPAV2@HAAVMfCallBack@@@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXPAV2@HAAVMfListItemInterface@@@Z + ?Clear@MfDblList@@UAEXXZ + ?Clear@MfDblList@@UAEXAAVMfCallBack@@@Z + ?Clear@MfDblList@@UAEXAAVMfListItemInterface@@@Z + ?Delete@MfDblList@@UAEPAXAAPAVMfDblListItem@@@Z + ?DeleteLast@MfDblList@@UAEPAXXZ
+10017840     48 import     mfutil.dll ?DeleteFirst@MfDblList@@UAEPAXXZ + ?Iterate@MfDblList@@UBEXAAVMfCallBack@@@Z + ?Iterate@MfDblList@@UBEXAAVMfListItemInterface@@@Z + ?GetLast@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetPrev@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetCurrent@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetNext@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetFirst@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z
+10017870     48 import     mfutil.dll ?Copy@MfDblList@@UAEXABV1@@Z + ?Copy@MfDblList@@UAEXABV1@AAVMfCallBack@@@Z + ?Copy@MfDblList@@UAEXABV1@AAVMfListItemInterface@@@Z + ?Add@MfDblList@@UAEXQAX@Z + ?Merge@MfDblList@@UAEXAAV1@W4EnumListPosition@1@PAVMfDblListItem@@@Z + ?Insert@MfDblList@@UAEXPAXW4EnumListPosition@1@PAVMfDblListItem@@@Z + ?Append@MfDblList@@UAEXQAX@Z + ?Prepend@MfDblList@@UAEXQAX@Z
+100178a0     48 import     mfutil.dll ?CallBack@MfCallBack@@UAEHPAX0@Z + ?CallBack@MfCallBack@@UAEHPAX00@Z + ?Clear@MfStringList@@UAEXXZ + ?Clear@MfStrStack@@UAEXXZ + ?GetData@MfDictionary@@MAEPAXPAX@Z + ?GetKey@MfDictionary@@MAEPAXPAX@Z + ?DeleteDataItem@MfDictionary@@MAEXPAXPAVMfCallBack@@@Z + ?Search@MfDictionary@@MAE?AW4MfHTErrorCode@@PAXPAPAXPAH2PAPAVMfChainNode@MfHashTable@@@Z
+100178d0     42 import     mfutil.dll ?CallBack@MfStringList@@EAEHABVMfString@@AAV2@@Z + ?Search@MfStringList@@UBEPAVMfDblListItem@@ABVMfString@@@Z + ?Delete@MfStringList@@UAEXABVMfString@@@Z + ?Add@MfStringList@@UAEPAVMfString@@ABV2@@Z + ?Delete@MfStringList@@UAEPAXAAPAVMfDblListItem@@@Z + ?DeleteLast@MfStringList@@UAEPAXXZ + ?DeleteFirst@MfStringList@@UAEPAXXZ
+10017900     30 lib        msvcrt.lib(ti_inst.obj) ??_Gtype_info@@UAEPAXI@Z
+10017920      6 import     MSVCRT.dll ??3@YAXPAX@Z
+10017926      6 import     MSVCRT.dll ??2@YAPAXI@Z
+1001792c      6 import     MSVCRT.dll __CxxFrameHandler
+10017940      6 import     MSVCRT.dll _purecall
+10017950    121 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z
+100179c9     23 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z:$L12052
+100179e0     19 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z:$L12051
+10017a00    106 lib        msvcrt.lib(ehvecdtr.obj) ?__ArrayUnwind@@YGXPAXIHP6EX0@Z@Z
+10017a70     22 lib        msvcrt.lib(ehvecdtr.obj) ?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z
+10017a90     48 lib        msvcrt.lib(atonexit.obj) __onexit
+10017ac0     21 lib        msvcrt.lib(atonexit.obj) _atexit
+10017ae0      6 import     MSVCRT.dll __RTDynamicCast
+10017af0    205 lib        msvcrt.lib(crtdll.obj) __CRT_INIT@12
+10017bc0    173 lib        msvcrt.lib(crtdll.obj) __DllMainCRTStartup@12
+10017c70     12 import     MSVCRT.dll ??1type_info@@UAE@XZ + _except_handler3
+10017c7c      6 import     MSVCRT.dll ?terminate@@YAXXZ
+10017c82      6 import     MSVCRT.dll __dllonexit
+10017c88      6 import     MSVCRT.dll _initterm

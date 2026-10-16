@@ -1,0 +1,99 @@
+#pragma once
+
+// The Piccolo bytecode instructions (one opcode byte, then the operands:
+// n8 = signed byte, n16 = little-endian signed word, n32 = dword). The names
+// are those of the compiler (PiccoloComp's MfScOpcodes.h); the compiler never
+// emits RETZERO, SETPROP, SETPROP1, NOP and EXIT, the debugger plants
+// BREAKPOINT. Sizes: MfScBytecodes::BytecodeSize.
+enum {
+    BC_PUSH_FP = 0x01,              // n8: push [FP + n8] (argument or local)
+    BC_PUSH_CPP = 0x02,             // n16: push constant n16
+    BC_POP_FP = 0x03,               // n8: pop into [FP + n8]
+    BC_PUSHIM8 = 0x04,              // n8: push the integer n8
+    BC_PUSHIM16 = 0x05,             // n16
+    BC_PUSHIM32 = 0x06,             // n32
+    BC_PUSH_REG0 = 0x07,
+    BC_PUSH_REG1 = 0x08,
+    BC_PUSH_REG2 = 0x09,
+    BC_PUSH_REG3 = 0x0a,
+    BC_POP_REG0 = 0x0b,
+    BC_POP_REG1 = 0x0c,
+    BC_POP_REG2 = 0x0d,
+    BC_POP_REG3 = 0x0e,
+    BC_PUSH_THIS = 0x0f,
+    BC_CLEAR_REG0 = 0x10,
+    BC_CLEAR_REG1 = 0x11,
+    BC_CLEAR_REG2 = 0x12,
+    BC_CLEAR_REG3 = 0x13,
+    BC_SWAP = 0x14,
+    BC_DUP = 0x15,
+    BC_ADD = 0x16,                  // numbers, or a string and a string or number
+    BC_SUB = 0x17,
+    BC_MULT = 0x18,
+    BC_DIV = 0x19,
+    BC_MOD = 0x1a,                  // integers only
+    BC_NEG = 0x1b,
+    BC_INCR = 0x1c,                 // n8: add n8 to an integer
+    BC_AND = 0x1d,                  // the bit operations take integers only
+    BC_OR = 0x1e,
+    BC_XOR = 0x1f,
+    BC_NOT = 0x20,
+    BC_LSHIFT = 0x21,
+    BC_RSHIFT = 0x22,
+    BC_CMPLT = 0x23,
+    BC_CMPLTE = 0x24,
+    BC_CMPGT = 0x25,
+    BC_CMPGTE = 0x26,
+    BC_CMPEQ = 0x27,
+    BC_CMPNEQ = 0x28,
+    BC_CMPAND = 0x29,
+    BC_CMPOR = 0x2a,
+    BC_CMPNOT = 0x2b,
+    BC_ADDSP8 = 0x2c,               // n8: pop and release n8 values
+    BC_ADDSP16 = 0x2d,              // n16
+    BC_SUBSP8 = 0x2e,               // n8: push n8 nils (room for locals)
+    BC_SUBSP16 = 0x2f,              // n16
+    BC_INVOKEFUNC = 0x30,           // [args, count, function]
+    BC_INVOKEMETH = 0x31,           // [args, count, object, function]
+    BC_RETZERO = 0x32,              // return the integer 0
+    BC_RET = 0x33,                  // return the value on the stack
+    BC_GETPROP = 0x34,              // n16: [object] -> [value]; the name is constant n16
+    BC_GETPROP1 = 0x35,             // n16: [object] -> [object, value]
+    BC_SETPROP = 0x36,              // n16: [value, object] -> []
+    BC_SETPROP1 = 0x37,             // n16: [value, object] -> [object]
+    BC_GETARRAYITEM = 0x38,         // [array, index] -> [value]
+    BC_SETARRAYITEM = 0x39,         // [value, array, index] -> []
+    BC_GETVAR = 0x3a,               // n16: push the variable named by constant n16
+    BC_SETVAR = 0x3b,               // n16: pop into a variable
+    BC_NEW = 0x3c,                  // push a new object
+    BC_NEWINTEGER = 0x3d,           // convert to a boxed integer
+    BC_NEWFLOAT = 0x3e,             // convert to a boxed float
+    BC_NEWSTRING = 0x3f,            // convert to a string
+    BC_NEWARRAY = 0x40,             // n16: array of the size in constant n16
+    BC_NEWTHREAD = 0x41,            // [args, function] -> [thread]
+    BC_JMP8 = 0x42,                 // the offsets count from the opcode
+    BC_JMP16 = 0x43,
+    BC_JMP32 = 0x44,
+    BC_JMPZERO8 = 0x45,
+    BC_JMPZERO16 = 0x46,
+    BC_JMPZERO32 = 0x47,
+    BC_JMPNOTZERO8 = 0x48,
+    BC_JMPNOTZERO16 = 0x49,
+    BC_JMPNOTZERO32 = 0x4a,
+    BC_NOP = 0x4b,
+    BC_EXIT = 0x4c,                 // leave MfScVirtualMachine::ExecuteCode
+    BC_GETPROPTEST = 0x4d,          // like GETPROP, nil when there is no such property
+    BC_GETPROPTEST1 = 0x4e,
+    BC_NEWARRAY_DYN = 0x4f,         // [size] -> [array]
+    BC_SWITCHTABLE = 0x50,          // n16 SWITCHENTRYs, then n16 + 1 jumps
+    BC_SWITCHENTRY = 0x51,          // n16: the constant to compare with
+    BC_GETPROPSTACK = 0x52,         // [object, name] -> [value]
+    BC_GETPROPSTACK1 = 0x53,        // [object, name] -> [object, value]
+    BC_GETPROPSTACKTEST = 0x54,
+    BC_GETPROPSTACKTEST1 = 0x55,
+    BC_SETPROPSTACK = 0x56,         // [value, object, name] -> []
+    BC_SETPROPSTACK1 = 0x57,        // [value, object, name] -> [object]
+    BC_SETGLOBALVAR = 0x58,         // n16: pop into a global variable
+    BC_CREATEGLOBALVAR = 0x59,      // n16: create a global variable (nil)
+    BC_BREAKPOINT = 0xfa            // planted by the debugger
+};

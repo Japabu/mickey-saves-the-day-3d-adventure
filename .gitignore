@@ -1,0 +1,17 @@
+# Generated output
+/out/
+.venv/
+__pycache__/
+
+# Proprietary inputs: each contributor imports their own copies (tools/import.py)
+/orig/
+/tools/msvc/vc5/
+/tools/msvc/vc6/
+*.iso
+*.zip
+/data
+
+# Agent worktrees (local only)
+/.claude/
+
+.DS_Store

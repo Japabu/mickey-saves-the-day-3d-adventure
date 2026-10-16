@@ -1,0 +1,19 @@
+# mflinalg.dll: statically linked library and linker-generated functions.
+# produced by: python3 tools/recomp/libmatch.py run mflinalg.dll
+# linker 5.10, libraries from vc5; mode blind (byte match, no PDB)
+# libraries: tools/msvc/vc5/lib/msvcrt.lib, tools/msvc/vc5/lib/msvcprt.lib, tools/msvc/vc5/lib/msvcirt.lib
+# columns: va size kind source name   (kinds: lib, crt-module, ilt, import;
+#   crt-module lines end with '# reason'; functions not listed are game code)
+100072e0     48 lib        msvcrt.lib(atonexit.obj) __onexit
+10007310     21 lib        msvcrt.lib(atonexit.obj) _atexit
+10007330      6 import     MSVCRT.dll ??2@YAPAXI@Z
+10007336      6 import     MSVCRT.dll _CIacos
+1000733c      6 import     MSVCRT.dll _ftol
+10007342      6 import     MSVCRT.dll _CIpow
+10007348      6 import     MSVCRT.dll _CIasin
+1000734e      6 import     MSVCRT.dll __CxxFrameHandler
+10007360    205 lib        msvcrt.lib(crtdll.obj) __CRT_INIT@12
+10007430    173 lib        msvcrt.lib(crtdll.obj) __DllMainCRTStartup@12
+100074e0      6 import     MSVCRT.dll __dllonexit
+100074e6      6 import     MSVCRT.dll _initterm
+100074f0     35 lib        msvcrt.lib(dllmain.obj) _DllMain@12

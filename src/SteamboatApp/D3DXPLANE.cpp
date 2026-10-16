@@ -1,0 +1,4 @@
+#include "D3DXPLANE.h"
+
+// 0x100c63ff ??0D3DXPLANE@@QAE@XZ
+D3DXPLANE::D3DXPLANE() {}

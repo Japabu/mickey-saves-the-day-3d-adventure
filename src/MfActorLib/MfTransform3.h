@@ -1,0 +1,41 @@
+#pragma once
+// MfTransform3 (translation + rotation), imported from mflinalg.dll.
+// Declaration from the SteamboatApp PDB; inline members as mflinalg emits them.
+#include "MfVector3.h"
+#include "MfRotation3.h"
+class MfXformMatrix3;
+
+class __declspec(dllimport) MfTransform3 {
+public:
+    MfTransform3(const MfRotation3 &r, const MfVector3 &t) : _translation(t), _rotation(r) {}
+    MfTransform3(const MfXformMatrix3 &);
+    MfTransform3(const MfTransform3 &t) : _translation(t._translation), _rotation(t._rotation) {}
+    MfTransform3() {}
+    ~MfTransform3() {}
+    MfTransform3 &operator=(const MfTransform3 &t)
+    {
+        _rotation = t._rotation;
+        _translation = t._translation;
+        return *this;
+    }
+    void Multiply(MfVector3 &, const MfVector3 &);
+    void Multiply(const MfTransform3 &, const MfTransform3 &);
+    MfTransform3 operator~() const;
+    MfVector3 operator*(const MfVector3 &) const;
+    MfTransform3 operator*(const MfTransform3 &) const;
+    MfVector3 &translation() { return _translation; }
+    const MfVector3 &translation() const { return _translation; }
+    MfRotation3 &rotation() { return _rotation; }
+    const MfRotation3 &rotation() const { return _rotation; }
+    void setValue(const MfRotation3 &r, const MfVector3 &t) { _rotation = r; _translation = t; }
+    void interpolate(const MfTransform3 &, const MfTransform3 &, const MfTransform3 &, const MfTransform3 &, float);
+    void interpolate(const MfTransform3 &, const MfTransform3 &, float);
+    static MfTransform3 identity();
+    float &x() { return _translation.x(); }
+    float &y() { return _translation.y(); }
+    float &z() { return _translation.z(); }
+    void PremultiplyInverse(const MfTransform3 &);
+private:
+    MfVector3 _translation;
+    MfRotation3 _rotation;
+};

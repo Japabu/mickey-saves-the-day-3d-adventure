@@ -1,0 +1,131 @@
+// Enumerations the program names. Values from the SteamboatApp PDB where it
+// describes them; the others are placeholders until a use shows their values.
+#ifndef RUNTIMELIB_ENUMS_H
+#define RUNTIMELIB_ENUMS_H
+
+enum MF_THREAD_NAME { MF_THREAD_NAME_unknown };
+enum MfActivityStatus { MfActivityStatus_unknown };
+enum MfTriangleSetType { MfTriangleSetType_unknown };
+
+enum MfStreamError {
+    MF_STREAM_OK = 0,
+    MF_STREAM_CREATE_FAILED = 1,
+    MF_STREAM_CORRUPT = 2,
+    MF_STREAM_READ_FAILED = 3,
+    MF_STREAM_WRITE_FAILED = 4,
+    MF_STREAM_SEEK_FAILED = 5
+};
+
+enum MfActorNodeType {
+    MF_NODE_GEOMETRY = 0,
+    MF_NODE_HANDLE = 1,
+    MF_NODE_CAMERA = 2,
+    MF_NODE_FLOOR = 3,
+    MF_NODE_LIGHT = 4,
+    MF_NODE_SPLINE = 5
+};
+
+enum MfHandleNodeStyle {
+    MF_HANDLE_NODE_CYLINDER = 0,
+    MF_HANDLE_NODE_ORIENTED_CYLINDER = 1,
+    MF_HANDLE_NODE_DISC = 2,
+    MF_HANDLE_NODE_ORIENTED_DISC = 3,
+    MF_HANDLE_NODE_POINT = 4,
+    MF_HANDLE_NODE_ERROR = 5
+};
+
+enum MfColInterfaceType {
+    MF_CIT_FAST_RS_COLLISION = 0,
+    MF_CIT_NUM_TYPES = 1
+};
+
+enum MfFileMode {
+    MF_FILE_READ = 0,
+    MF_FILE_WRITE = 1
+};
+
+enum MfHTErrorCode {
+    MFHT_EC_NO_ERROR = 0,
+    MFHT_EC_ALREADY_IN_TABLE = 1,
+    MFHT_EC_NOT_IN_TABLE = 2
+};
+
+enum MfSkillFormat {
+    MF_SKILL_FILE_KEYFRAMES = 'KlkS',
+    MF_SKILL_FILE_SAMPLES = 'SlkS',
+    MF_SKILL_NO_SAVE = 'NlkS'
+};
+
+enum MfRenderStyle {
+    MF_RENDER_SOLID = 0,
+    MF_RENDER_WIREFRAME = 1,
+    MF_RENDER_INVISIBLE = 2
+};
+
+enum MfHookPosition {
+    MF_HOOK_FIRST = 0,
+    MF_HOOK_LAST = 1
+};
+
+// the well-known hook IDs (MfAiHookManager); other hooks use four-character
+// codes ('WCAc', 'WDSR' ...)
+enum {
+    MF_HOOK_NODE_CREATE = 0,
+    MF_HOOK_NODE_DESTROY = 1,
+    MF_HOOK_NODE_SET_PROTOTYPE = 2,
+    MF_HOOK_NODE_CHANGE_COL_GEOM = 3,
+    MF_HOOK_NODE_CHANGE_TRANSFORM = 4,
+    MF_HOOK_NODE_CHANGE_MATERIAL = 5,
+    MF_HOOK_NODE_CHANGE_RENDER_SETTINGS = 6,
+    MF_HOOK_NODE_CHANGE_LIGHT_SETTINGS = 7,
+    MF_HOOK_NODE_CHANGE_CAMERA_SETTINGS = 8,
+    MF_HOOK_NODE_CHANGE_PARENT = 9,
+    MF_HOOK_NODE_CHANGE_OWNER = 10,
+    MF_HOOK_NODE_ADD_TO_SPACE = 11,
+    MF_HOOK_NODE_REMOVE_FROM_SPACE = 12,
+    MF_HOOK_ACTOR_CHANGE_SPACE = 13,
+    MF_HOOK_UPDATE_WORLD = 14,
+    MF_HOOK_PROXIMITY_NEAR_CHECK = 15,
+    MF_HOOK_PROXIMITY_BLOCK_CHECK = 16,
+    MF_HOOK_CAMERA_HAS_CHANGED = 17,
+    MF_HOOK_USER_EVENT = 18,
+    MF_HOOK_LBUTTON_UP = 19,
+    MF_HOOK_LBUTTON_DOWN = 20,
+    MF_HOOK_RBUTTON_UP = 21,
+    MF_HOOK_RBUTTON_DOWN = 22,
+    MF_HOOK_MOUSE_PRESS_MOVE = 23,
+    MF_HOOK_MOUSE_MOVE = 24,
+    MF_HOOK_MOUSE_WHEEL = 25,
+    MF_HOOK_COL_QUERY = 26,
+    MF_HOOK_MISC_DATA = 27,
+    MF_HOOK_ACTIVITY_DATA = 28,
+    MF_HOOK_FILTER_EDIT = 29,
+    MF_HOOK_GUARD_COP = 30,
+    MF_HOOK_FILE_HANDLE = 31,
+    MF_HOOK_FILE_DESTINATION = 32,
+    MF_HOOK_RAY_CAST = 33,
+    MF_HOOK_SPHERE_CHECK = 34,
+    MF_HOOK_CREATE_SPACE_COLNODE = 35,
+    MF_HOOK_OVERRIDE_UPDATE_SPHERE_TREE = 36,
+    MF_HOOK_OVERRIDE_DELETE_SPHERE_TREE = 37,
+    MF_NUM_FAST_HOOKS = 38
+};
+
+enum MfRequestStatus {
+    MF_SUCCESS = 0,
+    MF_CANCEL = 1,
+    MF_DUPLICATE_REQUEST = 2,
+    MF_SERVER_FILE_NOT_FOUND = 3,
+    MF_SERVER_CORRUPT_FILE = 4,
+    MF_INVALID_PARAMETERS = 5,
+    MF_FILE_NOT_FOUND = 6,
+    MF_CORRUPT_FILE = 7,
+    MF_PREVIOUSLY_LOADED = 8,
+    MF_FAILED_OPEN_FILE = 9,
+    MF_FAILED_WRITE_FILE = 10,
+    MF_FAILED_CREATE_FILE = 11,
+    MF_FAILED_CREATE_DIRECTORY = 12,
+    MF_ERROR = 13
+};
+
+#endif

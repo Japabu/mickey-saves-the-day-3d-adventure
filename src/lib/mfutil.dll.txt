@@ -1,0 +1,33 @@
+# mfutil.dll: statically linked library and linker-generated functions.
+# produced by: python3 tools/recomp/libmatch.py run mfutil.dll
+# linker 5.10, libraries from vc5; mode blind (byte match, no PDB)
+# libraries: tools/msvc/vc5/lib/msvcrt.lib, tools/msvc/vc5/lib/msvcprt.lib, tools/msvc/vc5/lib/msvcirt.lib
+# columns: va size kind source name   (kinds: lib, crt-module, ilt, import;
+#   crt-module lines end with '# reason'; functions not listed are game code)
+10014930     30 lib        msvcrt.lib(ti_inst.obj) ??_Gtype_info@@UAEPAXI@Z
+10014950      6 import     MSVCRT.dll ??3@YAXPAX@Z
+10014960    115 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z
+100149d3      6 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z:$L12049
+100149d9     23 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z:$L12052
+100149f0     19 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z:$L12051
+10014a10     64 lib        msvcrt.lib(ehvecdtr.obj) ?__ArrayUnwind@@YGXPAXIHP6EX0@Z@Z
+10014a50     13 lib        msvcrt.lib(ehvecdtr.obj) ?__ArrayUnwind@@YGXPAXIHP6EX0@Z@Z:$L12061
+10014a5d     29 lib        msvcrt.lib(ehvecdtr.obj) ?__ArrayUnwind@@YGXPAXIHP6EX0@Z@Z:$L12062
+10014a80     22 lib        msvcrt.lib(ehvecdtr.obj) ?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z
+10014aa0      6 import     MSVCRT.dll ??2@YAPAXI@Z
+10014aa6      6 import     MSVCRT.dll __CxxFrameHandler
+10014ab0      6 import     MSVCRT.dll _purecall
+10014ab6      6 import     MSVCRT.dll _ftol
+10014ac0     48 lib        msvcrt.lib(atonexit.obj) __onexit
+10014af0     21 lib        msvcrt.lib(atonexit.obj) _atexit
+10014b10      6 import     MSVCRT.dll __RTDynamicCast
+10014b20    111 lib        msvcrt.lib(ehvecctr.obj) ??_L@YGXPAXIHP6EX0@Z1@Z
+10014b8f      9 lib        msvcrt.lib(ehvecctr.obj) ??_L@YGXPAXIHP6EX0@Z1@Z:$L210
+10014b98     20 lib        msvcrt.lib(ehvecctr.obj) ??_L@YGXPAXIHP6EX0@Z1@Z:$L213
+10014bac     19 lib        msvcrt.lib(ehvecctr.obj) ??_L@YGXPAXIHP6EX0@Z1@Z:$L212
+10014bc0    205 lib        msvcrt.lib(crtdll.obj) __CRT_INIT@12
+10014c90    173 lib        msvcrt.lib(crtdll.obj) __DllMainCRTStartup@12
+10014d40     12 import     MSVCRT.dll ??1type_info@@UAE@XZ + _except_handler3
+10014d4c      6 import     MSVCRT.dll ?terminate@@YAXXZ
+10014d52      6 import     MSVCRT.dll __dllonexit
+10014d58      6 import     MSVCRT.dll _initterm

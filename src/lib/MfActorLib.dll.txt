@@ -1,0 +1,39 @@
+# MfActorLib.dll: statically linked library and linker-generated functions.
+# produced by: python3 tools/recomp/libmatch.py run MfActorLib.dll
+# linker 5.10, libraries from vc5; mode blind (byte match, no PDB)
+# libraries: tools/msvc/vc5/lib/msvcrt.lib, tools/msvc/vc5/lib/msvcprt.lib, tools/msvc/vc5/lib/msvcirt.lib
+# columns: va size kind source name   (kinds: lib, crt-module, ilt, import;
+#   crt-module lines end with '# reason'; functions not listed are game code)
+10019310      6 import     mfutil.dll ??1MfDblList@@UAE@XZ
+10025390     48 import     mfutil.dll ?Find@MfDblList@@UBEPAVMfDblListItem@@PAX@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXAAVMfCallBack@@@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXAAVMfListItemInterface@@@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXPAV2@H@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXPAV2@HAAVMfCallBack@@@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXPAV2@HAAVMfListItemInterface@@@Z + ?Clear@MfDblList@@UAEXAAVMfCallBack@@@Z + ?Clear@MfDblList@@UAEXAAVMfListItemInterface@@@Z
+100253c0     48 import     mfutil.dll ?Delete@MfDblList@@UAEPAXAAPAVMfDblListItem@@@Z + ?DeleteLast@MfDblList@@UAEPAXXZ + ?DeleteFirst@MfDblList@@UAEPAXXZ + ?Iterate@MfDblList@@UBEXAAVMfCallBack@@@Z + ?Iterate@MfDblList@@UBEXAAVMfListItemInterface@@@Z + ?GetLast@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetPrev@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetCurrent@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z
+100253f0     48 import     mfutil.dll ?GetNext@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetFirst@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?Copy@MfDblList@@UAEXABV1@@Z + ?Copy@MfDblList@@UAEXABV1@AAVMfCallBack@@@Z + ?Copy@MfDblList@@UAEXABV1@AAVMfListItemInterface@@@Z + ?Add@MfDblList@@UAEXQAX@Z + ?Merge@MfDblList@@UAEXAAV1@W4EnumListPosition@1@PAVMfDblListItem@@@Z + ?Insert@MfDblList@@UAEXPAXW4EnumListPosition@1@PAVMfDblListItem@@@Z
+10025420     48 import     mfutil.dll ?Append@MfDblList@@UAEXQAX@Z + ?Prepend@MfDblList@@UAEXQAX@Z + ?CallBack@MfCallBack@@UAEHPAX@Z + ?CallBack@MfCallBack@@UAEHPAX0@Z + ?CallBack@MfCallBack@@UAEHPAX00@Z + ?GetData@MfIndex@@MAEPAXPAX@Z + ?GetKey@MfIndex@@MAEPAXPAX@Z + ?DeleteDataItem@MfIndex@@MAEXPAXPAVMfCallBack@@@Z
+10025450      6 import     mfutil.dll ?Search@MfIndex@@MAE?AW4MfHTErrorCode@@PAXPAPAXPAH2PAPAVMfChainNode@MfHashTable@@@Z
+10025456      6 import     MSVCRT.dll __CxxFrameHandler
+10025460     30 lib        msvcrt.lib(ti_inst.obj) ??_Gtype_info@@UAEPAXI@Z
+10025480      6 import     MSVCRT.dll ??3@YAXPAX@Z
+10025490    115 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z
+10025503      6 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z:$L12049
+10025509     23 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z:$L12052
+10025520     19 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z:$L12051
+10025540     64 lib        msvcrt.lib(ehvecdtr.obj) ?__ArrayUnwind@@YGXPAXIHP6EX0@Z@Z
+10025580     13 lib        msvcrt.lib(ehvecdtr.obj) ?__ArrayUnwind@@YGXPAXIHP6EX0@Z@Z:$L12061
+1002558d     29 lib        msvcrt.lib(ehvecdtr.obj) ?__ArrayUnwind@@YGXPAXIHP6EX0@Z@Z:$L12062
+100255b0     22 lib        msvcrt.lib(ehvecdtr.obj) ?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z
+100255d0      6 import     MSVCRT.dll _purecall
+100255d6      6 import     MSVCRT.dll ??2@YAPAXI@Z
+100255e0    111 lib        msvcrt.lib(ehvecctr.obj) ??_L@YGXPAXIHP6EX0@Z1@Z
+1002564f      9 lib        msvcrt.lib(ehvecctr.obj) ??_L@YGXPAXIHP6EX0@Z1@Z:$L210
+10025658     20 lib        msvcrt.lib(ehvecctr.obj) ??_L@YGXPAXIHP6EX0@Z1@Z:$L213
+1002566c     19 lib        msvcrt.lib(ehvecctr.obj) ??_L@YGXPAXIHP6EX0@Z1@Z:$L212
+10025680     48 lib        msvcrt.lib(atonexit.obj) __onexit
+100256b0     21 lib        msvcrt.lib(atonexit.obj) _atexit
+100256d0      6 import     MSVCRT.dll _ftol
+100256e0    205 lib        msvcrt.lib(crtdll.obj) __CRT_INIT@12
+100257b0    173 lib        msvcrt.lib(crtdll.obj) __DllMainCRTStartup@12
+10025860     12 import     MSVCRT.dll ??1type_info@@UAE@XZ + _except_handler3
+1002586c      6 import     MSVCRT.dll ?terminate@@YAXXZ
+10025872      6 import     MSVCRT.dll __dllonexit
+10025878      6 import     MSVCRT.dll _initterm
+10025880     35 lib        msvcrt.lib(dllmain.obj) _DllMain@12

@@ -1,0 +1,158 @@
+IJG libjpeg 6b in MfImageLib.dll -- notes for the libjpeg units
+=================================================================
+
+Summary
+-------
+MfImageLib.dll statically links an UNMODIFIED IJG libjpeg 6b ("6b 27-Mar-1998",
+JPEG_LIB_VERSION 62, JMSG_LASTMSGCODE 123), compiled with VC5 /O2 (/Gy) and the
+stock jconfig.vc.  The headers in this directory are the pristine 6b files
+(jconfig.h = jconfig.vc, byte for byte).  Do not edit them.
+
+Pristine 6b sources: `git clone --depth 1 --branch jpeg-6b
+https://github.com/libjpeg-turbo/ijg` (the IJG release history; www.ijg.org is
+blocked by the proxy, anonymous git reads of public GitHub repos work).
+
+Measured: compiling every stock 6b .c file and matching every libjpeg function of
+the binary (the names in the unit list), 284 of 297 functions MATCH with the
+unmodified source.  So the unit work is mostly: copy the stock .c file, rewrite
+the includes, add the `/* 0x<va> <name> */` lines, run match.sh per function.
+
+Compiler options
+----------------
+  /O2 /Gy             for every libjpeg file
+  /O2 /Gy /DUSE_WINDOWS_MESSAGEBOX   for jerror.c only
+
+- /O2 alone gives the same bytes; /Gy is used because the linker folded identical
+  functions across objects (ICF needs COMDAT functions, i.e. /Gy objects).
+- /Ox, /G5, /Op: no improvement on the remaining diffs (see below).
+- USE_WINDOWS_MESSAGEBOX: jerror.c tests it (`#ifdef USE_WINDOWS_MESSAGEBOX`
+  -> `#include <windows.h>`, output_message calls MessageBoxA(GetActiveWindow(),
+  buffer, "JPEG Library Error", MB_OK|MB_ICONERROR)).  Stock jconfig.vc does NOT
+  define it and IJG documents it as a compiler switch, so it is a compile define
+  on jerror.c's manifest line, not a change to jconfig.h.  Verified:
+  output_message (0x100044b0) MATCHES with it, differs without it.
+
+How to include the headers
+--------------------------
+The .c files live in src/MfImageLib/<file>.c, the headers here in
+src/MfImageLib/jpeg/.  Rewrite each stock `#include "jXXX.h"` to
+`#include "jpeg/jXXX.h"` (headers including each other, e.g. jinclude.h ->
+jconfig.h, jpeglib.h -> jmorecfg.h/jpegint.h/jerror.h, work because cl searches
+the including header's directory first).  One-liner used:
+  sed -e 's/#include "j\([a-z]*\)\.h"/#include "jpeg\/j\1.h"/' jXXX.c
+Keep everything else as in 6b, in particular `#define JPEG_INTERNALS` before the
+includes (all library files have it), and the per-file extras:
+  jmemmgr.c, jmemnobs.c    + jpeg/jmemsys.h  (jmemmgr.c also #define AM_MEMORY_MANAGER)
+  jchuff.c, jcphuff.c      + jpeg/jchuff.h
+  jdhuff.c, jdphuff.c      + jpeg/jdhuff.h
+  jcdctmgr.c, jddctmgr.c, jfdct*.c, jidct*.c   + jpeg/jdct.h
+  jerror.c                 + jpeg/jversion.h, jpeg/jerror.h (with JMESSAGE table)
+  jdmerge.c, jdcolor.c, jccolor.c, jquant*.c: stock (defines in the .c file)
+Each function needs `--sym _<name>` on match.sh / manifest lines (C names, static
+functions included: `--sym _examine_app0`).
+
+Verified struct layout (VC5, default packing; boolean = unsigned char)
+----------------------------------------------------------------------
+Printed with offsetof from a VC5-built test program and confirmed by the 284
+matching functions (they use nearly every field).
+  sizeof: jpeg_compress_struct 0x168, jpeg_decompress_struct 0x1b0,
+          jpeg_error_mgr 0x84, jpeg_memory_mgr 0x34, jpeg_component_info 0x54,
+          jpeg_source_mgr 0x1c, jpeg_destination_mgr 0x14
+  (jpeg_CreateCompress/Decompress compare structsize with 0x168/0x1b0 and
+   version with 0x3e = 62)
+  common: err 0x00, mem 0x04, progress 0x08, is_decompressor 0x10 (byte),
+          global_state 0x14
+  compress: dest 0x18, image_width 0x1c, in_color_space 0x28, input_gamma 0x30,
+          data_precision 0x38, num_components 0x3c, comp_info 0x44,
+          quant_tbl_ptrs 0x48, dc_huff_tbl_ptrs 0x58, num_scans 0xa8,
+          scan_info 0xac, raw_data_in 0xb0, optimize_coding 0xb2,
+          dct_method 0xb8, restart_interval 0xbc, write_JFIF_header 0xc4,
+          density_unit 0xc7, X_density 0xc8, write_Adobe_marker 0xcc,
+          next_scanline 0xd0, progressive_mode 0xd4, max_h_samp_factor 0xd8,
+          total_iMCU_rows 0xe0, comps_in_scan 0xe4, MCUs_per_row 0xf8, Ss 0x12c,
+          master 0x13c main 0x140 prep 0x144 coef 0x148 marker 0x14c
+          cconvert 0x150 downsample 0x154 fdct 0x158 entropy 0x15c,
+          script_space 0x160, script_space_size 0x164
+  decompress: src 0x18, image_width 0x1c, jpeg_color_space 0x28,
+          out_color_space 0x2c, scale_num 0x30, output_gamma 0x38,
+          buffered_image 0x40, raw_data_out 0x41, dct_method 0x44,
+          do_fancy_upsampling 0x48, quantize_colors 0x4a, dither_mode 0x4c,
+          desired_number_of_colors 0x54, output_width 0x5c,
+          out_color_components 0x64, rec_outbuf_height 0x6c,
+          actual_number_of_colors 0x70, colormap 0x74, output_scanline 0x78,
+          input_scan_number 0x7c, coef_bits 0x8c, quant_tbl_ptrs 0x90,
+          data_precision 0xc0, comp_info 0xc4, progressive_mode 0xc8,
+          arith_code 0xc9, restart_interval 0xfc, saw_JFIF_marker 0x100,
+          density_unit 0x103, X_density 0x104, saw_Adobe_marker 0x108,
+          Adobe_transform 0x109, CCIR601_sampling 0x10a, marker_list 0x10c,
+          max_h_samp_factor 0x110, min_DCT_scaled_size 0x118,
+          total_iMCU_rows 0x11c, sample_range_limit 0x120, comps_in_scan 0x124,
+          MCUs_per_row 0x138, Ss 0x16c, unread_marker 0x17c,
+          master 0x180 main 0x184 coef 0x188 post 0x18c inputctl 0x190
+          marker 0x194 entropy 0x198 idct 0x19c upsample 0x1a0 cconvert 0x1a4
+          cquantize 0x1a8
+  jpeg_error_mgr: error_exit 0 emit_message 4 output_message 8 format_message 0xc
+          reset_error_mgr 0x10 msg_code 0x14 msg_parm 0x18 trace_level 0x68
+          num_warnings 0x6c jpeg_message_table 0x70 last_jpeg_message 0x74
+          addon_message_table 0x78 first/last_addon_message 0x7c/0x80
+          (jpeg_std_error 0x10004430 shows exactly these stores)
+  jpeg_memory_mgr: alloc_small 0 ... self_destruct 0x28,
+          max_memory_to_use 0x2c, max_alloc_chunk 0x30
+  jpeg_component_info: component_index 4, h_samp_factor 8, quant_tbl_no 0x10,
+          width_in_blocks 0x1c, DCT_scaled_size 0x24, downsampled_width 0x28,
+          component_needed 0x30, MCU_width 0x34, last_col_width 0x44,
+          quant_table 0x4c, dct_table 0x50
+
+Deviations from stock 6b
+------------------------
+None found in the code: the only non-stock setting is USE_WINDOWS_MESSAGEBOX.
+The 13 functions that do not match with stock source:
+  tool: switch split (the tool cuts the function at switch-case targets; cannot
+  MATCH until the tool is fixed -- record as "tool: switch split" in .todo):
+    jccolor  1000c010 jinit_color_converter
+    jcparam  10003750 jpeg_default_colorspace, 100037d0 jpeg_set_colorspace
+    jdapimin 10003d70 jpeg_consume_input
+    jdcolor  10011070 jinit_color_deconverter
+    jddctmgr 10010310 start_pass
+    jdmarker 10006b20 read_markers
+    jdmaster 10007e10 jpeg_calc_output_dimensions (case pieces 10007fdf.. 10008030)
+  register/stack-slot permutations only (same size or nearly), worth ~10
+  attempts each (local declaration order, expression order):
+    jdmarker 10006700 examine_app0: 4 bytes, data[12]/data[13] loads swapped
+             (matches by accident with /Op -- do not use /Op for the file);
+             EQUIV reviewed
+    jdcoefct 1000e380 decompress_smooth_data: 6 bytes (DC3/DC7 subtracted in
+             the other order); EQUIV reviewed
+    jcsample 1000be60 fullsize_smooth_downsample: MATCH with outptr declared first
+    jcsample 1000bb70 h2v2_smooth_downsample: 746 vs 764 bytes; outptr declared
+             first gives the size and 91% (all 120 pointer orders and all INT32
+             orders tried), scheduling of the edge-column sums still differs
+    jdmerge  10011980 h2v1_merged_upsample: 375 vs 391 bytes, Cbtab/Crgtab
+             locals in swapped stack slots, register choice
+Matches per file with stock source (/O2 /Gy): jcapimin 3/3 jcapistd 2/2
+jccoefct 6/6 jccolor 6/7 jcdctmgr 4/4 jchuff 14/14 jcinit 1/1 jcmainct 3/3
+jcmarker 18/18 jcmaster 8/8 jcomapi 4/4 jcparam 7/9 jcphuff 15/15 jcprepct 6/6
+jcsample 8/10 jdapimin 5/6 jdapistd 3/3 jdatadst 4/4 jdatasrc 4/4 jdcoefct 9/10
+jdcolor 6/7 jddctmgr 1/2 jdhuff 7/7 jdinput 8/8 jdmainct 9/9 jdmarker 15/17
+jdmaster 6/7 jdmerge 6/7 jdphuff 7/7 jdpostct 5/5 jdsample 10/10 jerror 6/6
+(with /DUSE_WINDOWS_MESSAGEBOX) jfdct* 3/3 jidct* 6/6 jmemmgr 15/15
+jmemnobs 6/6 (+2 folded) jquant1 16/16 jquant2 17/17 jutils 5/5.
+
+Pitfalls
+--------
+- Identical-code folding (ICF): several functions exist once in the binary but
+  in several sources.  0x1000b750 (a lone `ret`) is jcsample
+  start_pass_downsample and also jdatasrc term_source, jccolor null_method,
+  jdcolor start_pass_dcolor, jquant1 finish_pass_1_quant, jquant2
+  finish_pass2 (and possibly jcmarker); jpeg_destroy_compress is folded into
+  0x10003ce0 jpeg_destroy_decompress; jmemnobs get/free small/large.  Keep the
+  function in every source file (source order), and add a manifest line for it
+  in each unit with the folded VA and its own --sym (as in jmemnobs.txt).
+- Object order in the binary: each object's functions in source order, but a
+  static function is emitted right after its first user (so the address order
+  differs from the 6b file order; keep the 6b file order in the .c file).
+- Static functions are matched with `--sym _name` like globals.
+- boolean is unsigned char (jconfig.vc); byte-sized flags in the structs.
+- Do not define NEED_FAR_POINTERS etc.: jutils jcopy_block_row/jzero_far use
+  the MEMCOPY/MEMZERO (memcpy/memset) path and match that way.
+- jmemmgr reads getenv("JPEGMEM") (NO_GETENV not defined), as stock.

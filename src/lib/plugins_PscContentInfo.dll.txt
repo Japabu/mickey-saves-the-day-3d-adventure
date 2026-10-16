@@ -1,0 +1,28 @@
+# plugins/PscContentInfo.dll: statically linked library and linker-generated functions.
+# produced by: python3 tools/recomp/libmatch.py run plugins/PscContentInfo.dll
+# linker 5.10, libraries from vc5; mode blind (byte match, no PDB)
+# libraries: tools/msvc/vc5/lib/msvcrt.lib, tools/msvc/vc5/lib/msvcprt.lib, tools/msvc/vc5/lib/msvcirt.lib
+# columns: va size kind source name   (kinds: lib, crt-module, ilt, import;
+#   crt-module lines end with '# reason'; functions not listed are game code)
+10006530     48 import     PiccoloRT.dll ?GetPropertyNames@MfScDataObject@@UAEXPAVMfStringList@@H@Z + ?GetClassNameA@MfScDataObject@@UAE?AVMfString@@XZ + ?SetProperty@MfScDataObject@@UAE?AW4MfPropertyErrorCode@1@PAVMfScDataHandle@@ABVMfString@@0H@Z + ?GetProperty@MfScDataObject@@UAE?AW4MfPropertyErrorCode@1@ABVMfString@@PAPAVMfScDataHandle@@@Z + ?Release@MfScData@@UAEXXZ + ?AddRef@MfScData@@UAEXXZ + ?GetThroughCount@MfScDataObject@@MAEHPAVMfScDataHandle@@@Z + ?ReleaseCircLinks@MfScDataObject@@MAEXPAVMfScLinkData@@@Z
+10006560     48 import     PiccoloRT.dll ?CountCircLinks@MfScDataObject@@MAEPAVMfScLinkData@@PAVMfScDataHandle@@@Z + ?GetThroughCount@MfScObject@@MAEHPAVMfScDataHandle@@@Z + ?ReleaseCircLinks@MfScObject@@MAEXPAVMfScLinkData@@@Z + ?CountCircLinks@MfScObject@@MAEPAVMfScLinkData@@PAVMfScDataHandle@@@Z + ?GetTreeImage@MfScCiMethod@@UAEHXZ + ?DisplayInTree@MfScCiMethod@@UAEPAU_TREEITEM@@PAUHWND__@@PAU2@@Z + ?GetKey@MfScClassInfoItem@@UBE?AVMfString@@XZ + ?GetKey@MfScClassInfo@@UBE?AVMfString@@XZ
+10006590     42 import     mfutil.dll ?GetData@MfDictionary@@MAEPAXPAX@Z + ?GetKey@MfDictionary@@MAEPAXPAX@Z + ?DeleteDataItem@MfDictionary@@MAEXPAXPAVMfCallBack@@@Z + ?Search@MfDictionary@@MAE?AW4MfHTErrorCode@@PAXPAPAXPAH2PAPAVMfChainNode@MfHashTable@@@Z + ?CallBack@MfCallBack@@UAEHPAX0@Z + ?CallBack@MfCallBack@@UAEHPAX00@Z + _purecall
+100065c0     30 lib        msvcrt.lib(ti_inst.obj) ??_Gtype_info@@UAEPAXI@Z
+100065e0      6 import     MSVCRT.dll ??3@YAXPAX@Z
+100065e6      6 import     MSVCRT.dll ??2@YAPAXI@Z
+100065ec      6 import     MSVCRT.dll __CxxFrameHandler
+10006600     48 lib        msvcrt.lib(atonexit.obj) __onexit
+10006630     21 lib        msvcrt.lib(atonexit.obj) _atexit
+10006650    121 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z
+100066c9     23 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z:$L12052
+100066e0     19 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z:$L12051
+10006700    106 lib        msvcrt.lib(ehvecdtr.obj) ?__ArrayUnwind@@YGXPAXIHP6EX0@Z@Z
+10006770     22 lib        msvcrt.lib(ehvecdtr.obj) ?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z
+10006790      6 import     MSVCRT.dll __RTDynamicCast
+100067a0    205 lib        msvcrt.lib(crtdll.obj) __CRT_INIT@12
+10006870    173 lib        msvcrt.lib(crtdll.obj) __DllMainCRTStartup@12
+10006920      6 import     MSVCRT.dll ??1type_info@@UAE@XZ
+10006926      6 import     MSVCRT.dll __dllonexit
+1000692c      6 import     MSVCRT.dll _except_handler3
+10006932      6 import     MSVCRT.dll ?terminate@@YAXXZ
+10006938      6 import     MSVCRT.dll _initterm

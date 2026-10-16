@@ -1,0 +1,59 @@
+# plugins/PscClassInfo.dll: statically linked library and linker-generated functions.
+# produced by: python3 tools/recomp/libmatch.py run plugins/PscClassInfo.dll
+# linker 5.10, libraries from vc5; mode blind (byte match, no PDB)
+# libraries: tools/msvc/vc5/lib/msvcrt.lib, tools/msvc/vc5/lib/msvcprt.lib, tools/msvc/vc5/lib/msvcirt.lib, tools/msvc/vc5/mfc/lib/mfcs42.lib, tools/msvc/vc5/mfc/lib/mfc42.lib
+# columns: va size kind source name   (kinds: lib, crt-module, ilt, import;
+#   crt-module lines end with '# reason'; functions not listed are game code)
+10002870     48 import     MFC42.DLL ??2@YAPAXI@Z + ?ExitHelpMode@CFrameWnd@@UAEXXZ + ?DelayUpdateFrameMenu@CFrameWnd@@UAEXPAUHMENU__@@@Z + ?GetDefaultAccelerator@CFrameWnd@@UAEPAUHACCEL__@@XZ + ?OnUpdateFrameMenu@CFrameWnd@@UAEXPAUHMENU__@@@Z + ?OnUpdateFrameTitle@CFrameWnd@@UAEXH@Z + ?OnCreateClient@CFrameWnd@@MAEHPAUtagCREATESTRUCTA@@PAUCCreateContext@@@Z + ?NegotiateBorderSpace@CFrameWnd@@UAEHIPAUtagRECT@@@Z
+100028a0     48 import     MFC42.DLL ?GetMessageBar@CFrameWnd@@UAEPAVCWnd@@XZ + ?OnSetPreviewMode@CFrameWnd@@UAEXHPAUCPrintPreviewState@@@Z + ?ActivateFrame@CFrameWnd@@UAEXH@Z + ?RecalcLayout@CFrameWnd@@UAEXH@Z + ?GetMessageString@CFrameWnd@@UBEXIAAVCString@@@Z + ?GetActiveFrame@CFrameWnd@@UAEPAV1@XZ + ?GetActiveDocument@CFrameWnd@@UAEPAVCDocument@@XZ + ?LoadFrame@CFrameWnd@@UAEHIKPAVCWnd@@PAUCCreateContext@@@Z
+100028d0     48 import     MFC42.DLL ?SetOccDialogInfo@CWnd@@MAEHPAU_AFX_OCC_DIALOG_INFO@@@Z + ?IsFrameWnd@CFrameWnd@@UBEHXZ + ?CheckAutoCenter@CWnd@@UAEHXZ + ?OnChildNotify@CWnd@@MAEHIIJPAJ@Z + ?PostNcDestroy@CFrameWnd@@MAEXXZ + ?DefWindowProcA@CWnd@@MAEJIIJ@Z + ?OnWndMsg@CWnd@@MAEHIIJPAJ@Z + ?WindowProc@CWnd@@MAEJIIJ@Z
+10002900     48 import     MFC42.DLL ?OnAmbientProperty@CWnd@@UAEHPAVCOleControlSite@@JPAUtagVARIANT@@@Z + ?PreTranslateMessage@CFrameWnd@@UAEHPAUtagMSG@@@Z + ?EndModalState@CFrameWnd@@UAEXXZ + ?BeginModalState@CFrameWnd@@UAEXXZ + ?GetSuperWndProcAddr@CWnd@@MAEPAP6GJPAUHWND__@@IIJ@ZXZ + ?OnNotify@CWnd@@MAEHIJPAJ@Z + ?OnCommand@CFrameWnd@@MAEHIJ@Z + ?EndModalLoop@CWnd@@UAEXH@Z
+10002930     48 import     MFC42.DLL ?ContinueModal@CWnd@@UAEHXZ + ?WinHelpA@CWnd@@UAEXKI@Z + ?GetScrollBarCtrl@CWnd@@UBEPAVCScrollBar@@H@Z + ?OnToolHitTest@CWnd@@UBEHVCPoint@@PAUtagTOOLINFOA@@@Z + ?CalcWindowRect@CWnd@@UAEXPAUtagRECT@@I@Z + ?PreCreateWindow@CFrameWnd@@MAEHAAUtagCREATESTRUCTA@@@Z + ?DestroyWindow@CWnd@@UAEHXZ + ?Create@CWnd@@UAEHPBD0KABUtagRECT@@PAV1@IPAUCCreateContext@@@Z
+10002960     48 import     MFC42.DLL ?PreSubclassWindow@CWnd@@UAEXXZ + ?GetConnectionHook@CCmdTarget@@MAEPAUIConnectionPoint@@ABU_GUID@@@Z + ?GetExtraConnectionPoints@CCmdTarget@@MAEHPAVCPtrArray@@@Z + ?GetInterfaceHook@CCmdTarget@@UAEPAUIUnknown@@PBX@Z + ?OnCreateAggregates@CCmdTarget@@UAEHXZ + ?GetEventSinkMap@CCmdTarget@@MBEPBUAFX_EVENTSINKMAP@@XZ + ?GetInterfaceMap@CCmdTarget@@MBEPBUAFX_INTERFACEMAP@@XZ + ?GetConnectionMap@CCmdTarget@@MBEPBUAFX_CONNECTIONMAP@@XZ
+10002990     48 import     MFC42.DLL ?GetDispatchMap@CCmdTarget@@MBEPBUAFX_DISPMAP@@XZ + ?GetCommandMap@CCmdTarget@@MBEPBUAFX_OLECMDMAP@@XZ + ?GetTypeLib@CCmdTarget@@UAEJKPAPAUITypeLib@@@Z + ?GetTypeLibCache@CCmdTarget@@UAEPAVCTypeLibCache@@XZ + ?GetTypeInfoCount@CCmdTarget@@UAEIXZ + ?GetDispatchIID@CCmdTarget@@UAEHPAU_GUID@@@Z + ?IsInvokeAllowed@CCmdTarget@@UAEHJ@Z + ?OnFinalRelease@CWnd@@UAEXXZ
+100029c0      6 import     MFC42.DLL ?OnCmdMsg@CFrameWnd@@UAEHIHPAXPAUAFX_CMDHANDLERINFO@@@Z
+100029c6      6 import     MFC42.DLL ??0CFrameWnd@@QAE@XZ
+100029cc      6 import     MFC42.DLL ??3@YAXPAX@Z
+100029d2      6 import     MFC42.DLL ??1CFrameWnd@@UAE@XZ
+100029d8      6 import     MFC42.DLL ?ShowWindow@CWnd@@QAEHH@Z
+100029de      6 import     MFC42.DLL ?CreateEx@CWnd@@QAEHKPBD0KHHHHPAUHWND__@@PAUHMENU__@@PAX@Z
+100029e4      6 import     MFC42.DLL ?OnCreate@CFrameWnd@@IAEHPAUtagCREATESTRUCTA@@@Z
+100029ea      6 import     MFC42.DLL ?MoveWindow@CWnd@@QAEXHHHHH@Z
+100029f0     12 import     MFC42.DLL ?OnSize@CFrameWnd@@IAEXIHH@Z + ?IsFrameWnd@CWnd@@UBEHXZ
+100029fc      6 import     MFC42.DLL ?PostNcDestroy@CWnd@@MAEXXZ
+10002a02      6 import     MFC42.DLL ?PreTranslateMessage@CWnd@@UAEHPAUtagMSG@@@Z
+10002a08      6 import     MFC42.DLL ?OnCommand@CWnd@@MAEHIJ@Z
+10002a0e      6 import     MFC42.DLL ?PreCreateWindow@CWnd@@UAEHAAUtagCREATESTRUCTA@@@Z
+10002a14      6 import     MFC42.DLL ?GetMessageMap@CTreeCtrl@@MBEPBUAFX_MSGMAP@@XZ
+10002a1a      6 import     MFC42.DLL ?OnCmdMsg@CCmdTarget@@UAEHIHPAXPAUAFX_CMDHANDLERINFO@@@Z
+10002a20      6 import     MFC42.DLL ?GetRuntimeClass@CTreeCtrl@@UBEPAUCRuntimeClass@@XZ
+10002a26      6 import     MFC42.DLL ??1CTreeCtrl@@UAE@XZ
+10002a2c      6 import     MFC42.DLL ??0CWnd@@QAE@XZ
+10002a32      6 import     MFC42.DLL ??1CString@@QAE@XZ
+10002a38      6 import     MFC42.DLL ?GetItemText@CTreeCtrl@@QBE?AVCString@@PAU_TREEITEM@@@Z
+10002a3e      6 import     MFC42.DLL ?GetItemData@CTreeCtrl@@QBEKPAU_TREEITEM@@@Z
+10002a44      6 import     MFC42.DLL ?MeasureItem@CMenu@@UAEXPAUtagMEASUREITEMSTRUCT@@@Z
+10002a4a      6 import     MFC42.DLL ?DrawItem@CMenu@@UAEXPAUtagDRAWITEMSTRUCT@@@Z
+10002a50      6 import     MFC42.DLL ?GetRuntimeClass@CMenu@@UBEPAUCRuntimeClass@@XZ
+10002a56      6 import     MFC42.DLL ?Detach@CMenu@@QAEPAUHMENU__@@XZ
+10002a5c      6 import     MFC42.DLL ?Attach@CMenu@@QAEHPAUHMENU__@@@Z
+10002a62      6 import     MFC42.DLL ?InsertItem@CTreeCtrl@@QAEPAU_TREEITEM@@IPBDHHIIJPAU2@1@Z
+10002a68      6 import     MFC42.DLL ?FromHandle@CImageList@@SGPAV1@PAU_IMAGELIST@@@Z
+10002a6e      6 import     MFC42.DLL ?Create@CImageList@@QAEHIHHK@Z
+10002a74      6 import     MFC42.DLL ??0CImageList@@QAE@XZ
+10002a7a      6 import     MFC42.DLL ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+10002a80      6 import     MFC42.DLL ?Default@CWnd@@IAEJXZ
+10002a86      6 import     MFC42.DLL ?HitTest@CTreeCtrl@@QBEPAU_TREEITEM@@VCPoint@@PAI@Z
+10002a8c      6 import     MFC42.DLL ?DestroyMenu@CMenu@@QAEHXZ
+10002a92      6 import     MFC42.DLL ?TrackPopupMenu@CMenu@@QAEHIHHPAVCWnd@@PBUtagRECT@@@Z
+10002a98      6 import     MFC42.DLL ?GetRuntimeClass@CObject@@UBEPAUCRuntimeClass@@XZ
+10002a9e      6 import     MFC42.DLL ?Create@CTreeCtrl@@QAEHKABUtagRECT@@PAVCWnd@@I@Z
+10002aa4      6 import     MFC42.DLL ??0CDynLinkLibrary@@QAE@AAUAFX_EXTENSION_MODULE@@H@Z
+10002aaa      6 import     MFC42.DLL ?AfxInitExtensionModule@@YGHAAUAFX_EXTENSION_MODULE@@PAUHINSTANCE__@@@Z
+10002ab0      6 import     MSVCRT.dll __CxxFrameHandler
+10002ac0     30 lib        msvcrt.lib(ti_inst.obj) ??_Gtype_info@@UAEPAXI@Z
+10002ae0     12 import     MSVCRT.dll __RTDynamicCast + _purecall
+10002af0    205 lib        msvcrt.lib(crtdll.obj) __CRT_INIT@12
+10002bc0    173 lib        msvcrt.lib(crtdll.obj) __DllMainCRTStartup@12
+10002c70      6 import     MSVCRT.dll ??1type_info@@UAE@XZ
+10002c76      6 import     MSVCRT.dll _initterm

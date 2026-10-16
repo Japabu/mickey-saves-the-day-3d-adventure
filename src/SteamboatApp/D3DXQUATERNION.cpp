@@ -1,0 +1,7 @@
+#include "D3DXQUATERNION.h"
+
+// 0x100c63fc ??0D3DXQUATERNION@@QAE@XZ
+D3DXQUATERNION::D3DXQUATERNION() {}
+
+// 0x100c70a7 ??BD3DXQUATERNION@@QAEPAMXZ
+D3DXQUATERNION::operator float *() { return (float *)this; }

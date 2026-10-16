@@ -1,0 +1,24 @@
+# plugins/PxtMath.dll: statically linked library and linker-generated functions.
+# produced by: python3 tools/recomp/libmatch.py run plugins/PxtMath.dll
+# linker 5.10, libraries from vc5; mode blind (byte match, no PDB)
+# libraries: tools/msvc/vc5/lib/msvcrt.lib, tools/msvc/vc5/lib/msvcprt.lib, tools/msvc/vc5/lib/msvcirt.lib
+# columns: va size kind source name   (kinds: lib, crt-module, ilt, import;
+#   crt-module lines end with '# reason'; functions not listed are game code)
+10002040     48 import     PiccoloRT.dll ?GetTreeImage@MfScCiMethod@@UAEHXZ + ?DisplayInTree@MfScCiMethod@@UAEPAU_TREEITEM@@PAUHWND__@@PAU2@@Z + ?GetKey@MfScClassInfoItem@@UBE?AVMfString@@XZ + ?GetPropertyExtensions@MfScDataObject@@UAEPAVMfScPropertyExtList@@XZ + ?FilloutPropertyNameList@MfScDataObject@@UAEXPAVMfStringList@@@Z + ?GetPropTokenTable@MfScDataObject@@UAEPAVMfScPropTokenTable@@XZ + ?GetInstanceProperties@MfScDataObject@@UAEXPAVMfStringList@@H@Z + ?GetPropertyNames@MfScDataObject@@UAEXPAVMfStringList@@H@Z
+10002070     48 import     PiccoloRT.dll ?GetClassNameA@MfScDataObject@@UAE?AVMfString@@XZ + ?SetProperty@MfScDataObject@@UAE?AW4MfPropertyErrorCode@1@PAVMfScDataHandle@@ABVMfString@@0H@Z + ?GetProperty@MfScDataObject@@UAE?AW4MfPropertyErrorCode@1@ABVMfString@@PAPAVMfScDataHandle@@@Z + ?Release@MfScData@@UAEXXZ + ?AddRef@MfScData@@UAEXXZ + ?GetThroughCount@MfScObject@@MAEHPAVMfScDataHandle@@@Z + ?ReleaseCircLinks@MfScObject@@MAEXPAVMfScLinkData@@@Z + ?CountCircLinks@MfScObject@@MAEPAVMfScLinkData@@PAVMfScDataHandle@@@Z
+100020a0      6 import     PiccoloRT.dll ?GetKey@MfScClassInfo@@UBE?AVMfString@@XZ
+100020b0     48 lib        msvcrt.lib(atonexit.obj) __onexit
+100020e0     21 lib        msvcrt.lib(atonexit.obj) _atexit
+10002100     30 lib        msvcrt.lib(ti_inst.obj) ??_Gtype_info@@UAEPAXI@Z
+10002120      6 import     MSVCRT.dll ??3@YAXPAX@Z
+10002126      6 import     MSVCRT.dll ??2@YAPAXI@Z
+1000212c      6 import     MSVCRT.dll __RTDynamicCast
+10002132      6 import     MSVCRT.dll __CxxFrameHandler
+10002140      6 import     MSVCRT.dll _CIsinh
+10002146      6 import     MSVCRT.dll _CIcosh
+1000214c      6 import     MSVCRT.dll _CItanh
+10002160    205 lib        msvcrt.lib(crtdll.obj) __CRT_INIT@12
+10002230    173 lib        msvcrt.lib(crtdll.obj) __DllMainCRTStartup@12
+100022e0      6 import     MSVCRT.dll __dllonexit
+100022e6      6 import     MSVCRT.dll ??1type_info@@UAE@XZ
+100022ec      6 import     MSVCRT.dll _initterm

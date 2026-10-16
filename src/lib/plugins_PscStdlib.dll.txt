@@ -1,0 +1,29 @@
+# plugins/PscStdlib.dll: statically linked library and linker-generated functions.
+# produced by: python3 tools/recomp/libmatch.py run plugins/PscStdlib.dll
+# linker 5.10, libraries from vc5; mode blind (byte match, no PDB)
+# libraries: tools/msvc/vc5/lib/msvcrt.lib, tools/msvc/vc5/lib/msvcprt.lib, tools/msvc/vc5/lib/msvcirt.lib
+# columns: va size kind source name   (kinds: lib, crt-module, ilt, import;
+#   crt-module lines end with '# reason'; functions not listed are game code)
+100082e0     48 import     PiccoloRT.dll ?GetPropertyExtensions@MfScDataObject@@UAEPAVMfScPropertyExtList@@XZ + ?GetInstanceProperties@MfScDataObject@@UAEXPAVMfStringList@@H@Z + ?GetPropertyNames@MfScDataObject@@UAEXPAVMfStringList@@H@Z + ?Release@MfScData@@UAEXXZ + ?AddRef@MfScData@@UAEXXZ + ?Clear@MfScHandleList@@UAEXXZ + ?Delete@MfScHandleList@@UAEPAXAAPAVMfDblListItem@@@Z + ?DeleteLast@MfScHandleList@@UAEPAXXZ
+10008310     48 import     PiccoloRT.dll ?DeleteFirst@MfScHandleList@@UAEPAXXZ + ?Insert@MfScHandleList@@UAEXPAXW4EnumListPosition@MfDblList@@PAVMfDblListItem@@@Z + ?GetTreeImage@MfScCiProperty@@UAEHXZ + ?DisplayInTree@MfScCiProperty@@UAEPAU_TREEITEM@@PAUHWND__@@PAU2@@Z + ?GetTreeImage@MfScCiMethod@@UAEHXZ + ?DisplayInTree@MfScCiMethod@@UAEPAU_TREEITEM@@PAUHWND__@@PAU2@@Z + ?GetKey@MfScClassInfoItem@@UBE?AVMfString@@XZ + ?CallBack@MfScPropTokenTable@@UAEHPAX@Z
+10008340     48 import     PiccoloRT.dll ?GetKey@MfScClassInfo@@UBE?AVMfString@@XZ + ?GetProperty@MfScDataObject@@UAE?AW4MfPropertyErrorCode@1@ABVMfString@@PAPAVMfScDataHandle@@@Z + ?SetProperty@MfScDataObject@@UAE?AW4MfPropertyErrorCode@1@PAVMfScDataHandle@@ABVMfString@@0H@Z + ?FilloutPropertyNameList@MfScDataObject@@UAEXPAVMfStringList@@@Z + ?GetPropTokenTable@MfScDataObject@@UAEPAVMfScPropTokenTable@@XZ + ?GetThroughCount@MfScObject@@MAEHPAVMfScDataHandle@@@Z + ?ReleaseCircLinks@MfScObject@@MAEXPAVMfScLinkData@@@Z + ?CountCircLinks@MfScObject@@MAEPAVMfScLinkData@@PAVMfScDataHandle@@@Z
+10008370     48 import     mfutil.dll ?Find@MfDblList@@UBEPAVMfDblListItem@@PAX@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXAAVMfCallBack@@@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXAAVMfListItemInterface@@@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXPAV2@H@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXPAV2@HAAVMfCallBack@@@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXPAV2@HAAVMfListItemInterface@@@Z + ?Clear@MfDblList@@UAEXAAVMfCallBack@@@Z + ?Clear@MfDblList@@UAEXAAVMfListItemInterface@@@Z
+100083a0     48 import     mfutil.dll ?Iterate@MfDblList@@UBEXAAVMfCallBack@@@Z + ?Iterate@MfDblList@@UBEXAAVMfListItemInterface@@@Z + ?GetLast@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetPrev@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetCurrent@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetNext@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetFirst@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?Copy@MfDblList@@UAEXABV1@@Z
+100083d0     48 import     mfutil.dll ?Copy@MfDblList@@UAEXABV1@AAVMfCallBack@@@Z + ?Copy@MfDblList@@UAEXABV1@AAVMfListItemInterface@@@Z + ?Add@MfDblList@@UAEXQAX@Z + ?Merge@MfDblList@@UAEXAAV1@W4EnumListPosition@1@PAVMfDblListItem@@@Z + ?Append@MfDblList@@UAEXQAX@Z + ?Prepend@MfDblList@@UAEXQAX@Z + ?CallBack@MfCallBack@@UAEHPAX0@Z + ?CallBack@MfCallBack@@UAEHPAX00@Z
+10008400     24 import     mfutil.dll ?GetData@MfDictionary@@MAEPAXPAX@Z + ?GetKey@MfDictionary@@MAEPAXPAX@Z + ?DeleteDataItem@MfDictionary@@MAEXPAXPAVMfCallBack@@@Z + ?Search@MfDictionary@@MAE?AW4MfHTErrorCode@@PAXPAPAXPAH2PAPAVMfChainNode@MfHashTable@@@Z
+10008418      6 import     MSVCRT.dll __CxxFrameHandler
+10008420     48 lib        msvcrt.lib(atonexit.obj) __onexit
+10008450     21 lib        msvcrt.lib(atonexit.obj) _atexit
+10008470      6 import     MSVCRT.dll ??3@YAXPAX@Z
+10008476      6 import     MSVCRT.dll ??2@YAPAXI@Z
+10008480     30 lib        msvcrt.lib(ti_inst.obj) ??_Gtype_info@@UAEPAXI@Z
+100084a0     12 import     MSVCRT.dll __RTDynamicCast + _purecall
+100084ac      6 import     MSVCRT.dll _CIasin
+100084b2      6 import     MSVCRT.dll _CIacos
+100084b8      6 import     MSVCRT.dll _CIpow
+100084be      6 import     MSVCRT.dll _ftol
+100084d0    205 lib        msvcrt.lib(crtdll.obj) __CRT_INIT@12
+100085a0    173 lib        msvcrt.lib(crtdll.obj) __DllMainCRTStartup@12
+10008650      6 import     MSVCRT.dll __dllonexit
+10008656      6 import     MSVCRT.dll ??1type_info@@UAE@XZ
+1000865c      6 import     MSVCRT.dll _initterm

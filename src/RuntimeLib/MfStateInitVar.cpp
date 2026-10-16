@@ -1,0 +1,120 @@
+// MfStateInitVar (RuntimeLib.dll 10087600-10087c00).
+#include <iostream.h>
+#include "MfStateAction.h"
+#include "MfAiCompiler.h"
+#include "MfAiFunctionRegistry.h"
+#include "MfFiniteStateMachine.h"
+#include "MfInterfaceRegistry.h"
+#include "MfLogger.h"
+#include "MfScDataHandle.h"
+#include "MfScHandleList.h"
+#include "MfScPiccoloObjectFile.h"
+
+// 0x10087600 ??0MfStateInitVar@@QAE@VMfString@@@Z
+MfStateInitVar::MfStateInitVar(MfString source)
+    : mSource(source), mFunction(0)
+{
+    mName = "InitVar";
+    mType = TYPE;
+}
+
+// 0x100876b0 ??1MfStateInitVar@@UAE@XZ
+MfStateInitVar::~MfStateInitVar()
+{
+    if (mFunction)
+        mFunction->Release();
+}
+
+// 0x10087720 ?Clone@MfStateInitVar@@UAEPAVMfFSMMutable@@XZ
+MfFSMMutable *MfStateInitVar::Clone()
+{
+    MfStateInitVar *copy = new MfStateInitVar(mSource);
+    copy->SetFullPath(mPath);
+    copy->mMachine = mMachine;
+    return copy;
+}
+
+// 0x100877b0 ?Write@MfStateInitVar@@UAEXAAVostream@@AAHH@Z
+void MfStateInitVar::Write(ostream &os, int &indent, int mode)
+{
+    MfString tabs;
+    if (mSource.Length() < 3)
+        return;
+    for (int i = 0; i < indent; i++)
+        tabs << '\t';
+    if (mSource.Length() < 2)
+        return;
+    os << tabs;
+    os << "init_var" << endl;
+    os << tabs;
+    os << "{!*!";
+    if (!mode)
+        os << mSource;
+    os << "!*!}";
+    os << endl;
+}
+
+// 0x100878b0 ?Link@MfStateInitVar@@UAEXXZ
+void MfStateInitVar::Link()
+{
+    if (mFunction)
+        mFunction->Release();
+    mFunction = 0;
+    MfAiFunctionRegistry *registry = MfScPiccolo::GetFunctionRegistry();
+    MfScHandleList functions;
+    registry->Find(mPath, &functions);
+    mFunction = functions.First();
+    if (mFunction)
+        mFunction->AddRef();
+}
+
+// 0x10087960 ?Load@MfStateInitVar@@UAEXPAVMfScPiccoloObjectFile@@@Z
+void MfStateInitVar::Load(MfScPiccoloObjectFile *objectFile)
+{
+    if (mFunction)
+        mFunction->Release();
+    mFunction = 0;
+    MfScHandleList functions;
+    MfScPiccoloObjectFile::MfScPOFErrorCode error = objectFile->LookupFunctions(mPath, &functions);
+    if (error == MfScPiccoloObjectFile::kPOFOk) {
+        mFunction = functions.First();
+        if (mFunction)
+            mFunction->AddRef();
+    } else if (!mMachine->IsPlayingBack() && HasScript() == 1) {
+        MfString message("Unable to initialize MfStateInitVar, ");
+        message << mPath;
+        message << " from the .pobj file.";
+        MfLogger::Log(1, "Conductor", "InitCode", message);
+    }
+}
+
+// the image keeps the identical MfStateExitAction::HasScript (10086770)
+int MfStateInitVar::HasScript()
+{
+    return mSource.Length() > 3;
+}
+
+// EQUIV 0x10087ad0 ?Compile@MfStateInitVar@@UAEXPAVMfScPiccoloObjectFile@@PAVMfPcErrorCallBack@@AAH@Z: reviewed: register choice only, every instruction and stack slot agrees (register choice only: the original loads errors into eax and the vtable into edx for the Compile call)
+void MfStateInitVar::Compile(MfScPiccoloObjectFile *objectFile, MfPcErrorCallBack *errors, int &failures)
+{
+    MfAiCompiler *compiler;
+    int found = MfInterfaceRegistry::GetInterface("PiccoloCompilerI", (MfAi **)&compiler);
+    if (found) {
+        if (mFunction)
+            mFunction->Release();
+        mFunction = 0;
+        if (mSource.Length() >= 3) {
+            if (compiler->Compile(mPath, "SCRIPT", mSource, errors, 0x40)) {
+                mFunction = compiler->Functions().First();
+                if (mFunction) {
+                    mFunction->AddRef();
+                    if (objectFile)
+                        objectFile->AddFunction(mFunction);
+                }
+            } else
+                failures++;
+        }
+        compiler->Release();
+    }
+}
+

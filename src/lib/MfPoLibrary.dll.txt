@@ -1,0 +1,51 @@
+# MfPoLibrary.dll: statically linked library and linker-generated functions.
+# produced by: python3 tools/recomp/libmatch.py run MfPoLibrary.dll
+# linker 5.10, libraries from vc5; mode blind (byte match, no PDB)
+# libraries: tools/msvc/vc5/lib/msvcrt.lib, tools/msvc/vc5/lib/msvcprt.lib, tools/msvc/vc5/lib/msvcirt.lib
+# columns: va size kind source name   (kinds: lib, crt-module, ilt, import;
+#   crt-module lines end with '# reason'; functions not listed are game code)
+100011e0      6 import     PiccoloRT.dll ??1MfScDataObject@@UAE@XZ
+10040ba0     48 import     MfActorLib.dll ?Clear@MfListValue@@UAEXXZ + ?Destroy@MfListValue@@UAEXXZ + ?Copy@MfListValue@@UBEPAVMfTypedValue@@XZ + ?StreamSize@MfListValue@@UBEHXZ + ?WriteToStream@MfListValue@@UBE?AW4MfStreamError@@AAVMfStream@@@Z + ?ReadFromStream@MfListValue@@UAE?AW4MfStreamError@@AAVMfStream@@@Z + ?StreamType@MfListValue@@UBEJXZ + ?ConvertTo@MfFloatValue@@UBEPAVMfTypedValue@@J@Z
+10040bd0     48 import     MfActorLib.dll ?Compare@MfFloatValue@@UAEHABVMfTypedValue@@@Z + ?Destroy@MfFloatValue@@UAEXXZ + ?Copy@MfFloatValue@@UBEPAVMfTypedValue@@XZ + ?StreamSize@MfFloatValue@@UBEHXZ + ?WriteToStream@MfFloatValue@@UBE?AW4MfStreamError@@AAVMfStream@@@Z + ?ReadFromStream@MfFloatValue@@UAE?AW4MfStreamError@@AAVMfStream@@@Z + ?StreamType@MfFloatValue@@UBEJXZ + ?ConvertTo@MfIntValue@@UBEPAVMfTypedValue@@J@Z
+10040c00     48 import     MfActorLib.dll ?Compare@MfIntValue@@UAEHABVMfTypedValue@@@Z + ?Destroy@MfIntValue@@UAEXXZ + ?Copy@MfIntValue@@UBEPAVMfTypedValue@@XZ + ?StreamSize@MfIntValue@@UBEHXZ + ?WriteToStream@MfIntValue@@UBE?AW4MfStreamError@@AAVMfStream@@@Z + ?ReadFromStream@MfIntValue@@UAE?AW4MfStreamError@@AAVMfStream@@@Z + ?StreamType@MfIntValue@@UBEJXZ + ?Destroy@MfTransform3Value@@UAEXXZ
+10040c30     48 import     MfActorLib.dll ?Copy@MfTransform3Value@@UBEPAVMfTypedValue@@XZ + ?StreamSize@MfTransform3Value@@UBEHXZ + ?WriteToStream@MfTransform3Value@@UBE?AW4MfStreamError@@AAVMfStream@@@Z + ?ReadFromStream@MfTransform3Value@@UAE?AW4MfStreamError@@AAVMfStream@@@Z + ?StreamType@MfTransform3Value@@UBEJXZ + ?Destroy@MfVector3Value@@UAEXXZ + ?Copy@MfVector3Value@@UBEPAVMfTypedValue@@XZ + ?StreamSize@MfVector3Value@@UBEHXZ
+10040c60     48 import     MfActorLib.dll ?WriteToStream@MfVector3Value@@UBE?AW4MfStreamError@@AAVMfStream@@@Z + ?ReadFromStream@MfVector3Value@@UAE?AW4MfStreamError@@AAVMfStream@@@Z + ?StreamType@MfVector3Value@@UBEJXZ + ?ConvertTo@MfStringValue@@UBEPAVMfTypedValue@@J@Z + ?Compare@MfStringValue@@UAEHABVMfTypedValue@@@Z + ?Destroy@MfStringValue@@UAEXXZ + ?Copy@MfStringValue@@UBEPAVMfTypedValue@@XZ + ?StreamSize@MfStringValue@@UBEHXZ
+10040c90     48 import     MfActorLib.dll ?WriteToStream@MfStringValue@@UBE?AW4MfStreamError@@AAVMfStream@@@Z + ?ReadFromStream@MfStringValue@@UAE?AW4MfStreamError@@AAVMfStream@@@Z + ?StreamType@MfStringValue@@UBEJXZ + ?ConvertTo@MfTypedValue@@UBEPAV1@J@Z + ?Compare@MfTypedValue@@UAEHABV1@@Z + ?Destroy@MfArrayValue@@UAEXXZ + ?Copy@MfArrayValue@@UBEPAVMfTypedValue@@XZ + ?StreamSize@MfArrayValue@@UBEHXZ
+10040cc0     48 import     MfActorLib.dll ?WriteAsObject@MfStreamSizedObject@@MBE?AW4MfStreamError@@AAVMfStream@@@Z + ?WriteToStream@MfArrayValue@@UBE?AW4MfStreamError@@AAVMfStream@@@Z + ?ReadFromStream@MfArrayValue@@UAE?AW4MfStreamError@@AAVMfStream@@@Z + ?StreamType@MfArrayValue@@UBEJXZ + ?GetPropertyExtensions@MfScDataObject@@UAEPAVMfScPropertyExtList@@XZ + ?FilloutPropertyNameList@MfScDataObject@@UAEXPAVMfStringList@@@Z + ?GetPropTokenTable@MfScDataObject@@UAEPAVMfScPropTokenTable@@XZ + ?GetInstanceProperties@MfScDataObject@@UAEXPAVMfStringList@@H@Z
+10040cf0     48 import     PiccoloRT.dll ?GetPropertyNames@MfScDataObject@@UAEXPAVMfStringList@@H@Z + ?GetClassNameA@MfScDataObject@@UAE?AVMfString@@XZ + ?SetProperty@MfScDataObject@@UAE?AW4MfPropertyErrorCode@1@PAVMfScDataHandle@@ABVMfString@@0H@Z + ?GetProperty@MfScDataObject@@UAE?AW4MfPropertyErrorCode@1@ABVMfString@@PAPAVMfScDataHandle@@@Z + ?Release@MfScData@@UAEXXZ + ?AddRef@MfScData@@UAEXXZ + ?GetThroughCount@MfScObject@@MAEHPAVMfScDataHandle@@@Z + ?ReleaseCircLinks@MfScObject@@MAEXPAVMfScLinkData@@@Z
+10040d20     48 import     PiccoloRT.dll ?CountCircLinks@MfScObject@@MAEPAVMfScLinkData@@PAVMfScDataHandle@@@Z + ?GetTreeImage@MfScCiProperty@@UAEHXZ + ?DisplayInTree@MfScCiProperty@@UAEPAU_TREEITEM@@PAUHWND__@@PAU2@@Z + ?GetTreeImage@MfScCiMethod@@UAEHXZ + ?DisplayInTree@MfScCiMethod@@UAEPAU_TREEITEM@@PAUHWND__@@PAU2@@Z + ?GetKey@MfScClassInfoItem@@UBE?AVMfString@@XZ + ?Clear@MfScPropertyExtList@@UAEXXZ + ?Delete@MfScPropertyExtList@@UAEPAXAAPAVMfDblListItem@@@Z
+10040d50     48 import     PiccoloRT.dll ?DeleteLast@MfScPropertyExtList@@UAEPAXXZ + ?DeleteFirst@MfScPropertyExtList@@UAEPAXXZ + ?CallBack@MfScPropTokenTable@@UAEHPAX@Z + ?GetKey@MfScClassInfo@@UBE?AVMfString@@XZ + ?SetProperty@MfScDataArray@@UAE?AW4MfPropertyErrorCode@MfScDataObject@@PAVMfScDataHandle@@ABVMfString@@0H@Z + ?GetProperty@MfScDataArray@@UAE?AW4MfPropertyErrorCode@MfScDataObject@@ABVMfString@@PAPAVMfScDataHandle@@@Z + ?GetThroughCount@MfScDataObject@@MAEHPAVMfScDataHandle@@@Z + ?ReleaseCircLinks@MfScDataObject@@MAEXPAVMfScLinkData@@@Z
+10040d80     48 import     PiccoloRT.dll ?CountCircLinks@MfScDataObject@@MAEPAVMfScLinkData@@PAVMfScDataHandle@@@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAX@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXAAVMfCallBack@@@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXAAVMfListItemInterface@@@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXPAV2@H@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXPAV2@HAAVMfCallBack@@@Z + ?Find@MfDblList@@UBEPAVMfDblListItem@@PAXPAV2@HAAVMfListItemInterface@@@Z + ?Clear@MfDblList@@UAEXAAVMfCallBack@@@Z
+10040db0     48 import     mfutil.dll ?Clear@MfDblList@@UAEXAAVMfListItemInterface@@@Z + ?Iterate@MfDblList@@UBEXAAVMfCallBack@@@Z + ?Iterate@MfDblList@@UBEXAAVMfListItemInterface@@@Z + ?GetLast@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetPrev@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetCurrent@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetNext@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z + ?GetFirst@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z
+10040de0     48 import     mfutil.dll ?Copy@MfDblList@@UAEXABV1@@Z + ?Copy@MfDblList@@UAEXABV1@AAVMfCallBack@@@Z + ?Copy@MfDblList@@UAEXABV1@AAVMfListItemInterface@@@Z + ?Add@MfDblList@@UAEXQAX@Z + ?Merge@MfDblList@@UAEXAAV1@W4EnumListPosition@1@PAVMfDblListItem@@@Z + ?Insert@MfDblList@@UAEXPAXW4EnumListPosition@1@PAVMfDblListItem@@@Z + ?Append@MfDblList@@UAEXQAX@Z + ?Prepend@MfDblList@@UAEXQAX@Z
+10040e10     48 import     mfutil.dll ?CallBack@MfCallBack@@UAEHPAX0@Z + ?CallBack@MfCallBack@@UAEHPAX00@Z + ?GetData@MfDictionary@@MAEPAXPAX@Z + ?GetKey@MfDictionary@@MAEPAXPAX@Z + ?DeleteDataItem@MfDictionary@@MAEXPAXPAVMfCallBack@@@Z + ?Search@MfDictionary@@MAE?AW4MfHTErrorCode@@PAXPAPAXPAH2PAPAVMfChainNode@MfHashTable@@@Z + ?Clear@MfDblList@@UAEXXZ + ?Delete@MfDblList@@UAEPAXAAPAVMfDblListItem@@@Z
+10040e40     12 import     mfutil.dll ?DeleteLast@MfDblList@@UAEPAXXZ + ?DeleteFirst@MfDblList@@UAEPAXXZ
+10040e50     30 lib        msvcrt.lib(ti_inst.obj) ??_Gtype_info@@UAEPAXI@Z
+10040e70      6 import     MSVCRT.dll ??3@YAXPAX@Z
+10040e80    115 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z
+10040ef3      6 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z:$L12049
+10040ef9     23 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z:$L12052
+10040f10     19 lib        msvcrt.lib(ehvecdtr.obj) ??_M@YGXPAXIHP6EX0@Z@Z:$L12051
+10040f30     64 lib        msvcrt.lib(ehvecdtr.obj) ?__ArrayUnwind@@YGXPAXIHP6EX0@Z@Z
+10040f70     13 lib        msvcrt.lib(ehvecdtr.obj) ?__ArrayUnwind@@YGXPAXIHP6EX0@Z@Z:$L12061
+10040f7d     29 lib        msvcrt.lib(ehvecdtr.obj) ?__ArrayUnwind@@YGXPAXIHP6EX0@Z@Z:$L12062
+10040fa0     22 lib        msvcrt.lib(ehvecdtr.obj) ?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z
+10040fc0     48 lib        msvcrt.lib(atonexit.obj) __onexit
+10040ff0     21 lib        msvcrt.lib(atonexit.obj) _atexit
+10041010      6 import     MSVCRT.dll _purecall
+10041016      6 import     MSVCRT.dll ??2@YAPAXI@Z
+1004101c      6 import     MSVCRT.dll __CxxFrameHandler
+10041030      6 import     MSVCRT.dll __RTDynamicCast
+10041036      6 import     MSVCRT.dll _ftol
+10041040    111 lib        msvcrt.lib(ehvecctr.obj) ??_L@YGXPAXIHP6EX0@Z1@Z
+100410af      9 lib        msvcrt.lib(ehvecctr.obj) ??_L@YGXPAXIHP6EX0@Z1@Z:$L210
+100410b8     20 lib        msvcrt.lib(ehvecctr.obj) ??_L@YGXPAXIHP6EX0@Z1@Z:$L213
+100410cc     19 lib        msvcrt.lib(ehvecctr.obj) ??_L@YGXPAXIHP6EX0@Z1@Z:$L212
+100410e0      6 import     MSVCRT.dll __RTtypeid
+100410f0    205 lib        msvcrt.lib(crtdll.obj) __CRT_INIT@12
+100411c0    173 lib        msvcrt.lib(crtdll.obj) __DllMainCRTStartup@12
+10041270     12 import     MSVCRT.dll ??1type_info@@UAE@XZ + _except_handler3
+1004127c      6 import     MSVCRT.dll ?terminate@@YAXXZ
+10041282      6 import     MSVCRT.dll __dllonexit
+10041288      6 import     MSVCRT.dll _initterm
+10041290     35 lib        msvcrt.lib(dllmain.obj) _DllMain@12

@@ -1,0 +1,29 @@
+# Compiler options of each original project: one line per binary, plus a line for
+# each library that was built as a project of its own and linked into the binary
+# (its subdirectory, ending in /). Every source file is compiled with the line of
+# its directory; see tools/msvc/COMPILERS.md for the evidence.
+#
+# binary                     [subdirectory/]  options
+Steamboat.exe                                 /O2 /MT
+SteamboatApp.dll                              /O2 /GX /MT
+SteamboatApp.dll             libpng/          /Ox /GX /MT /I../../zlib /DPNG_USE_PNGVCRD /DZLIB_DLL /D_WINDOWS
+MBEngine.dll                                  /O2 /MT
+MBCom.dll                                     /O2 /MT
+mbruntime.dll                                 /O2 /MT
+zlib.dll                                      /O2 /MT /DZLIB_DLL /DWIN32 /D_WINDOWS
+RuntimeLib.dll                                /O2 /GX /MD /GR
+MfActorLib.dll                                /O2 /GX /MD /GR
+MfPoLibrary.dll                               /O2 /GX /MD /GR
+MfImageLib.dll                                /O2 /GX /MD /GR /Gy
+MfImageLib.dll               jpeg/            /O2 /Gy /DUSE_WINDOWS_MESSAGEBOX
+mflinalg.dll                                  /O2 /GX /MD /GR
+mfutil.dll                                    /O2 /GX /MD /GR
+PiccoloRT.dll                                 /O2 /GX /MD /GR
+PiccoloComp.dll                               /O2 /GX /MD /GR
+PiccoloConsole.dll                            /O2 /GX /MD /GR /D_AFXDLL
+plugins/PscClassInfo.dll                      /O2 /GX /MD /GR /D_AFXDLL /D_AFXEXT /DNDEBUG
+plugins/PscCompiler.dll                       /O2 /GX /MD /GR
+plugins/PscContentInfo.dll                    /O2 /GX /MD /GR
+plugins/PscDebugger.dll                       /O2 /GX /MD /GR
+plugins/PscStdlib.dll                         /O2 /GX /MD /GR
+plugins/PxtMath.dll                           /O2 /GX /MD /GR

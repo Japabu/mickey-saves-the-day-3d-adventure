@@ -1,0 +1,50 @@
+{
+  "version": "2.0.0",
+  "inputs": [
+    {
+      "id": "bin",
+      "type": "promptString",
+      "description": "binary (e.g. MBEngine.dll)",
+      "default": "MBEngine.dll"
+    },
+    {
+      "id": "va",
+      "type": "promptString",
+      "description": "function address (hex, e.g. 1000d090)"
+    }
+  ],
+  "tasks": [
+    {
+      "label": "match: watch function in this file",
+      "type": "shell",
+      "command": "../tools/msvc/watch.sh ${input:bin} ${input:va} ${fileDirnameBasename}/${fileBasename}",
+      "options": {
+        "cwd": "${workspaceFolder}/src"
+      },
+      "problemMatcher": [],
+      "isBackground": true
+    },
+    {
+      "label": "match: show original function",
+      "type": "shell",
+      "command": "../tools/msvc/show.sh ${input:bin} ${input:va}",
+      "options": {
+        "cwd": "${workspaceFolder}/src"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "match: check this file",
+      "type": "shell",
+      "command": "../tools/msvc/check.sh ${file}",
+      "options": {
+        "cwd": "${workspaceFolder}/src"
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    }
+  ]
+}
