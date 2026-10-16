@@ -3,6 +3,9 @@
 #include <locale> // evidence: the original unit ends with the std::ctype<unsigned short>::id and std::collate<char>::id initializers
 #include "CSBLinkingLogsGameBoard.h"
 
+// game state property holding the highest level the player reached (string in the original's .rdata)
+const char *MAX_LEVEL_PROP_NAME = "LLMaxLevel";
+
 // Event channels of the board's tiles and of the level buttons (m_objLeveler).
 const long kLinkingLogsTileChannel = 204;
 const long kLinkingLogsLevelChannel = 1122;

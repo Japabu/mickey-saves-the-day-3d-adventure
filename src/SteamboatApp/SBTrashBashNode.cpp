@@ -7,6 +7,9 @@
 #include "SBMouseEvent.h"
 #include <stdio.h>
 
+// game state property holding the highest level the player reached (string in the original's .rdata)
+const char *TB_MAX_LEVEL_PROP_NAME = "TBMaxLevel";
+
 // Event channel of the level buttons (mLeveler).
 const long kTrashBashLevelChannel = 1122;
 
