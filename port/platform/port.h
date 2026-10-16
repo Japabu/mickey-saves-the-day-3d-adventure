@@ -12,8 +12,9 @@ extern "C" {
 
 // Display (Win32 layer). The DirectDraw layer hands over each finished frame of the
 // primary surface as 32-bit ARGB (0xAARRGGBB in memory order of a uint32 per pixel);
-// the Win32 layer uploads it to the game window, scaled to fit (letterboxed).
-void port_present(const void *argb8888, int w, int h, int pitch);
+// the Win32 layer uploads it to the game window, scaled to fit (letterboxed). A frame
+// of the sharp copies (dx.h) is scale times the size of the game's screen.
+void port_present(const void *argb8888, int w, int h, int pitch, int scale);
 // Blocks until the next display refresh (IDirectDraw::WaitForVerticalBlank).
 void port_wait_vblank(void);
 // The game's choice of full screen (DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE) or a window

@@ -129,8 +129,25 @@ struct Surface : Object<IDirectDrawSurface7> {
     unsigned version = 0;      // bumped on every change of the pixels (texture caches)
     TexCache *texCache = 0;    // the converted copy for sampling (render.h)
 
+    // The sharp copy (MICKEY_SCALE, default 3): the same pixels at scale() times the
+    // size, for the surfaces the 3D renders into and every surface they are copied to.
+    // Direct3D draws into it at that resolution; everything else that changes the
+    // surface (blits, fills, the game's own writes through Lock and GetDC) changes it
+    // too, so it always shows what bits shows, only sharper. The window shows it.
+    uint8_t *hi = 0;           // swapped with bits by Flip
+    int hiPitch = 0;
+    std::vector<uint8_t> before; // bits when locked, to see what the game wrote
+
     Surface(DirectDraw *dd, const DDSURFACEDESC2 &d);
     ~Surface();
+    static int scale();
+    uint8_t *hirow(int y) { return hi + (size_t)y * hiPitch; }
+    // Gives this surface (and the rest of its flip chain) the sharp copy.
+    void make_hi();
+    // Brings the sharp copy up to date after the game wrote bits directly.
+    void sync_hi(const std::vector<uint8_t> &old);
+    // Brings bits up to date after Direct3D drew the rectangle r of the sharp copy.
+    void downsample(const RECT &r);
     bool primary() const { return (desc.ddsCaps.dwCaps & DDSCAPS_PRIMARYSURFACE) != 0; }
     int width() const { return (int)desc.dwWidth; }
     int height() const { return (int)desc.dwHeight; }

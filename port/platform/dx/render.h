@@ -75,6 +75,13 @@ struct Raster {
     uint32_t zmax;
     int zbytes;
     RECT clip; // the viewport
+    // where the pixels go: the sharp copies of the target and the z-buffer (dx.h) when
+    // they have them, k times the size; pclip is the viewport there, and dirty what
+    // the primitives can have touched
+    int k;
+    uint8_t *cbits, *zbits;
+    int cpitch, zpitch;
+    RECT pclip, dirty;
     bool zenable, zwrite;
     DWORD zfunc;
     DWORD cull;
@@ -117,6 +124,8 @@ struct Raster {
     int64_t work = 0; // estimated pixels
 
     void note_extent(const SVert *v);
+    SVert to_pixels(const SVert *v); // a vertex in the coordinates of the pixels
+    void touch(const SVert *v, int n);
     void draw_triangle(const SVert *a, const SVert *b, const SVert *c);
     void draw_line(const SVert *a, const SVert *b, bool last);
     void draw_point(const SVert *a);

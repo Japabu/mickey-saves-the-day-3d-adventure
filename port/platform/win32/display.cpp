@@ -16,14 +16,14 @@ namespace win32 {
 
 static SDL_Renderer *s_renderer;
 static SDL_Texture *s_texture;
-static int s_tex_w, s_tex_h;
+static int s_tex_w, s_tex_h, s_tex_scale;
 static Window *s_window;
 
 // The latest frame (copied by port_present, shown when the game's thread next pumps or
 // waits for the vertical blank).
 static std::mutex s_frame_mu;
 static std::vector<uint32_t> s_frame;
-static int s_frame_w, s_frame_h;
+static int s_frame_w, s_frame_h, s_frame_scale = 1;
 static bool s_frame_new;
 static DWORD s_last_present;
 
@@ -182,14 +182,17 @@ static void show_frame()
         return;
     s_last = now;
     s_frame_new = false;
-    if (!s_texture || s_tex_w != s_frame_w || s_tex_h != s_frame_h) {
+    if (!s_texture || s_tex_w != s_frame_w || s_tex_h != s_frame_h || s_tex_scale != s_frame_scale) {
         if (s_texture)
             SDL_DestroyTexture(s_texture);
         s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, s_frame_w, s_frame_h);
         SDL_SetTextureScaleMode(s_texture, getenv("MICKEY_SMOOTH") ? SDL_SCALEMODE_LINEAR : SDL_SCALEMODE_NEAREST);
         s_tex_w = s_frame_w;
         s_tex_h = s_frame_h;
-        SDL_SetRenderLogicalPresentation(s_renderer, s_frame_w, s_frame_h, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+        s_tex_scale = s_frame_scale;
+        // the logical size is the game's screen (mouse positions are in it)
+        SDL_SetRenderLogicalPresentation(s_renderer, s_frame_w / s_frame_scale, s_frame_h / s_frame_scale,
+                                         SDL_LOGICAL_PRESENTATION_LETTERBOX);
     }
     SDL_UpdateTexture(s_texture, 0, s_frame.data(), s_frame_w * 4);
     SDL_SetRenderDrawColor(s_renderer, 0, 0, 0, 255);
@@ -234,7 +237,7 @@ static void save_shot(const std::vector<uint32_t> &frame, int w, int h)
     SDL_DestroySurface(surface);
 }
 
-void port_present(const void *argb8888, int w, int h, int pitch)
+void port_present(const void *argb8888, int w, int h, int pitch, int scale)
 {
     {
         std::lock_guard<std::mutex> lock(s_frame_mu);
@@ -243,6 +246,7 @@ void port_present(const void *argb8888, int w, int h, int pitch)
             memcpy(&s_frame[(size_t)y * (size_t)w], (const char *)argb8888 + (size_t)y * (size_t)pitch, (size_t)w * 4);
         s_frame_w = w;
         s_frame_h = h;
+        s_frame_scale = scale < 1 ? 1 : scale;
         s_frame_new = true;
         save_shot(s_frame, w, h);
     }

@@ -56,6 +56,17 @@ void setup_raster(Device *d, Raster &r)
         r.clip.right = r.target->width();
     if (r.clip.bottom > r.target->height())
         r.clip.bottom = r.target->height();
+    r.target->make_hi();
+    if (r.zb && r.target->hi)
+        r.zb->make_hi();
+    r.k = r.target->hi && (!r.zb || r.zb->hi) ? Surface::scale() : 1;
+    bool sharp = r.k > 1;
+    r.cbits = sharp ? r.target->hi : r.target->bits;
+    r.cpitch = sharp ? r.target->hiPitch : r.target->pitch;
+    r.zbits = r.zb ? (sharp ? r.zb->hi : r.zb->bits) : 0;
+    r.zpitch = r.zb ? (sharp ? r.zb->hiPitch : r.zb->pitch) : 0;
+    r.pclip = {r.clip.left * r.k, r.clip.top * r.k, r.clip.right * r.k, r.clip.bottom * r.k};
+    r.dirty = {r.pclip.right, r.pclip.bottom, r.pclip.left, r.pclip.top};
     r.cull = rs[D3DRENDERSTATE_CULLMODE];
     r.fill = rs[D3DRENDERSTATE_FILLMODE];
     r.gouraud = rs[D3DRENDERSTATE_SHADEMODE] != D3DSHADE_FLAT;
@@ -233,7 +244,7 @@ void Raster::pixel(int x, int y, float z, float w, const float *a, const float *
     if (zenable) {
         float zc = z < 0 ? 0 : z > 1 ? 1 : z;
         zv = (uint32_t)((double)zc * zmax + 0.5);
-        zp = zb->row(y) + x * zbytes;
+        zp = zbits + (size_t)y * zpitch + x * zbytes;
         uint32_t old = zbytes == 2 ? *(uint16_t *)zp : zbytes == 4 ? *(uint32_t *)zp : read_pixel(zp, zbytes);
         if (!compare(zfunc, zv, old))
             return;
@@ -294,7 +305,7 @@ void Raster::pixel(int x, int y, float z, float w, const float *a, const float *
     if (alphaTest && !compare(alphaFunc, (uint32_t)(cur.w * 255.0f + 0.5f), (uint32_t)alphaRef))
         return;
 
-    uint8_t *p = target->row(y) + x * tf.bytes;
+    uint8_t *p = cbits + (size_t)y * cpitch + x * tf.bytes;
     if (blend) {
         f4 dst = unpack(read_target(tf, p));
         cur = cur * blend_factor(srcBlend, cur, dst) + dst * blend_factor(destBlend, cur, dst);
@@ -360,10 +371,10 @@ void Raster::draw_triangle(const SVert *v0, const SVert *v1, const SVert *v2)
     auto ceil16 = [](int64_t v) { return (int)(v >= 0 ? (v + 15) / 16 : -((-v) / 16)); };
     int xmin = ceil16((std::min)({X0, X1, X2})), xmax = floor16((std::max)({X0, X1, X2}));
     int ymin = ceil16((std::min)({Y0, Y1, Y2})), ymax = floor16((std::max)({Y0, Y1, Y2}));
-    xmin = (std::max)(xmin, (int)clip.left);
-    ymin = (std::max)(ymin, (int)clip.top);
-    xmax = (std::min)(xmax, (int)clip.right - 1);
-    ymax = (std::min)(ymax, (int)clip.bottom - 1);
+    xmin = (std::max)(xmin, (int)pclip.left);
+    ymin = (std::max)(ymin, (int)pclip.top);
+    xmax = (std::min)(xmax, (int)pclip.right - 1);
+    ymax = (std::min)(ymax, (int)pclip.bottom - 1);
     if (xmin > xmax || ymin > ymax)
         return;
 
@@ -460,7 +471,7 @@ void Raster::draw_line(const SVert *v0, const SVert *v1, bool last)
         float other = xmajor ? v0->y + dy * t : v0->x + dx * t;
         int x = xmajor ? i : (int)floorf(other + 0.5f);
         int y = xmajor ? (int)floorf(other + 0.5f) : i;
-        if (x < clip.left || x >= clip.right || y < clip.top || y >= clip.bottom)
+        if (x < pclip.left || x >= pclip.right || y < pclip.top || y >= pclip.bottom)
             continue;
         for (int k = 0; k < n; k++)
             a[k] = A0[k] + (A1[k] - A0[k]) * t;
@@ -475,7 +486,7 @@ void Raster::draw_line(const SVert *v0, const SVert *v1, bool last)
 void Raster::draw_point(const SVert *v)
 {
     int x = (int)floorf(v->x + 0.5f), y = (int)floorf(v->y + 0.5f);
-    if (x < clip.left || x >= clip.right || y < clip.top || y >= clip.bottom)
+    if (x < pclip.left || x >= pclip.right || y < pclip.top || y >= pclip.bottom)
         return;
     int n = attribute_count(nsets);
     float a[A_MAX], d[A_MAX] = {};
@@ -484,6 +495,30 @@ void Raster::draw_point(const SVert *v)
 }
 
 // ---- recording and the banded drawing
+
+// Pixel centres are at whole coordinates: the centre of pixel x of the game's screen is
+// the middle of the k pixels that show it.
+SVert Raster::to_pixels(const SVert *v)
+{
+    SVert p = *v;
+    if (k > 1) {
+        p.x = (v->x + 0.5f) * k - 0.5f;
+        p.y = (v->y + 0.5f) * k - 0.5f;
+    }
+    return p;
+}
+
+void Raster::touch(const SVert *v, int n)
+{
+    for (int i = 0; i < n; i++) {
+        int x0 = (int)floorf(v[i].x) - 1, x1 = (int)ceilf(v[i].x) + 2;
+        int y0 = (int)floorf(v[i].y) - 1, y1 = (int)ceilf(v[i].y) + 2;
+        dirty.left = (std::min)(dirty.left, (LONG)(std::max)(x0, (int)pclip.left));
+        dirty.top = (std::min)(dirty.top, (LONG)(std::max)(y0, (int)pclip.top));
+        dirty.right = (std::max)(dirty.right, (LONG)(std::min)(x1, (int)pclip.right));
+        dirty.bottom = (std::max)(dirty.bottom, (LONG)(std::min)(y1, (int)pclip.bottom));
+    }
+}
 
 void Raster::triangle(const SVert *v0, const SVert *v1, const SVert *v2)
 {
@@ -512,15 +547,16 @@ void Raster::triangle(const SVert *v0, const SVert *v1, const SVert *v2)
     Cmd c;
     c.kind = Cmd::TRIANGLE;
     c.last = false;
-    c.y0 = (int)floorf(fminf(v0->y, fminf(v1->y, v2->y))) - 1;
-    c.y1 = (int)ceilf(fmaxf(v0->y, fmaxf(v1->y, v2->y))) + 2;
-    if (c.y1 <= clip.top || c.y0 >= clip.bottom)
+    c.v[0] = to_pixels(v0);
+    c.v[1] = to_pixels(v1);
+    c.v[2] = to_pixels(v2);
+    c.y0 = (int)floorf(fminf(c.v[0].y, fminf(c.v[1].y, c.v[2].y))) - 1;
+    c.y1 = (int)ceilf(fmaxf(c.v[0].y, fmaxf(c.v[1].y, c.v[2].y))) + 2;
+    if (c.y1 <= pclip.top || c.y0 >= pclip.bottom)
         return;
-    c.v[0] = *v0;
-    c.v[1] = *v1;
-    c.v[2] = *v2;
+    touch(c.v, 3);
     cmds.push_back(c);
-    work += (area < 0 ? -area : area) / 512 + 16; // half the bounding area, in pixels
+    work += (area < 0 ? -area : area) * k * k / 512 + 16; // half the bounding area, in pixels
 }
 
 void Raster::line(const SVert *v0, const SVert *v1, bool last)
@@ -530,14 +566,15 @@ void Raster::line(const SVert *v0, const SVert *v1, bool last)
     Cmd c;
     c.kind = Cmd::LINE;
     c.last = last;
-    c.y0 = (int)floorf(fminf(v0->y, v1->y)) - 1;
-    c.y1 = (int)ceilf(fmaxf(v0->y, v1->y)) + 2;
-    if (c.y1 <= clip.top || c.y0 >= clip.bottom)
+    c.v[0] = to_pixels(v0);
+    c.v[1] = to_pixels(v1);
+    c.y0 = (int)floorf(fminf(c.v[0].y, c.v[1].y)) - 1;
+    c.y1 = (int)ceilf(fmaxf(c.v[0].y, c.v[1].y)) + 2;
+    if (c.y1 <= pclip.top || c.y0 >= pclip.bottom)
         return;
-    c.v[0] = *v0;
-    c.v[1] = *v1;
+    touch(c.v, 2);
     cmds.push_back(c);
-    work += (int64_t)(fabsf(v1->x - v0->x) + fabsf(v1->y - v0->y)) + 16;
+    work += (int64_t)(fabsf(c.v[1].x - c.v[0].x) + fabsf(c.v[1].y - c.v[0].y)) + 16;
 }
 
 void Raster::point(const SVert *v)
@@ -546,17 +583,18 @@ void Raster::point(const SVert *v)
     Cmd c;
     c.kind = Cmd::POINT;
     c.last = false;
-    c.y0 = (int)floorf(v->y) - 1;
-    c.y1 = (int)ceilf(v->y) + 2;
-    c.v[0] = *v;
+    c.v[0] = to_pixels(v);
+    c.y0 = (int)floorf(c.v[0].y) - 1;
+    c.y1 = (int)ceilf(c.v[0].y) + 2;
+    touch(c.v, 1);
     cmds.push_back(c);
     work += 16;
 }
 
 void Raster::run(const std::vector<Cmd> &list, int y0, int y1)
 {
-    clip.top = y0;
-    clip.bottom = y1;
+    pclip.top = y0;
+    pclip.bottom = y1;
     for (const Cmd &c : list) {
         if (c.y1 <= y0 || c.y0 >= y1)
             continue;
@@ -638,7 +676,7 @@ void Raster::flush()
 {
     if (cmds.empty())
         return;
-    RECT full = clip;
+    RECT full = pclip;
     enum { BAND = 32, PARALLEL_WORK = 20000 };
     int rows = full.bottom - full.top;
     int bands = (rows + BAND - 1) / BAND;
@@ -656,9 +694,16 @@ void Raster::flush()
         });
     }
     cmds.swap(list);
-    clip = full;
+    pclip = full;
     cmds.clear();
     work = 0;
+    // the game's own copy of what was drawn
+    if (k > 1 && dirty.left < dirty.right && dirty.top < dirty.bottom) {
+        target->downsample(dirty);
+        if (zwrite)
+            zb->downsample(dirty);
+    }
+    dirty = {pclip.right, pclip.bottom, pclip.left, pclip.top};
     target->version++;
 }
 

@@ -188,10 +188,14 @@ void present(Surface *s)
     if (w <= 0 || h <= 0)
         return;
     static std::vector<uint32_t> frame; // under the layer lock
-    frame.resize((size_t)w * h);
-    for (int y = 0; y < h; y++)
-        row_to_argb(s->fmt, s->row(r.top + y) + r.left * s->fmt.bytes, &frame[(size_t)y * w], w, s->pal());
-    port_present(frame.data(), w, h, w * 4);
+    int k = s->hi ? Surface::scale() : 1;
+    frame.resize((size_t)w * h * k * k);
+    for (int y = 0; y < h * k; y++) {
+        const uint8_t *src = s->hi ? s->hirow(r.top * k + y) + r.left * k * s->fmt.bytes
+                                   : s->row(r.top + y) + r.left * s->fmt.bytes;
+        row_to_argb(s->fmt, src, &frame[(size_t)y * w * k], w * k, s->pal());
+    }
+    port_present(frame.data(), w * k, h * k, w * k * 4, k);
 }
 
 // ---- palettes and clippers
@@ -271,11 +275,137 @@ Surface::Surface(DirectDraw *dd, const DDSURFACEDESC2 &d) : dd(dd), desc(d)
     bits = (uint8_t *)calloc((size_t)pitch * (height() ? height() : 1), 1);
 }
 
+int Surface::scale()
+{
+    static const int s = [] {
+        const char *e = getenv("MICKEY_SCALE");
+        int v = e && *e ? atoi(e) : 3;
+        return v < 1 ? 1 : v > 8 ? 8 : v;
+    }();
+    return s;
+}
+
+// Copies the pixels of src (the rectangle sr, stretched to d, colour keyed and converted)
+// into a buffer; both rectangles are inside their buffers' sizes except d, which is
+// clipped here. The buffers may be either the surfaces' own or their sharp copies.
+struct Pixels {
+    uint8_t *bits;
+    int pitch, w, h;
+};
+
+static bool same_format(const PixFmt &a, const PixFmt &b)
+{
+    return a.bytes == b.bytes && a.palette == b.palette && !memcmp(a.mask, b.mask, sizeof(a.mask));
+}
+
+static void copy_pixels(const Pixels &dp, const PixFmt &fmt, const PALETTEENTRY *dpal, const RECT &d, const Pixels &sp,
+                        const PixFmt &sf, const PALETTEENTRY *spal, const RECT &sr, bool key, uint32_t klo, uint32_t khi)
+{
+    int dw = d.right - d.left, dh = d.bottom - d.top;
+    int sw = sr.right - sr.left, sh = sr.bottom - sr.top;
+    bool convert = !same_format(sf, fmt);
+    int y0 = d.top < 0 ? 0 : d.top, y1 = d.bottom > dp.h ? dp.h : d.bottom;
+    int x0 = d.left < 0 ? 0 : d.left, x1 = d.right > dp.w ? dp.w : d.right;
+    for (int y = y0; y < y1; y++) {
+        int sy = sr.top + (int)((int64_t)(y - d.top) * sh / dh);
+        const uint8_t *srow = sp.bits + (size_t)sy * sp.pitch;
+        uint8_t *drow = dp.bits + (size_t)y * dp.pitch;
+        if (!convert && !key && sw == dw) {
+            memcpy(drow + x0 * fmt.bytes, srow + (sr.left + x0 - d.left) * sf.bytes, (size_t)(x1 - x0) * fmt.bytes);
+            continue;
+        }
+        for (int x = x0; x < x1; x++) {
+            int sx = sr.left + (int)((int64_t)(x - d.left) * sw / dw);
+            uint32_t v = read_pixel(srow + sx * sf.bytes, sf.bytes);
+            if (key && v >= klo && v <= khi)
+                continue;
+            if (convert)
+                v = from_argb(fmt, to_argb(sf, v, spal), dpal);
+            write_pixel(drow + x * fmt.bytes, fmt.bytes, v);
+        }
+    }
+}
+
+void Surface::make_hi()
+{
+    if (hi || scale() == 1)
+        return;
+    if (owner) {
+        owner->make_hi(); // the whole flip chain: Flip swaps the copies with the pixels
+        return;
+    }
+    int k = scale();
+    std::vector<Surface *> all = {this};
+    if (chain.size() && !(desc.ddsCaps.dwCaps & DDSCAPS_MIPMAP))
+        all.insert(all.end(), chain.begin(), chain.end());
+    for (Surface *s : all) {
+        s->hiPitch = (s->width() * k * s->fmt.bytes + 15) & ~15;
+        s->hi = (uint8_t *)calloc((size_t)s->hiPitch * (s->height() ? s->height() * k : 1), 1);
+        RECT whole = {0, 0, s->width(), s->height()};
+        RECT big = {0, 0, s->width() * k, s->height() * k};
+        copy_pixels({s->hi, s->hiPitch, s->width() * k, s->height() * k}, s->fmt, 0, big,
+                    {s->bits, s->pitch, s->width(), s->height()}, s->fmt, 0, whole, false, 0, 0);
+    }
+}
+
+void Surface::sync_hi(const std::vector<uint8_t> &old)
+{
+    if (!hi || old.size() != (size_t)pitch * height())
+        return;
+    int k = scale(), n = fmt.bytes;
+    for (int y = 0; y < height(); y++) {
+        const uint8_t *now = row(y), *was = old.data() + (size_t)y * pitch;
+        if (!memcmp(now, was, (size_t)width() * n))
+            continue;
+        for (int x = 0; x < width(); x++) {
+            if (!memcmp(now + x * n, was + x * n, n))
+                continue;
+            for (int j = 0; j < k; j++) {
+                uint8_t *p = hirow(y * k + j) + x * k * n;
+                for (int i = 0; i < k; i++)
+                    memcpy(p + i * n, now + x * n, n);
+            }
+        }
+    }
+}
+
+void Surface::downsample(const RECT &r)
+{
+    if (!hi)
+        return;
+    int k = scale(), n = fmt.bytes;
+    int x0 = r.left / k, y0 = r.top / k, x1 = (r.right + k - 1) / k, y1 = (r.bottom + k - 1) / k;
+    x1 = x1 > width() ? width() : x1;
+    y1 = y1 > height() ? height() : y1;
+    for (int y = y0 < 0 ? 0 : y0; y < y1; y++) {
+        for (int x = x0 < 0 ? 0 : x0; x < x1; x++) {
+            uint32_t v;
+            if (fmt.zbuffer || fmt.palette) {
+                v = read_pixel(hirow(y * k + k / 2) + (x * k + k / 2) * n, n); // depths and indices do not mix
+            } else {
+                uint32_t sum[4] = {};
+                for (int j = 0; j < k; j++)
+                    for (int i = 0; i < k; i++) {
+                        uint32_t c = to_argb(fmt, read_pixel(hirow(y * k + j) + (x * k + i) * n, n), 0);
+                        for (int c4 = 0; c4 < 4; c4++)
+                            sum[c4] += c >> (8 * c4) & 0xff;
+                    }
+                uint32_t c = 0, kk = (uint32_t)(k * k);
+                for (int c4 = 0; c4 < 4; c4++)
+                    c |= (sum[c4] + kk / 2) / kk << (8 * c4);
+                v = from_argb(fmt, c, 0);
+            }
+            write_pixel(row(y) + x * n, n, v);
+        }
+    }
+}
+
 Surface::~Surface()
 {
     if (dc)
         port_gdi_release_surface_dc(dc);
     free(dcShadow);
+    free(hi);
     free_texture_cache(texCache);
     for (Surface *s : attached)
         s->Release();
@@ -356,35 +486,40 @@ HRESULT Surface::EnumAttachedSurfaces(void *ctx, LPDDENUMSURFACESCALLBACK7 cb)
     return DD_OK;
 }
 
-HRESULT Surface::fill(const RECT *dst, uint32_t raw)
+static void fill_pixels(const Pixels &px, int bytes, RECT r, uint32_t raw)
 {
-    RECT r = dst ? *dst : RECT{0, 0, width(), height()};
     if (r.left < 0) r.left = 0;
     if (r.top < 0) r.top = 0;
-    if (r.right > width()) r.right = width();
-    if (r.bottom > height()) r.bottom = height();
+    if (r.right > px.w) r.right = px.w;
+    if (r.bottom > px.h) r.bottom = px.h;
     for (int y = r.top; y < r.bottom; y++) {
-        uint8_t *p = row(y) + r.left * fmt.bytes;
-        if (fmt.bytes == 2) {
+        uint8_t *p = px.bits + (size_t)y * px.pitch + r.left * bytes;
+        if (bytes == 2) {
             uint16_t *q = (uint16_t *)p;
             for (int x = r.left; x < r.right; x++)
                 *q++ = (uint16_t)raw;
-        } else if (fmt.bytes == 4) {
+        } else if (bytes == 4) {
             uint32_t *q = (uint32_t *)p;
             for (int x = r.left; x < r.right; x++)
                 *q++ = raw;
         } else {
-            for (int x = r.left; x < r.right; x++, p += fmt.bytes)
-                write_pixel(p, fmt.bytes, raw);
+            for (int x = r.left; x < r.right; x++, p += bytes)
+                write_pixel(p, bytes, raw);
         }
+    }
+}
+
+HRESULT Surface::fill(const RECT *dst, uint32_t raw)
+{
+    RECT r = dst ? *dst : RECT{0, 0, width(), height()};
+    fill_pixels({bits, pitch, width(), height()}, fmt.bytes, r, raw);
+    if (hi) {
+        int k = scale();
+        fill_pixels({hi, hiPitch, width() * k, height() * k}, fmt.bytes,
+                    {r.left * k, r.top * k, r.right * k, r.bottom * k}, raw);
     }
     changed();
     return DD_OK;
-}
-
-static bool same_format(const PixFmt &a, const PixFmt &b)
-{
-    return a.bytes == b.bytes && a.palette == b.palette && !memcmp(a.mask, b.mask, sizeof(a.mask));
 }
 
 HRESULT Surface::blit(const RECT &d, Surface *src, const RECT &sr, bool key)
@@ -395,38 +530,36 @@ HRESULT Surface::blit(const RECT &d, Surface *src, const RECT &sr, bool key)
         return DD_OK;
     if (sr.left < 0 || sr.top < 0 || sr.right > src->width() || sr.bottom > src->height())
         return DDERR_INVALIDPARAMS;
-    // the source pixels; a copy when source and destination are the same surface
-    const uint8_t *sbits = src->bits;
-    int spitch = src->pitch;
-    std::vector<uint8_t> copy;
-    if (src == this) {
-        copy.assign(src->bits, src->bits + (size_t)src->pitch * src->height());
-        sbits = copy.data();
-    }
-    const PixFmt &sf = src->fmt;
-    bool convert = !same_format(sf, fmt);
     uint32_t klo = src->srcKey.dwColorSpaceLowValue, khi = src->srcKey.dwColorSpaceHighValue;
     key = key && src->hasSrcKey;
-    int y0 = d.top < 0 ? 0 : d.top, y1 = d.bottom > height() ? height() : d.bottom;
-    int x0 = d.left < 0 ? 0 : d.left, x1 = d.right > width() ? width() : d.right;
-    for (int y = y0; y < y1; y++) {
-        int sy = sr.top + (int)((int64_t)(y - d.top) * sh / dh);
-        const uint8_t *srow = sbits + (size_t)sy * spitch;
-        uint8_t *drow = row(y);
-        if (!convert && !key && sw == dw) {
-            memcpy(drow + x0 * fmt.bytes, srow + (sr.left + x0 - d.left) * sf.bytes, (size_t)(x1 - x0) * fmt.bytes);
-            continue;
-        }
-        for (int x = x0; x < x1; x++) {
-            int sx = sr.left + (int)((int64_t)(x - d.left) * sw / dw);
-            uint32_t v = read_pixel(srow + sx * sf.bytes, sf.bytes);
-            if (key && v >= klo && v <= khi)
-                continue;
-            if (convert)
-                v = from_argb(fmt, to_argb(sf, v, src->pal()), pal());
-            write_pixel(drow + x * fmt.bytes, fmt.bytes, v);
+    // the source pixels; a copy when source and destination are the same surface
+    auto source = [&](uint8_t *b, int p, int h, std::vector<uint8_t> &copy) -> uint8_t * {
+        if (src != this)
+            return b;
+        copy.assign(b, b + (size_t)p * h);
+        return copy.data();
+    };
+    // a sharp source makes the destination sharp too
+    if (src->hi)
+        make_hi();
+    if (hi) {
+        int k = scale();
+        std::vector<uint8_t> copy;
+        RECT hd = {d.left * k, d.top * k, d.right * k, d.bottom * k};
+        Pixels dp = {hi, hiPitch, width() * k, height() * k};
+        if (src->hi) {
+            RECT hs = {sr.left * k, sr.top * k, sr.right * k, sr.bottom * k};
+            Pixels sp = {source(src->hi, src->hiPitch, src->height() * k, copy), src->hiPitch, src->width() * k,
+                         src->height() * k};
+            copy_pixels(dp, fmt, pal(), hd, sp, src->fmt, src->pal(), hs, key, klo, khi);
+        } else {
+            Pixels sp = {source(src->bits, src->pitch, src->height(), copy), src->pitch, src->width(), src->height()};
+            copy_pixels(dp, fmt, pal(), hd, sp, src->fmt, src->pal(), sr, key, klo, khi);
         }
     }
+    std::vector<uint8_t> copy;
+    Pixels sp = {source(src->bits, src->pitch, src->height(), copy), src->pitch, src->width(), src->height()};
+    copy_pixels({bits, pitch, width(), height()}, fmt, pal(), d, sp, src->fmt, src->pal(), sr, key, klo, khi);
     changed();
     return DD_OK;
 }
@@ -489,16 +622,20 @@ HRESULT Surface::Flip(IDirectDrawSurface7 *, DWORD)
     if (locks || dc)
         return DDERR_SURFACEBUSY;
     // front <- first back buffer <- second ... <- old front
-    uint8_t *front = bits;
+    uint8_t *front = bits, *frontHi = hi;
     for (size_t i = 0; i < chain.size(); i++) {
         Surface *b = chain[i];
-        if (i == 0)
+        if (i == 0) {
             bits = b->bits;
-        else
+            hi = b->hi;
+        } else {
             chain[i - 1]->bits = b->bits;
+            chain[i - 1]->hi = b->hi;
+        }
         b->version++;
     }
     chain.back()->bits = front;
+    chain.back()->hi = frontHi;
     changed();
     return DD_OK;
 }
@@ -573,6 +710,8 @@ HRESULT Surface::GetDC(HDC *out)
         || (fmt.bytes >= 3 && fmt.mask[1] == 0xff0000 && fmt.mask[2] == 0xff00 && fmt.mask[3] == 0xff);
     if (fmt.zbuffer)
         return DDERR_UNSUPPORTED;
+    if (hi)
+        before.assign(bits, bits + (size_t)pitch * height());
     if (direct) {
         dc = port_gdi_surface_dc(bits, width(), height(), pitch, bpp, pal());
     } else {
@@ -609,6 +748,10 @@ HRESULT Surface::ReleaseDC(HDC h)
         }
         free(dcShadow);
         dcShadow = 0;
+    }
+    if (hi) {
+        sync_hi(before);
+        before.clear();
     }
     changed();
     return DD_OK;
@@ -650,7 +793,8 @@ HRESULT Surface::Lock(RECT *r, DDSURFACEDESC2 *out, DWORD, HANDLE)
     GetSurfaceDesc(out);
     out->dwFlags |= DDSD_LPSURFACE | DDSD_PITCH;
     out->lpSurface = r ? row(r->top) + r->left * fmt.bytes : bits;
-    locks++;
+    if (!locks++ && hi)
+        before.assign(bits, bits + (size_t)pitch * height());
     return DD_OK;
 }
 
@@ -659,7 +803,10 @@ HRESULT Surface::Unlock(RECT *)
     DX_GUARD;
     if (!locks)
         return DDERR_NOTLOCKED;
-    locks--;
+    if (!--locks && hi) {
+        sync_hi(before);
+        before.clear();
+    }
     changed();
     return DD_OK;
 }
