@@ -65,6 +65,7 @@ DDPIXELFORMAT z_format(int bits);
 
 struct DirectDraw;
 struct Surface;
+struct TexCache;
 
 // Reference counting shared by every object.
 template <class I> struct Object : I {
@@ -119,6 +120,7 @@ struct Surface : Object<IDirectDrawSurface7> {
     HDC dc = 0;
     uint8_t *dcShadow = 0;     // 32-bit copy behind the DC for formats GDI cannot draw into
     unsigned version = 0;      // bumped on every change of the pixels (texture caches)
+    TexCache *texCache = 0;    // the converted copy for sampling (render.h)
 
     Surface(DirectDraw *dd, const DDSURFACEDESC2 &d);
     ~Surface();

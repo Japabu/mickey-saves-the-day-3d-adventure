@@ -1,6 +1,6 @@
 // surface.cpp - DirectDraw surfaces, palettes and clippers in memory, the pixel format
 // conversions, and the hand-over of the primary surface to the window layer.
-#include "dx.h"
+#include "render.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -269,6 +269,7 @@ Surface::~Surface()
     if (dc)
         port_gdi_release_surface_dc(dc);
     free(dcShadow);
+    free_texture_cache(texCache);
     for (Surface *s : attached)
         s->Release();
     if (palette)
