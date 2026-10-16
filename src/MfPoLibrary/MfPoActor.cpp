@@ -80,6 +80,11 @@
 // 0x10006780 _$E52
 static MfString strClassName("Actor");
 
+MfPoActor *MfPoActor::poExemplar;
+MfScPropertyExtList *MfPoActor::pelPropExtensions;
+MfScPropTokenTable *MfPoActor::pttPropTokens;
+int MfPoActor::nExemplarRef;
+
 // 0x10006790 ?GetClassNameA@MfPoActor@@EAE?AVMfString@@XZ
 MfString MfPoActor::GetClassName()
 {

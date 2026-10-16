@@ -10,6 +10,12 @@ MfPcExpression::~MfPcExpression()
 
 // 0x1000c6d0 ??_GMfPcExpression@@UAEPAXI@Z (compiler-generated)
 
+// 0x10002170 ?Generate@MfPcExpression@@UAEXPAVMfPcCompiler@@PAVMfPcChunkList@@HIPAVMfString@@@Z (an empty
+// function, folded with MfPcArgumentExpression::Generate)
+void MfPcExpression::Generate(MfPcCompiler *, MfPcChunkList *, int, unsigned int, MfString *)
+{
+}
+
 // 0x1000c6f0 ?CreateTokenInfo@MfPcExpression@@QAEPAVMfPcTokenInfo@@XZ
 MfPcTokenInfo *MfPcExpression::CreateTokenInfo()
 {

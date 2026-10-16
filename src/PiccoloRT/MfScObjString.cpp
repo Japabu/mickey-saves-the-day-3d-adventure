@@ -10,6 +10,9 @@
 #include "MfScRoutine.h"
 #include "MfScPropTokenTable.h"
 
+MfScHandleDict *MfScObjString::pdictStringProps;   // 0x10035224
+MfScPropTokenTable *MfScObjString::pttPropTokens;
+
 // the script environment of the calling thread
 #define THREAD_ENV() (((MfScThread *)MfThread::GetThread())->mVmEnv)
 

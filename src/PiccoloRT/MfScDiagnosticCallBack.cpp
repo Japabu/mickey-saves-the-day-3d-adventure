@@ -10,6 +10,11 @@ MfScDiagnosticCallBack::MfScDiagnosticCallBack(MfScDiagnosticCallBack const &)
 {
 }
 
+// 0x10002ad0 ?CallBack@MfScDiagnosticCallBack@@UAEXABVMfScDiagnosticInfo@@@Z (an empty
+// function, folded with MfScDataObject::FilloutPropertyNameList)
+void MfScDiagnosticCallBack::CallBack(MfScDiagnosticInfo const &)
+{
+}
 
 // Matched by this code:
 // 0x10004f30 ??_EMfScDiagnosticCallBack@@UAEPAXI@Z

@@ -7,6 +7,9 @@
 // (also ??1MfScBytecodes, ??1MfScLineInfo, ... and ??1Exemplar@MfScConsoleManager).
 void MfScData::AddRef() {}
 
+// 0x100033a0 ?Release@MfScData@@UAEXXZ (the same empty function)
+void MfScData::Release() {}
+
 // 0x100033b0 ??1MfScClassInfo@@UAE@XZ
 MfScClassInfo::~MfScClassInfo()
 {

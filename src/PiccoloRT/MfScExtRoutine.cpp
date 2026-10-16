@@ -3,6 +3,8 @@
 // exported classes in MfScExtRoutine.h, emitted by this object.
 #include "MfScExtRoutine_unit.h"
 
+MfScBreakpointManager *MfScBreakpointManager::pbrkptmgrMain;   // 0x10034f50
+
 // 0x10001000 ?Manager@MfScBreakpointManager@@SAPAV1@XZ (inline, header)
 // 0x10001010 ??0MfScBreakpointManager@@QAE@ABV0@@Z (compiler-generated)
 // 0x10001020 ??_EMfScBreakpointManager@@EAEPAXI@Z (compiler-generated)

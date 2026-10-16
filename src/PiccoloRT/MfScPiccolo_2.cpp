@@ -68,6 +68,14 @@ MfScStdLibListInterface *MfScStdLib::pslliListInterface = &MfScStdLib::slliDefau
 // 0x1000f290 _$E47
 // 0x1000f2a0 _$E45
 MfString MfScPiccolo::fsDataPath((MfStringSize(256)));
+int MfScPiccolo::bInitialized;                     // 0x10035238
+MfScThread *MfScPiccolo::pthrdMainThread;
+MfDblList *MfScPiccolo::plPlugins;
+MfDblList *MfScPiccolo::plExtensions;
+MfScPiccolo *MfScPiccolo::pdoPiccolo;
+MfScSourceResolver *MfScPiccolo::psrResolver;
+MfScFunctionRegistry *MfScPiccolo::pfrRegistry;
+int MfScPiccolo::bIsRunning;                       // 0x10035254
 
 // 0x1000f2c0 _$E53 (static initializer of sPiccoloName, with the three below)
 // 0x1000f2d0 _$E50

@@ -99,6 +99,27 @@ unsigned int MfScBytecodeRoutine::MemoryUsage(int what)
 
 // 0x10002790 ??0MfScBytecodes@@QAE@XZ (inline, header; folded)
 
+// aiBytecodeSize (data at 0x10032200): the length in bytes of each instruction
+// (opcode and operands), by opcode (MfScOpcodes.h)
+int MfScBytecodes::aiBytecodeSize[256] = {
+    1, 2, 3, 2, 2, 3, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 0x00
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1,  // 0x10
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3,  // 0x20
+    1, 1, 1, 1, 3, 3, 3, 3, 1, 1, 3, 3, 1, 1, 1, 1,  // 0x30
+    3, 1, 2, 3, 5, 2, 3, 5, 2, 3, 5, 1, 1, 3, 3, 1,  // 0x40
+    3, 3, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 1,  // 0x50
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 0x60
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 0x70
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 0x80
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 0x90
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 0xa0
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 0xb0
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 0xc0
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 0xd0
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 0xe0
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  // 0xf0
+};
+
 // 0x100027a0 ?BytecodeSize@MfScBytecodes@@SAHE@Z
 int MfScBytecodes::BytecodeSize(unsigned char op)
 {
@@ -164,3 +185,5 @@ int MfScBytecodes::IsJumpZero(unsigned char op)
 // runtimelib.dll 0x10030100 ?SetCodeSize@MfScDebugInfo@@QAEXH@Z
 // runtimelib.dll 0x1009cc60 ?SetClassInfoInterface@MfScDataObject@@SAXPAVMfAiClassInfo@@@Z
 // runtimelib.dll 0x1009cc80 ?SetClassInfoInterface@MfScDataObject@@SAXPAVMfAiClassInfo@@@Z
+// 0x10002ad0 ?FilloutPropertyNameList@MfScDataObject@@UAEXPAVMfStringList@@@Z (empty; folded with MfScDiagnosticCallBack::CallBack)
+void MfScDataObject::FilloutPropertyNameList(MfStringList *) {}

@@ -12,7 +12,7 @@ public:
     static int __cdecl JumpOffset(unsigned char *);
     ~MfScBytecodes();
 private:
-    static int * aiBytecodeSize;
+    static int aiBytecodeSize[];
 public:
     char field_0;
 };

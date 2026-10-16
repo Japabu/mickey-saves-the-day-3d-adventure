@@ -59,9 +59,9 @@ public:
     virtual MfPropertyErrorCode GetProperty(const MfString &name, MfScDataHandle **value);
     virtual MfPropertyErrorCode SetProperty(MfScDataHandle *self, const MfString &name, MfScDataHandle *value,
                                             int passRef);
-    virtual MfScPropTokenTable *GetPropTokenTable();
+    virtual MfScPropTokenTable *GetPropTokenTable() { return pttPropTokens; }
 protected:
-    virtual MfString GetClassNameA();
+    virtual MfString GetClassNameA() { return MfString("String"); }
     virtual void FilloutPropertyNameList(MfStringList *names);
 private:
     MfScDataHandle *PMPrint(MfScDataHandle *self, int argc, MfScDataHandle **argv);
