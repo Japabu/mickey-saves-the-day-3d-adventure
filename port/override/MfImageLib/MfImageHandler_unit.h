@@ -43,6 +43,22 @@ public:
     virtual void Prepend(void *const pData);                                 // +0x04
     virtual void Append(void *const pData);                                  // +0x08
     virtual void Insert(void *pData, EnumListPosition pos, MfDblListItem *pli); // +0x0c
+    // PORT: mfutil's other slots, so that Clear is in its slot (vtablecensus)
+    virtual void Merge(MfDblList &, EnumListPosition, MfDblListItem *);
+    virtual void Add(void *const);
+    virtual void Copy(const MfDblList &);
+    virtual void Copy(const MfDblList &, class MfCallBack &);
+    virtual void Copy(const MfDblList &, class MfListItemInterface &);
+    virtual void *GetFirst(MfDblListItem *&) const;
+    virtual void *GetNext(MfDblListItem *&) const;
+    virtual void *GetCurrent(MfDblListItem *&) const;
+    virtual void *GetPrev(MfDblListItem *&) const;
+    virtual void *GetLast(MfDblListItem *&) const;
+    virtual void Iterate(MfCallBack &) const;
+    virtual void Iterate(MfListItemInterface &) const;
+    virtual void *DeleteFirst();
+    virtual void *DeleteLast();
+    virtual void *Delete(MfDblListItem *&);
     virtual void Clear();
 
     void AppendItem(void *p) { Insert(p, LP_AFTER, pliLast); }

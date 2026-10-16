@@ -3,6 +3,7 @@
 # incomplete view drops slots for every user. Applied after PiccoloRT.py (name order).
 EDITS = {
     'PiccoloRT/MfScConsoleManager_unit.h': [
+        ('    virtual void Delete(void *item) {}\n', '    virtual void Destroy(void *item) {}\n', 1),
         # mfutil's MfHashTable/MfDictionary: the four protected virtuals (MfHashTable.h,
         # MfDictionary.h), which MfScHandleDict's vtable (emitted here) needs
         ('class MFIMPORT MfHashTable {\n'
@@ -27,5 +28,27 @@ EDITS = {
         # unknown, the vtable emitted here needs one
         ('    virtual ~MfScConsoleManager();\n    static MfScConsoleManager *Manager()',
          '    virtual ~MfScConsoleManager(); virtual void _slot1() {}\n    static MfScConsoleManager *Manager()', 1),
+    ],
+    'PiccoloRT/MfScClassInfo_unit.h': [
+        # MfListItemInterface's third slot is Destroy (MfListItemInterface.h)
+        ('    virtual void Delete(void *item) {}\n', '    virtual void Destroy(void *item) {}\n', 1),
+        # the overloads in declaration order (the view listed MSVC's vtable order, which
+        # reverses overloads; mfutil's MfDblList.h declares them this way round)
+        ('    virtual void Copy(const MfDblList &list, MfListItemInterface &iface);\n'
+         '    virtual void Copy(const MfDblList &list, MfCallBack &cb);\n'
+         '    virtual void Copy(const MfDblList &list);\n',
+         '    virtual void Copy(const MfDblList &list);\n'
+         '    virtual void Copy(const MfDblList &list, MfCallBack &cb);\n'
+         '    virtual void Copy(const MfDblList &list, MfListItemInterface &iface);\n', 1),
+        ('    virtual void Iterate(MfListItemInterface &iface) const;\n'
+         '    virtual void Iterate(MfCallBack &cb) const;\n',
+         '    virtual void Iterate(MfCallBack &cb) const;\n'
+         '    virtual void Iterate(MfListItemInterface &iface) const;\n', 1),
+    ],
+    # MfScData's own virtuals (MfScData.h): MfScExtRoutine's vtable is emitted here
+    'PiccoloRT/MfScExtRoutine_unit.h': [
+        ('class PICAPI MfScData {\npublic:\n    virtual ~MfScData();\n',
+         'class MfScLinkData; class PICAPI MfScData {\npublic:\n    virtual ~MfScData(); virtual MfScLinkData *CountCircLinks(MfScDataHandle *);'
+         ' virtual void ReleaseCircLinks(MfScLinkData *); virtual int GetThroughCount(MfScDataHandle *); virtual void AddRef(); virtual void Release();\n', 1),
     ],
 }

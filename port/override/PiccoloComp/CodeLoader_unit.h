@@ -130,6 +130,7 @@ public:
 class __declspec(dllimport) MfStringTokenizerCallBack {
 public:
     virtual ~MfStringTokenizerCallBack() {}
+    virtual int CallBack(const MfString &token, MfString &rest);    // PORT: mfutil's slot (this unit emits the vtable)
 };
 
 // MfDblList at +0, MfStringTokenizerCallBack at +0x10; size 0x14.
@@ -138,6 +139,9 @@ public:
     MfStringList() {}
     ~MfStringList() { Clear(); }
     virtual void Add(const MfString &);         // +0x70
+    virtual void Delete(const MfString &s);                    // PORT: mfutil's MfStringList slots
+    virtual MfDblListItem *Search(const MfString &s) const;
+    virtual int CallBack(const MfString &token, MfString &rest);
     // The local copies in these inline helpers leave no code, but each one takes a
     // temporary slot: together they put the EH funclets' cast temporaries at the
     // original frame offsets ([ebp-0x12c]/[ebp-0x130] in 0x10005bc0's funclets).

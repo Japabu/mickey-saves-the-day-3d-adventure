@@ -37,4 +37,17 @@ EDITS = {
         ('    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();\n',
          '    virtual ~MfStringList(); virtual void v04(); virtual void v08(); virtual void v0c();\n', 1),
     ],
+    # mfutil's MfHashTable: +0x0c and +0x10 are the bucket and chain arrays (pointers);
+    # with ints MfScPropTokenTable's MfCallBack base came out 8 bytes early and the
+    # dictionaries RuntimeLib allocates were too small
+    'RuntimeLib/MfHashTable.h': [
+        ('    int field_c;\n    int field_10;\n', '    void **field_c;\n    void **field_10;\n', 1),
+    ],
+    'RuntimeLib/MfLocoPlanCache_unit.h': [
+        ('class __declspec(dllimport) MfHashTable {\npublic:\n    virtual ~MfHashTable();\n    int m_04, m_08, m_0c, m_10;\n',
+         'class __declspec(dllimport) MfHashTable {\npublic:\n    virtual ~MfHashTable();\n    int m_04, m_08; void *m_0c, *m_10;\n', 1),
+        # MfRootObj's first member is its message table pointer (MfRootObj.h)
+        ('    virtual ~MfRootObj();\n    int m_04, m_08, m_0c, m_10;\n',
+         '    virtual ~MfRootObj();\n    void *m_04; int m_08, m_0c, m_10;\n', 1),
+    ],
 }

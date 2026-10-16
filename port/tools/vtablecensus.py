@@ -41,17 +41,41 @@ def shape(entry):
     """What makes a slot: the function's name, its parameters' base type names and its
     destructor kind (not the full spelling of the types, which differs harmlessly
     between copies: a typedef here, a reference there)."""
-    m = re.search(r'(~?[A-Za-z_]\w*|operator\s*[^\s(]+)\s*\((.*)\)', entry)
+    if entry.startswith(('offset_to_top', 'vbase_offset', 'vcall_offset')) or entry.endswith('RTTI'):
+        return entry.split(' RTTI')[0] + (' RTTI' if entry.endswith('RTTI') else '')
+    m = re.search(r'::(~?[A-Za-z_]\w*|operator\s*[^\s(]+?)\(', entry) or \
+        re.search(r'(~?[A-Za-z_]\w*|operator\s*[^\s(]+?)\s*\(', entry)
     if not m:
         return entry
-    params = m.group(2).split(')')[0]
-    arity = 0 if not params.strip() or params.strip() == 'void' else params.count(',') + 1
+    # the balanced parameter list after the name, split at top-level commas
+    depth, start, params = 0, m.end(), []
+    cur = ''
+    for ch in entry[start:]:
+        if ch == '(':
+            depth += 1
+        elif ch == ')':
+            if depth == 0:
+                break
+            depth -= 1
+        if ch == ',' and depth == 0:
+            params.append(cur)
+            cur = ''
+        else:
+            cur += ch
+    params.append(cur)
+    params = [p for p in params if p.strip() and p.strip() != 'void']
+    arity = len(params)
     # the parameters' base type names (overloads of one arity differ by them; const,
-    # pointer and reference marks are left out)
-    alias = {'HWND__': 'HWND', '_TREEITEM': 'HTREEITEM', 'HINSTANCE__': 'HINSTANCE', 'HDC__': 'HDC'}
-    types = ','.join(alias.get(n, n) for n in (
-        re.sub(r'\b(const|volatile|struct|class|enum|unsigned|signed)\b|[*&\s]', '', t).split('::')[-1]
-        for t in params.split(','))) if arity else ''
+    # pointer and reference marks are left out); function pointer types count as 'fn'
+    # spellings of one type in different copies (bool was unsigned char in some views)
+    alias = {'HWND__': 'HWND', '_TREEITEM': 'HTREEITEM', 'HINSTANCE__': 'HINSTANCE', 'HDC__': 'HDC', 'bool': 'char'}
+
+    def base(t):
+        if '(' in t:
+            return 'fn'
+        n = re.sub(r'\b(const|volatile|struct|class|enum|unsigned|signed)\b|[*&\s]', '', t).split('::')[-1]
+        return alias.get(n, n)
+    types = ','.join(base(t) for t in params)
     kind = ' '.join(re.findall(r'\[(complete|deleting|pure)\]', entry))
     return f'{m.group(1)}/{arity}({types}) {kind}'.strip()
 
@@ -64,6 +88,8 @@ def slot(entry):
     """A slot as other modules see it: placeholders match anything."""
     if PLACEHOLDER.match(entry):
         return '?'
+    if entry.startswith(('offset_to_top', 'vbase_offset', 'vcall_offset')) or entry.endswith('RTTI'):
+        return entry
     # across modules a slot is its parameter count (the types are each copy's spelling;
     # what crosses the boundary is the slot position and the call)
     return re.sub(r' ?pure', '', re.sub(r'\(.*\)', '', re.sub(r'^.*?(?=/)', '', entry)))
@@ -74,7 +100,13 @@ def same(a, b, prefix=False):
     two may stop early (a module that only calls the first slots)."""
     if len(a) != len(b) and not prefix:
         return False
-    return all(x == y or '?' in (x, y) for x, y in zip(a, b))
+    def eq(x, y):
+        if x == y or '?' in (x, y):
+            return True
+        # one copy states the parameter types, the other only the count
+        bare = re.compile(r'\(.*?\)')
+        return bare.sub('', x) == bare.sub('', y) and ('(' not in x or '(' not in y)
+    return all(eq(x, y) for x, y in zip(a, b))
 
 
 def layouts(module, path):
@@ -125,10 +157,23 @@ def main():
     for m in mods:
         def wild(e):
             return '?' if PLACEHOLDER.match(e) else e
+
+        def untyped(layout):
+            """The parameter types only tell overloads apart: where a name and
+            parameter count occur once in the layout, the types (one copy's bool,
+            another's int) do not count."""
+            keys = [e if e.startswith(('offset_to_top', 'vbase_offset', 'vcall_offset')) or e.endswith('RTTI')
+                    else re.sub(r'\(.*?\)', '', e) for e in layout]
+            return tuple(k if keys.count(k) == 1 else e for k, e in zip(keys, layout))
         bad = {}
         for c, l in per[m].items():
             if len(l) < 2:
                 continue
+            l = {untyped(k): v for k, v in l.items()} if len({untyped(k) for k in l}) < len(l) else l
+            merged = collections.defaultdict(list)
+            for k, v in l.items():
+                merged[untyped(k)] += v
+            l = merged
             longest = tuple(wild(e) for e in max(l, key=len))
             full = max(l, key=len)
             # a copy that only stops early is harmless where the unit does not emit
@@ -136,6 +181,7 @@ def main():
             short_emitter = any(v != full and any(f.endswith('[emits]') for f in fs) for v, fs in l.items())
             if shorter or short_emitter or not all(same(longest, tuple(wild(e) for e in v), True) for v in l):
                 bad[c] = l
+            per[m][c] = l
         total += len(bad)
         print(f'{m:16s} {len(per[m]):5d} classes, {len(bad)} with differing vtables' + (' (or shorter)' if shorter else ''))
         for c in sorted(bad):

@@ -230,7 +230,7 @@ class MfListItemInterface {
 public:
     virtual void *Copy(void *item) { return 0; }
     virtual int Iterate(void *item) { return 1; }
-    virtual void Delete(void *item) {}
+    virtual void Destroy(void *item) {}    // PORT: mfutil's name for the slot
     virtual int Matches(void *item, void *key) { return 0; }
 };
 
@@ -526,6 +526,8 @@ public:
 class __declspec(dllimport) MfScClassInfoItem : public MfSortedListItem {
 public:
     virtual MfString GetKey() const;
+    virtual _TREEITEM *DisplayInTree(HWND__ *, _TREEITEM *);    // PORT: PiccoloRT's slots (vtablecensus)
+    virtual int GetTreeImage() = 0;
 };
 
 class __declspec(dllimport) MfScMethodParameterInfo : public MfScClassInfoText {
@@ -553,6 +555,7 @@ public:
     MfScClassInfo(const MfString &);
     virtual ~MfScClassInfo();
     virtual MfString GetKey() const;
+    virtual int Matches(void *item, void *key);    // PORT: PiccoloRT's primary-vtable slot (vtablecensus)
     MfScClassInfo &operator+(MfScClassInfoItem *);
     MfString m_10;          // PORT: the real member is an MfString (the class name), not int
     void *m_14;             // PORT: a pointer like the real member (the item list)

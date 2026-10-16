@@ -121,6 +121,9 @@ public:
     MfStringList() {}
     virtual ~MfStringList() { Clear(); }
     virtual MfString *Add(const MfString &s);                     // +0x70
+    virtual void Delete(const MfString &s);                       // PORT: mfutil's slots after Add
+    virtual MfDblListItem *Search(const MfString &s) const;
+    virtual int CallBack(const MfString &token, MfString &rest);
     virtual void Clear();                                         // +0x54
 };
 
@@ -496,6 +499,8 @@ class __declspec(dllimport) MfScClassInfoItem : public MfSortedListItem, public 
 public:
     MfScClassInfoItem(const MfString &key) : m_c(0), m_key(key) {}
     virtual MfString GetKey() const;
+    virtual _TREEITEM *DisplayInTree(HWND__ *, _TREEITEM *);    // PORT: PiccoloRT's slots (vtablecensus)
+    virtual int GetTreeImage() = 0;
 protected:
     int m_c;            // +0x0c
     MfString m_key;     // +0x10
@@ -534,6 +539,7 @@ public:
     MfScClassInfo(const MfString &);
     virtual ~MfScClassInfo();
     virtual MfString GetKey() const;
+    virtual int Matches(void *item, void *key);    // PORT: PiccoloRT's primary-vtable slot (vtablecensus)
     MfScClassInfo &operator+(MfScClassInfoItem *);
 private:
     MfString m_name;

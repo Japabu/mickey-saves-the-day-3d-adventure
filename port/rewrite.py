@@ -301,6 +301,11 @@ def rewrite(text, rel=None):
 
 def generated():
     """Write the rewritten copies and return {src path: rewritten path}."""
+    # an edit of a file that has an override would be silently ignored (the override
+    # replaces the chain): edit the override instead
+    for rel in EDITS:
+        if os.path.isfile(os.path.join(PORT, 'override', rel)):
+            raise SystemExit('port/rewrite.py: %s has an override (port/override/%s); edit that instead' % (rel, rel))
     result = {}
     for base, dirs, files in os.walk(SRC):
         for f in files:
