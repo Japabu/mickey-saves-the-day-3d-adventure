@@ -677,6 +677,7 @@ BOOL WINAPI SetConsoleWindowInfo(HANDLE hConsoleOutput, BOOL bAbsolute, const SM
 BOOL WINAPI SetCurrentDirectoryA(LPCSTR lpPathName);
 BOOL WINAPI SetEndOfFile(HANDLE hFile);
 BOOL WINAPI SetEnvironmentVariableA(LPCSTR lpName, LPCSTR lpValue);
+DWORD WINAPI GetEnvironmentVariableA(LPCSTR lpName, LPSTR lpBuffer, DWORD nSize);
 BOOL WINAPI SetEvent(HANDLE hEvent);
 BOOL WINAPI SetFileAttributesA(LPCSTR lpFileName, DWORD dwFileAttributes);
 DWORD WINAPI SetFilePointer(HANDLE hFile, LONG lDistanceToMove, PLONG lpDistanceToMoveHigh, DWORD dwMoveMethod);
@@ -754,6 +755,7 @@ int WINAPI lstrlenA(LPCSTR lpString);
 #define RemoveDirectory RemoveDirectoryA
 #define SetCurrentDirectory SetCurrentDirectoryA
 #define SetEnvironmentVariable SetEnvironmentVariableA
+#define GetEnvironmentVariable GetEnvironmentVariableA
 #define SetFileAttributes SetFileAttributesA
 #define WriteConsole WriteConsoleA
 #define lstrcat lstrcatA

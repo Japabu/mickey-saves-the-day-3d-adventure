@@ -1,3 +1,4 @@
+// PORT: the placeholder at +0x24 is an int like the real member (MfScBytecodeRoutine.h), so this view has the real layout on 64-bit.
 // PiccoloRT.dll (vc5, no PDB): declarations for the MfScBytecodeRoutine unit
 // (0x10002060-0x100028b5). Layouts from the compiler-generated copy
 // constructors / assignment operators and from the code of this unit.
@@ -114,7 +115,7 @@ public:
 private:
     unsigned char *m_bytecodes;   // +0x1c
     int m_codeSize;               // +0x20
-    long m_unk24;                 // +0x24
+    int m_unk24;                  // PORT: int, as the real mFlags (long moved the members after it); +0x24
     MfString *m_str28;            // +0x28
     MfString *m_str2c;            // +0x2c
     MfString *m_str30;            // +0x30

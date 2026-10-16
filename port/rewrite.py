@@ -25,6 +25,10 @@ Rules:
 - MfScDataHandle::CreateData(int): the source passes Windows `long` values (32 bits
   there, 64 here), which are ambiguous between the int and float overloads; inline
   long and unsigned long overloads forward to the int one.
+- MBGUID (MBEngine, SteamboatApp, Steamboat): data1 is `unsigned long`, and data4 is
+  compared through `(const unsigned long *)`: both are the 32-bit Windows long, port_u32.
+- A wide literal cast to the game's 16-bit characters, `(unsigned short *)L"..."`: the
+  literal is UTF-16, u"...".
 - `extern "C" static` (flex output): a linkage on a static function, which clang
   rejects; the function is static.
 - `class ostream;` and the other old iostream classes at file scope: in the port they
@@ -77,6 +81,9 @@ RULES = [
      r'\1 static MfScDataHandle *CreateData(long v) { return CreateData((int)v); }'
      r' static MfScDataHandle *CreateData(unsigned long v) { return CreateData((int)v); }'),
     (re.compile(r'\bextern\s+"C"\s+static\b'), r'static'),
+    (re.compile(r'(struct\s+MBGUID\s*\{\s*\n\s*)unsigned\s+long(\s+data1\s*;)'), r'\1port_u32\2'),
+    (re.compile(r'\(const\s+unsigned\s+long\s*\*\)(\s*(?:\w+\s*\.\s*)?data4\b)'), r'(const port_u32 *)\1'),
+    (re.compile(r'\(((?:const\s+)?(?:unsigned\s+short|WCHAR)\s*\*)\)L"'), r'(\1)u"'),
     (re.compile(r'^class\s+(type_info)\s*;[ \t]*$', re.M),
      r'#include <typeinfo.h> // port: was a declaration of class \1'),
 ]
@@ -163,7 +170,7 @@ DIR_RULES = {
 # files no rule touches
 KEEP = {'SteamboatApp/ios.h', 'SteamboatApp/ostream.h'}
 # a cheap first test before the regular expressions
-NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern')
+NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern', 'MBGUID', 'data4', 'L"')
 
 
 def rewrite(text, rel=None):

@@ -1,3 +1,4 @@
+// PORT: the handle diagnostics print pointers with %p (the source printed their low 32 bits with %x).
 // PiccoloRT.dll 0x100050f0-0x100072ff: MfScDataHandle allocation, garbage collection, diagnostics.
 #include "MfScDataHandle.h"
 #include "MfScHandleHeap.h"
@@ -138,8 +139,8 @@ void MfScDataHandle::InfoShort(MfString *info)
 // EQUIV 0x10005460 ?InfoLong@MfScDataHandle@@QAEXPAVMfString@@@Z: reviewed: as InfoShort, the boxed float is passed through fld/fstp in the original and copied as a dword in ours; the later branches differ only in register choice; same calls, arguments and branches
 void MfScDataHandle::InfoLong(MfString *info)
 {
-    char address[16];
-    info->Format("\tHandle 0x%08x(%s): Count = %d: ", this, IsReadOnly() ? "RO" : "RW", m_refCount);
+    char address[24]; // PORT: room for a 64-bit %p
+    info->Format("\tHandle %p(%s): Count = %d: ", (void *)this, /* PORT: %p */ IsReadOnly() ? "RO" : "RW", m_refCount);
     if (IsType(0x10))
         *info << "DATA_INT: " << (int)m_long;
     else if (IsType(0x20))
@@ -151,7 +152,7 @@ void MfScDataHandle::InfoLong(MfString *info)
     else if (IsType(0x80))
         *info << "DATA_OFLOAT: " << ((MfScObjFloat *)m_data)->mValue;
     else if (IsType(0x1000)) {
-        sprintf(address, "0x%08x", m_pointer);
+        sprintf(address, "%p", (void *)m_pointer); // PORT: %p
         *info << "DATA_POINTER: --> " << address;
     } else if (IsType(0x800))
         *info << "DATA_METHOD: " << m_data->Name();
