@@ -4,6 +4,7 @@
 #include <SDL3/SDL.h>
 
 #include "user.h"
+#include <commctrl.h>
 
 #include <mutex>
 #include <set>

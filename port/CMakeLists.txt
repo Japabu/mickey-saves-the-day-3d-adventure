@@ -17,9 +17,11 @@ set(CMAKE_C_VISIBILITY_PRESET hidden)
 file(GLOB_RECURSE PLATFORM_SOURCES CONFIGURE_DEPENDS platform/*.cpp platform/*.c)
 add_library(platform SHARED ${PLATFORM_SOURCES} platform/README.md)
 target_include_directories(platform SYSTEM PRIVATE compat/include)
+# the platform library exists to export the API the modules call
+set_target_properties(platform PROPERTIES C_VISIBILITY_PRESET default CXX_VISIBILITY_PRESET default)
 target_compile_options(platform PRIVATE -include ${CMAKE_CURRENT_SOURCE_DIR}/compat/prelude.h
   $<$<COMPILE_LANGUAGE:CXX>:-std=gnu++17>)
-target_link_libraries(platform PRIVATE SDL3::SDL3)
+target_link_libraries(platform PRIVATE SDL3::SDL3 "-framework CoreText" "-framework CoreGraphics" "-framework CoreFoundation")
 # FFmpeg decodes Bink, Smacker and the sounds (platform/media)
 find_path(FFMPEG_INCLUDE_DIR libavformat/avformat.h REQUIRED)
 target_include_directories(platform SYSTEM PRIVATE ${FFMPEG_INCLUDE_DIR})

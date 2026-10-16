@@ -224,6 +224,10 @@ EDITS = {
         ('SetWindowLong(', 'SetWindowLongPtr(', 2),
         ('GetWindowLong(', 'GetWindowLongPtr(', 3),
         ('(UINT)mSubMenu', '(UINT_PTR)mSubMenu', 1),
+        # the mouse position of a window message: the sign-extended low and high words
+        # of lParam, which is 64 bits wide here ((lParam << 16) >> 16 kept 48 bits)
+        ('    point.x = (lParam << 16) >> 16;\n    point.y = lParam >> 16;\n',
+         '    point.x = (short)lParam;\n    point.y = (short)(lParam >> 16);\n', 1),
     ],
     # the behaviour functions answer with the machine as an int: the callers (the
     # script's ActivateBehavior/LoadBehavior) only test it, so the port gives 1 or 0

@@ -60,7 +60,7 @@ COMMON = [
 ]
 # Modules whose original exported its whole C interface through a .def file rather
 # than __declspec(dllexport): everything they define is exported
-DEFAULT_VISIBILITY = {'zlib'}
+DEFAULT_VISIBILITY = {'zlib', 'mbruntime'}
 
 # src/options.txt options the port does not use: libpng's MMX code is x86 assembly,
 # so the port builds its portable C path

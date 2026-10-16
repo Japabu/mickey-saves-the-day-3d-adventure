@@ -45,6 +45,31 @@ TYPEDVALUE_VIEW = (
 # MfFileType holds a 4-byte four-character code (read with ReadBytes(4, &type))
 FILETYPE = ('    long m_type;\n', '    port_i32 m_type;    // PORT: a four-character code, 4 bytes in the file\n', 1)
 
+# mflinalg's inline members: the original imports them from mflinalg.dll, which
+# emitted and exported every inline member of its dllexport classes. Here dllexport
+# is a visibility attribute and unused inlines are not emitted, so the views that
+# declare them without a body get mflinalg's body (src/mflinalg/*.h).
+LINALG_INLINES = {
+    'MfActorLib/MfFile_unit.h': [
+        ('    MfVector3 &operator=(const MfVector3 &);\n',
+         '    MfVector3 &operator=(const MfVector3 &v) { x = v.x; y = v.y; z = v.z; return *this; }    // PORT: mflinalg\'s inline\n', 1),
+        ('    MfRotation3();\n'
+         '    ~MfRotation3() {}\n'
+         '    MfRotation3 &operator=(const MfRotation3 &);\n',
+         '    MfRotation3() { q[0] = 1.0f; q[1] = 0; q[2] = 0; q[3] = 0; }    // PORT: mflinalg\'s inline\n'
+         '    ~MfRotation3() {}\n'
+         '    MfRotation3 &operator=(const MfRotation3 &r) { q[0] = r.q[0]; q[1] = r.q[1]; q[2] = r.q[2]; q[3] = r.q[3]; return *this; }    // PORT: mflinalg\'s inline\n', 1),
+    ],
+    'MfActorLib/MfVector3.h': [
+        ('    MfVector3 square();\n',
+         '    MfVector3 square() { return MfVector3(_x * _x, _y * _y, _z * _z); }    // PORT: mflinalg\'s inline\n', 1),
+    ],
+    'MfActorLib/MfTransform3.h': [
+        ('    static MfTransform3 identity();\n',
+         '    static MfTransform3 identity() { return MfTransform3(MfRotation3::identity(), MfVector3()); }    // PORT: mflinalg\'s inline\n', 1),
+    ],
+}
+
 EDITS = {
     'MfActorLib/MfStream.cpp': [
         ('MfStream &MfStream::operator>>(long &i)\n'
@@ -146,3 +171,5 @@ EDITS = {
          '        s << (int)(((MfProtoGeomInfo *)mInfo)->mTriangles != 0);    // PORT: a 32-bit flag\n', 1),
     ],
 }
+assert not set(EDITS) & set(LINALG_INLINES)
+EDITS.update(LINALG_INLINES)

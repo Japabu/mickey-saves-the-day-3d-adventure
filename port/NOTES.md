@@ -105,7 +105,7 @@ Port overrides and rules (SteamboatApp):
 
 ## MBCom
 
-- **[crash]** `src/MBCom/MBCom.h:31-38, 55-59` — `MBGUID::data1` is `unsigned long`, so the struct grows from the 16-byte GUID layout to 24 bytes (data1 8, data2/data3 4, data4 8, 4 bytes of tail padding). `operator<` compares `*(unsigned long *)&guid.data4[0]` and `*(unsigned long *)&guid.data4[4]` as 8-byte loads. The second load covers `data4[4..7]` plus the 4 padding bytes, which are indeterminate in copies (map nodes, stack temporaries). The ordering of `mFactoryMap` then becomes inconsistent: `find` misses registered factories, `MBComFactory::Make` returns 0, and callers dereference null (or the tree is corrupted). Cross-module note: the same 8-byte `data4` pattern in `operator==` reads past the array and past the object, for example `MBEngine/CMBMemFile.h:19-22` and the other MBGUID copies (Steamboat/GameApp.h:18, SteamboatApp/MBGUID.h, MBEngine/*.h). Fix: an override of MBCom.h with `port_u32 data1` (restoring the 16-byte layout), and `data4` compared with 32-bit loads (`port_u32`, or memcpy/memcmp). The other copies need the same change. Format: no file format involved here (keep the 16-byte layout in case MBEngine streams GUIDs). — fixed: port/override/MBCom/MBCom.h (`port_u32 data1`, `static_assert(sizeof(MBGUID) == 16)`, data4 compared as two `port_u32`). Still open: the MBGUID copies in MBEngine (54 headers and dllmain.cpp), Steamboat/GameApp.h and SteamboatApp/MBGUID.h
+- **[crash]** `src/MBCom/MBCom.h:31-38, 55-59` — `MBGUID::data1` is `unsigned long`, so the struct grows from the 16-byte GUID layout to 24 bytes (data1 8, data2/data3 4, data4 8, 4 bytes of tail padding). `operator<` compares `*(unsigned long *)&guid.data4[0]` and `*(unsigned long *)&guid.data4[4]` as 8-byte loads. The second load covers `data4[4..7]` plus the 4 padding bytes, which are indeterminate in copies (map nodes, stack temporaries). The ordering of `mFactoryMap` then becomes inconsistent: `find` misses registered factories, `MBComFactory::Make` returns 0, and callers dereference null (or the tree is corrupted). Cross-module note: the same 8-byte `data4` pattern in `operator==` reads past the array and past the object, for example `MBEngine/CMBMemFile.h:19-22` and the other MBGUID copies (Steamboat/GameApp.h:18, SteamboatApp/MBGUID.h, MBEngine/*.h). Fix: an override of MBCom.h with `port_u32 data1` (restoring the 16-byte layout), and `data4` compared with 32-bit loads (`port_u32`, or memcpy/memcmp). The other copies need the same change. Format: no file format involved here (keep the 16-byte layout in case MBEngine streams GUIDs). — fixed: port/override/MBCom/MBCom.h (`port_u32 data1`, `static_assert(sizeof(MBGUID) == 16)`, data4 compared as two `port_u32`). The other copies (MBEngine headers and dllmain.cpp, Steamboat/GameApp.h, SteamboatApp/MBGUID.h) — fixed by port/rewrite.py's MBGUID rules (`port_u32 data1`, data4 as `port_u32` words)
 - **[minor]** `src/MBCom/MBCom.cpp:13, 39-48` — `unsigned long gRefCount` (64-bit) is updated through `InterlockedIncrement((LPLONG)&gRefCount)` and `InterlockedDecrement((LPLONG)&gRefCount)`, which are 32-bit atomics on the low half. This works on little-endian while the count stays in range, but an extra Uninitialize at 0 leaves 0x00000000FFFFFFFF instead of wrapping the whole word, and the mixed-width access is UB. Fix: declare `gRefCount` as `LONG` in an override. Format: no file format involved. — fixed: port/override/MBCom/MBCom.cpp
 
 ## MfActorLib
@@ -284,7 +284,7 @@ Top 10 hazards:
    include the real class headers in the port.
 7. **[crash]** `src/MBCom/MBCom.h:31-59`: `MBGUID::data1` is `unsigned long`, so the GUID is
    24 bytes and `operator<` reads padding. Factory lookups miss, and `MBComFactory::Make`
-   returns null. — fixed for MBCom: port/override/MBCom/MBCom.h (the MBEngine, Steamboat and SteamboatApp copies are still open)
+   returns null. — fixed for MBCom: port/override/MBCom/MBCom.h (the MBEngine, Steamboat and SteamboatApp copies: fixed by port/rewrite.py's MBGUID rules)
 8. **[crash]** `this` pointers are stored in `GWL_USERDATA` through `SetWindowLong`, which
    truncates them: `mfutil/MfNameDialog.cpp:52`, `MfKeyDialog.cpp:43`, `MfLoggerUI.cpp:56,474,558`
    and `PscContentInfo/MfContent.cpp:176`. Fix: `Set/GetWindowLongPtr`. — fixed for mfutil: port/override/mfutil/MfNameDialog.cpp, MfKeyDialog.cpp, MfLoggerUI.cpp (PscContentInfo still open)
@@ -310,6 +310,42 @@ Also crash-level, outside the top 10: the keyframe and pointer-array sizes in Mf
 - Binary reads in the game code: EG2::Bitmap reads BITMAPFILEHEADER/INFOHEADER (compat wingdi.h
   packs them as Windows does); the scene-graph files go through Graph::FileStream (override); the
   rest of the game reads ini files.
+
+## Resource and ini path (CMBPref, CMBWinFile, CMBResourceZipfile → win32 file layer)
+
+- CMBPref (MBEngine/CMBPref.cpp) reads the whole stream (GetStreamSize, Seek(0), Read), drops
+  `\r`, and parses `[section]` and `key = value` lines; section and key names are compared
+  case-sensitively (std::less), values are trimmed of blanks, comments start with `;`.
+  ApplyChanges rewrites the file on release when something was set (`SetSize(0)` = Seek +
+  SetEndOfFile, then `[sec]\r\n`, `key = value\r\n`). SetLong prints with `%d` (fine for
+  32-bit values).
+- CMBWinFile: CreateFileA(path, GENERIC_READ[|GENERIC_WRITE], FILE_SHARE_READ, OPEN_EXISTING
+  (flag 4) / CREATE_ALWAYS (8) / OPEN_ALWAYS), ReadFile (TRUE with 0 bytes at the end),
+  WriteFile, SetFilePointer(FILE_BEGIN/END/CURRENT, 0xffffffff on error, also used as "tell"),
+  SetEndOfFile, CloseHandle; stream errors travel through SetLastError with engine codes.
+- CMBWinFileSpec: SetPath keeps a trailing `\` (it tests the terminator, an original bug);
+  Update calls FindFirstFileA on the exact path (no wildcard; a directory path must find the
+  directory itself) and, for a path without a drive or leading `\`, replaces it with
+  GetFullPathNameA(<found name>) — so relative paths only work for files in the current
+  directory. Existence and folder tests are GetFileAttributesA. Directory listings
+  (CMBResourceTree, the plugin search) are FindFirstFileA("dir\*.*")/FindNextFileA.
+- DatabaseMgr::Initialize (SimpleNode.cpp): the cd resource path is used if it exists as a
+  folder; otherwise, if it starts with `\`, MBMakeCDPath tries `X:` + path for every drive X
+  with GetDriveTypeA == DRIVE_CDROM. The hd path must exist as a folder.
+- CMBResourceZipfile: `.mbd` files are ordinary zip archives (no comment): the end record is
+  read at -22 from the end, then the central directory; each member is keyed by the
+  MBHashString of its bare name (directories and extension stripped) and the extension as a
+  four-character type; members are stored or deflated (zlib inflate, raw). Fixed for 64-bit in
+  port/edits/MBEngine.py: the zip record structs' 4-byte fields were `unsigned long` and were
+  read with sizeof(field), 8 bytes, so no archive opened.
+- Defaults for vfs::install_defaults (steamboat.ini): ReadPrefs concatenates `hd`/`cd` with
+  `fly`, `mofa` and `muffin` (defaults `fly`, `mofa`, `resources`) without a separator, so
+  `hd` and `cd` need a trailing backslash: `hd = C:\setup\hd\`, `cd = C:\setup\cd\` (unless
+  the CD's template gives fly/mofa/muffin a leading `\`). Scene files are opened relative to the
+  current directory (`<code>scene.ini`, `<code>dialogue.ini`, `gamestate.ini`, `SGDB.ini`,
+  `savedgame<N>.ini`), so they must be in (or be written to) the binaries directory.
+  engine.ini: `[Screen] EnableDirect3D, Fullscreen, DDEnumCallback, ForceSoftware`,
+  `[Boot] GameTitle, Game` (the game DLL name LoadLibrary must resolve; default `gamex86.dll`).
 
 ## Startup sequence
 
