@@ -389,6 +389,8 @@ void Gfx::IndexedVertexShape::Clear()
     m_TCoords.setLength(0);
 }
 
+// the run-time type of Gfx::IndexedVertexShape (values from the original's data section)
+StdBase::TypeInfo const Gfx::IndexedVertexShape::s_TypeInfo = { "Gfx::IndexedVertexShape", &Gfx::Shape::s_TypeInfo };
 // defined after the code: the original loads them from memory
 short const Gfx::IndexedVertexShape::NormalMask = 0x001f;
 short const Gfx::IndexedVertexShape::ColorMask = 0x03e0;

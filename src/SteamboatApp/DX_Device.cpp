@@ -119,6 +119,9 @@ void DX::Device::Create(int driver, DX::DirectDrawSurface *backBuffer, int width
         EnumTextureFormats();
 }
 
+// the first texture format to try (the original's .data)
+int DX::Device::m_StartFormat = -1;
+
 // TODO 0x100ca1c0 ?CreateZBuffer@Device@DX@@QAEXHHH@Z: as Device::Create: the original calls ValList<D3DDriverInfo>::operator[] out of line inside DriverInfo(int), VC6 here inlines it
 void DX::Device::CreateZBuffer(int width, int height, int driver)
 {

@@ -390,6 +390,8 @@ void Gfx::IndexedTriangleSet::ConvertPackedTriStripSetToIndexedTriangleSet(Gfx::
 }
 
 // defined after the code: the original loads it from memory
+// the run-time type of Gfx::IndexedTriangleSet (values from the original's data section)
+StdBase::TypeInfo const Gfx::IndexedTriangleSet::s_TypeInfo = { "Gfx::IndexedTriangleSet", &Gfx::IndexedVertexShape::s_TypeInfo };
 int const Gfx::IndexedTriangleSet::Version = 1;
 
 // 0x100e9770 ??_GIndexedTriangleSet@Gfx@@MAEPAXI@Z

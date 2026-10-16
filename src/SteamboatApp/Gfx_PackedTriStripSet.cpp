@@ -182,6 +182,8 @@ void Gfx::PackedTriStripSet::SetDrawFunction()
 }
 
 // defined after the code: the original loads it from memory
+// the run-time type of Gfx::PackedTriStripSet (values from the original's data section)
+StdBase::TypeInfo const Gfx::PackedTriStripSet::s_TypeInfo = { "Gfx::PackedTriStripSet", &Gfx::PackedVertexShape::s_TypeInfo };
 int const Gfx::PackedTriStripSet::Version = 2;
 
 // 0x100f3760 ??_GPackedTriStripSet@Gfx@@MAEPAXI@Z

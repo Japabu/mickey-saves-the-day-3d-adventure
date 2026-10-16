@@ -60,7 +60,7 @@ COMMON = [
 ]
 # Modules whose original exported its whole C interface through a .def file rather
 # than __declspec(dllexport): everything they define is exported
-DEFAULT_VISIBILITY = {'zlib', 'mbruntime'}
+DEFAULT_VISIBILITY = {'zlib', 'mbruntime', 'MBCom'}
 
 # src/options.txt options the port does not use: libpng's MMX code is x86 assembly,
 # so the port builds its portable C path
@@ -209,6 +209,8 @@ def cmake(path):
         srcs = sources(m)
         if m != 'Steamboat':
             srcs = srcs + [dllmain_stub(m)]
+        else:
+            srcs = srcs + [os.path.join(PORT, 'launcher', 'main.cpp')]    # main() -> WinMain
         kind = 'add_executable' if m == 'Steamboat' else 'add_library'
         lines.append(f'{kind}({m}{"" if m == "Steamboat" else " SHARED"} ' + ' '.join(q(s) for s in srcs) + ')')
         lines.append(f'target_link_libraries({m} PRIVATE ' + ' '.join(deps + ['platform']) + ')')

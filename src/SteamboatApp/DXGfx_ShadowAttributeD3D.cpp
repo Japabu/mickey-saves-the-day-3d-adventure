@@ -88,3 +88,6 @@ void DXGfx::ShadowAttributeD3D::Pop(Graph::PassiveTraverser *traverser) const
 // 0x100d9b80 _$E63
 // 0x100d9bb0 _$E59
 // 0x100d9bc0 _$E62
+
+// the run-time type of DXGfx::ShadowAttributeD3D (values from the original's data section)
+StdBase::TypeInfo const DXGfx::ShadowAttributeD3D::s_TypeInfo = { "DXGfx::ShadowAttributeD3D", &Gfx::ShadowAttribute::s_TypeInfo };

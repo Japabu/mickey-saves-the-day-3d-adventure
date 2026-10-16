@@ -101,3 +101,6 @@ void DXGfx::MaterialAttributeD3D::Read(Graph::Stream *stream)
 // 0x100d96a0 _$E76
 // 0x100d96d0 _$E72
 // 0x100d96e0 _$E75
+
+// the run-time type of DXGfx::MaterialAttributeD3D (values from the original's data section)
+StdBase::TypeInfo const DXGfx::MaterialAttributeD3D::s_TypeInfo = { "DXGfx::MaterialAttributeD3D", &Gfx::MaterialAttribute::s_TypeInfo };

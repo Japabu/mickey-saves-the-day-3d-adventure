@@ -5,6 +5,8 @@
 #include "DX_Exception.h"
 #include "DXGfx_DisplayD3D.h"
 #include "DXGfx_LightD3D.h"
+#include "DXGfx_Surface.h"
+#include "DX_Direct3D.h"
 #include "MBNew.h"
 #include "Gfx_TextureException.h"
 #include "StdBase.h"
@@ -43,6 +45,28 @@ DXGfx::ViewD3D::~ViewD3D()
     Release();
     delete m_pViewport;
     delete m_pDevice;
+}
+
+// TODO 0x100d4130 ?Create@ViewD3D@DXGfx@@UAEXHH@Z: as Device::Create: the original calls ValList<DDDeviceInfo>::operator[] out of line inside GetCurrentDevice(), VC6 here inlines it (67%)
+void DXGfx::ViewD3D::Create(int width, int height)
+{
+    m_pDevice->m_bEnableRendering = FALSE;
+    Release();
+    DXGfx::DisplayD3D *display = dynamic_cast<DXGfx::DisplayD3D *>(Gfx::Display::GetInstance());
+    m_pDevice->Create(display->GetDirect3D()->Driver(), m_pSurface->GetDirectDrawSurface(), width, height);
+    D3DDEVICEDESC7 caps;
+    m_pDevice->m_IDirect3DDevice7->GetCaps(&caps);
+    m_MaxLights = caps.dwMaxActiveLights;
+    if (m_MaxLights > 10)
+        m_MaxLights = 10;
+    if (!m_LightInUse)
+        m_LightInUse = (bool *)MBmalloc_release(m_MaxLights);
+    for (unsigned int i = 0; i < m_MaxLights; i++)
+        m_LightInUse[i] = false;
+    m_pViewport->Create(width, height);
+    m_pDevice->SetRenderState();
+    SetAspectRatio((float)width / height);
+    m_pDevice->m_bEnableRendering = TRUE;
 }
 
 // 0x100d4260 ?Release@ViewD3D@DXGfx@@UAEXXZ
@@ -123,6 +147,11 @@ void DXGfx::ViewD3D::Refresh()
 // 0x100d3f40 _$E22
 // 0x100d3f50 _$E21
 
-// 0x100d44f0 _$E88
-// 0x100d4520 _$E84
-// 0x100d4530 _$E87
+// The initializers below are named by VC6's counter: DXGfx::Surface's three static members
+// (needed by Create) move it by 3 from the original's _$E88/_$E84/_$E87; the bytes match.
+// 0x100d44f0 _$E91
+// 0x100d4520 _$E87
+// 0x100d4530 _$E90
+
+// the run-time type of DXGfx::ViewD3D (values from the original's data section)
+StdBase::TypeInfo const DXGfx::ViewD3D::s_TypeInfo = { "DXGfx::ViewD3D", &Gfx::View::s_TypeInfo };

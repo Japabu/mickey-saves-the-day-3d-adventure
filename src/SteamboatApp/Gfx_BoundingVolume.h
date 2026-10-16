@@ -156,7 +156,7 @@ public:
     Gfx::LineSegment3f GetEdge(unsigned int) const;
     virtual const Vec3<float> &GetCenter() const;
     Vec3<float> GetDiagonal() const { return m_Maxima - m_Minima; }
-    virtual float GetRadius() const;
+    virtual float GetRadius() const { return GetDiagonal().mag() * 0.5f; }
     float GetSurfaceArea() const;
     Vec3<float> FindClosestPoint(const Gfx::BoundingSphere &, Vec3<float> &, Vec3<float> &, const TMatrix4<float> &) const;
     Vec3<float> FindClosestPoint(const Gfx::BoundingBox &, Vec3<float> &, Vec3<float> &, const TMatrix4<float> &) const;
@@ -198,4 +198,11 @@ protected:
     Vec3<float> m_Minima;
     Vec3<float> m_Maxima;
 };
+
+// the box's centre, cached in the base
+inline const Vec3<float> &BoundingBox::GetCenter() const
+{
+    SetCenter((m_Maxima + m_Minima) * 0.5f);
+    return BoundingVolume::GetCenter();
+}
 }

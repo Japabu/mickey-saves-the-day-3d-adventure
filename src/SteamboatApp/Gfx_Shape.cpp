@@ -92,6 +92,8 @@ void Gfx::Shape::ReadInternals(Graph::Stream *, int)
 {
 }
 
+// the run-time type of Gfx::Shape (values from the original's data section)
+StdBase::TypeInfo const Gfx::Shape::s_TypeInfo = { "Gfx::Shape", &Gfx::Node::s_TypeInfo };
 int const Gfx::Shape::Version = 0;
 
 // 0x100f3fa0 ??_GShape@Gfx@@MAEPAXI@Z

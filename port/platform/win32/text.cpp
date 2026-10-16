@@ -52,9 +52,10 @@ static CTLineRef line_of(void *font, const char *s, int n)
     CFStringRef str = CFStringCreateWithBytes(0, (const UInt8 *)s, n, kCFStringEncodingWindowsLatin1, false);
     if (!str)
         return 0;
-    CFStringRef keys[] = {kCTFontAttributeName};
-    CFTypeRef values[] = {(CTFontRef)font};
-    CFDictionaryRef attrs = CFDictionaryCreate(0, (const void **)keys, (const void **)values, 1,
+    // the glyphs take the context's fill colour (the default would be black: an empty mask)
+    CFStringRef keys[] = {kCTFontAttributeName, kCTForegroundColorFromContextAttributeName};
+    CFTypeRef values[] = {(CTFontRef)font, kCFBooleanTrue};
+    CFDictionaryRef attrs = CFDictionaryCreate(0, (const void **)keys, (const void **)values, 2,
                                                &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
     CFAttributedStringRef as = CFAttributedStringCreate(0, str, attrs);
     CTLineRef line = CTLineCreateWithAttributedString(as);

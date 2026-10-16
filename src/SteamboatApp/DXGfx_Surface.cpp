@@ -237,3 +237,6 @@ bool DXGfx::Surface::CopyBitmap(HBITMAP bitmap)
 // 0x100db0d0 _$E31
 // 0x100db100 _$E27
 // 0x100db110 _$E30
+
+// the run-time type of DXGfx::Surface (values from the original's data section)
+StdBase::TypeInfo const DXGfx::Surface::s_TypeInfo = { "DXGfx::Surface", &Gfx::Surface::s_TypeInfo };

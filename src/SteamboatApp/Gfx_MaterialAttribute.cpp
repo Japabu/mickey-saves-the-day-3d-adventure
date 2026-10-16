@@ -225,6 +225,8 @@ void Gfx::MaterialAttribute::ReadInternals(Graph::Stream *stream, int version, G
     }
 }
 
+// the run-time type of Gfx::MaterialAttribute (values from the original's data section)
+StdBase::TypeInfo const Gfx::MaterialAttribute::s_TypeInfo = { "Gfx::MaterialAttribute", &Gfx::Attribute::s_TypeInfo };
 int const Gfx::MaterialAttribute::Version = 7;
 std::stack<Gfx::MaterialAttribute const *, std::vector<Gfx::MaterialAttribute const *, std::allocator<Gfx::MaterialAttribute const *> > > Gfx::MaterialAttribute::s_Stack;
 

@@ -55,11 +55,25 @@ def symbols(paths):
             undefined.add(name)
         elif ' external ' in line or 'weak external' in line:
             defined.add(name)
-            if 'private external' not in line:
+            if 'private external' not in line and 'automatically hidden' not in line:
                 exported.add(name)
         elif 'non-external' in line:
             defined.add(name)
     return defined, exported, undefined
+
+
+def duplicates(paths):
+    """Strong external symbols that more than one object file of a module defines:
+    a function the decompilation wrote in two units (often a copy the original linker
+    folded), which the port's linker rejects."""
+    seen = collections.defaultdict(list)
+    for p in paths:
+        out = subprocess.run([NM, '-m', p], capture_output=True, text=True).stdout
+        for line in out.split('\n'):
+            if ' external ' in line and '(undefined)' not in line and 'weak' not in line \
+                    and '(__TEXT,__text)' in line or ('(__DATA' in line and ' external ' in line and 'weak' not in line):
+                seen[line.rsplit(' ', 1)[-1]].append(os.path.basename(p))
+    return {s: f for s, f in seen.items() if len(f) > 1}
 
 
 def objects(module):
@@ -94,7 +108,10 @@ def main():
         code = [s for s in missing if s.startswith('__Z')]
         total['platform'] += len(platform)
         total['code'] += len(code)
-        print(f'{m:16s} {len(objects(m)):4d} objects: {len(platform)} platform symbols, {len(code)} C++ symbols missing')
+        dups = duplicates(objects(m))
+        print(f'{m:16s} {len(objects(m)):4d} objects: {len(platform)} platform symbols, {len(code)} C++ symbols missing'
+              + (f', {len(dups)} defined twice' if dups else ''))
+        total['duplicate'] += len(dups)
         if len(mods) <= 3:
             for s in platform:
                 print('    ' + s)
@@ -103,7 +120,12 @@ def main():
             for s in demangled:
                 if s:
                     print('    ' + s)
-    print(f"all: {total['platform']} platform, {total['code']} C++ symbols missing")
+            names = subprocess.run(['c++filt'], input='\n'.join(d[1:] for d in dups),
+                                   capture_output=True, text=True).stdout.split('\n')
+            for name, (sym, files) in zip(names, sorted(dups.items())):
+                print(f'    twice: {name}  ({", ".join(files)})')
+    print(f"all: {total['platform']} platform, {total['code']} C++ symbols missing, "
+          f"{total['duplicate']} defined twice")
 
 
 if __name__ == '__main__':

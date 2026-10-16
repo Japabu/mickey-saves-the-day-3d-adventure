@@ -125,6 +125,8 @@ void Gfx::PolyLineSet::SetDrawFunction()
 }
 
 // defined after the code: the original loads it from memory
+// the run-time type of Gfx::PolyLineSet (values from the original's data section)
+StdBase::TypeInfo const Gfx::PolyLineSet::s_TypeInfo = { "Gfx::PolyLineSet", &Gfx::PackedVertexShape::s_TypeInfo };
 int const Gfx::PolyLineSet::Version = 0;
 
 // 0x100fb920 ??_GPolyLineSet@Gfx@@MAEPAXI@Z

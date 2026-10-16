@@ -324,3 +324,6 @@ void DXGfx::PolyLineSetD3D::SetDrawFunction()
 // 0x100d90d0 ?reallocMem@?$Vec@U_D3DVERTEX@@@@IAEXHHH@Z
 // TODO 0x100d91c0 ?reallocMem@?$Vec@U_D3DLVERTEX@@@@IAEXHHH@Z: not emitted: our copy inlines Vec<D3DLVERTEX>::reallocMem at every call (inline budget), and emits initElements<D3DVERTEX> instead
 // TODO 0x100d92b0 ?initElements@?$Vec@U_D3DLVERTEX@@@@IAEXHH@Z: 55% - rep stosd only with /Oa at the end of the unit (template bodies), which breaks the reallocMem instances
+
+// the run-time type of DXGfx::PolyLineSetD3D (values from the original's data section)
+StdBase::TypeInfo const DXGfx::PolyLineSetD3D::s_TypeInfo = { "DXGfx::PolyLineSetD3D", &Gfx::PolyLineSet::s_TypeInfo };

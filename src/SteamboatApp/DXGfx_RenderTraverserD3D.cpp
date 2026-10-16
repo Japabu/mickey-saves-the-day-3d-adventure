@@ -40,3 +40,6 @@ int DXGfx::RenderTraverserD3D::GetMultiTexture()
 // 0x100da970 _$E46
 // 0x100da9a0 _$E42
 // 0x100da9b0 _$E45
+
+// the run-time type of DXGfx::RenderTraverserD3D (values from the original's data section)
+StdBase::TypeInfo const DXGfx::RenderTraverserD3D::s_TypeInfo = { "DXGfx::RenderTraverserD3D", &Gfx::RenderTraverser::s_TypeInfo };

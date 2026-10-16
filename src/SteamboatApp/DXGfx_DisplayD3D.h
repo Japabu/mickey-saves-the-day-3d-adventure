@@ -41,9 +41,9 @@ public:
     int IsFullScreen() { return m_bFullscreen; }
     void SetEmulation(int emulation) { m_bEmulation = emulation; }
     int IsEmulation() { return m_bEmulation; }
-    void SetFrontBuffer(IDirectDrawSurface7 *);
+    void SetFrontBuffer(IDirectDrawSurface7 *buffer) { m_FrontBuffer = buffer; }
     void SetBackBuffer(DXGfx::Surface *);
-    void SetBackBuffer(IDirectDrawSurface7 *);
+    void SetBackBuffer(IDirectDrawSurface7 *buffer) { m_BackBuffer = buffer; }
     void SetDisplaySurface(DXGfx::Surface *);
     void CheckForPalettized();
     int IgnoreWM_SIZE() { return m_bIgnoreWM_SIZE; }

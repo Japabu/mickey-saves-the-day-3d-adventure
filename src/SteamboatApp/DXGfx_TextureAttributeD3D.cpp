@@ -279,3 +279,6 @@ unsigned char *DXGfx::TextureAttributeD3D::GetTextureCache(Gfx::RefreshTraverser
 
 // Template and inline instances this unit also emits:
 // EQUIV 0x100da7a0 ?find@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QBEIPBDII@Z: reviewed: npos is the constant -1 in the original and loaded from memory by VC6 (as Actor.cpp rfind); nothing else differs. Was: 98% - the inline instance compiles differently here
+
+// the run-time type of DXGfx::TextureAttributeD3D (values from the original's data section)
+StdBase::TypeInfo const DXGfx::TextureAttributeD3D::s_TypeInfo = { "DXGfx::TextureAttributeD3D", &Gfx::TextureAttribute::s_TypeInfo };

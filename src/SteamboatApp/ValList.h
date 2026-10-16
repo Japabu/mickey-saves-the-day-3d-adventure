@@ -94,7 +94,12 @@ public:
     void Swap(int, int);
     void Sort(int (__cdecl *)(const T &, const T &));
     void Sort();
-    ValList<T> &operator=(const ValList<T> &);
+    ValList<T> &operator=(const ValList<T> &l)
+    {
+        RemoveAll();
+        AddList(l);
+        return *this;
+    }
     T &operator[](int i)
     {
         if (cnum == i)

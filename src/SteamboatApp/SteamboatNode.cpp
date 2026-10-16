@@ -3739,7 +3739,7 @@ void SteamboatNode::RemoveDatabase(const char *name)
 // 0x100b3f70 ?_Ucopy@?$vector@V?$MBComPtr@VIMBScreenPoly@@@@V?$MBAllocator@V?$MBComPtr@VIMBScreenPoly@@@@@@@std@@IAEPAV?$MBComPtr@VIMBScreenPoly@@@@PBV3@0PAV3@@Z
 // 0x100b3fc0 ?_Ufill@?$vector@V?$MBComPtr@VIMBScreenPoly@@@@V?$MBAllocator@V?$MBComPtr@VIMBScreenPoly@@@@@@@std@@IAEXPAV?$MBComPtr@VIMBScreenPoly@@@@IABV3@@Z
 // 0x100b41a0 ??1?$ValList@UDXDisplayModeInfo@DX@@@@QAE@XZ
-// 0x100b4210 ??A?$ValList@UDDDeviceInfo@DX@@@@QAEAAUDDDeviceInfo@DX@@H@Z
+// TODO 0x100b4210 ??A?$ValList@UDDDeviceInfo@DX@@@@QAEAAUDDDeviceInfo@DX@@H@Z: inline in ValList.h; with DisplayD3D's inline buffer setters CreateDisplay's inline budget changes and this unit inlines every call, so no out-of-line copy is emitted here
 // 0x100b4570 ?_QueryInterface@?$MBComPtr@VISBClickable@@@@AAEJABQAVIMBUnknown@@@Z
 // 0x100b4760 ?_QueryInterface@?$MBComPtr@VIMBViewManager@@@@AAEJABQAVIMBUnknown@@@Z
 // 0x100b4800 ?fill@std@@YAXPAV?$MBComPtr@VIMBScreenPoly@@@@0ABV2@@Z

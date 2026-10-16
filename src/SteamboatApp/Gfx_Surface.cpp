@@ -12,3 +12,6 @@ char const * Gfx::Surface::GetTypeName() const
 {
     return s_TypeInfo.typeName;
 }
+
+// the run-time type of Gfx::Surface (values from the original's data section)
+StdBase::TypeInfo const Gfx::Surface::s_TypeInfo = { "Gfx::Surface", &StdBase::s_TypeInfo };

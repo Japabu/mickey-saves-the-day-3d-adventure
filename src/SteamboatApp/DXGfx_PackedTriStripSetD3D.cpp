@@ -245,3 +245,6 @@ void DXGfx::PackedTriStripSetD3D::SetDrawFunction()
 // 0x100d7180 ??1?$Vec@U_D3DDRAWPRIMITIVESTRIDEDDATA@@@@UAE@XZ
 // 0x100d71b0 ?reallocMem@?$Vec@U_D3DDRAWPRIMITIVESTRIDEDDATA@@@@IAEXHHH@Z
 // TODO 0x100d72b0 ?initElements@?$Vec@U_D3DDRAWPRIMITIVESTRIDEDDATA@@@@IAEXHH@Z: 46% - rep movsd copy of the zero element only with /Oa at the end of the unit (template bodies), which breaks reallocMem
+
+// the run-time type of DXGfx::PackedTriStripSetD3D (values from the original's data section)
+StdBase::TypeInfo const DXGfx::PackedTriStripSetD3D::s_TypeInfo = { "DXGfx::PackedTriStripSetD3D", &Gfx::PackedTriStripSet::s_TypeInfo };

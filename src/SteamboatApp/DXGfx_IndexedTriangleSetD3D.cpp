@@ -273,3 +273,6 @@ void DXGfx::IndexedTriangleSetD3D::SetDrawFunction()
 // 0x100d7f40 _$E123
 // 0x100d7f70 _$E119
 // 0x100d7f80 _$E122
+
+// the run-time type of DXGfx::IndexedTriangleSetD3D (values from the original's data section)
+StdBase::TypeInfo const DXGfx::IndexedTriangleSetD3D::s_TypeInfo = { "DXGfx::IndexedTriangleSetD3D", &Gfx::IndexedTriangleSet::s_TypeInfo };

@@ -164,3 +164,6 @@ void DXGfx::LightD3D::TurnOff()
 // 0x100d66f0 _$E84
 // 0x100d6720 _$E80
 // 0x100d6730 _$E83
+
+// the run-time type of DXGfx::LightD3D (values from the original's data section)
+StdBase::TypeInfo const DXGfx::LightD3D::s_TypeInfo = { "DXGfx::LightD3D", &Gfx::Light::s_TypeInfo };

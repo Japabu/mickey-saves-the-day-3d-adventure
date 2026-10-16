@@ -4,7 +4,6 @@ namespace DX {
 class Exception {
 public:
     virtual ~Exception();
-    Exception(DX::Exception const &);
     Exception(char *);
     Exception(long, char *, int, char *);
     Exception(long, char *, ...);
