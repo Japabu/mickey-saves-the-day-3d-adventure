@@ -20,6 +20,7 @@ public:
     VisTData();
 };
 
+template <>
 inline VisTData<float>::VisTData()
 {
     epsilon = 1e-4f;

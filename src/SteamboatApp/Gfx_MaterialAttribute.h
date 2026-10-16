@@ -10,6 +10,8 @@ namespace Gfx { class WriteTraverser; }
 namespace Graph { class PassiveTraverser; }
 namespace Graph { class Stream; }
 
+namespace DXGfx { class IndexedTriangleSetD3D; class PackedTriStripSetD3D; class PolyLineSetD3D; }
+
 namespace Gfx {
 // Surface material: the colours and power of a Direct3D material plus the
 // shading, culling and depth-buffer settings of the nodes below it (no PDB
@@ -41,6 +43,10 @@ protected:
     static int s_CurrentTypeCount;
     int m_TypeHandle;
 private:
+    // the Direct3D shapes read the current material (VC6 did not check access here)
+    friend class DXGfx::IndexedTriangleSetD3D;
+    friend class DXGfx::PackedTriStripSetD3D;
+    friend class DXGfx::PolyLineSetD3D;
     static std::stack<Gfx::MaterialAttribute const *, std::vector<Gfx::MaterialAttribute const *, std::allocator<Gfx::MaterialAttribute const *> > > s_Stack;
     static int const Version;
 public:
