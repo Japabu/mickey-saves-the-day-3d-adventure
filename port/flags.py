@@ -67,29 +67,48 @@ def sources(module):
             if not os.path.basename(p).startswith('zz_')]
 
 
+_OVERLAY = None
+_OVERLAY_LOCK = __import__('threading').Lock()
+
+
 def overlay():
-    """A clang VFS overlay that maps every src/ file with a copy under port/override/
-    (same relative path) onto that copy, headers included: clang then compiles and
-    includes the copy wherever the original is named. Written to out/port/overlay.yaml."""
+    """A clang VFS overlay that maps src/ files onto their port versions, headers
+    included, so clang compiles and includes the port version wherever the original is
+    named: a copy under port/override/ (same path under src/), else a mechanically
+    rewritten copy from port/rewrite.py. Written once per process to
+    out/port/overlay.yaml."""
+    global _OVERLAY
+    with _OVERLAY_LOCK:
+        if not _OVERLAY:
+            _OVERLAY = _write_overlay()
+    return _OVERLAY
+
+
+def _write_overlay():
     import json
+    sys.path.insert(0, PORT)
+    import rewrite
+    mapped = dict(rewrite.generated())
     top = os.path.join(PORT, 'override')
-    roots = {}
     for base, _, files in os.walk(top):
         for f in files:
             if f.startswith('.') or f.endswith('.md'):
                 continue
-            rel = os.path.relpath(os.path.join(base, f), top)
-            d = os.path.dirname(os.path.join(SRC, rel))
-            roots.setdefault(d, []).append({'type': 'file', 'name': f,
-                                            'external-contents': os.path.join(base, f)})
+            mapped[os.path.join(SRC, os.path.relpath(os.path.join(base, f), top))] = os.path.join(base, f)
+    roots = {}
+    for src, dst in mapped.items():
+        roots.setdefault(os.path.dirname(src), []).append(
+            {'type': 'file', 'name': os.path.basename(src), 'external-contents': dst})
     data = {'version': 0, 'case-sensitive': 'false', 'fallthrough': True,
-            'roots': [{'type': 'directory', 'name': d, 'contents': c} for d, c in sorted(roots.items())]}
+            'roots': [{'type': 'directory', 'name': d, 'contents': sorted(c, key=lambda e: e['name'])}
+                      for d, c in sorted(roots.items())]}
     path = os.path.join(ROOT, 'out', 'port', 'overlay.yaml')
     os.makedirs(os.path.dirname(path), exist_ok=True)
     text = json.dumps(data, indent=1)
     if not os.path.isfile(path) or open(path).read() != text:
-        with open(path, 'w') as f:
+        with open(path + '.tmp', 'w') as f:
             f.write(text)
+        os.replace(path + '.tmp', path)
     return path
 
 
