@@ -319,5 +319,15 @@ def generated():
 
 
 if __name__ == '__main__':
-    for s, d in sorted(generated().items()):
-        print(os.path.relpath(s, SRC))
+    import sys
+    if sys.argv[1:2] == ['--long']:
+        # convert files (e.g. overrides) to the 32-bit integer model in place
+        for f in sys.argv[2:]:
+            text = open(f, encoding='latin-1').read()
+            new = drop_duplicate_overloads(text, windows_long(text))
+            if new != text:
+                open(f, 'w', encoding='latin-1').write(new)
+                print('converted', f)
+    else:
+        for s, d in sorted(generated().items()):
+            print(os.path.relpath(s, SRC))

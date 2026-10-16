@@ -338,30 +338,12 @@ void Raster::note_extent(const SVert *v)
 
 static inline int64_t fixed(float v) { return (int64_t)lrintf(v * 16.0f); }
 
-void Raster::triangle(const SVert *v0, const SVert *v1, const SVert *v2)
+void Raster::draw_triangle(const SVert *v0, const SVert *v1, const SVert *v2)
 {
     int64_t X0 = fixed(v0->x), Y0 = fixed(v0->y), X1 = fixed(v1->x), Y1 = fixed(v1->y), X2 = fixed(v2->x), Y2 = fixed(v2->y);
     int64_t area = (X1 - X0) * (Y2 - Y0) - (X2 - X0) * (Y1 - Y0);
     if (area == 0)
         return;
-    // area > 0: clockwise on the screen (y down)
-    if ((cull == D3DCULL_CW && area > 0) || (cull == D3DCULL_CCW && area < 0))
-        return;
-    note_extent(v0);
-    note_extent(v1);
-    note_extent(v2);
-    if (fill == D3DFILL_WIREFRAME) {
-        line(v0, v1, false);
-        line(v1, v2, false);
-        line(v2, v0, false);
-        return;
-    }
-    if (fill == D3DFILL_POINT) {
-        point(v0);
-        point(v1);
-        point(v2);
-        return;
-    }
     if (area < 0) {
         std::swap(v1, v2);
         std::swap(X1, X2);
@@ -442,13 +424,10 @@ void Raster::triangle(const SVert *v0, const SVert *v1, const SVert *v2)
             e2 += e[2].dx;
         }
     }
-    target->version++;
 }
 
-void Raster::line(const SVert *v0, const SVert *v1, bool last)
+void Raster::draw_line(const SVert *v0, const SVert *v1, bool last)
 {
-    note_extent(v0);
-    note_extent(v1);
     float dx = v1->x - v0->x, dy = v1->y - v0->y;
     int n = attribute_count(nsets);
     float A0[A_MAX], A1[A_MAX], a[A_MAX], dadx[A_MAX] = {}, dady[A_MAX] = {};
@@ -458,7 +437,7 @@ void Raster::line(const SVert *v0, const SVert *v1, bool last)
     float len = xmajor ? dx : dy;
     if (len == 0) {
         if (last)
-            point(v1);
+            draw_point(v1);
         return;
     }
     // gradients along the line for the texture level
@@ -486,12 +465,10 @@ void Raster::line(const SVert *v0, const SVert *v1, bool last)
         float w = a[A_RHW] > 0 ? 1.0f / a[A_RHW] : 0;
         pixel(x, y, a[A_Z], w, a, dadx, dady);
     }
-    target->version++;
 }
 
-void Raster::point(const SVert *v)
+void Raster::draw_point(const SVert *v)
 {
-    note_extent(v);
     int x = (int)floorf(v->x + 0.5f), y = (int)floorf(v->y + 0.5f);
     if (x < clip.left || x >= clip.right || y < clip.top || y >= clip.bottom)
         return;
@@ -499,7 +476,6 @@ void Raster::point(const SVert *v)
     float a[A_MAX], d[A_MAX] = {};
     load(v, n, a);
     pixel(x, y, a[A_Z], v->rhw > 0 ? 1.0f / v->rhw : 0, a, d, d);
-    target->version++;
 }
 
 } // namespace dx

@@ -48,10 +48,10 @@ Port overrides and rules (SteamboatApp):
 - Graph::Stream (scene graph files: Gfx_*, Graph_*): `Read(unsigned long *)` read 4 bytes into
   an 8-byte `unsigned long`, and the texel colour of Gfx_TextureAttribute was read as one. Fixed
   by rewrite.py's 32-bit long (the overrides that patched these are gone).
-- For G2 (shapes): Gfx_IndexedVertexShape.cpp and Gfx_PackedVertexShape.cpp store and load
-  packed colours as `*(unsigned long *)&m_CList[k]`; with an 8-byte `unsigned long` that writes
-  over the next element (the store of 0xff000000 into k + 1 hides it, the loads read 8 bytes).
-  These need a 32-bit type.
+- Gfx_IndexedVertexShape.cpp and Gfx_PackedVertexShape.cpp store and load packed colours as
+  `*(unsigned long *)&m_CList[k]`, and DX_DirectDrawSurface.cpp writes 32-bit pixels through
+  `unsigned long`: 8 bytes each with a 64-bit long. Fixed by rewrite.py's 32-bit long (their
+  overrides are gone).
 - The `throw (long)__LINE__` error codes (CSBInventory, SavedGameDB, SteamboatNode) are caught as
   `long`: harmless, the value fits.
 - The saved games and the saved-game database are written through the engine's preference files
