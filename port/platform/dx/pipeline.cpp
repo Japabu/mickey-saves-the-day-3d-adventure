@@ -586,6 +586,7 @@ HRESULT Device::draw(D3DPRIMITIVETYPE type, DWORD fvf, const void *data, const _
     default:
         return DDERR_INVALIDPARAMS;
     }
+    d.r.flush();
     if (d.r.extents) {
         clipStatus.minx = d.r.minx;
         clipStatus.maxx = d.r.maxx;

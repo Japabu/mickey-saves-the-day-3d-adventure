@@ -6,6 +6,11 @@
 
 #include <math.h>
 #include <algorithm>
+#include <atomic>
+#include <condition_variable>
+#include <functional>
+#include <mutex>
+#include <thread>
 
 namespace dx {
 
@@ -476,6 +481,185 @@ void Raster::draw_point(const SVert *v)
     float a[A_MAX], d[A_MAX] = {};
     load(v, n, a);
     pixel(x, y, a[A_Z], v->rhw > 0 ? 1.0f / v->rhw : 0, a, d, d);
+}
+
+// ---- recording and the banded drawing
+
+void Raster::triangle(const SVert *v0, const SVert *v1, const SVert *v2)
+{
+    int64_t X0 = fixed(v0->x), Y0 = fixed(v0->y), X1 = fixed(v1->x), Y1 = fixed(v1->y), X2 = fixed(v2->x), Y2 = fixed(v2->y);
+    int64_t area = (X1 - X0) * (Y2 - Y0) - (X2 - X0) * (Y1 - Y0);
+    if (area == 0)
+        return;
+    // area > 0: clockwise on the screen (y down)
+    if ((cull == D3DCULL_CW && area > 0) || (cull == D3DCULL_CCW && area < 0))
+        return;
+    if (fill == D3DFILL_WIREFRAME) {
+        line(v0, v1, false);
+        line(v1, v2, false);
+        line(v2, v0, false);
+        return;
+    }
+    if (fill == D3DFILL_POINT) {
+        point(v0);
+        point(v1);
+        point(v2);
+        return;
+    }
+    note_extent(v0);
+    note_extent(v1);
+    note_extent(v2);
+    Cmd c;
+    c.kind = Cmd::TRIANGLE;
+    c.last = false;
+    c.y0 = (int)floorf(fminf(v0->y, fminf(v1->y, v2->y))) - 1;
+    c.y1 = (int)ceilf(fmaxf(v0->y, fmaxf(v1->y, v2->y))) + 2;
+    if (c.y1 <= clip.top || c.y0 >= clip.bottom)
+        return;
+    c.v[0] = *v0;
+    c.v[1] = *v1;
+    c.v[2] = *v2;
+    cmds.push_back(c);
+    work += (area < 0 ? -area : area) / 512 + 16; // half the bounding area, in pixels
+}
+
+void Raster::line(const SVert *v0, const SVert *v1, bool last)
+{
+    note_extent(v0);
+    note_extent(v1);
+    Cmd c;
+    c.kind = Cmd::LINE;
+    c.last = last;
+    c.y0 = (int)floorf(fminf(v0->y, v1->y)) - 1;
+    c.y1 = (int)ceilf(fmaxf(v0->y, v1->y)) + 2;
+    if (c.y1 <= clip.top || c.y0 >= clip.bottom)
+        return;
+    c.v[0] = *v0;
+    c.v[1] = *v1;
+    cmds.push_back(c);
+    work += (int64_t)(fabsf(v1->x - v0->x) + fabsf(v1->y - v0->y)) + 16;
+}
+
+void Raster::point(const SVert *v)
+{
+    note_extent(v);
+    Cmd c;
+    c.kind = Cmd::POINT;
+    c.last = false;
+    c.y0 = (int)floorf(v->y) - 1;
+    c.y1 = (int)ceilf(v->y) + 2;
+    c.v[0] = *v;
+    cmds.push_back(c);
+    work += 16;
+}
+
+void Raster::run(const std::vector<Cmd> &list, int y0, int y1)
+{
+    clip.top = y0;
+    clip.bottom = y1;
+    for (const Cmd &c : list) {
+        if (c.y1 <= y0 || c.y0 >= y1)
+            continue;
+        switch (c.kind) {
+        case Cmd::TRIANGLE: draw_triangle(&c.v[0], &c.v[1], &c.v[2]); break;
+        case Cmd::LINE: draw_line(&c.v[0], &c.v[1], c.last); break;
+        case Cmd::POINT: draw_point(&c.v[0]); break;
+        }
+    }
+}
+
+// Worker threads for the bands: run(n, job) calls job(0..n-1), spread over the
+// workers and the calling thread, and returns when all are done.
+namespace {
+class Pool {
+public:
+    static Pool &get()
+    {
+        static Pool *pool = new Pool; // never destroyed: workers outlive static destructors
+        return *pool;
+    }
+    int threads() const { return (int)workers.size() + 1; }
+    void run(int n, const std::function<void(int)> &job)
+    {
+        std::unique_lock<std::mutex> lock(m);
+        this->job = &job;
+        count = n;
+        next = 0;
+        pending = (int)workers.size();
+        generation++;
+        wake.notify_all();
+        lock.unlock();
+        work();
+        lock.lock();
+        done.wait(lock, [this] { return pending == 0; });
+        this->job = 0;
+    }
+
+private:
+    Pool()
+    {
+        unsigned n = std::thread::hardware_concurrency();
+        n = n < 1 ? 1 : n > 8 ? 8 : n;
+        for (unsigned i = 1; i < n; i++)
+            workers.emplace_back([this] { loop(); });
+        for (std::thread &t : workers)
+            t.detach();
+    }
+    void work()
+    {
+        for (int i; (i = next++) < count;)
+            (*job)(i);
+    }
+    void loop()
+    {
+        unsigned seen = 0;
+        for (;;) {
+            std::unique_lock<std::mutex> lock(m);
+            wake.wait(lock, [&] { return generation != seen; });
+            seen = generation;
+            lock.unlock();
+            work();
+            lock.lock();
+            if (--pending == 0)
+                done.notify_one();
+        }
+    }
+    std::vector<std::thread> workers;
+    std::mutex m;
+    std::condition_variable wake, done;
+    const std::function<void(int)> *job = 0;
+    std::atomic<int> next{0};
+    int count = 0, pending = 0;
+    unsigned generation = 0;
+};
+} // namespace
+
+void Raster::flush()
+{
+    if (cmds.empty())
+        return;
+    RECT full = clip;
+    enum { BAND = 32, PARALLEL_WORK = 20000 };
+    int rows = full.bottom - full.top;
+    int bands = (rows + BAND - 1) / BAND;
+    Pool *pool = work >= PARALLEL_WORK && bands > 1 ? &Pool::get() : 0;
+    std::vector<Cmd> list;
+    list.swap(cmds); // copies of the state below do not copy the list
+    if (!pool || pool->threads() == 1) {
+        run(list, full.top, full.bottom);
+    } else {
+        // each band on its own copy of the state: the bands share no pixels
+        pool->run(bands, [&](int b) {
+            Raster band = *this;
+            int y0 = full.top + b * BAND;
+            band.run(list, y0, y0 + BAND < full.bottom ? y0 + BAND : full.bottom);
+        });
+    }
+    cmds.swap(list);
+    clip = full;
+    cmds.clear();
+    work = 0;
+    target->version++;
 }
 
 } // namespace dx

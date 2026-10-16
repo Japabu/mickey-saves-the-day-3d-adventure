@@ -99,10 +99,28 @@ struct Raster {
     bool extents;
     float minx, maxx, miny, maxy;
 
+    // Primitives are recorded (with culling and the extents) and drawn by flush(), in
+    // horizontal bands on several threads when there is enough to draw. Each band
+    // draws the primitives in order, so the result is the same as drawing in one go.
     void triangle(const SVert *a, const SVert *b, const SVert *c);
     void line(const SVert *a, const SVert *b, bool last);
     void point(const SVert *a);
+    void flush();
+
+    struct Cmd {
+        enum Kind : uint8_t { TRIANGLE, LINE, POINT } kind;
+        bool last;
+        int y0, y1; // rows it can touch
+        SVert v[3];
+    };
+    std::vector<Cmd> cmds;
+    int64_t work = 0; // estimated pixels
+
     void note_extent(const SVert *v);
+    void draw_triangle(const SVert *a, const SVert *b, const SVert *c);
+    void draw_line(const SVert *a, const SVert *b, bool last);
+    void draw_point(const SVert *a);
+    void run(const std::vector<Cmd> &list, int y0, int y1); // draws primitives on rows y0..y1-1
 
     // one pixel: a holds the interpolated attributes divided by rhw (see raster.cpp)
     void pixel(int x, int y, float z, float w, const float *a, const float *dadx, const float *dady);
