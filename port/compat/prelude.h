@@ -38,4 +38,41 @@
 typedef int port_i32;
 typedef unsigned int port_u32;
 
+
+// libc++ decides its ABI from _WIN32 && _MSC_VER (both defined for the source) and would
+// then expect the Microsoft runtime's headers (<new.h>, <vcruntime_exception.h>). Its
+// configuration is read once, here, with the two hidden, so it sees plain macOS.
+#ifdef __cplusplus
+#pragma push_macro("_WIN32")
+#pragma push_macro("_MSC_VER")
+#undef _WIN32
+#undef _MSC_VER
+#include <cstddef>
+#include <new>
+#include <exception>
+#include <typeinfo>
+#pragma pop_macro("_MSC_VER")
+#pragma pop_macro("_WIN32")
+#endif
+
+
+// Visual C++ binds temporaries to non-const references; the port's copies of such calls
+// pass the temporary through this (see port/rewrite.py).
+#ifdef __cplusplus
+template <class T> inline T &port_lvalue(const T &t) { return const_cast<T &>(t); }
+// VC6's vector iterators are element pointers; code that uses them as such gets these.
+template <class V> inline typename V::value_type *port_begin(V &v) { return v.empty() ? 0 : &v[0]; }
+template <class V> inline typename V::value_type *port_end(V &v) { return v.empty() ? 0 : &v[0] + v.size(); }
+#endif
+
+// Structured exception handling does not exist on macOS: a __try block is a try block,
+// and its handler catches what RaiseException throws (platform); the filter expression
+// is dropped.
+#ifdef __cplusplus
+#define __try try
+#define __except(filter) catch (...)
+#endif
+
+// the Microsoft C runtime names the source uses (_stricmp, _snprintf, _isnan, ...)
+#include <port_crt.h>
 #endif

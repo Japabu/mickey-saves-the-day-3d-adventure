@@ -68,4 +68,28 @@ LONG WINAPI RegFlushKey(HKEY hKey);
 
 PORT_END_C
 
+#ifdef __cplusplus
+// For values the source keeps in 64-bit C `long`s.
+inline LONG RegQueryValueExA(HKEY k, LPCSTR name, LPDWORD reserved, unsigned long *type, LPBYTE data,
+                             unsigned long *size)
+{
+    DWORD t = type ? (DWORD)*type : 0, n = size ? (DWORD)*size : 0;
+    LONG r = RegQueryValueExA(k, name, reserved, type ? &t : 0, data, size ? &n : 0);
+    if (type)
+        *type = t;
+    if (size)
+        *size = n;
+    return r;
+}
+inline LONG RegCreateKeyExA(HKEY k, LPCSTR sub, DWORD reserved, LPSTR cls, DWORD options, REGSAM sam,
+                            LPSECURITY_ATTRIBUTES sa, PHKEY result, unsigned long *disposition)
+{
+    DWORD d = 0;
+    LONG r = RegCreateKeyExA(k, sub, reserved, cls, options, sam, sa, result, disposition ? &d : 0);
+    if (disposition)
+        *disposition = d;
+    return r;
+}
+#endif
+
 #endif

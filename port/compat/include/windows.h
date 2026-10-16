@@ -18,8 +18,10 @@
 #include "mmsystem.h"
 #include "shellapi.h"
 #include "commdlg.h"
+#include "dlgs.h"
 #include "objbase.h"
 #include "imm.h"
+#include "winver.h"
 #endif
 
 #endif

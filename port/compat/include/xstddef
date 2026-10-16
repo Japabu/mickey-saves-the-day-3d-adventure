@@ -1,0 +1,14 @@
+// xstddef - the internal header of Visual C++'s standard library. The source includes
+// it for the exception macros of the library code (MBStl.h redefines them).
+#ifndef PORT_XSTDDEF
+#define PORT_XSTDDEF
+#include <cstddef>
+#define _TRY_BEGIN try {
+#define _CATCH(x) } catch (x) {
+#define _CATCH_ALL } catch (...) {
+#define _CATCH_END }
+#define _RERAISE throw
+#define _STD std::
+#define _STD_BEGIN namespace std {
+#define _STD_END }
+#endif

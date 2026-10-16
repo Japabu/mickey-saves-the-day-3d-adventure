@@ -13,6 +13,8 @@
 #include <wchar.h>
 #include <math.h>
 #include <alloca.h>
+#include <ctype.h>
+#include <wctype.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,13 +25,20 @@ static inline int _stricmp(const char *a, const char *b) { return strcasecmp(a, 
 static inline int _strcmpi(const char *a, const char *b) { return strcasecmp(a, b); }
 static inline int _strnicmp(const char *a, const char *b, size_t n) { return strncasecmp(a, b, n); }
 static inline char *_strdup(const char *s) { return strdup(s); }
+// the old names without the underscore
+static inline int stricmp(const char *a, const char *b) { return strcasecmp(a, b); }
+static inline int strcmpi(const char *a, const char *b) { return strcasecmp(a, b); }
+static inline int strnicmp(const char *a, const char *b, size_t n) { return strncasecmp(a, b, n); }
 char *_strlwr(char *s);
 char *_strupr(char *s);
 char *_strrev(char *s);
 char *_strset(char *s, int c);
 // The source's wchar_t is the compiler's (4 bytes here, 2 on Windows): text it reads
-// from Windows data as UTF-16 is WCHAR (unsigned short), not wchar_t.
+// from Windows data as UTF-16 is WCHAR (unsigned short), not wchar_t. In C++ _wcsicmp
+// compares any mix of the two (below).
+#ifndef __cplusplus
 static inline int _wcsicmp(const wchar_t *a, const wchar_t *b) { return wcscasecmp(a, b); }
+#endif
 
 // stdio.h: Microsoft's _snprintf does not terminate a truncated string and returns -1;
 // callers of the game terminate it themselves, so the C99 functions serve.
@@ -48,6 +57,8 @@ static inline int _snprintf(char *buf, size_t n, const char *fmt, ...) {
 // stdlib.h
 char *_itoa(int value, char *buf, int radix);
 char *_ltoa(long value, char *buf, int radix);
+static inline char *itoa(int value, char *buf, int radix) { return _itoa(value, buf, radix); }
+static inline char *ltoa(long value, char *buf, int radix) { return _ltoa(value, buf, radix); }
 static inline int _putenv(const char *s) { return putenv(strdup(s)); }
 #define _MAX_PATH 260
 #define _MAX_DRIVE 3
@@ -60,6 +71,21 @@ void _makepath(char *path, const char *drive, const char *dir, const char *fname
 // malloc.h
 #define _alloca alloca
 
+// stdio.h
+static inline FILE *_fdopen(int fd, const char *mode) { return fdopen(fd, mode); }
+
+// ctype.h: Microsoft's character class masks, for iswctype() (whose masks on macOS are
+// the _CTYPE_ bits)
+#define _UPPER _CTYPE_U
+#define _LOWER _CTYPE_L
+#define _DIGIT _CTYPE_D
+#define _SPACE _CTYPE_S
+#define _PUNCT _CTYPE_P
+#define _CONTROL _CTYPE_C
+#define _BLANK _CTYPE_B
+#define _HEX _CTYPE_X
+#define _ALPHA _CTYPE_A
+
 // float.h and math.h
 static inline int _isnan(double x) { return isnan(x); }
 static inline int _finite(double x) { return isfinite(x); }
@@ -71,6 +97,48 @@ unsigned long _beginthread(void (*start)(void *), unsigned stack, void *arg);
 void _endthread(void);
 
 #ifdef __cplusplus
+}
+
+// The game's 16-bit characters (WCHAR, UTF-16 in Windows data): the wide string
+// functions the source calls with them. The multibyte side is the "C" locale of the
+// Microsoft runtime, one byte per character (Latin-1).
+static inline size_t wcslen(const unsigned short *s) { size_t n = 0; while (s[n]) n++; return n; }
+static inline size_t wcstombs(char *d, const unsigned short *s, size_t n)
+{
+    size_t i = 0;
+    for (; s[i]; i++) {
+        if (d) {
+            if (i >= n) return i;
+            d[i] = s[i] < 0x100 ? (char)s[i] : '?';
+        }
+    }
+    if (d && i < n) d[i] = 0;
+    return i;
+}
+static inline size_t mbstowcs(unsigned short *d, const char *s, size_t n)
+{
+    size_t i = 0;
+    for (; s[i]; i++) {
+        if (d) {
+            if (i >= n) return i;
+            d[i] = (unsigned char)s[i];
+        }
+    }
+    if (d && i < n) d[i] = 0;
+    return i;
+}
+template <class A, class B> static inline int _wcsicmp(const A *a, const B *b)
+{
+    for (;; a++, b++) {
+        unsigned ca = *a < 0x80 ? (unsigned)tolower(*a) : *a, cb = *b < 0x80 ? (unsigned)tolower(*b) : *b;
+        if (ca != cb || !ca) return (int)ca - (int)cb;
+    }
+}
+
+// VC6's <xutility> min and max (the standard ones under other names)
+namespace std {
+template <class T> inline const T &_cpp_min(const T &a, const T &b) { return b < a ? b : a; }
+template <class T> inline const T &_cpp_max(const T &a, const T &b) { return a < b ? b : a; }
 }
 #endif
 #endif

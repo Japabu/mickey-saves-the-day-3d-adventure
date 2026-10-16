@@ -318,7 +318,22 @@ typedef struct _EXCEPTION_RECORD {
     DWORD NumberParameters;
     ULONG_PTR ExceptionInformation[EXCEPTION_MAXIMUM_PARAMETERS];
 } EXCEPTION_RECORD, *PEXCEPTION_RECORD;
-typedef struct _CONTEXT CONTEXT, *PCONTEXT;
+// The register state of a 32-bit x86 thread as the crash handler reads it (Eip, Esp,
+// Ebp). Nothing on arm64 fills it in; the port's crash handler reports its own way.
+typedef struct _CONTEXT {
+    DWORD ContextFlags;
+    DWORD Dr0, Dr1, Dr2, Dr3, Dr6, Dr7;
+    BYTE FloatSave[112];
+    DWORD SegGs, SegFs, SegEs, SegDs;
+    DWORD Edi, Esi, Ebx, Edx, Ecx, Eax;
+    DWORD Ebp, Eip, SegCs, EFlags, Esp, SegSs;
+    BYTE ExtendedRegisters[512];
+} CONTEXT, *PCONTEXT, *LPCONTEXT;
+#define CONTEXT_i386 0x00010000
+#define CONTEXT_CONTROL (CONTEXT_i386 | 0x00000001L)
+#define CONTEXT_INTEGER (CONTEXT_i386 | 0x00000002L)
+#define CONTEXT_FULL (CONTEXT_CONTROL | CONTEXT_INTEGER | CONTEXT_i386 | 0x00000004L)
+BOOL WINAPI GetThreadContext(HANDLE hThread, LPCONTEXT lpContext);
 typedef struct _EXCEPTION_POINTERS {
     PEXCEPTION_RECORD ExceptionRecord;
     PCONTEXT ContextRecord;
@@ -333,6 +348,26 @@ typedef PTOP_LEVEL_EXCEPTION_FILTER LPTOP_LEVEL_EXCEPTION_FILTER;
 #define EXCEPTION_BREAKPOINT ((DWORD)0x80000003)
 #define EXCEPTION_INT_DIVIDE_BY_ZERO ((DWORD)0xC0000094)
 #define EXCEPTION_STACK_OVERFLOW ((DWORD)0xC00000FD)
+#define EXCEPTION_DATATYPE_MISALIGNMENT ((DWORD)0x80000002)
+#define EXCEPTION_SINGLE_STEP ((DWORD)0x80000004)
+#define EXCEPTION_ARRAY_BOUNDS_EXCEEDED ((DWORD)0xC000008C)
+#define EXCEPTION_FLT_DENORMAL_OPERAND ((DWORD)0xC000008D)
+#define EXCEPTION_FLT_DIVIDE_BY_ZERO ((DWORD)0xC000008E)
+#define EXCEPTION_FLT_INEXACT_RESULT ((DWORD)0xC000008F)
+#define EXCEPTION_FLT_INVALID_OPERATION ((DWORD)0xC0000090)
+#define EXCEPTION_FLT_OVERFLOW ((DWORD)0xC0000091)
+#define EXCEPTION_FLT_STACK_CHECK ((DWORD)0xC0000092)
+#define EXCEPTION_FLT_UNDERFLOW ((DWORD)0xC0000093)
+#define EXCEPTION_INT_OVERFLOW ((DWORD)0xC0000095)
+#define EXCEPTION_PRIV_INSTRUCTION ((DWORD)0xC0000096)
+#define EXCEPTION_IN_PAGE_ERROR ((DWORD)0xC0000006)
+#define EXCEPTION_ILLEGAL_INSTRUCTION ((DWORD)0xC000001D)
+#define EXCEPTION_NONCONTINUABLE_EXCEPTION ((DWORD)0xC0000025)
+#define EXCEPTION_INVALID_DISPOSITION ((DWORD)0xC0000026)
+#define EXCEPTION_GUARD_PAGE ((DWORD)0x80000001)
+#define STATUS_GUARD_PAGE_VIOLATION ((DWORD)0x80000001)
+#define STATUS_ACCESS_VIOLATION ((DWORD)0xC0000005)
+#define STATUS_NO_MEMORY ((DWORD)0xC0000017)
 
 // Synchronisation. The critical section is opaque to the game; the platform keeps its
 // mutex behind DebugInfo.
@@ -488,6 +523,9 @@ typedef struct _cpinfo {
 typedef BOOL (CALLBACK *LOCALE_ENUMPROCA)(LPSTR);
 typedef LOCALE_ENUMPROCA LOCALE_ENUMPROC;
 
+// Every library's entry point (the port's load stub calls it, see port/flags.py).
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved);
+
 // kernel32 functions the game imports.
 BOOL WINAPI AllocConsole(void);
 BOOL WINAPI Beep(DWORD dwFreq, DWORD dwDuration);
@@ -587,9 +625,15 @@ LPVOID WINAPI HeapReAlloc(HANDLE hHeap, DWORD dwFlags, LPVOID lpMem, SIZE_T dwBy
 SIZE_T WINAPI HeapSize(HANDLE hHeap, DWORD dwFlags, LPCVOID lpMem);
 HANDLE WINAPI GetProcessHeap(void);
 void WINAPI InitializeCriticalSection(LPCRITICAL_SECTION lpCriticalSection);
-LONG WINAPI InterlockedDecrement(LONG volatile *lpAddend);
-LONG WINAPI InterlockedExchange(LONG volatile *Target, LONG Value);
-LONG WINAPI InterlockedIncrement(LONG volatile *lpAddend);
+static inline LONG InterlockedIncrement(LONG volatile *p) { return __atomic_add_fetch(p, 1, __ATOMIC_SEQ_CST); }
+static inline LONG InterlockedDecrement(LONG volatile *p) { return __atomic_sub_fetch(p, 1, __ATOMIC_SEQ_CST); }
+static inline LONG InterlockedExchange(LONG volatile *p, LONG v) { return __atomic_exchange_n(p, v, __ATOMIC_SEQ_CST); }
+static inline LONG InterlockedExchangeAdd(LONG volatile *p, LONG v) { return __atomic_fetch_add(p, v, __ATOMIC_SEQ_CST); }
+static inline LONG InterlockedCompareExchange(LONG volatile *p, LONG v, LONG cmp)
+{
+    __atomic_compare_exchange_n(p, &cmp, v, 0, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+    return cmp;
+}
 BOOL WINAPI IsBadCodePtr(FARPROC lpfn);
 BOOL WINAPI IsBadReadPtr(const void *lp, UINT_PTR ucb);
 BOOL WINAPI IsBadWritePtr(LPVOID lp, UINT_PTR ucb);
@@ -716,5 +760,39 @@ int WINAPI lstrlenA(LPCSTR lpString);
 #define lstrlen lstrlenA
 
 PORT_END_C
+
+#ifdef __cplusplus
+// The source keeps many of these values in C `long`s, which are 64 bits on macOS.
+// These overloads take them as they are.
+inline LONG InterlockedIncrement(long volatile *p) { return (LONG)__atomic_add_fetch(p, 1, __ATOMIC_SEQ_CST); }
+inline LONG InterlockedDecrement(long volatile *p) { return (LONG)__atomic_sub_fetch(p, 1, __ATOMIC_SEQ_CST); }
+inline LONG InterlockedExchange(long volatile *p, long v) { return (LONG)__atomic_exchange_n(p, v, __ATOMIC_SEQ_CST); }
+inline LONG InterlockedIncrement(unsigned long volatile *p) { return (LONG)__atomic_add_fetch(p, 1, __ATOMIC_SEQ_CST); }
+inline LONG InterlockedDecrement(unsigned long volatile *p) { return (LONG)__atomic_sub_fetch(p, 1, __ATOMIC_SEQ_CST); }
+inline BOOL ReadFile(HANDLE h, LPVOID buf, DWORD n, unsigned long *done, LPOVERLAPPED ov)
+{
+    DWORD d = 0;
+    BOOL ok = ReadFile(h, buf, n, &d, ov);
+    if (done)
+        *done = d;
+    return ok;
+}
+inline BOOL WriteFile(HANDLE h, LPCVOID buf, DWORD n, unsigned long *done, LPOVERLAPPED ov)
+{
+    DWORD d = 0;
+    BOOL ok = WriteFile(h, buf, n, &d, ov);
+    if (done)
+        *done = d;
+    return ok;
+}
+inline DWORD SetFilePointer(HANDLE h, long dist, long *high, DWORD method)
+{
+    LONG hi = high ? (LONG)*high : 0;
+    DWORD r = SetFilePointer(h, (LONG)dist, high ? &hi : 0, method);
+    if (high)
+        *high = hi;
+    return r;
+}
+#endif
 
 #endif

@@ -354,6 +354,10 @@ typedef DEVMODEA DEVMODE, *PDEVMODE, *LPDEVMODE;
 #define OBJ_FONT 6
 #define OBJ_BITMAP 7
 #define SP_ERROR (-1)
+#define SP_APPABORT (-2)
+#define SP_USERABORT (-3)
+#define SP_OUTOFDISK (-4)
+#define SP_OUTOFMEMORY (-5)
 #define GDI_ERROR (0xFFFFFFFFL)
 #define CLR_INVALID 0xFFFFFFFF
 
