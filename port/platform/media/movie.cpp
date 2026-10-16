@@ -76,6 +76,9 @@ bool Movie::fill(bool want_video)
             m->decode_audio(0, pcm);
             if (!pcm.empty())
                 push_sound();
+            // The resampler holds back its last samples until flushed: without this the
+            // queue never empties and the clock stops just short of the last frame.
+            SDL_FlushAudioStream(sound);
             SDL_FlushAudioStream(sound);
         }
         return false;

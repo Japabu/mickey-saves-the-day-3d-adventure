@@ -481,7 +481,7 @@ int MfFiniteStateMachine::Compile(MfPcErrorCallBack *errors, int *error)
                     || objectTime.dwHighDateTime == behaviorTime.dwHighDateTime
                        && objectTime.dwLowDateTime + 20000000 > behaviorTime.dwLowDateTime)) {
                 MfScPiccoloObjectFile objectFile(objectPath, 0, 1, 0);
-                if (!objectFile.mStatus) {
+                if (!objectFile.mError) {
                     mRoot->Load(&objectFile);
                     *error = objectFile.ReadClose();
                 }
@@ -490,7 +490,7 @@ int MfFiniteStateMachine::Compile(MfPcErrorCallBack *errors, int *error)
         } else {
             CloseHandle(behavior);
             MfScPiccoloObjectFile objectFile(objectPath, 0, 1, 0);
-            if (!objectFile.mStatus) {
+            if (!objectFile.mError) {
                 mRoot->Load(&objectFile);
                 *error = objectFile.ReadClose();
             }
@@ -528,7 +528,7 @@ void MfFiniteStateMachine::LoadCompiled()
         if (behavior != INVALID_HANDLE_VALUE) {
             CloseHandle(behavior);
             MfScPiccoloObjectFile objectFile(objectPath, 0, 1, 0);
-            if (!objectFile.mStatus) {
+            if (!objectFile.mError) {
                 mRoot->Load(&objectFile);
                 objectFile.ReadClose();
             }

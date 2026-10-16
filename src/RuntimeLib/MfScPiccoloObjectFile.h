@@ -21,8 +21,9 @@ public:
     // the functions of a module
     MfScPOFErrorCode LookupFunctions(const MfString &module, MfScHandleList *functions);
 
-    char m04[0x18];                                         // 0x04
-    int mStatus;                                            // 0x1c RuntimeLib reads only when this is 0, writes only when not
+    int mError;                                             // 0x04 0 when the file opened; RuntimeLib loads one only then
+    char m08[0x14];                                         // 0x08
+    int mStatus;                                            // 0x1c mOpen: RuntimeLib writes the file only when it is set
     char m20[0x18];                                         // 0x20
 };
 

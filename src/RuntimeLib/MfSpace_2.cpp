@@ -917,7 +917,7 @@ void MfSpace::InitMsgTable()
         aMethods[MSG_STATIC_ACTOR_CHANGE] = &MfSpace::HandleStaticActorChange;
     }
     mMsgTable = aMethods;
-    MfRootObj::InitMsgTable();
+    Register();  // the original ends in a jump to MfRootObj::Register (0x10069340)
 }
 
 // 0x10092f60 ?HandleStaticActorChange@MfSpace@@IAEXAAVMfMsg@@@Z

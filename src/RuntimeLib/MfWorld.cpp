@@ -130,7 +130,7 @@ void MfWorld::InitMsgTable()
         aMethods[MSG_TELEPORT_ACTOR] = &MfWorld::HandleTeleportActorRequest;
     }
     mMsgTable = aMethods;
-    MfRootObj::InitMsgTable();
+    Register();  // the original ends in a jump to MfRootObj::Register (0x10069340)
 }
 
 // 0x10099270 ?ProcessMessages@MfWorld@@UAEXXZ

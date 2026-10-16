@@ -25,13 +25,15 @@ EDITS = {
          '    void *m3c;                                              // 0x3c\n', 1),
     ],
     # PiccoloRT's MfScPiccoloObjectFile (its override MfScPiccoloObjectFile.h): RuntimeLib
-    # makes these on the stack, and mStatus is the open flag at Windows offset 0x1c
+    # makes these on the stack; it reads the error code at 0x04 and the open flag (mStatus) at 0x1c
     'RuntimeLib/MfScPiccoloObjectFile.h': [
-        ('    char m04[0x18];                                         // 0x04\n'
-         '    int mStatus;                                            // 0x1c RuntimeLib reads only when this is 0, writes only when not\n'
+        ('    int mError;                                             // 0x04 0 when the file opened; RuntimeLib loads one only then\n'
+         '    char m08[0x14];                                         // 0x08\n'
+         '    int mStatus;                                            // 0x1c mOpen: RuntimeLib writes the file only when it is set\n'
          '    char m20[0x18];                                         // 0x20\n',
-         '    int mError; unsigned int mSystemError; int mWrite; int mType; unsigned int mOptions; MfString mName; // 0x04\n'
-         '    int mStatus;                                            // 0x1c (mOpen) RuntimeLib reads only when this is 0, writes only when not\n'
+         '    int mError;                                             // 0x04 0 when the file opened; RuntimeLib loads one only then\n'
+         '    unsigned int mSystemError; int mWrite; int mType; unsigned int mOptions; MfString mName; // 0x08\n'
+         '    int mStatus;                                            // 0x1c mOpen: RuntimeLib writes the file only when it is set\n'
          '    void *mFile, *mMapping; char *mBase; void *mLists; void *mModules; MfScPiccoloObjectFile *mDebugFile; // 0x20\n', 1),
     ],
     # MfActorLib's MfCamera: +0x20 is an MfPropertyList (40 bytes here, 20 on Windows);

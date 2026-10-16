@@ -290,7 +290,7 @@ void MfActivity::InitMsgTable()
             aMethods[i] = &MfActivity::DefaultMsgHandler;
     }
     mMsgTable = aMethods;
-    MfRootObj::InitMsgTable();
+    Register();  // the original ends in a jump to MfRootObj::Register (0x10069340)
 }
 
 // 0x1000def0 ?DefaultMsgHandler@MfActivity@@UAEXAAVMfMsg@@@Z

@@ -95,7 +95,7 @@ void MfProximityManager::InitMsgTable()
         aMethods[MSG_PROXIMITY_TIMER] = &MfProximityManager::HandleTimer;
     }
     mMsgTable = aMethods;
-    MfRootObj::InitMsgTable();
+    Register();  // the original ends in a jump to MfRootObj::Register (0x10069340)
 }
 
 // 0x10091390 ?HandleTimer@MfProximityManager@@QAEXAAVMfMsg@@@Z
