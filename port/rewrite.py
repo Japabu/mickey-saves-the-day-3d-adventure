@@ -8,6 +8,12 @@ the overlay maps them like overrides. A file under port/override/ always wins ov
 rewritten copy. Every rule keeps the line count, so diagnostics point at the original
 lines.
 
+Order, for every file: first the exact edits of port/edits/ (EDITS), on the text as it
+is in src/, so that they can quote src/ verbatim; then the rules for that file
+(FILE_RULES), then those for its directory (DIR_RULES), then the global rules (RULES),
+each on the result of the one before. A file under port/override/ replaces all of
+this.
+
 Rules:
 - `operator new(unsigned int` and `operator new[](unsigned int`: the size parameter
   is size_t on every target; on 32-bit Windows that was `unsigned int`, here it is
@@ -183,8 +189,8 @@ def rewrite(text, rel=None):
     if not rules and not edits and not any(n in text for n in NEEDLES):
         return None
     out = text
-    for pat, rep in RULES + rules:
-        out = pat.sub(rep, out)
+    # the order (see the docstring): exact edits on the source text, then the
+    # rules of the file, then those of its directory, then the global ones
     for old, new, count in edits:
         found = out.count(old)
         if found != count:
@@ -193,6 +199,8 @@ def rewrite(text, rel=None):
         if old.count('\n') != new.count('\n'):
             raise SystemExit('port/rewrite.py: %s: the edit of %r changes the line count' % (rel, old))
         out = out.replace(old, new)
+    for pat, rep in rules + RULES:
+        out = pat.sub(rep, out)
     return out if out != text else None
 
 
