@@ -46,7 +46,7 @@ public:
     void SetNearClip(float nearClip) { m_EAICamera.setNear(nearClip); }
     void SetFarClip(float farClip) { m_EAICamera.setFar(farClip); }
     void SetFOV(float fov) { m_EAICamera.setFOV(fov); }
-    void EnableAutoClipping(bool);
+    void EnableAutoClipping(bool enable) { m_EAICamera.setAutoClip(enable); }
     const Vec3<float> &GetAt() const { return m_EAICamera.getAtPoint(); }
     const Vec3<float> &GetFrom() const { return m_EAICamera.getFromPoint(); }
     const Vec3<float> &GetUp() const { return m_EAICamera.getUpVec(); }

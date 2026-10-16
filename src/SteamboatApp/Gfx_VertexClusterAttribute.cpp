@@ -531,6 +531,8 @@ void Gfx::VertexClusterAttribute::OverrideClusterFrames(Gfx::ClusterData *cluste
 }
 
 // defined after the code: the original loads it from memory
+// the run-time type of Gfx::VertexClusterAttribute (values from the original's data section)
+StdBase::TypeInfo const Gfx::VertexClusterAttribute::s_TypeInfo = { "Gfx::VertexClusterAttribute", &Gfx::Attribute::s_TypeInfo };
 int const Gfx::VertexClusterAttribute::Version = 4;
 
 // 0x100e6880 ??_GVertexClusterAttribute@Gfx@@UAEPAXI@Z
@@ -568,3 +570,7 @@ int const Gfx::VertexClusterAttribute::Version = 4;
 // TODO 0x100e8f50 ?reallocMem@?$Vec@V?$TMatrix3@M@@@@IAEXHHH@Z: 41% similar: the TMatrix3 copies in the inlined element loop (TMatrix3 copy puzzle); neither /Oa setting matches
 // TODO 0x100e8c10 ??0?$Vec@V?$TMatrix3@M@@@@QAE@HM@Z: not emitted by our object (the IVec/AVec constructors inline Vec(int, float))
 // TODO 0x100e8d30 ??0?$Vec@V?$Vec3@M@@@@QAE@HM@Z: not emitted by our object (as Vec<TMatrix3<float> >(int, float))
+
+// static data (zero in the original, .bss)
+int Gfx::VertexClusterAttribute::s_InstanceCount = 0;
+Gfx::AttributeStack *Gfx::VertexClusterAttribute::s_Stack = 0;

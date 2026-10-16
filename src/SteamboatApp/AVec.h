@@ -6,7 +6,7 @@ template <class T>
 class AVec : public Vec<T> {
 public:
     AVec(const Vec<T> &);
-    AVec(const AVec<T> &);
+    AVec(const AVec<T> &v) : Vec<T>(v) {}
     AVec(const T *, int, float);
     AVec(int n = 0, float mult = 2.0f) : Vec<T>(n, mult) {}
     AVec<T> &operator=(const AVec<T> &v)
@@ -37,8 +37,12 @@ public:
 template <class T>
 class IVec : public AVec<T> {
 public:
-    IVec(const IVec<T> &);
+    IVec(const IVec<T> &v) : AVec<T>(v) {}
     IVec(int n = 0, float mult = 2.0f) : AVec<T>(n, mult) {}
-    IVec<T> &operator=(const IVec<T> &);
+    IVec<T> &operator=(const IVec<T> &v)
+    {
+        AVec<T>::operator=(v);
+        return *this;
+    }
     void zero();
 };

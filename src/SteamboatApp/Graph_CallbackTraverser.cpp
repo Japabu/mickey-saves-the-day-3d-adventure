@@ -95,3 +95,6 @@ Graph::NodeTraverser::Response Graph::CallbackTraverser::Visit(Graph::BasicNode 
 
 // Matched by this code:
 // 0x1012ff10 ??_GCallbackTraverser@Graph@@UAEPAXI@Z
+
+// the run-time type of Graph::CallbackTraverser (values from the original's data section)
+StdBase::TypeInfo const Graph::CallbackTraverser::s_TypeInfo = { "Graph::CallbackTraverser", &Graph::PassiveTraverser::s_TypeInfo };

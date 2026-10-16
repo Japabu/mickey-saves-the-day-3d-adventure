@@ -73,3 +73,6 @@ Gfx::CurrentTransformationMatrix::~CurrentTransformationMatrix()
 // 0x100f2fd0 ??1?$stack@V?$TMatrix4@M@@V?$vector@V?$TMatrix4@M@@V?$allocator@V?$TMatrix4@M@@@std@@@std@@@std@@QAE@XZ
 // TODO 0x100f3080 ?insert@?$vector@V?$TMatrix4@M@@V?$allocator@V?$TMatrix4@M@@@std@@@std@@QAEXPAV?$TMatrix4@M@@IABV3@@Z: bytes identical; the two element copies call SquareMatrix<float, 4>::operator= out of line where the original calls setValues(const float *) (same arguments; the original's operator= is setValues(m) with setValues not inlined, and no unit emits an operator= with setValues' bytes: ours returns *this, 22 bytes against 20) (100% similar)
 // 0x100f32e0 ?_Construct@std@@YAXPAV?$TMatrix4@M@@ABV2@@Z
+
+// static data (zero in the original, .bss)
+Gfx::CurrentTransformationMatrix *Gfx::CurrentTransformationMatrix::s_pInstance = 0;

@@ -326,3 +326,6 @@ Quaternion<T> Quaternion<T>::slerp(const Quaternion<T> &a, const Quaternion<T> &
 // TODO 0x100dd6a0 ?setValues@?$SquareMatrix@M$02@@QAEXPBM@Z: inline instance; this unit inlines every use, so VC6 here emits no out-of-line copy
 // 0x100dca90 ??1?$Euler@M@@QAE@XZ
 // TODO 0x100dcaa0 ?slerp@?$Euler@M@@SA?AV1@ABV1@0M@Z: 35% - reconstruction; register use, scheduling and inlining differ
+
+// static data (zero in the original, .bss)
+float EAIRefFrame::tol = 0;

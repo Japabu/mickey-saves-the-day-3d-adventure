@@ -75,3 +75,6 @@ int Gfx::WriteTraverser::IsInstance(Gfx::Node *node)
 // 0x10104680 _$E21
 // 0x101046a0 _$E25
 // 0x101046b0 _$E24
+
+// the run-time type of Gfx::WriteTraverser (values from the original's data section)
+StdBase::TypeInfo const Gfx::WriteTraverser::s_TypeInfo = { "Gfx::WriteTraverser", &Gfx::Traverser::s_TypeInfo };

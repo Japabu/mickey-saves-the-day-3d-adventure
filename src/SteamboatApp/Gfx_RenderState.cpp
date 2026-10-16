@@ -72,3 +72,10 @@ std::stack<Gfx::RenderState const *, std::vector<Gfx::RenderState const *, std::
 // 0x101126d0 ?_Ucopy@?$vector@PBVRenderState@Gfx@@V?$allocator@PBVRenderState@Gfx@@@std@@@std@@IAEPAPBVRenderState@Gfx@@PBQBV34@0PAPBV34@@Z
 // 0x10112700 ?_Ufill@?$vector@PBVRenderState@Gfx@@V?$allocator@PBVRenderState@Gfx@@@std@@@std@@IAEXPAPBVRenderState@Gfx@@IABQBV34@@Z
 // 0x10112730 ?_Construct@std@@YAXPAPBVRenderState@Gfx@@ABQBV23@@Z
+
+// the run-time type of Gfx::RenderState (values from the original's data section)
+StdBase::TypeInfo const Gfx::RenderState::s_TypeInfo = { "Gfx::RenderState", &Gfx::Attribute::s_TypeInfo };
+
+// static data (zero in the original, .bss)
+int Gfx::RenderState::s_TotalTypeCount = 0;
+int Gfx::RenderState::s_CurrentTypeCount = 0;

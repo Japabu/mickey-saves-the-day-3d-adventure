@@ -131,3 +131,6 @@ _SS<char> Graph::DataBase::ReadAttributeHeader(Graph::Stream *stream)
 // 0x1000f9c0 ?append@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@ID@Z
 // 0x100d2d10 ?Buffer@?$_SS@D@@QAEPADH@Z
 // 0x100e07c0 ?resize@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEXI@Z
+
+// static data (zero in the original, .bss)
+Graph::DataBase *Graph::DataBase::sCurrentDataBase = 0;

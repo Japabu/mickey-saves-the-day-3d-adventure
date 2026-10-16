@@ -64,6 +64,8 @@ void Gfx::Attribute::ReadInternals(Graph::Stream *stream, int version)
     stream->Read(&m_Ignore);
 }
 
+// the run-time type of Gfx::Attribute (values from the original's data section)
+StdBase::TypeInfo const Gfx::Attribute::s_TypeInfo = { "Gfx::Attribute", &Graph::BasicAttribute::s_TypeInfo };
 int const Gfx::Attribute::Version = 0;
 
 // 0x100e9450 ??_GAttribute@Gfx@@MAEPAXI@Z

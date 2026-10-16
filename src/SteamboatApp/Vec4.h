@@ -56,3 +56,11 @@ inline Vec4<T>::Vec4(const FixedVec<T, 3> &v, T w)
     e[2] = v.e[2];
     e[3] = w;
 }
+
+template <class T>
+Vec4<T> Vec4<T>::operator-(const Vec4<T> &v) const
+{
+    Vec4<T> r(*this);
+    r.subVec(v);
+    return r;
+}

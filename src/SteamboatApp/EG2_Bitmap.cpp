@@ -1,4 +1,5 @@
 #include "EG2_Bitmap.h"
+#include "EG2_Resource.h"
 #include "MBInterfaces.h"
 #include "StdString.h"
 #include <stdlib.h>
@@ -23,6 +24,16 @@ Bitmap::~Bitmap()
         free(mBitmapHeader);
         free(mBits);
     }
+}
+
+// 0x10112880 ?LoadFromResource@Bitmap@EG2@@UAE_NPAVResource@2@@Z
+bool Bitmap::LoadFromResource(EG2::Resource *resource)
+{
+    // hands the resource's data back to it and reports nothing loaded
+    EG2::ResourceData *data = resource->GetData();
+    void *p = data->Slot30();
+    data->Slot34(p);
+    return false;
 }
 
 // 0x101128a0 ?LoadFromFile@Bitmap@EG2@@QAE_NV?$_SS@D@@@Z

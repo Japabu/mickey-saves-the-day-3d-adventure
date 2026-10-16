@@ -3760,6 +3760,32 @@ MBComPtr<IMBTextControl> SteamboatNode::sTextControl;
 MBString SteamboatNode::sInventoryItemPicked("");
 MBString SteamboatNode::sBackgroundMusicName("");
 MBString SteamboatNode::sLocale("");
+// the plain statics (initial values from the original's data section; zero ones are in .bss)
+MfAiActor *SteamboatNode::sMfPrimaryActor = 0;
+short SteamboatNode::sSfxVolume = 196;
+short SteamboatNode::sDialogVolume = 255;
+short SteamboatNode::sMusicVolume = 196;
+Gfx::Node *SteamboatNode::sSceneRootNode = 0;
+ViewEventHandler *SteamboatNode::sMotivateEventHandler = 0;
+SBItem *SteamboatNode::sCursorItem = 0;
+unsigned long SteamboatNode::sLastFrameTime = 0;
+char SteamboatNode::sS[80];
+int SteamboatNode::sNumFrames = 0;
+bool SteamboatNode::sDisplayFrameRate = false;
+unsigned long SteamboatNode::sRenderFlags = 11;
+int SteamboatNode::sBackgroundDirty = 0;
+int SteamboatNode::sBuffer = 0;
+SteamboatNode *SteamboatNode::sCurrentActiveNode = 0;
+bool SteamboatNode::sAppInForeground = true;
+bool SteamboatNode::sInputEventChannelActive = true;
+_STREAM *SteamboatNode::sBackgroundMusic = 0;
+bool SteamboatNode::sWantBackgroundMusic = true;
+
+// the code of the scene being played
+MBString __cdecl SteamboatNode::GetSpaceCode()
+{
+    return sCurrentActiveNode->mSpaceCode;
+}
 
 // the unit includes this after its code (the line numbers above are the original ones)
 #include <locale> // evidence: the original unit ends with the std::ctype<unsigned short>::id and std::collate<char>::id initializers

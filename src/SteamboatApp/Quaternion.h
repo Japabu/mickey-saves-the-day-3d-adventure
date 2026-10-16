@@ -26,7 +26,13 @@ public:
     }
     Quaternion(const Vec4<T> &);
     Quaternion(const T *);
-    Quaternion(T, T, T, T);
+    Quaternion(T w, T x, T y, T z)
+    {
+        e[0] = w;
+        e[1] = x;
+        e[2] = y;
+        e[3] = z;
+    }
     Quaternion(Vec3<T> &);
     Quaternion(T, T, T);
     Quaternion() {}

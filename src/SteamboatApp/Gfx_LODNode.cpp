@@ -174,6 +174,8 @@ float Gfx::LODNode::GetEyeDistance(const Vec3<float> &eye)
     return d.mag();
 }
 
+// the run-time type of Gfx::LODNode (values from the original's data section)
+StdBase::TypeInfo const Gfx::LODNode::s_TypeInfo = { "Gfx::LODNode", &Gfx::Node::s_TypeInfo };
 int const Gfx::LODNode::Version = 0;
 
 // 0x100ec510 ??_GLODNode@Gfx@@MAEPAXI@Z

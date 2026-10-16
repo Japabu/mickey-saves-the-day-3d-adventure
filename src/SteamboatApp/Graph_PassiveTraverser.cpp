@@ -33,3 +33,6 @@ Graph::NodeTraverser::Response Graph::PassiveTraverser::Visit(Graph::BasicNode &
 
 // Matched by this code:
 // 0x100e1e70 ??_GPassiveTraverser@Graph@@UAEPAXI@Z
+
+// the run-time type of Graph::PassiveTraverser (values from the original's data section)
+StdBase::TypeInfo const Graph::PassiveTraverser::s_TypeInfo = { "Graph::PassiveTraverser", &Graph::NodeTraverser::s_TypeInfo };

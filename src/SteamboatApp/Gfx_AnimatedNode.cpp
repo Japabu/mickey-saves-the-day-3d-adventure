@@ -112,6 +112,8 @@ void Gfx::AnimatedNode::ReadInternals(Graph::Stream *stream, int version)
     }
 }
 
+// the run-time type of Gfx::AnimatedNode (values from the original's data section)
+StdBase::TypeInfo const Gfx::AnimatedNode::s_TypeInfo = { "Gfx::AnimatedNode", &Gfx::Node::s_TypeInfo };
 int const Gfx::AnimatedNode::Version = 1;
 
 // 0x1010e970 ??_GAnimatedNode@Gfx@@MAEPAXI@Z

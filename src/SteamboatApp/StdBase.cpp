@@ -42,3 +42,6 @@ bool StdBase::IsOfType(TypeInfo const *typeInfo) const
     }
     return true;
 }
+
+// the run-time type of StdBase (values from the original's data section)
+StdBase::TypeInfo const StdBase::s_TypeInfo = { 0, 0 };

@@ -142,3 +142,6 @@ int const Gfx::IONode::Version = 0;
 // 0x10111df0 _$E49
 // 0x10111e10 _$E53
 // 0x10111e20 _$E52
+
+// the run-time type of Gfx::IONode (values from the original's data section)
+StdBase::TypeInfo const Gfx::IONode::s_TypeInfo = { "Gfx::IONode", &Gfx::Node::s_TypeInfo };

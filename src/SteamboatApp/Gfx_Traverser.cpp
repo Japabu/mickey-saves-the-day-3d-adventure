@@ -43,3 +43,6 @@ void Gfx::Traverser::Traverse(Gfx::Node &node)
 // 0x1010d490 _$E18
 // 0x1010d4b0 _$E22
 // 0x1010d4c0 _$E21
+
+// the run-time type of Gfx::Traverser (values from the original's data section)
+StdBase::TypeInfo const Gfx::Traverser::s_TypeInfo = { "Gfx::Traverser", &Graph::PassiveTraverser::s_TypeInfo };

@@ -163,3 +163,6 @@ int const Gfx::FileNode::Version = 0;
 // TODO 0x1010f390 ??0Text@@QAE@ABV0@@Z: inline instance (body in the header); this unit does not emit an out-of-line copy yet
 // TODO 0x1010f700 ??0?$Vec@VText@@@@QAE@ABV0@@Z: inline instance (body in the header); this unit does not emit an out-of-line copy yet
 // TODO 0x1010f830 ?initElements@?$Vec@VText@@@@IAEXHH@Z: 63% - the inline instance compiles differently here
+
+// the run-time type of Gfx::FileNode (values from the original's data section)
+StdBase::TypeInfo const Gfx::FileNode::s_TypeInfo = { "Gfx::FileNode", &Gfx::IONode::s_TypeInfo };

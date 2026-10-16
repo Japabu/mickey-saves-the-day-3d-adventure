@@ -44,3 +44,6 @@ Graph::NodeTraverser::Response Graph::NodeTraverser::Visit(Graph::BasicNode &)
 // Matched by this code:
 // 0x100e1f30 ??_GNodeTraverser@Graph@@UAEPAXI@Z
 // 0x100e20f0 ?initElements@?$Vec@PAVBasicNode@Graph@@@@IAEXHH@Z
+
+// the run-time type of Graph::NodeTraverser (values from the original's data section)
+StdBase::TypeInfo const Graph::NodeTraverser::s_TypeInfo = { "Graph::NodeTraverser", &StdBase::s_TypeInfo };

@@ -74,3 +74,6 @@ int const Gfx::Light::Version = 0;
 // 0x100f33a0 _$E45
 // 0x100f33c0 _$E49
 // 0x100f33d0 _$E48
+
+// the run-time type of Gfx::Light (values from the original's data section)
+StdBase::TypeInfo const Gfx::Light::s_TypeInfo = { "Gfx::Light", &Gfx::Node::s_TypeInfo };

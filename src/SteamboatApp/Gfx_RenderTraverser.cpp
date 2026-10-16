@@ -143,3 +143,6 @@ char const * Gfx::RenderTraverser::GetTypeName() const
 // 0x100fc600 ?_Ucopy@?$vector@W4ViewFrustumIntersect@Gfx@@V?$allocator@W4ViewFrustumIntersect@Gfx@@@std@@@std@@IAEPAW4ViewFrustumIntersect@Gfx@@PBW434@0PAW434@@Z
 // 0x100fc630 ?_Ufill@?$vector@W4ViewFrustumIntersect@Gfx@@V?$allocator@W4ViewFrustumIntersect@Gfx@@@std@@@std@@IAEXPAW4ViewFrustumIntersect@Gfx@@IABW434@@Z
 // 0x100fc660 ?_Construct@std@@YAXPAW4ViewFrustumIntersect@Gfx@@ABW423@@Z
+
+// the run-time type of Gfx::RenderTraverser (values from the original's data section)
+StdBase::TypeInfo const Gfx::RenderTraverser::s_TypeInfo = { "Gfx::RenderTraverser", &Gfx::Traverser::s_TypeInfo };

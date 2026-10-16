@@ -85,6 +85,12 @@ Gfx::ShadowAttribute::~ShadowAttribute()
     }
 }
 
+// the run-time type of Gfx::ShadowAttribute (values from the original's data section)
+StdBase::TypeInfo const Gfx::ShadowAttribute::s_TypeInfo = { "Gfx::ShadowAttribute", &Gfx::Attribute::s_TypeInfo };
 int const Gfx::ShadowAttribute::Version = 0;
 
 // 0x100fc7a0 ??_GShadowAttribute@Gfx@@MAEPAXI@Z
+
+// static data (zero in the original, .bss)
+Gfx::AttributeStack *Gfx::ShadowAttribute::s_Stack = 0;
+int Gfx::ShadowAttribute::s_InstanceCount = 0;

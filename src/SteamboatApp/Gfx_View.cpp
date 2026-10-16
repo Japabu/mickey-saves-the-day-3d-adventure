@@ -252,3 +252,6 @@ Gfx::View::View()
 // Header instances of this object:
 // 0x100ed810 ??D?$Vec3@M@@QBE?AV0@M@Z
 // TODO 0x100ed860 ?multVector3Left@?$TMatrix4@M@@QBE?AV?$Vec3@M@@ABV2@@Z: the terms are now summed in the original order (through a local, see TMatrix4.h); the original still keeps the partial sum on the FPU (fadd st(1) ... fstp st(0)), VC6 here adds with faddp (84% similar)
+
+// the run-time type of Gfx::View (values from the original's data section)
+StdBase::TypeInfo const Gfx::View::s_TypeInfo = { "Gfx::View", &StdBase::s_TypeInfo };

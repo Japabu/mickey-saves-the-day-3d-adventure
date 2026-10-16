@@ -129,3 +129,10 @@ int const Gfx::MatrixTransform::Version = 0;
 // 0x10104540 ?_Ufill@?$vector@V?$TMatrix4@M@@V?$allocator@V?$TMatrix4@M@@@std@@@std@@IAEXPAV?$TMatrix4@M@@IABV3@@Z
 // 0x10104570 ?fill@std@@YAXPAV?$TMatrix4@M@@0ABV2@@Z
 // 0x101045a0 ?copy_backward@std@@YAPAV?$TMatrix4@M@@PAV2@00@Z
+
+// the run-time type of Gfx::MatrixTransform (values from the original's data section)
+StdBase::TypeInfo const Gfx::MatrixTransform::s_TypeInfo = { "Gfx::MatrixTransform", &Gfx::Node::s_TypeInfo };
+
+// static data (zero in the original, .bss)
+int Gfx::MatrixTransform::s_CurrentTypeCount = 0;
+int Gfx::MatrixTransform::s_TotalTypeCount = 0;

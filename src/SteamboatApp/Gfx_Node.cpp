@@ -314,6 +314,8 @@ void Gfx::Node::PopAttributes(Graph::PassiveTraverser *traverser)
         ((Gfx::Attribute *)GetAttribute(i))->Pop(traverser);
 }
 
+// the run-time type of Gfx::Node (values from the original's data section)
+StdBase::TypeInfo const Gfx::Node::s_TypeInfo = { "Gfx::Node", &Graph::ActiveNode::s_TypeInfo };
 int const Gfx::Node::Version = 1;
 
 // 0x100e3a00 ?GetInstance@DataBase@Graph@@SAPAV12@XZ
@@ -657,3 +659,8 @@ void Gfx::BVolHierNode<T>::Build(Gfx::Node *node, int nLeafAtoms, int level, int
 // the hierarchy of the nodes' bounding boxes is this unit's instance
 template class Gfx::BVolHierarchy<Gfx::BoundingBox>;
 // 0x100e4d60 ??0BoundingVolume@Gfx@@IAE@XZ
+
+// static data (zero in the original, .bss)
+int Gfx::Node::s_CurrentTypeCount = 0;
+int Gfx::Node::s_TotalTypeCount = 0;
+Graph::NodeContext<Gfx::Node, bool> *Gfx::Node::m_VisibilityContext = 0;

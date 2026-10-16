@@ -61,3 +61,6 @@ Graph::NodeTraverser::Response Graph::SearchTraverser::Visit(Graph::BasicNode &n
 // 0x100e0ed0 ?reallocMem@?$Vec@VPath@Graph@@@@IAEXHHH@Z
 // 0x100e1060 ?initElements@?$Vec@VPath@Graph@@@@IAEXHH@Z
 // 0x100e10f0 ??_EPath@Graph@@UAEPAXI@Z
+
+// the run-time type of Graph::SearchTraverser (values from the original's data section)
+StdBase::TypeInfo const Graph::SearchTraverser::s_TypeInfo = { "Graph::SearchTraverser", &Graph::PassiveTraverser::s_TypeInfo };

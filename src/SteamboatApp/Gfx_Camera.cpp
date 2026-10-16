@@ -257,6 +257,8 @@ void Gfx::Camera::ParentRemoved(Graph::BasicNode *parent)
     Node::ParentRemoved(parent);
 }
 
+// the run-time type of Gfx::Camera (values from the original's data section)
+StdBase::TypeInfo const Gfx::Camera::s_TypeInfo = { "Gfx::Camera", &Gfx::Node::s_TypeInfo };
 int const Gfx::Camera::Version = 2;
 
 // 0x100f0750 _$E38

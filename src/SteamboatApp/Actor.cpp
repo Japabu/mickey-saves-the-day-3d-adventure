@@ -478,3 +478,6 @@ template class Quaternion<float>;
 // 0x100102d0 _$E138
 // 0x10010310 _$E134
 // 0x10010330 _$E137
+
+// the run-time type of Actor (values from the original's data section)
+StdBase::TypeInfo const Actor::s_TypeInfo = { "Actor", &Gfx::Node::s_TypeInfo };

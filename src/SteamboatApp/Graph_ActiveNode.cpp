@@ -94,3 +94,6 @@ void Graph::ActiveNode::ScheduleChildRefresh()
 // Matched by this code:
 // 0x100df770 ??_GActiveNode@Graph@@UAEPAXI@Z
 // 0x100dfac0 ?reallocMem@?$Vec@PAVBasicNode@Graph@@@@IAEXHHH@Z
+
+// the run-time type of Graph::ActiveNode (values from the original's data section)
+StdBase::TypeInfo const Graph::ActiveNode::s_TypeInfo = { "Graph::ActiveNode", &Graph::BasicNode::s_TypeInfo };

@@ -138,3 +138,10 @@ void Gfx::RenderList::Clear()
 // TODO 0x10111b00 ?_Construct@std@@YAXPAV?$vector@PAVShape@Gfx@@V?$allocator@PAVShape@Gfx@@@std@@@1@ABV21@@Z: matches without /Oa (a #pragma optimize("a", off) at the end of the unit), which breaks the constructor, destructor, Clear and the vector<vector> insert (72% similar)
 // 0x10111ba0 ?_Construct@std@@YAXPAPAVShape@Gfx@@ABQAV23@@Z
 // TODO 0x10111bc0 ??4?$vector@PAVShape@Gfx@@V?$allocator@PAVShape@Gfx@@@std@@@std@@QAEAAV01@ABV01@@Z: as _Construct above: matches only without /Oa (47% similar)
+
+// the run-time type of Gfx::RenderList (values from the original's data section)
+StdBase::TypeInfo const Gfx::RenderList::s_TypeInfo = { "Gfx::RenderList", &Gfx::Attribute::s_TypeInfo };
+
+// static data (zero in the original, .bss)
+int Gfx::RenderList::s_TotalTypeCount = 0;
+int Gfx::RenderList::s_CurrentTypeCount = 0;

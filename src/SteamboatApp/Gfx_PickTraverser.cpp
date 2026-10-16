@@ -144,3 +144,6 @@ char const * Gfx::PickTraverser::GetTypeName() const
 // 0x10110c50 ?_Ucopy@?$vector@V?$Vec3@M@@V?$allocator@V?$Vec3@M@@@std@@@std@@IAEPAV?$Vec3@M@@PBV3@0PAV3@@Z
 // 0x10110ca0 ?_Ufill@?$vector@V?$Vec3@M@@V?$allocator@V?$Vec3@M@@@std@@@std@@IAEXPAV?$Vec3@M@@IABV3@@Z
 // 0x10110ce0 ?_Construct@std@@YAXPAVTraversalPath@Gfx@@ABV23@@Z
+
+// the run-time type of Gfx::PickTraverser (values from the original's data section)
+StdBase::TypeInfo const Gfx::PickTraverser::s_TypeInfo = { "Gfx::PickTraverser", &Gfx::Traverser::s_TypeInfo };

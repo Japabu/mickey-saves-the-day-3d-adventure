@@ -56,3 +56,6 @@ void Graph::BasicAttribute::ParentRemoved(Graph::BasicNode *parent)
 
 // Matched by this code:
 // 0x100e1630 ??_GBasicAttribute@Graph@@MAEPAXI@Z
+
+// the run-time type of Graph::BasicAttribute (values from the original's data section)
+StdBase::TypeInfo const Graph::BasicAttribute::s_TypeInfo = { "Graph::BasicAttribute", &Graph::BasicNode::s_TypeInfo };

@@ -86,3 +86,10 @@ void Gfx::DisplayQuality::ReadInternals(Graph::Stream *stream)
 }
 
 // 0x10110de0 ??_GDisplayQuality@Gfx@@UAEPAXI@Z
+
+// the run-time type of Gfx::DisplayQuality (values from the original's data section)
+StdBase::TypeInfo const Gfx::DisplayQuality::s_TypeInfo = { "Gfx::DisplayQuality", &Gfx::Attribute::s_TypeInfo };
+
+// static data (zero in the original, .bss)
+int Gfx::DisplayQuality::s_InstanceCount = 0;
+Gfx::AttributeStack *Gfx::DisplayQuality::s_Stack = 0;

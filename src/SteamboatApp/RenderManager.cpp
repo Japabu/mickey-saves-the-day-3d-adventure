@@ -239,3 +239,9 @@ RenderManager::~RenderManager()
 // 0x10036d30 _$E85
 // 0x10036d70 _$E81
 // 0x10036d90 _$E84
+
+// the run-time type of RenderManager (values from the original's data section)
+StdBase::TypeInfo const RenderManager::s_TypeInfo = { "RenderManager", &StdBase::s_TypeInfo };
+
+// static data (zero in the original, .bss)
+RenderManager *RenderManager::sInstance = 0;

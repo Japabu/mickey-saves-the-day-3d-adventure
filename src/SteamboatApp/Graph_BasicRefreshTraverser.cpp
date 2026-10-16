@@ -50,3 +50,6 @@ Graph::NodeTraverser::Response Graph::BasicRefreshTraverser::Visit(Graph::BasicN
 
 // Matched by this code:
 // 0x100e14d0 ??_GBasicRefreshTraverser@Graph@@UAEPAXI@Z
+
+// the run-time type of Graph::BasicRefreshTraverser (values from the original's data section)
+StdBase::TypeInfo const Graph::BasicRefreshTraverser::s_TypeInfo = { "Graph::BasicRefreshTraverser", &Graph::PassiveTraverser::s_TypeInfo };

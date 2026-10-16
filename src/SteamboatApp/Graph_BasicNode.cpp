@@ -392,3 +392,6 @@ void Graph::BasicNode::ObserverRemoved(Graph::BasicNode *)
 
 // Template and inline instances this unit also emits:
 // 0x1000bde0 ?assign@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAEAAV12@PBDI@Z
+
+// the run-time type of Graph::BasicNode (values from the original's data section)
+StdBase::TypeInfo const Graph::BasicNode::s_TypeInfo = { "Graph::BasicNode", &StdBase::s_TypeInfo };

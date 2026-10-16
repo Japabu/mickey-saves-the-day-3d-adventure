@@ -416,3 +416,6 @@ MfProtoActor *__cdecl SBActorManager::CreateActorPrototype(MfString actorName)
 // 0x10042270 _$E113
 // 0x100422b0 _$E109
 // 0x100422d0 _$E112
+
+// static data (zero in the original, .bss)
+SBActorManager *SBActorManager::_instance = 0;

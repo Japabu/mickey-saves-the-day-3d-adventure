@@ -238,3 +238,8 @@ int Text::replaceWith(const char *s, int pos, int n)
 // 0x100de0a0 ??0Text@@QAE@XZ
 // 0x100de1b0 ?reallocMem@?$Vec@VText@@@@IAEXHHH@Z
 // 0x100de400 ??_EText@@UAEPAXI@Z
+
+Text &Text::operator+=(const Text &t)
+{
+    return *this += (const char *)t;
+}
