@@ -48,6 +48,9 @@ cmake --build out/port/build                        # or --target <module>
 For crash reports with exact locations, build a second tree with sanitizers:
 `cmake -S port -B out/port/build-asan -G Ninja -DPORT_SANITIZE=address,undefined`.
 
+Not ported: the developers' tools (Piccolo script console, debugger, class browser),
+which use MFC and are not part of the game.
+
 ## Run
 
 You need the game's CD (the German release, "Micky auf Ganovenjagd") as an `.iso` image,
@@ -101,6 +104,3 @@ PORT_LOG=1 MICKEY_CD=... out/port/build/Steamboat 2>&1 | tee mickey.log
 
 Send `mickey.log` together with the newest `Steamboat-*.ips` file from
 `~/Library/Logs/DiagnosticReports`. Also say what you did just before the crash.
-
-Not ported: the developers' tools (Piccolo script console, debugger, class browser),
-which use MFC and are not part of the game.

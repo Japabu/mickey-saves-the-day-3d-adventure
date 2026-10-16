@@ -47,7 +47,7 @@ static UINT_PTR s_next_timer = 1;
 
 // Keyboard and mouse state, as the game saw it in its messages.
 static BYTE s_keys[256];  // 0x80 down, 0x01 toggled
-static int s_mouse_x, s_mouse_y;
+static volatile int s_mouse_x, s_mouse_y;
 static HWND s_capture;
 static int s_cursor_count = 0;  // ShowCursor's display counter
 
@@ -486,12 +486,17 @@ HKL WINAPI GetKeyboardLayout(DWORD) { return (HKL)(uintptr_t)0x04070407; }
 
 BOOL WINAPI GetCursorPos(LPPOINT lpPoint)
 {
+    // Other threads (the game's cursor thread) get the position the main thread saw last;
+    // SDL's window state belongs to the main thread.
     HWND m = main_window();
     Window *w = m ? window(m) : 0;
-    if (w && w->sdl) {
+    if (w && w->sdl && (GetCurrentThreadId() == s_main_thread || !s_main_thread)) {
         float x, y;
+        int cx, cy;
         SDL_GetMouseState(&x, &y);
-        display_to_client(w, x, y, &s_mouse_x, &s_mouse_y);
+        display_to_client(w, x, y, &cx, &cy);
+        s_mouse_x = cx;
+        s_mouse_y = cy;
     }
     lpPoint->x = s_mouse_x;
     lpPoint->y = s_mouse_y;

@@ -15,6 +15,9 @@ extern "C" {
 void port_present(const void *argb8888, int w, int h, int pitch);
 // Blocks until the next display refresh (IDirectDraw::WaitForVerticalBlank).
 void port_wait_vblank(void);
+// The game's choice of full screen (DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE) or a window
+// (DDSCL_NORMAL), from SetCooperativeLevel. MICKEY_WINDOWED=1 keeps a window anyway.
+void port_set_fullscreen(int fullscreen);
 
 // GDI on memory the caller owns (DirectDraw surfaces' GetDC). The DC draws straight into
 // pixels: w x h, pitch bytes per row, bpp 8 (palette is the surface's 256 entries), 16

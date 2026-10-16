@@ -49,10 +49,14 @@ int display_height()
     return 480;
 }
 
+static int s_fullscreen_request = -1;  // from port_set_fullscreen; -1 until the game says
+
 static bool fullscreen_wanted()
 {
     const char *e = getenv("MICKEY_WINDOWED");
-    return !(e && *e && *e != '0');
+    if (e && *e && *e != '0')
+        return false;
+    return s_fullscreen_request != 0;
 }
 
 void display_show(Window *w)
@@ -195,6 +199,13 @@ void port_present(const void *argb8888, int w, int h, int pitch)
         s_last_present = now;
         show_frame();
     }
+}
+
+void port_set_fullscreen(int fullscreen)
+{
+    s_fullscreen_request = fullscreen != 0;
+    if (s_window && s_window->sdl)
+        SDL_SetWindowFullscreen(s_window->sdl, fullscreen_wanted());
 }
 
 void port_wait_vblank(void)

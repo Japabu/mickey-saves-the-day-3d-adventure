@@ -58,9 +58,11 @@ COMMON = [
     '-isystem', os.path.join(PORT, 'compat', 'include'),
     '-D_WIN32', '-DWIN32', '-D_X86_', '-D_M_IX86=500', '-D_MSC_VER=1200', '-DPORT_MACOS',
 ]
-# Modules whose original exported its whole C interface through a .def file rather
-# than __declspec(dllexport): everything they define is exported
-DEFAULT_VISIBILITY = {'zlib', 'mbruntime', 'MBCom'}
+# Modules whose original exported plain C names through a .def file rather than
+# __declspec(dllexport) (their export tables have only undecorated names): everything
+# they define is exported
+DEFAULT_VISIBILITY = {'zlib', 'mbruntime', 'MBCom', 'MBEngine', 'SteamboatApp',
+                      'PscStdlib', 'PxtMath', 'PscCompiler', 'PscContentInfo'}
 
 # src/options.txt options the port does not use: libpng's MMX code is x86 assembly,
 # so the port builds its portable C path
