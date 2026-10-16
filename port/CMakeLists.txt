@@ -4,6 +4,12 @@
 cmake_minimum_required(VERSION 3.24)
 project(MickeyPort C CXX)
 
+# optimised by default: the software renderer needs it (the game's own modules set
+# -O1 per file in port/flags.py, which comes after these flags)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type" FORCE)
+endif()
+
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 find_package(SDL3 REQUIRED CONFIG)
 

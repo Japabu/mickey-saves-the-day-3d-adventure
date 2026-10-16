@@ -1,4 +1,4 @@
-// PORT override: adds operator< for maps keyed by MBComPtr (libc++ finds the T *, T & and bool conversions ambiguous); otherwise a copy of src/SteamboatApp/MBComPtr.h, keep in sync.
+// PORT override: adds operator< for maps keyed by MBComPtr (libc++ finds the T *, T & and bool conversions ambiguous); otherwise a copy of src/SteamboatApp/MBComPtr.h with port/rewrite.py's 32-bit long (int), keep in sync.
 #pragma once
 // muffin/include/Com/MBComPtr.h: the engine's COM-style smart pointer (members from
 // SteamboatApp.pdb; bodies from the out-of-line copies in SteamboatNode.obj and MBEngine).
@@ -94,31 +94,31 @@ public:
     // Asks the held interface for another one; -2 when nothing is held (the result goes through hr:
     // the instances copy it into a second register). A MBComPtr<T> built from a
     // pointer to another MBComPtr comes here (SteamboatNode::ClearHotspots passes its iterators).
-    long QueryInterface(const MBGUID &iid, void **ppv) const
+    int QueryInterface(const MBGUID &iid, void **ppv) const
     {
-        long hr;
+        int hr;
         if (mInterface)
             hr = mInterface->QueryInterface(iid, ppv);
         else
             hr = -2;
         return hr;
     }
-    long CreateObject(const MBGUID &clsid)
+    int CreateObject(const MBGUID &clsid)
     {
         IMBUnknown *unk;
         Release();
         MBComCreateInstance(0, clsid, &unk);
         if (unk) {
-            long hr = _QueryInterface(unk);
+            int hr = _QueryInterface(unk);
             unk->Release();
             return hr;
         }
         return -2;
     }
 private:
-    template <class U> long _QueryInterface(U *const &p)
+    template <class U> int _QueryInterface(U *const &p)
     {
-        long hr;
+        int hr;
         if (p) {
             T *pInterface;
             hr = p->QueryInterface(T::GetGUID(), (void **)&pInterface);
@@ -134,9 +134,9 @@ private:
         return hr;
     }
     // Same shape as the raw-pointer form (the out-of-line copy in CMBCursor.obj).
-    template <class U> long _QueryInterface(const MBComPtr<U> &p)
+    template <class U> int _QueryInterface(const MBComPtr<U> &p)
     {
-        long hr;
+        int hr;
         if (p) {
             T *pInterface;
             hr = p->QueryInterface(T::GetGUID(), (void **)&pInterface);

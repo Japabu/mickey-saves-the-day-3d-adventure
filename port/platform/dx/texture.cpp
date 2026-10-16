@@ -142,8 +142,12 @@ f4 sample(const StageState &s, float u, float v, float dudx, float dvdx, float d
     if (s.min != s.mag || (s.mip != D3DTFP_NONE && c.levels.size() > 1)) {
         float ax = dudx * top.w, ay = dvdx * top.h, bx = dudy * top.w, by = dvdy * top.h;
         float rho2 = fmaxf(ax * ax + ay * ay, bx * bx + by * by);
-        lod = rho2 > 0 ? 0.5f * log2f(rho2) + s.lodBias : -100.0f;
-        minify = lod > 0;
+        if (s.mip != D3DTFP_NONE && c.levels.size() > 1) {
+            lod = rho2 > 0 ? 0.5f * log2f(rho2) + s.lodBias : -100.0f;
+            minify = lod > 0;
+        } else {
+            minify = s.lodBias == 0 ? rho2 > 1 : 0.5f * log2f(rho2) + s.lodBias > 0; // lod > 0
+        }
     }
     bool linear = minify ? s.min != D3DTFN_POINT : s.mag != D3DTFG_POINT;
     if (!minify || s.mip == D3DTFP_NONE || c.levels.size() == 1)

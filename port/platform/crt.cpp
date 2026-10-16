@@ -168,7 +168,7 @@ static void *RunThread(void *p)
     return 0;
 }
 
-unsigned long _beginthread(void (*start)(void *), unsigned stack, void *arg)
+unsigned int _beginthread(void (*start)(void *), unsigned stack, void *arg)
 {
     ThreadStart *s = (ThreadStart *)malloc(sizeof *s);
     s->start = start;
@@ -183,9 +183,10 @@ unsigned long _beginthread(void (*start)(void *), unsigned stack, void *arg)
     pthread_attr_destroy(&attr);
     if (err) {
         free(s);
-        return (unsigned long)-1;
+        return (unsigned int)-1;
     }
-    return (unsigned long)thread;
+    static unsigned int sThreads;
+    return __atomic_add_fetch(&sThreads, 1, __ATOMIC_RELAXED);
 }
 
 void _endthread(void)

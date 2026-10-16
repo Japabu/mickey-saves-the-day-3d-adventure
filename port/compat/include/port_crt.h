@@ -13,6 +13,7 @@
 #include <wchar.h>
 #include <math.h>
 #include <alloca.h>
+#include <time.h>
 #include <ctype.h>
 #include <wctype.h>
 
@@ -93,7 +94,8 @@ static inline double _copysign(double x, double y) { return copysign(x, y); }
 static inline double _hypot(double x, double y) { return hypot(x, y); }
 
 // process.h
-unsigned long _beginthread(void (*start)(void *), unsigned stack, void *arg);
+// the result is a thread number (not a handle): the game only tests it against -1
+unsigned int _beginthread(void (*start)(void *), unsigned stack, void *arg);
 void _endthread(void);
 
 #ifdef __cplusplus
@@ -134,6 +136,11 @@ template <class A, class B> static inline int _wcsicmp(const A *a, const B *b)
         if (ca != cb || !ca) return (int)ca - (int)cb;
     }
 }
+
+// time_t was the 32-bit long of Windows: the source passes the address of a 32-bit
+// time (its long is int in the port, see rewrite.py)
+static inline struct tm *localtime(const int *t) { time_t v = *t; return localtime(&v); }
+static inline struct tm *gmtime(const int *t) { time_t v = *t; return gmtime(&v); }
 
 // VC6's <xutility> min and max (the standard ones under other names)
 namespace std {

@@ -14,6 +14,10 @@
 #include "MfScBytecodeRoutine.h"
 #include "MfScDebugInfo.h"
 
+_RTL_CRITICAL_SECTION MfScVmEnv::csGuard;         // 0x10035280
+MfScHandleDict *MfScVmEnv::varpool;
+int MfScVmEnv::iIdPool;
+
 // the global variable pool is made on first use
 #define INIT_VARPOOL()                            \
     if (!varpool) {                               \

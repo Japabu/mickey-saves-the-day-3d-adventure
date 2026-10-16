@@ -68,3 +68,47 @@ EDITS = {
          '    MfScClassInfoText() {}\n    virtual ~MfScClassInfoText() {}\n', 1),
     ],
 }
+
+# more of the same: mfutil (MfString::Truncate, MfDblList::GetCurrent, MfDirectoryFileInfo
+# as MfSoundManager declares it: its first member is the WIN32_FIND_DATAA), MfActorLib
+# (MfProtoSkill::Conversion, ~MfJointKeyList), PiccoloRT (~MfScHandleDict, MfScDataObject's
+# defaults), PscStdlib (~MfPlList)
+EDITS.update({
+    'RuntimeLib/MfString.h': [
+        ('    void Truncate(int);\n', '    void Truncate(int n) { CopyOnWrite(0); mfsr->Truncate(n); }\n', 1),
+    ],
+    'RuntimeLib/MfSoundManager.cpp': [
+        ('class __declspec(dllimport) MfDirectoryFileInfo {\npublic:\n    MfString GetFileName() const;\n',
+         'class __declspec(dllimport) MfDirectoryFileInfo {\npublic:\n'
+         '    MfString GetFileName() const { return MfString(((const WIN32_FIND_DATAA *)this)->cFileName); }\n', 1),
+    ],
+    'RuntimeLib/MfProtoSkill.h': [
+        ('    virtual const MfRotation3 &Conversion();\n', '    virtual const MfRotation3 &Conversion() { return conversion; }\n', 1),
+    ],
+    'RuntimeLib/MfJointKeyList.h': [
+        ('    virtual ~MfJointKeyList();\n', '    virtual ~MfJointKeyList() {}\n', 1),
+    ],
+    'RuntimeLib/MfScHandleDict.h': [
+        ('    virtual ~MfScHandleDict();\n', '    virtual ~MfScHandleDict() { Clear(); }\n', 1),
+    ],
+    'RuntimeLib/MfScData.h': [
+        ('    virtual MfScPropTokenTable *GetPropTokenTable();\n'
+         '    virtual void FilloutPropertyNameList(MfStringList *);\n'
+         '    virtual MfScPropertyExtList *GetPropertyExtensions();\n',
+         '    virtual MfScPropTokenTable *GetPropTokenTable() { return 0; }\n'
+         '    virtual void FilloutPropertyNameList(MfStringList *) {}\n'
+         '    virtual MfScPropertyExtList *GetPropertyExtensions() { return 0; }\n', 1),
+    ],
+    'RuntimeLib/MfPoSpace.cpp': [
+        ('class __declspec(dllimport) MfPlList : public MfScObject {\npublic:\n    virtual ~MfPlList();\n',
+         'class __declspec(dllimport) MfPlList : public MfScObject {\npublic:\n    virtual ~MfPlList() {}\n', 1),
+    ],
+})
+EDITS['RuntimeLib/MfDblList.h'].append(
+    ('    virtual void *GetCurrent(MfDblListItem *&pli) const;\n',
+     '    virtual void *GetCurrent(MfDblListItem *&pli) const { return pli ? pli->GetData() : 0; }\n', 1))
+# MfString::Truncate (above) calls MfStringRef::Truncate, which RuntimeLib's copy of the
+# class does not declare (mfutil exports it)
+EDITS['RuntimeLib/MfString.h'].append(
+    ('    MfStringRef *CopyOnWrite() { return new MfStringRef(*this); }\n',
+     '    MfStringRef *CopyOnWrite() { return new MfStringRef(*this); } void Truncate(int n);\n', 1))

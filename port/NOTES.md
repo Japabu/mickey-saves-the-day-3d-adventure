@@ -32,25 +32,22 @@ Still open in other areas (reported, not mine):
 
 Port overrides and rules (SteamboatApp):
 - MBContainers.h: MBVector hands out `T *` iterators and takes them in insert/erase (VC6's vector
-  iterator is `T *`); it carries rewrite.py's MBAllocator/MBMap changes, keep both in step.
-- MBComPtr.h: `operator<` on the interface pointer for maps keyed by MBComPtr; a copy of src,
-  keep in step.
+  iterator is `T *`); it carries rewrite.py's MBAllocator/MBMap changes and its 32-bit long,
+  keep both in step.
+- MBComPtr.h: `operator<` on the interface pointer for maps keyed by MBComPtr; a copy of src
+  with rewrite.py's 32-bit long, keep in step.
 - Graph_NodeContext.h: values in a one-field struct (libc++'s vector<bool> is a bit vector).
-- Gfx_TextureAttribute.cpp, Graph_FileStream.cpp: 64-bit reads (see below).
-- libpng/pngconf.h, zlib/zconf.h: TARGET_OS_MAC is not Classic Mac OS.
+- libpng/pngconf.h, zlib/zconf.h: TARGET_OS_MAC is not Classic Mac OS (png_uint_32, uLong and
+  z_off_t carry rewrite.py's 32-bit long).
+- Overrides are not rewritten: every `long` in one is written as the rule would (int, unsigned
+  int).
 - Temporaries bound to non-const references and the other VC6 conversions go through
   rewrite.py's FILE_RULES (port_lvalue and friends), requested from D.
 
 64-bit hazards found so far:
-- Graph::Stream (scene graph files: Gfx_*, Graph_*): `Read(unsigned long *)` reads 4 bytes into
-  an 8-byte `unsigned long` and `ByteSwap(unsigned long *)` swaps 4 bytes of it, so the upper half
-  keeps whatever the variable held, and `Write(unsigned long)` must write only 4 bytes. Every
-  `unsigned long` read from a file (Gfx_Attribute, Gfx_AnimatedNode, Gfx_Camera,
-  Gfx_DisplayQuality, Gfx_FileNode, Gfx_IONode, Gfx_IndexedTriangleSet, Gfx_IndexedVertexShape,
-  Gfx_LODNode, Gfx_Node) is read through this. Override port/override/SteamboatApp/Graph_FileStream.cpp
-  clears the value before the 4-byte read (little-endian: the low half is the file value), and
-  `Read(unsigned char *, int)` no longer passes its int as `unsigned long &`. Writing is correct
-  as it is (4 low bytes).
+- Graph::Stream (scene graph files: Gfx_*, Graph_*): `Read(unsigned long *)` read 4 bytes into
+  an 8-byte `unsigned long`, and the texel colour of Gfx_TextureAttribute was read as one. Fixed
+  by rewrite.py's 32-bit long (the overrides that patched these are gone).
 - For G2 (shapes): Gfx_IndexedVertexShape.cpp and Gfx_PackedVertexShape.cpp store and load
   packed colours as `*(unsigned long *)&m_CList[k]`; with an 8-byte `unsigned long` that writes
   over the next element (the store of 0xff000000 into k + 1 hides it, the loads read 8 bytes).
@@ -341,9 +338,9 @@ Also crash-level, outside the top 10: the keyframe and pointer-array sizes in Mf
 - CMBResourceZipfile: `.mbd` files are ordinary zip archives (no comment): the end record is
   read at -22 from the end, then the central directory; each member is keyed by the
   MBHashString of its bare name (directories and extension stripped) and the extension as a
-  four-character type; members are stored or deflated (zlib inflate, raw). Fixed for 64-bit in
-  port/edits/MBEngine.py: the zip record structs' 4-byte fields were `unsigned long` and were
-  read with sizeof(field), 8 bytes, so no archive opened.
+  four-character type; members are stored or deflated (zlib inflate, raw). The zip record
+  structs' 4-byte fields are `unsigned long`, read with sizeof(field): rewrite.py's 32-bit long
+  keeps them at 4 bytes (with 8, no archive opened).
 - Defaults (port/platform/win32/defaults.cpp, vfs::install_defaults): ReadPrefs joins `hd`/`cd`
   to `fly`, `mofa` and `muffin` without a separator; the CD's steamboat.ini gives those a
   leading `\` (`mofa = \resources\universal\mofa`, `muffin = \resources`), so `hd` and `cd`

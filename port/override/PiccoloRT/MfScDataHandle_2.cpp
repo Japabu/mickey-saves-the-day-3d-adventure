@@ -27,6 +27,16 @@
 extern __declspec(dllimport) MfNullString NULL_STRING;
 
 MfCriticalSection MfScDataHandle::csGCGuard;
+MfScHandleHeap *MfScDataHandle::aphhp[3];          // 0x10034f90
+unsigned long MfScDataHandle::dwGCTick;
+MfThread *MfScDataHandle::ptGCThread;
+MfScGCWork *MfScDataHandle::pgcwWork;
+MfThread *MfScDataHandle::ptGCTimerThread;
+MfScGCTimerWork *MfScDataHandle::pgctwWork;
+long MfScDataHandle::lGCTimeOut;
+unsigned long MfScDataHandle::udwHints;
+long MfScDataHandle::lDisableGC;
+long MfScDataHandle::lGCrunning;                   // 0x10034fbc
 
 // 0x10005140 ??0MfScDataHandle@@QAE@XZ
 MfScDataHandle::MfScDataHandle()

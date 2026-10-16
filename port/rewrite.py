@@ -26,11 +26,8 @@ Rules:
   rebind, a converting constructor and allocate(n), all on the line of its `};`.
 - std::map/multimap with MBAllocator<V>: VC6 maps took an allocator of the mapped
   type; libc++ requires one of the element type pair<const K, V>.
-- Window procedures declared `(HWND, unsigned int, unsigned int, long)`: the third
-  parameter is WPARAM, which is pointer-sized here (it was a 32-bit UINT).
-- MfScDataHandle::CreateData(int): the source passes Windows `long` values (32 bits
-  there, 64 here), which are ambiguous between the int and float overloads; inline
-  long and unsigned long overloads forward to the int one.
+- Window procedures declared `long __stdcall ...Proc(HWND, unsigned int, unsigned int,
+  long)`: WPARAM, LPARAM and LRESULT are pointer-sized here (they were 32 bits).
 - MBGUID (MBEngine, SteamboatApp, Steamboat): data1 is `unsigned long`, and data4 is
   compared through `(const unsigned long *)`: both are the 32-bit Windows long, port_u32.
 - MBHashString (mbruntime) returns the 32-bit hash as `unsigned long`, which the
@@ -83,11 +80,11 @@ RULES = [
      r'#include <iostream.h> // port: was a declaration of class \1'),
     (re.compile(r'^class\s+(ofstream|ifstream|fstream|filebuf)\s*;[ \t]*$', re.M),
      r'#include <fstream.h> // port: was a declaration of class \1'),
+    (re.compile(r'(\(\s*(?:HWND__\s*\*|HWND)\s*\w*\s*,\s*(?:unsigned\s+int|UINT)\s*\w*\s*,\s*)unsigned\s+int(\s*\w*\s*,\s*)long\b'),
+     r'\1WPARAM\2LPARAM'),
     (re.compile(r'(\(\s*(?:HWND__\s*\*|HWND)\s*\w*\s*,\s*(?:unsigned\s+int|UINT)\s*\w*\s*,\s*)unsigned\s+int\b'),
      r'\1WPARAM'),
-    (re.compile(r'(static\s+MfScDataHandle\s*\*\s*(?:__cdecl\s+)?CreateData\s*\(\s*int\s*(?:\w+\s*)?\)\s*;)'),
-     r'\1 static MfScDataHandle *CreateData(long v) { return CreateData((int)v); }'
-     r' static MfScDataHandle *CreateData(unsigned long v) { return CreateData((int)v); }'),
+    (re.compile(r'\blong(\s+(?:__stdcall|CALLBACK|WINAPI)\s+[\w:]*Proc\w*\s*\()'), r'LRESULT\1'),
     (re.compile(r'\bextern\s+"C"\s+static\b'), r'static'),
     (re.compile(r'(struct\s+MBGUID\s*\{\s*\n\s*)unsigned\s+long(\s+data1\s*;)'), r'\1port_u32\2'),
     (re.compile(r'\bunsigned\s+long(\s+(?:__cdecl\s+)?MBHashString\s*\()'), r'port_u32\1'),
@@ -176,6 +173,96 @@ DIR_RULES = {
          r'\1port_lvalue(MBString(\2))'),
     ],
 }
+# --- the 32-bit Windows integer model -------------------------------------------------
+# The game was written for 32-bit Windows, where long is 32 bits; on macOS it is 64.
+# The source's long and unsigned long become int and unsigned int, and the l suffix
+# of its integer constants goes (0x80000000L is then unsigned int, as it was unsigned
+# long there). long long and long double stay, and so do identifiers, comments,
+# character and string literals, apart from the printf length modifier l in a string
+# (%ld, %lu, %lx ... become %d, %u, %x ...: the argument was a long). Applied last, to
+# every file. Declarations that then repeat their int twin are dropped (see
+# drop_duplicate_overloads).
+_TOKEN = re.compile(r"""
+    (?P<comment>//[^\n]*|/\*.*?\*/)
+  | (?P<string>"(?:\\.|[^"\\\n])*")
+  | (?P<char>'(?:\\.|[^'\\\n])*')
+  | (?P<number>\.?[0-9](?:[eEpP][+-]|[0-9A-Za-z_.])*)
+  | (?P<ident>[A-Za-z_][A-Za-z_0-9]*)
+""", re.S | re.X)
+_FORMAT_L = re.compile(r'(%[-+ #0]*(?:\*|[0-9]+)?(?:\.(?:\*|[0-9]+))?)l(?=[diouxX])')
+_LONGISH = re.compile(r'\blong\b|[0-9][uU]?[lL]\b|%[-+ #0-9.*]*l[diouxX]')
+_INT_NUMBER = re.compile(r'(0[xX][0-9A-Fa-f]+|[0-9]+)([uU]?)[lL]([uU]?)$')
+
+
+def windows_long(text):
+    out = []
+    pos = 0
+    tokens = list(_TOKEN.finditer(text))
+    skip = set()
+    for i, m in enumerate(tokens):
+        out.append(text[pos:m.start()])
+        pos = m.end()
+        tok = m.group(0)
+        kind = m.lastgroup
+        if kind == 'string':
+            out.append(_FORMAT_L.sub(r'\1', tok) if '%' in tok else tok)
+            continue
+        if kind == 'number':
+            n = _INT_NUMBER.match(tok)
+            out.append(n.group(1) + n.group(2) + n.group(3) if n else tok)
+            continue
+        if kind != 'ident' or tok != 'long' or i in skip:
+            out.append(tok)
+            continue
+        # the next token, when only blanks separate them
+        nxt = tokens[i + 1] if i + 1 < len(tokens) else None
+        follow = nxt.group(0) if nxt is not None and nxt.lastgroup == 'ident' and \
+            not text[m.end():nxt.start()].strip() else None
+        if follow == 'long':
+            skip.add(i + 1)
+            out.append(tok)
+        elif follow == 'double':
+            out.append(tok)
+        elif follow in ('int', 'unsigned', 'signed'):
+            out.append('')
+        else:
+            out.append('int')
+    out.append(text[pos:])
+    return ''.join(out)
+
+
+
+def drop_duplicate_overloads(before, after):
+    """A class often declares a member for int and again for long (MfStream's
+    operator>>, MfString's conversions): after windows_long() the two are the same
+    declaration. A changed line whose declaration (up to its body or semicolon) repeats
+    one of the 12 lines above it at the same brace depth becomes a comment."""
+    old = before.split('\n')
+    new = after.split('\n')
+    if len(old) != len(new):
+        return after
+    depth = 0
+    seen = []          # (line index, depth, key)
+    for i, line in enumerate(new):
+        code = re.sub(r'//.*', '', line)
+        key = re.sub(r'\s+', '', re.split(r'[{;]', code, maxsplit=1)[0])
+        single = code.strip().endswith((';', '}')) and code.count('{') == code.count('}')
+        decl = re.match(r'^[\w:<>*&~,]+\([^()]*\)(?:const)?(?:=0)?$', key) and not key.startswith(('return', 'else', 'if('))
+        if single and decl:
+            twin = [j for j, d, k in seen if d == depth and k == key and i - j <= 12]
+            # drop whichever of the two the rewrite made (the long one)
+            drop = i if twin and old[i] != line else twin[0] if twin and old[twin[0]] != new[twin[0]] else None
+            if drop is not None:
+                new[drop] = re.match(r'\s*', new[drop]).group(0) + '// port: the same as the int declaration ' + \
+                    ('above' if drop == i else 'below')
+                if drop == i:
+                    continue
+        if single and key:
+            seen.append((i, depth, key))
+        depth += code.count('{') - code.count('}')
+    return '\n'.join(new)
+
+
 # files no rule touches
 KEEP = {'SteamboatApp/ios.h', 'SteamboatApp/ostream.h'}
 # a cheap first test before the regular expressions
@@ -186,7 +273,7 @@ def rewrite(text, rel=None):
     """The rewritten text, or None when no rule applies (rel: the path under src/)."""
     edits = EDITS.get(rel, [])
     rules = FILE_RULES.get(rel, []) + [r for d, rs in DIR_RULES.items() if rel and rel.startswith(d) for r in rs]
-    if not rules and not edits and not any(n in text for n in NEEDLES):
+    if not rules and not edits and not any(n in text for n in NEEDLES) and not _LONGISH.search(text):
         return None
     out = text
     # the order (see the docstring): exact edits on the source text, then the
@@ -201,6 +288,7 @@ def rewrite(text, rel=None):
         out = out.replace(old, new)
     for pat, rep in rules + RULES:
         out = pat.sub(rep, out)
+    out = drop_duplicate_overloads(out, windows_long(out))
     return out if out != text else None
 
 

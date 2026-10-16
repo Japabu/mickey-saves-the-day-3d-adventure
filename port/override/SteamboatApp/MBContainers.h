@@ -1,4 +1,4 @@
-// PORT override: MBVector with pointer iterators (VC6 vector iterators are T *); also carries port/rewrite.py's MBAllocator and MBMap changes, since an override replaces the rewritten copy.
+// PORT override: MBVector with pointer iterators (VC6 vector iterators are T *); also carries port/rewrite.py's MBAllocator and MBMap changes and its 32-bit long (unsigned int), since an override replaces the rewritten copy.
 #pragma once
 // muffin/include/Runtime/MBContainers.h: the STL containers on the engine's heap.
 #include <list>
@@ -16,12 +16,12 @@
 #pragma optimize("a", on)
 
 template <class T> class MBAllocator : public std::allocator<T> {
-    typedef unsigned long SizeType;
+    typedef unsigned int SizeType;
     typedef T *PointerType;
 public:
-    T *allocate(unsigned long n, const void *) { return (T *)MBmalloc_release(n * sizeof(T)); }
-    char *_Charalloc(unsigned long n) { return (char *)MBmalloc_release(n); }
-    void deallocate(void *p, unsigned long) { if (p) MBfree_release(p); }
+    T *allocate(unsigned int n, const void *) { return (T *)MBmalloc_release(n * sizeof(T)); }
+    char *_Charalloc(unsigned int n) { return (char *)MBmalloc_release(n); }
+    void deallocate(void *p, unsigned int) { if (p) MBfree_release(p); }
     MBAllocator() {} template <class U> MBAllocator(const MBAllocator<U> &) {} template <class U> struct rebind { typedef MBAllocator<U> other; }; T *allocate(size_t n) { return (T *)MBmalloc_release(n * sizeof(T)); } };
 
 // The game walks MBVectors with plain pointers (VC6's vector iterator is T *): the port's
