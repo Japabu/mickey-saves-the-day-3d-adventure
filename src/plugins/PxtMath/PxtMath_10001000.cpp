@@ -19,7 +19,7 @@ MfPxtMath::MfPxtMath(MfPxtMathArg)
     MfScVmEnv::GetGlobalVariable("Math", &h);
     if (h)
         obj = dynamic_cast<MfScDataObject *>(h->GetData());
-    *m_className = g_mathName + MfString("Ext<class>");
+    Name() = g_mathName + MfString("Ext<class>");
     {
         MfString full("Math::Sinh");
         MfString name("Sinh");
@@ -92,15 +92,15 @@ MfScDataHandle *MfPxtMath::Sinh(MfScDataHandle *, int, MfScDataHandle **args)
     MfScDataHandle *result = 0;
     MfScDataHandle *a = args[0];
     if (a) {
-        if (a->IsNumber()) {
-            float x = a->GetFloat();
+        if (a->IsType(0x30)) {
+            float x = a->GetNumber();
             result = MfScDataHandle::CreateData((float)sinh(x));
         } else {
-            MfScVmEnv *env = MfThread::GetThread()->m_env;
+            MfScVmEnv *env = ((MfScThread *)MfThread::GetThread())->mVmEnv;
             env->ThrowException(12, "Math::sinh requires a number operand.");
         }
     } else {
-        MfScVmEnv *env = MfThread::GetThread()->m_env;
+        MfScVmEnv *env = ((MfScThread *)MfThread::GetThread())->mVmEnv;
             env->ThrowException(6, "Math::sinh requires a non-nil operand.");
     }
     return result;
@@ -112,15 +112,15 @@ MfScDataHandle *MfPxtMath::Cosh(MfScDataHandle *, int, MfScDataHandle **args)
     MfScDataHandle *result = 0;
     MfScDataHandle *a = args[0];
     if (a) {
-        if (a->IsNumber()) {
-            float x = a->GetFloat();
+        if (a->IsType(0x30)) {
+            float x = a->GetNumber();
             result = MfScDataHandle::CreateData((float)cosh(x));
         } else {
-            MfScVmEnv *env = MfThread::GetThread()->m_env;
+            MfScVmEnv *env = ((MfScThread *)MfThread::GetThread())->mVmEnv;
             env->ThrowException(12, "Math::cosh requires a number operand.");
         }
     } else {
-        MfScVmEnv *env = MfThread::GetThread()->m_env;
+        MfScVmEnv *env = ((MfScThread *)MfThread::GetThread())->mVmEnv;
             env->ThrowException(6, "Math::cosh requires a non-nil operand.");
     }
     return result;
@@ -132,15 +132,15 @@ MfScDataHandle *MfPxtMath::Tanh(MfScDataHandle *, int, MfScDataHandle **args)
     MfScDataHandle *result = 0;
     MfScDataHandle *a = args[0];
     if (a) {
-        if (a->IsNumber()) {
-            float x = a->GetFloat();
+        if (a->IsType(0x30)) {
+            float x = a->GetNumber();
             result = MfScDataHandle::CreateData((float)tanh(x));
         } else {
-            MfScVmEnv *env = MfThread::GetThread()->m_env;
+            MfScVmEnv *env = ((MfScThread *)MfThread::GetThread())->mVmEnv;
             env->ThrowException(12, "Math::tanh requires a number operand.");
         }
     } else {
-        MfScVmEnv *env = MfThread::GetThread()->m_env;
+        MfScVmEnv *env = ((MfScThread *)MfThread::GetThread())->mVmEnv;
             env->ThrowException(6, "Math::tanh requires a non-nil operand.");
     }
     return result;
@@ -151,12 +151,12 @@ MfScDataHandle *MfPxtMath::Hypot(MfScDataHandle *, int, MfScDataHandle **args)
 {
     MfScDataHandle *result = 0;
     if (args[0] && args[1]) {
-        int na = args[0]->IsNumber();
-        int nb = args[1]->IsNumber();
+        int na = args[0]->IsType(0x30);
+        int nb = args[1]->IsType(0x30);
         if (na && nb) {
-            result = MfScDataHandle::CreateData((float)hypot(args[0]->GetFloat(), args[1]->GetFloat()));
+            result = MfScDataHandle::CreateData((float)hypot(args[0]->GetNumber(), args[1]->GetNumber()));
         } else {
-            MfScVmEnv *env = MfThread::GetThread()->m_env;
+            MfScVmEnv *env = ((MfScThread *)MfThread::GetThread())->mVmEnv;
             if (!na && !nb)
                 env->ThrowException(12, "Math::hypot: both parameters are invalid.");
             else if (!na)
@@ -165,7 +165,7 @@ MfScDataHandle *MfPxtMath::Hypot(MfScDataHandle *, int, MfScDataHandle **args)
                 env->ThrowException(12, "Math::hypot: the second parameter is invalid.");
         }
     } else {
-        MfScVmEnv *env = MfThread::GetThread()->m_env;
+        MfScVmEnv *env = ((MfScThread *)MfThread::GetThread())->mVmEnv;
         env->ThrowException(6, "Math::hypot requires non-nil operands.");
     }
     return result;
@@ -184,10 +184,10 @@ void CreateMathObject()
         MfScDataHandle *h;
         MfScVmEnv::GetGlobalVariable(g_mathName, &h);
         if (h) {
-            h->m_flags &= ~8;
+            h->SetReadWrite();
             MfPxtMathArg arg;
             g_math = new MfPxtMath(arg);
-            h->m_flags |= 8;
+            h->SetReadOnly();
             h->Release();
         }
     }
@@ -202,7 +202,7 @@ void DestroyMathObject()
 // compiler-generated adjustor thunks of the secondary vtables
 
 // 0x10001f50 _DllMain@12
-extern "C" int __stdcall DllMain(void *, unsigned long, void *)
+extern "C" BOOL WINAPI DllMain(HINSTANCE, DWORD, LPVOID)
 {
     return 1;
 }

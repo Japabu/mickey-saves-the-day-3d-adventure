@@ -1,171 +1,19 @@
 // PxtMath.dll 0x10001000-0x10002040: the "Math" script extension (MfPxtMath).
-// Motion Factory runtime declarations as far as this unit needs them; names and
-// signatures from the decorated import names, layouts from the code and RTTI.
 #ifndef PXTMATH_10001000_H
 #define PXTMATH_10001000_H
 
-class MfStringList;
-class MfScLinkData;
-class MfScPropTokenTable;
-class MfScPropertyExtList;
-struct _TREEITEM;
-struct HWND__;
+// PiccoloRT.dll; its headers bring mfutil's MfString, MfThread, MfListItemInterface and
+// MfSortedListItem (PiccoloRT's declarations of them until PiccoloRT includes mfutil's).
+#include "../../PiccoloRT/MfScDataHandle.h"
+#include "../../mfutil/MfNullString.h"
 
-class __declspec(dllimport) MfNullString;
-
-class __declspec(dllimport) MfString {
-public:
-    MfString(const char *);
-    ~MfString();
-    MfString &operator=(const MfString &);
-    MfString &operator=(const MfNullString &);
-    MfString operator+(const MfString &) const;
-private:
-    char *m_p;
-};
-extern __declspec(dllimport) MfNullString NULL_STRING;
-
-class MfScDataHandle;
 class MfScData;
 typedef MfScDataHandle *(MfScData::*MfScMethod)(MfScDataHandle *, int, MfScDataHandle **);
 
-// data handle: +0 reference count, +2 type flags, +4 value
-class __declspec(dllimport) MfScDataHandle {
-public:
-    static MfScDataHandle *CreateData(float);
-    static MfScDataHandle *CreateData(MfScData *, MfScMethod, const MfString &, int);
-    MfScData *GetData() { return (m_flags & 0xfc0) ? m_data : 0; }
-    int IsNumber() { return m_type & 0x30; }
-    float GetFloat() { return (m_type & 0x10) ? (float)m_int : m_float; }
-    void Release() { if (m_refs > 0) m_refs--; }
-
-    unsigned short m_refs;
-    union {
-        unsigned short m_flags;
-        unsigned char m_type;
-    };
-    union {
-        MfScData *m_data;
-        int m_int;
-        float m_float;
-    };
-};
-
-class MfScVariableStack {
-public:
-    enum MfScVariableErrorCode { };
-};
-
-class __declspec(dllimport) MfScVmEnv {
-public:
-    static MfScVariableStack::MfScVariableErrorCode GetGlobalVariable(const MfString &, MfScDataHandle **);
-    void ThrowException(int, const MfString &);
-};
-
-class __declspec(dllimport) MfThread {
-public:
-    static MfThread *GetThread();
-    char m_pad[0x20];
-    MfScVmEnv *m_env;     // +0x20
-};
-
-class __declspec(dllimport) MfScData {
-public:
-    virtual ~MfScData();
-protected:
-    virtual MfScLinkData *CountCircLinks(MfScDataHandle *);
-    virtual void ReleaseCircLinks(MfScLinkData *);
-    virtual int GetThroughCount(MfScDataHandle *);
-public:
-    virtual void AddRef();
-    virtual void Release();
-    int m_4;
-};
-
-class __declspec(dllimport) MfScClassInfo;
-
-class __declspec(dllimport) MfScDataObject : public MfScData {
-public:
-    enum MfPropertyErrorCode { };
-    MfScDataObject(unsigned int);
-    virtual ~MfScDataObject();
-    virtual MfPropertyErrorCode GetProperty(const MfString &, MfScDataHandle **);
-    virtual MfPropertyErrorCode SetProperty(MfScDataHandle *, const MfString &, MfScDataHandle *, int);
-    virtual MfString GetClassNameA();
-    virtual void GetPropertyNames(MfStringList *, int);
-    virtual void GetInstanceProperties(MfStringList *, int);
-    virtual MfScPropTokenTable *GetPropTokenTable();
-    virtual void FilloutPropertyNameList(MfStringList *);
-    virtual MfScPropertyExtList *GetPropertyExtensions();
-    static void AddClassInfo(MfScClassInfo *);
-    MfString *m_className;  // +8
-    int m_c;
-    int m_10;
-};
-
-class __declspec(dllimport) MfScObject : public MfScDataObject {
-public:
-    MfScObject() : MfScDataObject(0x200) { }
-protected:
-    virtual MfScLinkData *CountCircLinks(MfScDataHandle *);
-    virtual void ReleaseCircLinks(MfScLinkData *);
-    virtual int GetThroughCount(MfScDataHandle *);
-};
-
-// class info (help/browser tree) classes
-class __declspec(dllimport) MfSortedListItem {
-public:
-    virtual ~MfSortedListItem();
-    virtual MfString GetKey() const = 0;
-};
-
-class __declspec(dllimport) MfListItemInterface {
-public:
-    virtual int Compare(MfListItemInterface *);
-};
-
-class __declspec(dllimport) MfScClassInfoText {
-public:
-    virtual ~MfScClassInfoText();
-    MfString *m_text;
-};
-
-class __declspec(dllimport) MfScClassInfoItem : public MfSortedListItem {
-public:
-    virtual MfString GetKey() const;
-};
-
-class MfScCiMethod;
-class __declspec(dllimport) MfScMethodParameterInfo : public MfScClassInfoText {
-public:
-    MfScMethodParameterInfo(const MfString &, int);
-    virtual ~MfScMethodParameterInfo();
-    int m_8;
-    int m_c;
-};
-
-class __declspec(dllimport) MfScCiMethod : public MfScClassInfoItem, public MfScClassInfoText {
-public:
-    MfScCiMethod(const MfString &);
-    virtual ~MfScCiMethod();
-    virtual _TREEITEM *DisplayInTree(HWND__ *, _TREEITEM *);
-    virtual int GetTreeImage();
-    MfScCiMethod &operator+(MfScMethodParameterInfo *);
-    int m_c;
-    int m_10;
-    int m_14;
-};
-
-class MfScClassInfoItem;
-class __declspec(dllimport) MfScClassInfo : public MfSortedListItem, public MfListItemInterface, public MfScClassInfoText {
-public:
-    MfScClassInfo(const MfString &);
-    virtual ~MfScClassInfo();
-    virtual MfString GetKey() const;
-    MfScClassInfo &operator+(MfScClassInfoItem *);
-    int m_10;
-    int m_14;
-};
+#include "../../PiccoloRT/MfScVmEnv.h"
+#include "../../PiccoloRT/MfScThread.h"
+#include "../../PiccoloRT/MfScObject.h"
+#include "../../PiccoloRT/MfScClassInfo.h"
 
 // by-value constructor argument with an empty destructor (its out-of-line copy
 // is at 0x100017c0, used by the EH unwind funclet of the constructor)
