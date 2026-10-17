@@ -1,10 +1,10 @@
 // PscStdlib.dll 0x10007810-0x100082d0: the script class "Time".
 #include "PscStdlib.h"
 
-// 0x10007810 _$E6
-// 0x10007820 _$E3
-// 0x10007840 _$E5
-// 0x10007850 _$E4
+// 0x10007810 _$E39
+// 0x10007820 _$E36
+// 0x10007840 _$E38
+// 0x10007850 _$E37
 // 0x1000f298
 static MfString fsName("Time");
 // 0x1000f29c: the class object
