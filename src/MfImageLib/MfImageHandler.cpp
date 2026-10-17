@@ -1,12 +1,52 @@
 // MfImageHandler: handler registry and DllMain (MfImageLib.dll 0x10002200-0x10002440).
-#include "MfImageHandler_unit.h"
+#include "MfImageHandler.h"
+#include "MfBmpHandler.h"
+#include "MfTgaHandler.h"
+#include "MfJpgHandler.h"
+
+// mfutil.dll
+class MfDblListItem {
+public:
+    void *pData;            // +0
+    MfDblListItem *pliPrev; // +4
+    MfDblListItem *pliNext; // +8
+};
+
+// MfImageLib's view of mfutil's MfDblList: the constructor is inline here
+// (stores the imported vtable), the destructor/Insert/Clear are imported.
+// The inline helpers stand for whatever inline accessors the original header had.
+class MFUTIL_API MfDblList {
+public:
+    enum EnumListPosition { LP_BEFORE = 0, LP_AFTER = 1 };
+
+    MfDblList() : pliFirst(0), pliLast(0), nCount(0) {}
+    virtual ~MfDblList();                                                    // +0x00
+    virtual void Prepend(void *const pData);                                 // +0x04
+    virtual void Append(void *const pData);                                  // +0x08
+    virtual void Insert(void *pData, EnumListPosition pos, MfDblListItem *pli); // +0x0c
+    virtual void Clear();
+
+    void AppendItem(void *p) { Insert(p, LP_AFTER, pliLast); }
+    void *First(MfDblListItem *&pli) const { pli = pliFirst; return pli ? pli->pData : 0; }
+    void *Next(MfDblListItem *&pli) const
+    {
+        if (pli) pli = pli->pliNext;
+        return pli ? pli->pData : 0;
+    }
+
+    MfDblListItem *pliFirst; // +4
+    MfDblListItem *pliLast;  // +8
+    int nCount;              // +0xc
+};
 
 // 0x10002200 _$E4 (static initializer: construct + atexit)
 // 0x10002210 _$E1
 // 0x10002230 _$E3 (atexit(_$E2))
 static MfDblList s_handlers;
 
-// 0x10002250 ??0MfImageParams@@QAE@XZ (inline, emitted here)
+// 0x10002250 ??0MfImageParams@@QAE@XZ (inline, emitted here: an exported inline function
+// is emitted by every object that sees its body, so only this one sees it)
+inline MfImageParams::MfImageParams() : image(0), alignment(0), flags(0x1ffff), field_10(0) {}
 
 // 0x10002280 ?MfFindImageHandler@@YAPAVMfImageHandler@@W4MfImageOp@@ABVMfString@@@Z
 MfImageHandler *MfFindImageHandler(MfImageOp op, const MfString &path)

@@ -1,26 +1,12 @@
 # MfImageLib edits for the port (see port/rewrite.py, EDITS).
 EDITS = {}
 
-# MfImageLib/MfImageHandler_unit.h: MfJpgHandler declared with its real members (the filler was too small on LP64)
-EDITS['MfImageLib/MfImageHandler_unit.h'] = [
-    ('\n'
-     '#include <windows.h>\n'
-     '\n'
-     '// mfutil.dll\n',
-     '\n'
-     '#include <windows.h>\n'
-     '#include <stdio.h>    // PORT: for jpeglib.h (the real MfJpgHandler members, below)\n'
-     'extern "C" {\n'
-     '#include "jpeg/jpeglib.h"\n'
-     '}\n'
-     '\n'
-     '// mfutil.dll\n'
-     '#line 8\n', 1),
-    ('    virtual void Append(void *const pData);                                  // +0x08\n'
-     '    virtual void Insert(void *pData, EnumListPosition pos, MfDblListItem *pli); // +0x0c\n'
+# MfImageLib/MfImageHandler.cpp: the MfDblList view lists only the slots MfImageLib calls; mfutil's
+# real vtable has more between Insert and Clear
+EDITS['MfImageLib/MfImageHandler.cpp'] = [
+    ('    virtual void Insert(void *pData, EnumListPosition pos, MfDblListItem *pli); // +0x0c\n'
      '    virtual void Clear();\n'
      '\n',
-     '    virtual void Append(void *const pData);                                  // +0x08\n'
      '    virtual void Insert(void *pData, EnumListPosition pos, MfDblListItem *pli); // +0x0c\n'
      "    // PORT: mfutil's other slots, so that Clear is in its slot (vtablecensus)\n"
      '    virtual void Merge(MfDblList &, EnumListPosition, MfDblListItem *);\n'
@@ -40,35 +26,19 @@ EDITS['MfImageLib/MfImageHandler_unit.h'] = [
      '    virtual void *Delete(MfDblListItem *&);\n'
      '    virtual void Clear();\n'
      '\n'
-     '#line 43\n', 1),
-    ('    virtual MfImageError Handle(MfImageOp op, MfImageParams &params);\n'
-     'private:\n'
-     '    char m_state[0x23c];\n'
-     '};\n'
-     '\n',
-     '    virtual MfImageError Handle(MfImageOp op, MfImageParams &params);\n'
-     'private:\n'
-     "    // PORT: the real members of MfJpgHandler_unit.h (libjpeg's structs grow on LP64,\n"
-     "    // so a 0x23c filler made DllMain's `new MfJpgHandler` too small)\n"
-     '    int m_field_04;\n'
-     '    struct jpeg_decompress_struct m_cinfo;\n'
-     '    struct jpeg_error_mgr m_jerr;\n'
-     '    int m_field_23c;\n'
-     '};\n'
-     '\n'
-     '#line 112\n', 1),
+     '#line 29\n', 1),
 ]
 
 # MfImageLib/MfJpgHandler.cpp: Win32 structured exceptions (__try/__except, RaiseException) do not exist on
 EDITS['MfImageLib/MfJpgHandler.cpp'] = [
     ('// MfJpgHandler: JPEG reader/writer (MfImageLib.dll 0x10002ac0-0x10003040).\n'
-     '#include "MfJpgHandler_unit.h"\n'
+     '#include "MfJpgHandler.h"\n'
      '\n'
      '#define MF_JPEG_EXCEPTION 0xE0000001\n',
      "// macOS; libjpeg's error exit now unwinds with setjmp/longjmp, the usual libjpeg way.\n"
      '// Also fixed: the write path destroyed m_cinfo instead of its own compress object.\n'
      '// MfJpgHandler: JPEG reader/writer (MfImageLib.dll 0x10002ac0-0x10003040).\n'
-     '#include "MfJpgHandler_unit.h"\n'
+     '#include "MfJpgHandler.h"\n'
      '#include <setjmp.h>\n'
      '#include <stdlib.h>\n'
      '\n'

@@ -1,7 +1,7 @@
 // MfBmpHandler: Windows BMP reader (MfImageLib.dll 0x10001000-0x10001490).
 // 0x10001000-0x100010a0 are the implicit members of the exported classes
 // MfImage/MfImageParams, emitted in this object (first user).
-#include "MfBmpHandler_unit.h"
+#include "MfBmpHandler.h"
 #include <string.h>
 
 // 0x10001000 ??4MfImage@@QAEAAV0@ABV0@@Z (implicit)
