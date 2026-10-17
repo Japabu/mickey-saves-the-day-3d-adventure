@@ -3,10 +3,10 @@
 #include <math.h>
 #include <stdlib.h>
 
-// 0x10005750 _$E6
-// 0x10005760 _$E3
-// 0x10005780 _$E5
-// 0x10005790 _$E4
+// 0x10005750 _$E39
+// 0x10005760 _$E36
+// 0x10005780 _$E38
+// 0x10005790 _$E37
 // 0x1000f290
 static MfString fsName("Math");
 // 0x1000f294: the class object

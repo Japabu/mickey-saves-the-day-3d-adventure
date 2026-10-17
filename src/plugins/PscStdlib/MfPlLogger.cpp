@@ -1,10 +1,10 @@
 // PscStdlib.dll 0x10004eb0-0x10005750: the script class "Logger".
 #include "PscStdlib.h"
 
-// 0x10004eb0 _$E6
-// 0x10004ec0 _$E3
-// 0x10004ee0 _$E5
-// 0x10004ef0 _$E4
+// 0x10004eb0 _$E39
+// 0x10004ec0 _$E36
+// 0x10004ee0 _$E38
+// 0x10004ef0 _$E37
 // 0x1000f288
 static MfString fsName("Logger");
 // 0x1000f28c: the class object

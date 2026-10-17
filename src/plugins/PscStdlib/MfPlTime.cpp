@@ -1,10 +1,10 @@
 // PscStdlib.dll 0x10007810-0x100082d0: the script class "Time".
 #include "PscStdlib.h"
 
-// 0x10007810 _$E6
-// 0x10007820 _$E3
-// 0x10007840 _$E5
-// 0x10007850 _$E4
+// 0x10007810 _$E39
+// 0x10007820 _$E36
+// 0x10007840 _$E38
+// 0x10007850 _$E37
 // 0x1000f298
 static MfString fsName("Time");
 // 0x1000f29c: the class object
@@ -74,7 +74,7 @@ MfPlTime::MfPlTime(MfPlClassArg)
 MfScDataHandle *MfPlTime::TimeStamp(MfScDataHandle *, int, MfScDataHandle **)
 {
     MfSystemTime now(0);
-    GetLocalTime(&now.mTime);
+    GetLocalTime(&now);
     MfString stamp;
     stamp.FormatTime("%#m/%#d/%y %#I:%M:%S %p", now);
     return MfScDataHandle::CreateData(stamp, 0);
@@ -84,7 +84,7 @@ MfScDataHandle *MfPlTime::TimeStamp(MfScDataHandle *, int, MfScDataHandle **)
 MfScDataHandle *MfPlTime::GetDayOfWeek(MfScDataHandle *, int, MfScDataHandle **)
 {
     MfSystemTime now(0);
-    GetLocalTime(&now.mTime);
+    GetLocalTime(&now);
     struct tm t;
     now.Convert(&t);
     return MfScDataHandle::CreateData(t.tm_wday);
@@ -94,7 +94,7 @@ MfScDataHandle *MfPlTime::GetDayOfWeek(MfScDataHandle *, int, MfScDataHandle **)
 MfScDataHandle *MfPlTime::GetDay(MfScDataHandle *, int, MfScDataHandle **)
 {
     MfSystemTime now(0);
-    GetLocalTime(&now.mTime);
+    GetLocalTime(&now);
     struct tm t;
     now.Convert(&t);
     return MfScDataHandle::CreateData(t.tm_mday);
@@ -104,7 +104,7 @@ MfScDataHandle *MfPlTime::GetDay(MfScDataHandle *, int, MfScDataHandle **)
 MfScDataHandle *MfPlTime::GetMonth(MfScDataHandle *, int, MfScDataHandle **)
 {
     MfSystemTime now(0);
-    GetLocalTime(&now.mTime);
+    GetLocalTime(&now);
     struct tm t;
     now.Convert(&t);
     return MfScDataHandle::CreateData(t.tm_mon);
@@ -114,7 +114,7 @@ MfScDataHandle *MfPlTime::GetMonth(MfScDataHandle *, int, MfScDataHandle **)
 MfScDataHandle *MfPlTime::GetYear(MfScDataHandle *, int, MfScDataHandle **)
 {
     MfSystemTime now(0);
-    GetLocalTime(&now.mTime);
+    GetLocalTime(&now);
     struct tm t;
     now.Convert(&t);
     return MfScDataHandle::CreateData(t.tm_year);
@@ -124,7 +124,7 @@ MfScDataHandle *MfPlTime::GetYear(MfScDataHandle *, int, MfScDataHandle **)
 MfScDataHandle *MfPlTime::GetHour(MfScDataHandle *, int, MfScDataHandle **)
 {
     MfSystemTime now(0);
-    GetLocalTime(&now.mTime);
+    GetLocalTime(&now);
     struct tm t;
     now.Convert(&t);
     return MfScDataHandle::CreateData(t.tm_hour);
@@ -134,7 +134,7 @@ MfScDataHandle *MfPlTime::GetHour(MfScDataHandle *, int, MfScDataHandle **)
 MfScDataHandle *MfPlTime::GetMinute(MfScDataHandle *, int, MfScDataHandle **)
 {
     MfSystemTime now(0);
-    GetLocalTime(&now.mTime);
+    GetLocalTime(&now);
     struct tm t;
     now.Convert(&t);
     return MfScDataHandle::CreateData(t.tm_min);

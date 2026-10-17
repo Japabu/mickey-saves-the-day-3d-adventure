@@ -1,10 +1,10 @@
 // PscStdlib.dll 0x10003fa0-0x10004eb0: the script class "Dictionary".
 #include "PscStdlib.h"
 
-// 0x10003fa0 _$E6
-// 0x10003fb0 _$E3
-// 0x10003fd0 _$E5
-// 0x10003fe0 _$E4
+// 0x10003fa0 _$E39
+// 0x10003fb0 _$E36
+// 0x10003fd0 _$E38
+// 0x10003fe0 _$E37
 // 0x1000f27c
 static MfString fsName("Dictionary");
 // 0x1000f280: the class object

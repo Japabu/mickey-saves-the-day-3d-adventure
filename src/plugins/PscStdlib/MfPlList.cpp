@@ -5,10 +5,10 @@
 // The value a variable pool stores for a declared but undefined variable.
 static MfScDataHandle *pdhUndefined = (MfScDataHandle *)-1;
 
-// 0x10001240 _$E6
-// 0x10001250 _$E3
-// 0x10001270 _$E5
-// 0x10001280 _$E4
+// 0x10001240 _$E39
+// 0x10001250 _$E36
+// 0x10001270 _$E38
+// 0x10001280 _$E37
 // 0x1000f268
 static MfString fsName("List");
 // 0x1000f26c: the class object
