@@ -44,7 +44,7 @@
 #include "Quaternion.h"
 #include "DXGfx_NodeFactory.h"
 #include "Graph_BasicRefreshTraverser.h"
-#include "MBLocale.h"
+#include "../MBEngine/MBLocale.h"
 #include <windows.h>
 #undef CreateFont                                       // SimpleNode::CreateFont, not the GDI call
 #include <stdlib.h>

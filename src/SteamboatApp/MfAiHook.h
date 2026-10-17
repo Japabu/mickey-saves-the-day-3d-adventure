@@ -20,6 +20,8 @@ enum {
     MF_HOOK_FILE_DESTINATION = 32
 };
 
+// own copy: MfActorLib's MfAiHook.h is itself a view (it declares a dllimport MfAi and
+// MfInterfaceRegistry of its own and opens MfActorLib's MfString.h).
 class MfAiHookManager : public MfAi {
 public:
     virtual int AddHook(unsigned long, MfHookFunc, void *, MfHookPosition) = 0;
@@ -27,6 +29,8 @@ public:
     virtual int CallHooks(unsigned long, MfHookData *) = 0;
 };
 
+// own copy: mfutil's MfInterfaceRegistry.h declares the class MFUTIL_API (dllimport here;
+// the game calls GetInterface through its import thunk) and opens mfutil's MfString.h
 class MfInterfaceRegistry {
 public:
     static int __cdecl GetInterface(const MfString &, MfAi **);

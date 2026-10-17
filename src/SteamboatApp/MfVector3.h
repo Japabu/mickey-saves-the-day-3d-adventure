@@ -3,6 +3,9 @@
 // (SteamboatApp.pdb). The constructors and destructor are inline: the game's units inline them
 // or emit them as instances (Actor.obj, SteamboatNode.obj).
 
+// own copy: the game calls mflinalg through its import thunks (no dllimport) and emits its own copies of
+// inline members; the owner's header declares the class MFLINALG_API, dllimport here
+// (Actor.obj and SteamboatNode.obj emit the constructors).
 class MfVector3 {
 public:
     MfVector3(const MfVector3 &src) : _x(src._x), _y(src._y), _z(src._z) {}

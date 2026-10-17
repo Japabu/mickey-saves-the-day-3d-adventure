@@ -34,14 +34,12 @@ class MfStringList;
 class MfTransform3;
 class MfVector3;
 
-class MfAi {
-public:
-    virtual void GetInterfaceName(char *, int, int &, int &) = 0;
-    virtual int AddRef() = 0;
-    virtual int Release() = 0;
-};
+#include "../mfutil/MfAi.h"
 
 
+// own copy: MfPoLibrary's MfAi*.h open MfPoLibrary/MfAi.h, a second MfAi next to mfutil's,
+// and its MfAiActor.h opens <windows.h>, whose macros would rename game members in the units
+// that do not include it.
 class MfAiActor : public MfAi {
 public:
     virtual const MfString &GetClassNameA() = 0;
@@ -179,6 +177,7 @@ public:
 };
 
 
+// own copy: as above.
 class MfAiSpace : public MfAi {
 public:
     virtual void GetActorList(MfDblList *, const MfString &) = 0;
@@ -213,6 +212,7 @@ public:
 };
 
 // The view's event handler interface (MfInterfaceRegistry name "MfAiViewEventHandler").
+// own copy: as above.
 class MfAiViewEventHandler : public MfAi {
 public:
     virtual void SetSpace(MfAiSpace *) = 0;             // vftable+0x0c
@@ -226,6 +226,7 @@ class MfMaterial;
 class MfRenderer;
 class MfSoundManager;
 
+// own copy: as above.
 class MfAiWorld : public MfAi {
 public:
     virtual int CreateUniqueID() = 0;
@@ -263,6 +264,7 @@ public:
     virtual int GetInstances(MfProtoActor *, MfDblList &) = 0;
 };
 
+// own copy: as above.
 class MfAiRuntime : public MfAi {
 public:
     virtual int Initialize(const char *, const char *) = 0;
@@ -278,6 +280,7 @@ public:
 };
 
 // what the application gives MfAiRuntime::CreateWorld: the world asks it for the clock
+// own copy: as above.
 class MfAiAppWorld : public MfAi {
 public:
     virtual unsigned long GetClock() = 0;

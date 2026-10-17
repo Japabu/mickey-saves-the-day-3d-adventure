@@ -29,6 +29,7 @@ enum MfHandleNodeStyle {
     MF_HANDLE_NODE_ERROR = 5
 };
 
+// own copy: MfPoLibrary's MfAiActorNode.h opens MfPoLibrary/MfAi.h, a second MfAi next to mfutil's.
 class MfAiActorNode : public MfAi {
 public:
     virtual const MfString &GetNodeName() = 0;

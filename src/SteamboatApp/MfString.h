@@ -7,6 +7,10 @@ class MfStringRef;
 class MfStringSize;
 class MfVariant;
 
+// own copy: the game calls mfutil through its import thunks (no dllimport) and emits its own copies of
+// inline members; the owner's header declares the class MFUTIL_API, dllimport here,
+// and it opens <windows.h> (its macros would rename game members in the units that do not
+// include it) and <iostream.h>.
 class MfString {
 public:
     MfString(const MfVariant &);

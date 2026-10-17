@@ -21,6 +21,7 @@
 // 0x101186a0 ?ListenToEvent@ScriptHelpNode@@UAEXJJPAX@Z
 // 0x101187b0 ??0ScriptManager@@QAE@XZ
 // 0x10118890 ?QueryInterface@ScriptManager@@UAEJABUMBGUID@@PAPAX@Z
+// 0x10118960 ?AddRef@ScriptManager@@UAEKXZ
 // 0x10118970 ?Release@ScriptManager@@UAEKXZ
 // 0x10118ac0 ?ListenToEvent@ScriptManager@@UAEXJJPAX@Z
 // 0x10118c10 ??1?$MBMultimap@KPAVIMBScript@@U?$less@K@std@@@@QAE@XZ

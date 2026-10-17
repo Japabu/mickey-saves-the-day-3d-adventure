@@ -5,6 +5,9 @@
 class MfAiActor;
 class MfPiccoloMessageHandler;
 
+// own copy: the game calls MfPoLibrary through its import thunks (no dllimport) and emits its own copies of
+// inline members; the owner's header declares the class MFPO_API, dllimport here,
+// and it opens MfPoLibrary's MfScData/MfString copies.
 class MfPoEvent : public MfScObject {
 public:
     MfPoEvent(const MfString &type, MfAiActor *sender);

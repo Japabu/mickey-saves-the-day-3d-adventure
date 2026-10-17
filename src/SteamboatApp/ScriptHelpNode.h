@@ -4,6 +4,7 @@
 // the code is MBEngine's ScriptHelpNode.cpp, compiled into this binary by ScriptHelpNode.cpp).
 #include "SimpleNode.h"
 
+// own copy: MBEngine's ScriptHelpNode.h builds on its SimpleNode.h (see SimpleNode.h).
 class ScriptHelpNode : public SimpleNode {
 public:
     ScriptHelpNode(const ScriptHelpNode &);

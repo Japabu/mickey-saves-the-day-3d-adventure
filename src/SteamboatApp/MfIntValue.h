@@ -2,6 +2,10 @@
 // MfIntValue.h: an integer property value (declaration from SteamboatApp.pdb).
 #include "MfTypedValue.h"
 
+// own copy: the game calls MfActorLib through its import thunks (no dllimport) and emits its own copies of
+// inline members; the owner's header declares the class MFACTOR_API, dllimport here,
+// and its inline members differ (Destroy without the this test, the default constructor
+// initializes value in its initializer list).
 class MfIntValue : public MfTypedValue {
 public:
     static const long STREAM_TYPE;

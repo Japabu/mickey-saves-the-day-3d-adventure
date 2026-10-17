@@ -5,6 +5,8 @@
 
 class MfAiColNode;
 
+// own copy: RuntimeLib's MfColResults.h opens RuntimeLib/MfVector3.h, a second MfVector3 next
+// to this module's (MfVector3.h).
 struct MfColResultNode {
     MfAiColNode *node1;                                 // +0x0000
     MfAiColNode *node2;                                 // +0x0004
@@ -13,6 +15,7 @@ struct MfColResultNode {
 };
 
 // the first hit of a ray (MfAiColNode::CheckCollision, MfAiSpace::CastRay)
+// own copy: as above.
 struct MfColResultRay {
     MfVector3 pos;                                      // +0x0000
     MfAiColNode *node;                                  // +0x000c

@@ -17,6 +17,10 @@ enum MfStreamError {
     MF_STREAM_SEEK_FAILED = 5
 };
 
+// own copy: the game calls MfActorLib through its import thunks (no dllimport) and emits its own copies of
+// inline members; the owner's header declares the class MFACTOR_API, dllimport here,
+// and MfStreamObject has an inline constructor there (CSBGameState.obj emits these
+// classes' inline members).
 class MfStreamObject {
 public:
     virtual long StreamType() const = 0;
@@ -26,6 +30,7 @@ protected:
     virtual MfStreamError WriteAsObject(MfStream &) const;
 };
 
+// own copy: as above.
 class MfStreamSizedObject : public MfStreamObject {
 public:
     virtual int StreamSize() const = 0;
@@ -33,6 +38,7 @@ protected:
     virtual MfStreamError WriteAsObject(MfStream &) const;
 };
 
+// own copy: as above.
 class MfTypedValue : public MfStreamSizedObject {
 public:
     MfTypedValue()

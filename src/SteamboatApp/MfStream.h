@@ -11,6 +11,8 @@ enum MfFileMode {
     MF_FILE_WRITE = 1
 };
 
+// own copy: the game calls MfActorLib through its import thunks (no dllimport) and emits its own copies of
+// inline members; the owner's header declares the class MFACTOR_API, dllimport here.
 class MfStream {
 public:
     MfStream(const MfStream &);
@@ -44,6 +46,7 @@ protected:
     MfCallBack *cb;                                     // +0x0018
 };
 
+// own copy: as above.
 class MfFileStream : public MfStream {
 public:
     MfFileStream(const MfFileStream &);
@@ -65,6 +68,7 @@ protected:
 
 // The prototype of an actor as read from its .mfa file (only what the game uses).
 class MfProtoSkill;
+// own copy: as above; here derived from MfStreamSizedObject (MfActorLib's: MfStreamObject)
 class MfProtoActor : public MfStreamSizedObject {
 public:
     void AddSkill(MfProtoSkill *);

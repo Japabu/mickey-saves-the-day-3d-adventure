@@ -14,19 +14,6 @@ EDITS = {
         ('    *(int *)((char *)&r + 0x30) = w;\n    return r;\n}\n',
          '    *(int *)((char *)&r + 0x30) = w;\n    return r;\n}\n#endif', 1),
     ],
-    # One definition each: SimpleNode.cpp and ScriptHelpNode.cpp compile MBEngine's units
-    # into the DLL with their own copies of DatabaseMgr::Database::AddDBRef and
-    # ScriptManager::AddRef (VC6 linked the duplicates; the macOS linker refuses them). The
-    # copies kept are those of the classes the engine units declare in full (Database's
-    # MBComPtr is pointer-sized; DatabaseMgr.h's draft has an int there).
-    'SteamboatApp/DatabaseMgr_Database.cpp': [
-        ('unsigned long DatabaseMgr::Database::AddDBRef()\n{\n    return ++field_4;\n}\n',
-         '#if 0 // port: defined by SimpleNode.cpp (MBEngine/SimpleNode.cpp)\n{\n    return ++field_4;\n#endif\n', 1),
-    ],
-    'SteamboatApp/ScriptManager.cpp': [
-        ('unsigned long ScriptManager::AddRef()\n{\n    return ++_mRefCnt;\n}\n',
-         '#if 0 // port: defined by ScriptHelpNode.cpp (MBEngine/ScriptHelpNode.cpp)\n{\n    return ++_mRefCnt;\n#endif\n', 1),
-    ],
     # "SBSPbirdHigh" and a letter are 14 bytes with the terminator, in a 10-byte buffer (the
     # original overran its stack too; the macOS fortified sprintf aborts). The song key's
     # count is a size_t (8 bytes) printed with %d.

@@ -3,9 +3,11 @@
 // (CMBWorld.obj); the methods without a body here are not known to be inline yet.
 #include "MBPoint.h"
 
-template <class T> inline const T &MBmax(const T &a, const T &b) { return a < b ? b : a; }
-template <class T> inline const T &MBmin(const T &a, const T &b) { return b < a ? b : a; }
+#include "../MBEngine/MBMinMax.h"
 
+// own copy: MBEngine's MBRect.h includes its MBPoint/MBSize (see MBPoint.h) and lacks members the game
+// uses inline (Left/Top/Right/Bottom, TopLeft, SetRect(rect), ContainsPoint, Grow, Offset(point));
+// its MBRect(point, size) assigns in the body where this one initializes.
 class MBRect {
 public:
     MBRect(MBPoint3 p, MBSize s) : left(p.x), top(p.y), right(p.x + s.w), bottom(p.y + s.h) {}

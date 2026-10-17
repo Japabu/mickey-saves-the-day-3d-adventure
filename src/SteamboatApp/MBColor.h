@@ -1,60 +1,16 @@
 #pragma once
 // muffin/include/Runtime/MBColor.h (layout from SteamboatApp.pdb; the bodies are inline, as in the
-// engine's copy).
+// engine's copy). MBColorMask is MBEngine's.
 
-class MBColorMask {
-public:
-    MBColorMask(unsigned long r, unsigned long g, unsigned long b, unsigned long a) { Set(r, g, b, a); }
-    void Set(unsigned long redmask, unsigned long greenmask, unsigned long bluemask, unsigned long alphamask)
-    {
-        mRedMask = redmask;
-        mBlueMask = bluemask;
-        mGreenMask = greenmask;
-        mAlphaMask = alphamask;
-        mRedShift = GetShiftCount(redmask) + GetBitCount(redmask) - 8;
-        mBlueShift = GetShiftCount(bluemask) + GetBitCount(bluemask) - 8;
-        mGreenShift = GetShiftCount(greenmask) + GetBitCount(greenmask) - 8;
-        mAlphaShift = GetShiftCount(alphamask) + GetBitCount(alphamask) - 8;
-    }
-    unsigned char GetRedBitCount() const;
-    unsigned char GetBlueBitCount() const;
-    unsigned char GetGreenBitCount() const;
-    unsigned char GetAlphaBitCount() const;
-    unsigned long mRedMask;
-    unsigned long mBlueMask;
-    unsigned long mGreenMask;
-    unsigned long mAlphaMask;
-    char mRedShift;
-    char mBlueShift;
-    char mGreenShift;
-    char mAlphaShift;
-    static unsigned char __cdecl GetShiftCount(unsigned long mask)
-    {
-        unsigned char count = 0;
-        while (!(mask & 1)) {
-            if (count >= 32)
-                break;
-            mask >>= 1;
-            count++;
-        }
-        return count;
-    }
-    static unsigned char __cdecl GetBitCount(unsigned long mask)
-    {
-        unsigned char count = 0;
-        while (mask) {
-            mask &= mask - 1;
-            count++;
-        }
-        return count;
-    }
-};
+#include "../MBEngine/MBColorMask.h"
 
 // The colour constants belong to the precompiled header (Steamboat_pch.obj initializes them all);
 // a unit re-emits only the ones it uses, so the units define those themselves (SteamboatNode.cpp:
 // kCM_ARGB32 and kYellow). MBColor's constructor converts through kCM_ARGB32.
 extern const MBColorMask kCM_ARGB32;
 
+// own copy: the game's MBColor converts through a const reference (MBEngine's takes the mask by
+// value), has operator== and the channel setters, and its Set(colour, mask) is out of line.
 class MBColor {
 public:
     MBColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) { Set(r, g, b, a); }

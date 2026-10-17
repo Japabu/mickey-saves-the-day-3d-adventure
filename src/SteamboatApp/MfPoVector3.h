@@ -3,6 +3,9 @@
 #include "MfScDataObject.h"
 #include "MfVector3.h"
 
+// own copy: the game calls MfPoLibrary through its import thunks (no dllimport) and emits its own copies of
+// inline members; the owner's header declares the class MFPO_API, dllimport here,
+// and it opens MfPoLibrary's MfScData/MfString/MfVector3 copies.
 class MfPoVector3 : public MfPoBase {
 public:
     MfPoVector3(const MfVector3 &v);
