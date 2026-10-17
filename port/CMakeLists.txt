@@ -106,7 +106,10 @@ if(PORT_TARGET STREQUAL web)
   # the game for the page (port/web): createMickey() starts it; the page reads the shared
   # block (host/web/shared.h) through the heap views
   target_link_options(Steamboat PRIVATE -sMODULARIZE -sEXPORT_NAME=createMickey -sENVIRONMENT=web,worker
-    -sEXPORTED_RUNTIME_METHODS=wasmMemory,ENV -sEXPORTED_FUNCTIONS=_main,_host_web_shared)
+    -sEXPORTED_RUNTIME_METHODS=wasmMemory,ENV -sEXPORTED_FUNCTIONS=_main,_host_web_shared
+    # a crash in the game prints its stack in the page's console, with function names
+    --profiling-funcs --pre-js ${CMAKE_CURRENT_SOURCE_DIR}/platform/host/web/crash.pre.js)
+  set_property(TARGET Steamboat APPEND PROPERTY LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/platform/host/web/crash.pre.js)
   # the page next to it
   file(GLOB PORT_WEB_PAGE CONFIGURE_DEPENDS web/*.html web/*.js)
   add_custom_command(TARGET Steamboat POST_BUILD
