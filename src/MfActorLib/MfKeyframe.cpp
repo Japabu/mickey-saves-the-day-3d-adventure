@@ -1,6 +1,7 @@
 // MfActorLib.dll 0x1000b050-0x1000b210: MfKeyframe.
 #include "MfKeyframe.h"
 #include "MfStream.h"
+#include "MfStreamConstructorEntry.h"
 
 // 0x1000b050 ??0MfKeyframe@@QAE@XZ
 MfKeyframe::MfKeyframe() : m_flags(0), m_time(0)

@@ -1,34 +1,21 @@
 // MfActorRecordList.cpp - MfActorLib.dll 0x10001000-0x100012e0
-#include "MfActorRecordList_unit.h"
+#include "MfString.h"
+#include "MfDblList.h"
+#include "MfActorRecord.h"
+#include "MfActorRecordList.h"
+#include "MfStream.h"
+#include "MfStreamObject.h"
+#include "MfStreamSizedObject.h"
+#include "MfFileProgress.h"
 
+// Inline members (MfActorRecord.h, MfActorRecordList.h), emitted here:
 // 0x10001000 ??0MfActorRecord@@QAE@PAVMfProtoActor@@AAVMfString@@@Z
-MfActorRecord::MfActorRecord(MfProtoActor *actor, MfString &name)
-{
-    m_actor = actor;
-    m_name = name;
-}
-
 // 0x10001060 ??1MfActorRecord@@QAE@XZ
-MfActorRecord::~MfActorRecord()
-{
-}
-
 // 0x10001070 ??0MfActorRecord@@QAE@ABV0@@Z (compiler-generated)
 // 0x10001090 ??4MfActorRecord@@QAEAAV0@ABV0@@Z (compiler-generated)
-// 0x100010b0 ??0MfActorRecordList@@QAE@XZ (inline)
-
+// 0x100010b0 ??0MfActorRecordList@@QAE@XZ
 // 0x100010d0 ??1MfActorRecordList@@UAE@XZ
-MfActorRecordList::~MfActorRecordList()
-{
-    Clear();
-}
-
 // 0x10001120 ?AddRecord@MfActorRecordList@@QAEXPBVMfActorRecord@@@Z
-void MfActorRecordList::AddRecord(const MfActorRecord *rec)
-{
-    Insert((void *)rec, kAfter, m_tail);
-}
-
 // 0x10001140 ??_EMfActorRecordList@@UAEPAXI@Z (compiler-generated)
 
 // 0x10001190 ?Contains@MfActorRecordList@@QAEPAVMfActorRecord@@ABVMfString@@@Z

@@ -1,5 +1,6 @@
 // MfActorLib.dll 0x10017bb0-0x10018150: MfProtoTraversal, MfPermutation.
 #include "MfProtoTraversal.h"
+#include "MfPermutation.h"
 #include "MfProtoNode.h"
 
 // 0x1000cbe0 ?Node@MfProtoTraversal@@QAEPAVMfProtoNode@@H@Z (inline; the first copy

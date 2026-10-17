@@ -1,21 +1,32 @@
 // MfActorLib.dll 0x10015e60-0x10017bb0: MfProtoNode (construction, styles,
 // transforms, streaming). The object starts with the compiler-generated
-// members of the triangle primitives (MfTriPrimitives.h).
+// members of the triangle primitives (MfTriSquare.h ... MfTriRing.h).
 #include <stdio.h>   // first: gives ReadFromStream the inlined normalize of the original (VC5 x87 tie-breaks)
 #include "MfProtoNode.h"
+#include "MfColSphere.h"
 #include "MfProtoGeomInfo.h"
 #include "MfProtoHandleInfo.h"
 #include "MfColModel.h"
 #include "MfJLimit.h"
 #include "MfCamera.h"
 #include "MfLight.h"
-#include "MfProtoNodeInfo.h"
+#include "MfProtoFloorInfo.h"
+#include "MfProtoSplineInfo.h"
 #include "MfMaterial.h"
-#include "MfTriPrimitives.h"
+#include "MfTriSquare.h"
+#include "MfTriCube.h"
+#include "MfTriSphere.h"
+#include "MfTriCone.h"
+#include "MfTriCylinder.h"
+#include "MfTriLine.h"
+#include "MfTriBezier.h"
+#include "MfTriCircle.h"
+#include "MfTriRing.h"
 #include "MfStream.h"
 #include "MfAiHook.h"
+#include "MfStreamConstructorEntry.h"
 
-// Compiler-generated members of MfTriPrimitives.h:
+// Compiler-generated members of the triangle primitives:
 // 0x10015e60 ??0MfTriSquare@@QAE@ABV0@@Z
 // 0x10015e80 ??0MfTriCube@@QAE@ABV0@@Z
 // 0x10015ea0 ??0MfTriSphere@@QAE@ABV0@@Z

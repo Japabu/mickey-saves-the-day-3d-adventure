@@ -1,6 +1,7 @@
 // MfActorLib.dll 0x10018430: MfProtoEventKeyframe.
 #include "MfProtoEventKeyframe.h"
 #include "MfStream.h"
+#include "MfStreamConstructorEntry.h"
 
 // 0x10018430 ??0MfProtoEventKeyframe@@QAE@XZ
 MfProtoEventKeyframe::MfProtoEventKeyframe()

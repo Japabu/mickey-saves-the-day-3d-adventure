@@ -3,6 +3,7 @@
 #include "MfKeyframe.h"
 #include "MfStream.h"
 #include "MfDblList.h"
+#include "MfStreamConstructorEntry.h"
 
 const long MfKeyList::STREAM_TYPE = 'KeyL';
 

@@ -1,45 +1,22 @@
-// MfFile.h - binary object files of MfActorLib (exported classes MfFileType,
-// MfFileObject, MfFile, MfFileProgress). Shared by the object that emits the
-// inline members (MfFile.cpp, 0x10001880-) and the one that defines MfFile
-// (MfFile_2.cpp, 0x10006c70-0x10007c10).
+// MfFile.h - binary object files of MfActorLib (exported classes MfFileObject
+// and MfFile; MfFileType and MfFileProgress have their own headers). Shared by
+// the object that emits the inline members (MfFile.cpp, 0x10001880-) and the
+// one that defines MfFile (MfFile_2.cpp, 0x10006c70-0x10007c10).
 #pragma once
 
 // <windows.h> comes first: the export is RegisterClassA, renamed by its macro.
 #include <windows.h>
+#include "MfActorLib_api.h"
 #include "MfString.h"
 #include "MfDblList.h"
 #include "enums.h"
+#include "MfFileType.h"
 
 extern __declspec(dllimport) MfNullString NULL_STRING;
 
-// mfutil.dll; every member is inline.
-class __declspec(dllimport) MfCriticalSection {
-public:
-    MfCriticalSection() { InitializeCriticalSection(&m_cs); }
-    ~MfCriticalSection() { DeleteCriticalSection(&m_cs); }
-    void Enter() { EnterCriticalSection(&m_cs); }
-    void Leave() { LeaveCriticalSection(&m_cs); }
-private:
-    CRITICAL_SECTION m_cs;
-};
-
 class MfFile;
 
-// A four-character code ('    ' when unset).
-class __declspec(dllexport) MfFileType {
-public:
-    MfFileType(long t) { m_type = t; }
-    MfFileType(MfString);
-    ~MfFileType() {}
-    int operator==(MfFileType t) { return m_type == t.m_type; }
-    int operator!=(MfFileType t) { return m_type != t.m_type; }
-    operator long() { return m_type; }
-    MfFileType &operator=(const MfFileType &t) { m_type = t.m_type; return *this; }
-private:
-    long m_type;
-};
-
-class __declspec(dllexport) MfFileObject {
+class MFACTOR_API MfFileObject {
 public:
     MfFileObject() {}
     virtual ~MfFileObject() {}
@@ -67,7 +44,7 @@ enum MfFileError {
 #define MF_FILE_MAGIC 'BFM '
 #define MF_FILE_BUFFER_SIZE 0x800
 
-class __declspec(dllexport) MfFile {
+class MFACTOR_API MfFile {
 public:
     MfFile();
     virtual ~MfFile();
@@ -128,15 +105,4 @@ protected:
     char *m_buffer;             // 0x28
     unsigned long m_bufferSize; // 0x2c
     unsigned long m_pos;        // 0x30
-};
-
-class __declspec(dllexport) MfFileProgress {
-public:
-    static void GetProgress(int &, MfString &);
-    static void SetProgress(int, MfString);
-    static void SetProgressCB(void (*)());
-    static void UpdateProgress();
-protected:
-    static MfCriticalSection lock;
-    static void (*callback)();
 };

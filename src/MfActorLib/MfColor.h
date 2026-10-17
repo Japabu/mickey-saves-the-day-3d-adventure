@@ -1,10 +1,11 @@
 #pragma once
 // MfColor: an RGBA colour value ('Colr').
+#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 class MfStream;
 
 // size 0x1c
-class __declspec(dllexport) MfColor : public MfTypedValue {
+class MFACTOR_API MfColor : public MfTypedValue {
 public:
     MfColor();
     MfColor(float r, float g, float b, float a);

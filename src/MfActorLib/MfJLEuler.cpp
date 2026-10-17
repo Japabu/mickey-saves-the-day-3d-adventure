@@ -1,7 +1,8 @@
 // MfActorLib.dll 0x10008c20-0x100095a0: MfJLEuler.
-#include "MfJLimit.h"
+#include "MfJLEuler.h"
 #include "MfStream.h"
 #include "MfXformMatrix3.h"
+#include "MfStreamConstructorEntry.h"
 
 #define MF_PI 3.14159265f
 #define MF_2PI 6.2831853f

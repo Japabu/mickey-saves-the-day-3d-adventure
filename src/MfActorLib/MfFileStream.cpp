@@ -6,6 +6,8 @@
 #include "MfDblList.h"
 #include "MfCallBack.h"
 #include "MfAiHook.h"
+#include "MfFileHookData.h"
+#include "MfAiHookManager.h"
 
 #define BUFFER_SIZE 0x800
 

@@ -1,11 +1,12 @@
 #pragma once
 // MfVector3Value: a MfVector3 property value ('VVe3'). The inline members are the
 // ones MfTransform3Value.cpp emits.
+#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 #include "MfVector3.h"
 class MfStream;
 
-class __declspec(dllexport) MfVector3Value : public MfTypedValue {
+class MFACTOR_API MfVector3Value : public MfTypedValue {
 public:
     static const long STREAM_TYPE;
     virtual long StreamType() const;

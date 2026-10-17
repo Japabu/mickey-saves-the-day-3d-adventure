@@ -1,10 +1,11 @@
 #pragma once
 // MfProtoTraversal: the nodes of a prototype skeleton (optionally only the
 // ones of one style) in preorder.
+#include "MfActorLib_api.h"
 #include "MfString.h"
 class MfProtoNode;
 
-class __declspec(dllexport) MfProtoTraversal {
+class MFACTOR_API MfProtoTraversal {
 public:
     MfProtoTraversal(MfProtoNode *root, int style);
     ~MfProtoTraversal();
@@ -19,16 +20,4 @@ protected:
 public:
     int mNumNodes;
     MfProtoNode **mNodes;
-};
-
-// MfPermutation: how the nodes of one skeleton map onto the nodes of another
-// (-1 where a node has no counterpart).
-class __declspec(dllexport) MfPermutation {
-public:
-    MfPermutation(MfProtoTraversal *from, MfProtoTraversal *to);
-    ~MfPermutation();
-    int mNumFrom;           // +0x00
-    int mNumTo;             // +0x04
-    int *mFromToTo;         // +0x08 index in to of each node of from
-    int *mToToFrom;         // +0x0c index in from of each node of to
 };

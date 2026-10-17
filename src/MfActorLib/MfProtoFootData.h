@@ -1,8 +1,9 @@
 #pragma once
 // MfProtoFootData: a foot of a locomotion skill ('PrFD').
+#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 
-struct __declspec(dllexport) MfProtoFootData : public MfStreamObject {
+struct MFACTOR_API MfProtoFootData : public MfStreamObject {
     MfProtoFootData();
     static const long STREAM_TYPE;
     virtual long StreamType() const;

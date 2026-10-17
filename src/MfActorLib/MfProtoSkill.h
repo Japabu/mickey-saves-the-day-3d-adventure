@@ -3,6 +3,7 @@
 // manipulation): a keyframe track per joint of the actor's skeleton plus the
 // skill's subclass objects (keyframes for textures, sounds and events, feet,
 // hands, anchors, manipulation handles). Declaration from the SteamboatApp PDB.
+#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfAiSkill.h"
 #include "MfString.h"
@@ -23,7 +24,7 @@ struct MfProtoHandData;
 struct MfProtoAnchorData;
 struct MfProtoManipData;
 
-class __declspec(dllexport) MfProtoSkill : public MfStreamObject, public MfAiSkill {
+class MFACTOR_API MfProtoSkill : public MfStreamObject, public MfAiSkill {
     friend class MfProtoActor;
 public:
     static const long STREAM_TYPE;

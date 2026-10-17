@@ -1,6 +1,7 @@
 // MfActorLib.dll 0x10018150: MfProtoTextureKeyframe.
 #include "MfProtoTextureKeyframe.h"
 #include "MfStream.h"
+#include "MfStreamConstructorEntry.h"
 
 // 0x10018150 ??0MfProtoTextureKeyframe@@QAE@XZ
 MfProtoTextureKeyframe::MfProtoTextureKeyframe()

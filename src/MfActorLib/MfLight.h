@@ -1,12 +1,13 @@
 #pragma once
 // MfLight: a light source description ('Lit2').
+#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 #include "MfColor.h"
 #include "MfPropertyList.h"
 class MfStream;
 
 // size 0x8c
-class __declspec(dllexport) MfLight : public MfTypedValue {
+class MFACTOR_API MfLight : public MfTypedValue {
 public:
     MfLight();
     MfLight(const MfLight &);

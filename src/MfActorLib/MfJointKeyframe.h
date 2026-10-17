@@ -2,6 +2,7 @@
 // MfJointKeyframe: one key of a joint track ('JKey'): the joint's transform
 // relative to its parent and in the actor, each with two spline control
 // points, and how the track runs on to the next key.
+#include "MfActorLib_api.h"
 #include "MfKeyframe.h"
 #include "MfTransform3.h"
 #include "MfVector3.h"
@@ -12,7 +13,7 @@ class MfStream;
 enum { MF_JOINT_LINEAR = 0, MF_JOINT_SPLINE = 1, MF_JOINT_HOLD = 2 };
 
 // size 0xd4
-class __declspec(dllexport) MfJointKeyframe : public MfKeyframe {
+class MFACTOR_API MfJointKeyframe : public MfKeyframe {
 public:
     MfJointKeyframe();
     MfJointKeyframe(const MfJointKeyframe &);

@@ -1,6 +1,7 @@
 // MfActorLib.dll 0x10006c70-0x10007c10: MfFile, MfFileType(MfString) and
 // MfFileProgress (the object after MfColModel).
 #include "MfFile.h"
+#include "MfFileProgress.h"
 
 // 0x10006c60 _$E11 (calls $E6 and $E9)
 // 0x10006c70 _$E7 (original _$E6:) constructs lRegisteredClasses

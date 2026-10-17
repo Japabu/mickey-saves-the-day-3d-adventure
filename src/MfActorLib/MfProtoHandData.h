@@ -1,8 +1,9 @@
 #pragma once
 // MfProtoHandData: a hand of a skill ('PrHD').
+#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 
-struct __declspec(dllexport) MfProtoHandData : public MfStreamObject {
+struct MFACTOR_API MfProtoHandData : public MfStreamObject {
     MfProtoHandData();
     static const long STREAM_TYPE;
     virtual long StreamType() const;

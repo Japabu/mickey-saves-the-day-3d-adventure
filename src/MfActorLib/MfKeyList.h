@@ -2,19 +2,15 @@
 // MfKeyList: keyframes ordered by time in a doubly linked list ('KeyL'), with a
 // cursor that the time lookups move. Reconstructed (no PDB): layout from the code,
 // signatures from the export names.
+#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
+#include "MfKeyListNode.h"
 class MfDblList;
 class MfKeyframe;
 class MfStream;
 
-struct MfKeyListNode {
-    MfKeyframe *m_keyframe;     // +0
-    MfKeyListNode *m_prev;      // +4
-    MfKeyListNode *m_next;      // +8
-};
-
 // size 0x14; vtable: StreamType, ReadFromStream, WriteToStream, WriteAsObject, ~
-class __declspec(dllexport) MfKeyList : public MfStreamObject {
+class MFACTOR_API MfKeyList : public MfStreamObject {
 public:
     MfKeyList();
     MfKeyList(const MfKeyList &list);

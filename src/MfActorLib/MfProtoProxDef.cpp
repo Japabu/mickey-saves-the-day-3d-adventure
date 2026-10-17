@@ -2,6 +2,7 @@
 #include "MfProtoProxDef.h"
 #include "MfDblList.h"
 #include "MfStream.h"
+#include "MfStreamConstructorEntry.h"
 
 extern __declspec(dllimport) MfNullString NULL_STRING;
 

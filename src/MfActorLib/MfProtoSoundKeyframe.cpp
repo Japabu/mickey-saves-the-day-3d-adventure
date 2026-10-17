@@ -1,6 +1,7 @@
 // MfActorLib.dll 0x100182a0: MfProtoSoundKeyframe.
 #include "MfProtoSoundKeyframe.h"
 #include "MfStream.h"
+#include "MfStreamConstructorEntry.h"
 
 // 0x100182a0 ??0MfProtoSoundKeyframe@@QAE@XZ
 MfProtoSoundKeyframe::MfProtoSoundKeyframe()

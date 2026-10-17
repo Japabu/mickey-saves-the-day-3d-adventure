@@ -2,6 +2,7 @@
 // MfListValueSearchItr, MfArrayValue, MfOpaqueValue and MfPropertySet
 // (all defined in MfListValue.h)
 #include "MfListValue.h"
+#include "MfListValueSearchItr.h"
 #include "MfArrayValue.h"
 #include "MfOpaqueValue.h"
 #include "MfPropertySet.h"

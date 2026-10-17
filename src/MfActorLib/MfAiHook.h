@@ -62,28 +62,3 @@ enum {
     MF_HOOK_OVERRIDE_DELETE_SPHERE_TREE = 37,
     MF_NUM_FAST_HOOKS = 38
 };
-
-struct MfHookData {
-    int reserved[4];
-};
-
-// MF_HOOK_FILE_HANDLE / MF_HOOK_FILE_DESTINATION
-struct MfFileHookData : public MfHookData {
-    void *fileHandle;       // +0x10
-    MfString fileLocation;  // +0x14
-    int mode;               // +0x18
-};
-
-// 'OrPa': read a proto actor file (MfProtoDB::GetPrototype)
-struct MfActorRWHookData : public MfHookData {
-    MfString filePath;      // +0x10
-    class MfAiActor *pActor; // +0x14
-    class MfProtoActor *pProto; // +0x18
-};
-
-class MfAiHookManager : public MfAi {
-public:
-    virtual int AddHook(unsigned long, int (*)(MfHookData *, void *), void *, MfHookPosition) = 0;
-    virtual int RemoveHook(unsigned long, int (*)(MfHookData *, void *), void *&) = 0;
-    virtual int CallHooks(unsigned long, MfHookData *) = 0;
-};

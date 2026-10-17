@@ -1,7 +1,14 @@
 // MfFSMSpaceToBhvr.cpp - MfActorLib.dll 0x10002f00-0x10003240
 // Only inline / compiler-generated members live in this range; they are
 // emitted because the classes are exported.
-#include "MfFSMSpaceToBhvr_unit.h"
+#include "MfPropertyTable.h"
+#include "MfFSMSpaceToBhvr.h"
+#include "MfColor.h"
+#include "MfTexture.h"
+#include "MfMaterial.h"
+#include "MfProtoTextureKeyframe.h"
+#include "MfProtoSoundKeyframe.h"
+#include "MfProtoEventKeyframe.h"
 
 // 0x10002f00 ??4MfPropertyTable@@QAEAAV0@ABV0@@Z (compiler-generated)
 // 0x10002f30 ??0MfFSMSpaceToBhvr@@QAE@XZ (inline)

@@ -1,10 +1,11 @@
 #pragma once
 // MfRect: an axis-aligned rectangle (declaration from the SteamboatApp PDB).
+#include "MfActorLib_api.h"
 class MfTriangleSet;
 class MfVector2;
 
 // size 0x10; operator= is compiler-generated (exported with the class)
-class __declspec(dllexport) MfRect {
+class MFACTOR_API MfRect {
 public:
     MfRect();
     MfRect(float, float, float, float);

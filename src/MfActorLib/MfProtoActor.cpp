@@ -17,4 +17,4 @@
 // 0x10003700 ?BhvrList@MfProtoActor@@QAEABVMfStringList@@XZ
 // 0x10003710 ?SetUserData@MfProtoActor@@QAEHPAVMfAi@@@Z
 // 0x10003730 ?GetUserData@MfProtoActor@@QAEPAVMfAi@@XZ
-#include "MfProtoActor_unit.h"
+#include "MfProtoActor.h"

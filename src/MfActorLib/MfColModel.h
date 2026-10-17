@@ -1,62 +1,20 @@
 #pragma once
 // Collision model: a triangle set with a bounding-sphere tree (one leaf per
 // triangle, n - 1 inner spheres) and an oriented bounding box.
+#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfTransform3.h"
+#include "MfOrientedBox.h"
+#include "MfNode.h"
+#include "MfLeafNode.h"
+#include "MfSphereNode.h"
 
 class MfAi;
 class MfStream;
 class MfTriangleSet;
 
-// size 0x28; the copy members are compiler-generated
-class __declspec(dllexport) MfOrientedBox {
-public:
-    bool CheckIntersection(MfOrientedBox *, MfTransform3 &, MfTransform3 &);
-    bool CheckRayIntersection(MfTransform3 &, MfVector3 &, MfVector3 &, float);
-    MfTransform3 m_transform;   // 0x00
-    MfVector3 m_extent;         // 0x1c half sizes along the box axes
-};
-
-// size 8
-struct __declspec(dllexport) MfTextureVertex {
-    void Set(float u, float v) { m_u = u; m_v = v; }
-    float m_u, m_v;
-};
-
-// size 0xc
-struct __declspec(dllexport) MfTriangle {
-    void Set(int a, int b, int c) { m_v[0] = a; m_v[1] = b; m_v[2] = c; }
-    int m_v[3];
-};
-
-enum { MF_LEAF_NODE = 0, MF_SPHERE_NODE = 1 };
-
-// size 0x14; bounding-sphere tree node
-class __declspec(dllexport) MfNode {
-public:
-    MfNode(long type) { m_type = type; m_index = 0; }
-    ~MfNode() {}
-    MfVector3 m_center;         // 0x00
-    unsigned m_type : 2;        // 0x0c bits 0-1 (MF_LEAF_NODE, MF_SPHERE_NODE)
-    unsigned m_index : 30;      // 0x0c bits 2-31 (leaf: triangle index)
-    float m_radius;             // 0x10
-};
-
-class __declspec(dllexport) MfLeafNode : public MfNode {
-public:
-    MfLeafNode() : MfNode(MF_LEAF_NODE) {}
-};
-
-// size 0x1c
-class __declspec(dllexport) MfSphereNode : public MfNode {
-public:
-    MfSphereNode() : MfNode(MF_SPHERE_NODE) { m_left = 0; m_right = 0; }
-    MfNode *m_left;             // 0x14
-    MfNode *m_right;            // 0x18
-};
-
 // size 0x5c
-class __declspec(dllexport) MfColModel : public MfStreamObject {
+class MFACTOR_API MfColModel : public MfStreamObject {
 public:
     MfColModel();
     MfColModel(const MfColModel &);

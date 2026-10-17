@@ -2,13 +2,14 @@
 // MfStream: abstract byte stream with typed operators and object records.
 // ReadObject/WriteObject records: -2 = null object; -1, type, size, data for
 // sized objects; otherwise type, data.
+#include "MfActorLib_api.h"
 #include "enums.h"
 class MfCallBack;
 class MfStreamObject;
 class MfStreamSizedObject;
 class MfString;
 
-class __declspec(dllexport) MfStream {
+class MFACTOR_API MfStream {
 public:
     MfStream();
     ~MfStream();

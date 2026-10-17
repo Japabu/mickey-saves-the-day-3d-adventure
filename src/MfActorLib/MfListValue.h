@@ -1,13 +1,14 @@
 #pragma once
 // MfListValue: a property value holding a list of values ('VLis'). The SteamboatApp
 // PDB names the class only; layout from the code.
+#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 #include "MfDblList.h"
 #include "MfListItemInterface.h"
 class MfStream;
 
 // size 0x20: MfTypedValue at 0, MfDblList at 0xc
-class __declspec(dllexport) MfListValue : public MfTypedValue, public MfDblList {
+class MFACTOR_API MfListValue : public MfTypedValue, public MfDblList {
 public:
     static const long STREAM_TYPE;
     virtual long StreamType() const;
@@ -25,11 +26,4 @@ public:
     int Search(MfTypedValue *v, MfDblListItem *&pli);
 protected:
     int flags;  // +0x1c (cleared by the constructors, otherwise unused)
-};
-
-// Matches the list values that compare equal to the key.
-class __declspec(dllexport) MfListValueSearchItr : public MfListItemInterface {
-public:
-    MfListValueSearchItr() {}
-    virtual int Matches(void *pKey, void *pData);
 };

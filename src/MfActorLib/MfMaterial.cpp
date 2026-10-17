@@ -3,6 +3,7 @@
 #include "MfStream.h"
 #include "MfProperty.h"
 #include "MfStringValue.h"
+#include "MfStreamConstructorEntry.h"
 
 // The pre-version-100 material format (read elsewhere in MfActorLib).
 // the old-format reader (MfProtoNode.cpp)

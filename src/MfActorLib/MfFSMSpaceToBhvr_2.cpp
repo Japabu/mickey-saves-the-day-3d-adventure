@@ -1,6 +1,7 @@
 // MfActorLib.dll 0x10007c10-0x100080c0: MfFSMSpaceToBhvr.
 #include "MfFSMSpaceToBhvr.h"
 #include "MfStream.h"
+#include "MfStreamConstructorEntry.h"
 
 // 0x10007c10 ??1MfFSMSpaceToBhvr@@QAE@XZ
 MfFSMSpaceToBhvr::~MfFSMSpaceToBhvr()

@@ -1,11 +1,12 @@
 #pragma once
 // MfIntValue: an int property value ('VInt'). Declaration from the SteamboatApp
 // PDB; the inline members are the ones the first users emit (MfStringValue.cpp).
+#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 class MfStream;
 
 // size 0x10
-class __declspec(dllexport) MfIntValue : public MfTypedValue {
+class MFACTOR_API MfIntValue : public MfTypedValue {
 public:
     static const long STREAM_TYPE;
     virtual long StreamType() const;

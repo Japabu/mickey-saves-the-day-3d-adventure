@@ -4,6 +4,7 @@
 #include "MfVector3.h"
 #include "MfRotation3.h"
 #include "MfStream.h"
+#include "MfStreamConstructorEntry.h"
 
 // 0x1001a7b0 ??0MfSpline@@QAE@XZ
 MfSpline::MfSpline()

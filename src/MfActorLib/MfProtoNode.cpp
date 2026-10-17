@@ -1,7 +1,10 @@
 #include <string.h>
 #include "MfProtoNode.h"
+#include "MfColSphere.h"
 #include "MfCamera.h"
 #include "MfColModel.h"
+#include "MfTextureVertex.h"
+#include "MfTriangle.h"
 #include "MfJLimit.h"
 #include "MfLight.h"
 #include "MfPropertyTable.h"
@@ -40,7 +43,8 @@
 #include "MfStringValue.h"
 #include "MfProperty.h"
 #include "MfTriangleSet.h"
-#include "MfProtoNodeInfo.h"
+#include "MfProtoFloorInfo.h"
+#include "MfProtoSplineInfo.h"
 
 // 0x1000cbf0 ?IsOldProtoNodeFormat@@YA_NAAVMfStream@@@Z
 bool IsOldProtoNodeFormat(MfStream &s)

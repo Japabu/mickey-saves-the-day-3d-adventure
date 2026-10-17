@@ -4,17 +4,21 @@ Read this before a new MfActorLib unit. Every item was verified by match.sh in t
 unit named in brackets. Add a line when you find a new pattern; keep it short.
 
 ## Shared headers (use them, do not redeclare the class in a unit header)
-- `MfStreamObject.h` (vtable StreamType, ReadFromStream, WriteToStream, WriteAsObject;
-  MfStreamConstructorEntry), `MfStreamSizedObject.h`, `MfStream.h` (m_version at +4 is
-  public: the stream objects test it directly) [MfColModel, MfJL*].
+- One header per MfActorLib class, `<Class>.h`, declared as the owner's code sees it.
+- `MfStreamObject.h` (vtable StreamType, ReadFromStream, WriteToStream, WriteAsObject),
+  `MfStreamConstructorEntry.h`, `MfStreamSizedObject.h`, `MfStream.h` (m_version at
+  +4 is public: the stream objects test it directly) [MfColModel, MfJL*].
 - mfutil imports: `MfString.h` (inline Length() through MfStringRef), `MfDblList.h`
   (inline ctor, GetFirst/GetNext, Prepend/Add), `MfStringList.h` (inline dtor
   `{ Clear(); }`, First/Next) [MfFile_2, MfFSMSpaceToBhvr_2].
 - mflinalg imports: `MfVector3.h`, `MfRotation3.h`, `MfTransform3.h`, declared from the
   SteamboatApp PDB (`_x`, accessors `x()`) with the members mflinalg's first object
   emits made inline. MfTransform3::operator= assigns the rotation first [MfColModel].
-- `MfAiHook.h`: MfAi, MfInterfaceRegistry, MfAiHookManager and the MF_HOOK_* ids (PDB).
-- `MfFile.h`, `MfColModel.h`, `MfJLimit.h` (all five joint limits), `MfFSMSpaceToBhvr.h`.
+- `MfAiHook.h`: MfAi, MfInterfaceRegistry and the MF_HOOK_* ids (PDB);
+  `MfAiHookManager.h`, `MfHookData.h`, `MfFileHookData.h`, `MfActorRWHookData.h`.
+- `MfFile.h` (`MfFileType.h`, `MfFileProgress.h`), `MfColModel.h`, `MfJLimit.h` (the
+  base; `MfJLHinge.h`, `MfJLEuler.h`, `MfJLLinear.h`, `MfJLTranslate.h`),
+  `MfFSMSpaceToBhvr.h`.
 
 ## Vtables
 - Overloaded virtuals: VC5 lays an overload group out in reverse declaration order.
@@ -145,9 +149,8 @@ unit named in brackets. Add a line when you find a new pattern; keep it short.
   the style. DeleteInfo is a switch with `mInfo = 0;` after it (VC5 copies it
   into every case); the case order is the source order of the original.
 - The MfTri* primitives' compiler-generated copy constructors, destructor and
-  operator= come at the start of the MfProtoNode_2 object (MfTriPrimitives.h,
-  MfTriangleSet without a declared operator=).
-- MfCamera.h now has MfCamera_unit.h's layout (size 0x34).
+  operator= come at the start of the MfProtoNode_2 object (MfTriSquare.h ...
+  MfTriRing.h, MfTriangleSet without a declared operator=).
 
 ## Wave 7
 - MfRotation3.h includes <math.h> and has mflinalg's inline normalize()
@@ -163,7 +166,7 @@ unit named in brackets. Add a line when you find a new pattern; keep it short.
 ## Wave 8 (MfTriangleSet, primitives, MfProtoNode streaming, old node format)
 - MfTriangleSet.h has the real layout (mSource shares vertices and triangles;
   MF_TRISET_* flags; MfTriangleSetType values in enums.h). MfTriangle,
-  MfTextureVertex and MfOrientedBox stay in MfColModel.h.
+  MfTextureVertex and MfOrientedBox have their own headers.
 - MfVector3.h: lengthSquared and normalize are inline as in mflinalg
   (normalize divides by sqrt(lengthSquared())); it includes <math.h>.
 - `$E` names of statics are ours: take them from the failing `--sym` list and

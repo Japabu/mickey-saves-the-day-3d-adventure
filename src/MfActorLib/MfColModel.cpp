@@ -18,9 +18,14 @@
 // 0x10005390 ??0MfSphereNode@@QAE@ABV0@@Z (compiler-generated)
 #include <string.h>
 #include "MfColModel.h"
+#include "MfTextureVertex.h"
+#include "MfTriangle.h"
 #include "MfStream.h"
 #include "MfTriangleSet.h"
 #include "MfAiHook.h"
+#include "MfHookData.h"
+#include "MfAiHookManager.h"
+#include "MfStreamConstructorEntry.h"
 
 // MF_HOOK_OVERRIDE_UPDATE/DELETE_SPHERE_TREE: a hook returning > 0 replaces
 // the default behaviour.

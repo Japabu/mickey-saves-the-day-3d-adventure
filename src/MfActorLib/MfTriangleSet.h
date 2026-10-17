@@ -3,6 +3,7 @@
 // coordinates) and the triangles that index them. A set made with
 // Create(source, ...) shares the source's vertices and triangles and owns only
 // its own per-vertex attributes. Layout from the code (no PDB has it).
+#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "enums.h"
 class MfColor;
@@ -22,7 +23,7 @@ enum {
     MF_TRISET_MATERIALS = 8     // a material index per triangle
 };
 
-class __declspec(dllexport) MfTriangleSet : public MfStreamObject {
+class MFACTOR_API MfTriangleSet : public MfStreamObject {
 public:
     virtual long StreamType() const;
     virtual MfStreamError ReadFromStream(MfStream &);

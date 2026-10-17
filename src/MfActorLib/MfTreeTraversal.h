@@ -1,8 +1,9 @@
 #pragma once
 // MfTreeTraversal: the nodes of a tree (optionally of one type) in preorder.
+#include "MfActorLib_api.h"
 class MfTreeNode;
 
-class __declspec(dllexport) MfTreeTraversal {
+class MFACTOR_API MfTreeTraversal {
 public:
     MfTreeTraversal(int numNodes);
     MfTreeTraversal(MfTreeNode *root, int type, int fill);

@@ -1,6 +1,7 @@
 #pragma once
 // MfPropertySet: a set of named properties (MfPropertyList, MfPropertyTable).
 // Declaration from the SteamboatApp PDB.
+#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 class MfCallBack;
 class MfProperty;
@@ -8,7 +9,7 @@ class MfString;
 class MfStringList;
 class MfTypedValue;
 
-class __declspec(dllexport) MfPropertySet : public MfStreamObject {
+class MFACTOR_API MfPropertySet : public MfStreamObject {
 public:
     MfPropertySet() {}
     virtual int Add(const MfProperty *p) = 0;

@@ -1,9 +1,10 @@
 #pragma once
 // MfMemoryStream: a stream in a memory buffer, its own (growing) or the caller's.
+#include "MfActorLib_api.h"
 #include "MfStream.h"
 
 // size 0x2c
-class __declspec(dllexport) MfMemoryStream : public MfStream {
+class MFACTOR_API MfMemoryStream : public MfStream {
 public:
     MfMemoryStream();
     MfMemoryStream(void *buffer, int size);

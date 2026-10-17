@@ -1,6 +1,7 @@
 #pragma once
 // MfStringValue: a string property value ('VStr'). Declaration from the
 // SteamboatApp PDB; the inline members are the ones MfStringValue.cpp emits.
+#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 #include "MfString.h"
 class MfStream;
@@ -8,7 +9,7 @@ class MfStream;
 extern __declspec(dllimport) MfNullString NULL_STRING;
 
 // size 0x10
-class __declspec(dllexport) MfStringValue : public MfTypedValue {
+class MFACTOR_API MfStringValue : public MfTypedValue {
 public:
     static const long STREAM_TYPE;
     virtual long StreamType() const;

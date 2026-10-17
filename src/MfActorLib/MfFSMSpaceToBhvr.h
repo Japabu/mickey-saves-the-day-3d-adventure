@@ -1,10 +1,11 @@
 #pragma once
 // MfFSMSpaceToBhvr: the behaviours an actor's state machine runs in one space.
+#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfStringList.h"
 
 // size 0x1c
-class __declspec(dllexport) MfFSMSpaceToBhvr : public MfStreamObject {
+class MFACTOR_API MfFSMSpaceToBhvr : public MfStreamObject {
     friend class MfProtoActor;
 public:
     MfFSMSpaceToBhvr() {}

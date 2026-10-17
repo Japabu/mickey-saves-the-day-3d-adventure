@@ -1,12 +1,13 @@
 #pragma once
 // MfPropertyList: properties in a list ('PLst'). Declaration from the
 // SteamboatApp PDB.
+#include "MfActorLib_api.h"
 #include "MfPropertySet.h"
 #include "MfDblList.h"
 class MfStream;
 
 // size 0x14
-class __declspec(dllexport) MfPropertyList : public MfPropertySet {
+class MFACTOR_API MfPropertyList : public MfPropertySet {
 public:
     static const long STREAM_TYPE;
     virtual long StreamType() const;

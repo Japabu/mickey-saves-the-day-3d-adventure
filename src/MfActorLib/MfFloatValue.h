@@ -1,11 +1,12 @@
 #pragma once
 // MfFloatValue: a float property value ('VFlo'), declared like MfIntValue (the
 // SteamboatApp PDB names the class but has no record of it).
+#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 class MfStream;
 
 // size 0x10
-class __declspec(dllexport) MfFloatValue : public MfTypedValue {
+class MFACTOR_API MfFloatValue : public MfTypedValue {
 public:
     static const long STREAM_TYPE;
     virtual long StreamType() const;

@@ -1,8 +1,9 @@
 #pragma once
 // MfProtoAnchorData: an anchor node of a skill ('PrAD').
+#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 
-struct __declspec(dllexport) MfProtoAnchorData : public MfStreamObject {
+struct MFACTOR_API MfProtoAnchorData : public MfStreamObject {
     MfProtoAnchorData();
     static const long STREAM_TYPE;
     virtual long StreamType() const;

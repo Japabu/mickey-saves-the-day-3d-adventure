@@ -6,6 +6,7 @@
 #include "MfString.h"
 #include "MfCallBack.h"
 #include "MfHashTable.h"
+#include "MfStreamConstructorEntry.h"
 
 extern __declspec(dllimport) MfNullString NULL_STRING;
 

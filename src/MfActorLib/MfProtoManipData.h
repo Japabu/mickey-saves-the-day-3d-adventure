@@ -1,10 +1,11 @@
 #pragma once
 // MfProtoManipData: the handle of a manipulation skill ('Prmd').
+#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfVector3.h"
 #include "MfTransform3.h"
 
-struct __declspec(dllexport) MfProtoManipData : public MfStreamObject {
+struct MFACTOR_API MfProtoManipData : public MfStreamObject {
     MfProtoManipData();
     static const long STREAM_TYPE;
     virtual long StreamType() const;

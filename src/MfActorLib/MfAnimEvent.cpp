@@ -1,6 +1,13 @@
 // MfActorLib.dll 0x100012e0-0x10001690: compiler-generated and inline header
 // members emitted at the start of the MfAnimEvent object.
-#include "MfFileStream_unit.h"
+#include "MfString.h"
+#include "MfDblList.h"
+#include "MfStreamObject.h"
+#include "MfStream.h"
+#include "MfFileStream.h"
+#include "MfMemoryStream.h"
+#include "MfAnimEvent.h"
+#include "MfAnimEventList.h"
 
 // 0x100012e0 ??0MfStream@@QAE@ABV0@@Z            (implicit copy ctor)
 // 0x10001320 ??4MfJLTranslate@@QAEAAV0@ABV0@@Z         (implicit operator=)
@@ -19,5 +26,5 @@
 // 0x100015e0 ??1MfAnimEventList@@UAE@XZ           (header inline)
 // 0x10001640 ??_EMfAnimEventList@@UAEPAXI@Z       (vector deleting dtor)
 //
-// All of these are generated from the class declarations in MfFileStream.h
+// All of these are generated from the class declarations included above
 // (exported classes emit their inline and implicit members).

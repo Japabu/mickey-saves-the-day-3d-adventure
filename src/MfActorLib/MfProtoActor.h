@@ -2,6 +2,7 @@
 // MfProtoActor: the prototype of an actor ('PrtA'): its skeleton of
 // MfProtoNodes, properties, skills, proximity definitions and the behavior
 // maps of its spaces. Declaration from the SteamboatApp PDB.
+#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfString.h"
 #include "MfStringList.h"
@@ -21,7 +22,7 @@ class MfStream;
 class MfTransform3;
 
 // size 0x100
-class __declspec(dllexport) MfProtoActor : public MfStreamObject {
+class MFACTOR_API MfProtoActor : public MfStreamObject {
     friend class MfProtoDB;
     friend MfStreamError ReadOldActorFormat(MfStream *, MfProtoActor *);
 public:
