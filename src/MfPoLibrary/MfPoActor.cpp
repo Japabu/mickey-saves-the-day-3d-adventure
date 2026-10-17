@@ -77,10 +77,10 @@
 #include "MfAiHookManager.h"
 #include "MfInterfaceRegistry.h"
 
-// 0x10006740 _$E54
-// 0x10006750 _$E51
-// 0x10006770 _$E53
-// 0x10006780 _$E52
+// 0x10006740 _$E53
+// 0x10006750 _$E50
+// 0x10006770 _$E52
+// 0x10006780 _$E51
 static MfString strClassName("Actor");
 
 MfPoActor *MfPoActor::poExemplar;
