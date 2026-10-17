@@ -118,7 +118,7 @@ def layouts(module, path):
     text = res.stdout + res.stderr
     # the vtables this unit defines (emits): the ones a short copy here would corrupt
     defined = set(re.findall(r'^@(_ZTV\w+) = (?!external)', llvm, re.M))
-    out = os.path.join(ROOT, 'out', 'port', 'vtables', module, os.path.relpath(path, flags.SRC) + '.txt')
+    out = os.path.join(ROOT, 'out', 'port', 'vtables' + ('' if flags.TARGET == 'macos' else '-' + flags.TARGET), module, os.path.relpath(path, flags.SRC) + '.txt')
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, 'w') as f:
         f.write(text)

@@ -334,20 +334,21 @@ BOOL WINAPI MoveFileA(LPCSTR lpExistingFileName, LPCSTR lpNewFileName)
 
 // The process's own working directory: the overlay root, so that anything that still
 // opens a relative path behind the virtual file system's back lands there and not in
-// the player's directory. A relative MICKEY_CD is resolved before the change.
+// the player's directory. A relative MICKEY_CD is resolved before the change. Done when
+// the game starts (port_set_command_line), after the host named the data directory.
 namespace win32 {
 std::string &launch_dir()
 {
     static std::string dir;
     return dir;
 }
-}
 
-__attribute__((constructor)) static void port_set_process_cwd()
+void enter_overlay()
 {
     char buf[4096];
     if (getcwd(buf, sizeof(buf)))
-        win32::launch_dir() = buf;
-    if (chdir(win32::overlay_dir().c_str()) != 0)
-        win32::log("vfs", "chdir to the overlay failed\n");
+        launch_dir() = buf;
+    if (chdir(overlay_dir().c_str()) != 0)
+        log("vfs", "chdir to the overlay failed\n");
+}
 }

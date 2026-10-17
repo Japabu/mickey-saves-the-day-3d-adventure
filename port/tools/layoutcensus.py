@@ -39,7 +39,7 @@ def records(module, path):
     cmd = flags.command(module, path, ['-fsyntax-only', '-w', '-Xclang', '-fdump-record-layouts-complete'])
     res = subprocess.run(cmd, capture_output=True, text=True)
     text = res.stdout
-    out = os.path.join(ROOT, 'out', 'port', 'layouts', module, os.path.relpath(path, flags.SRC) + '.txt')
+    out = os.path.join(ROOT, 'out', 'port', 'layouts' + ('' if flags.TARGET == 'macos' else '-' + flags.TARGET), module, os.path.relpath(path, flags.SRC) + '.txt')
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, 'w') as f:
         f.write(text)

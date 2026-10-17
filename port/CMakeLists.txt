@@ -32,6 +32,9 @@ if(PORT_TARGET STREQUAL web)
   add_link_options(-pthread -fwasm-exceptions -sPROXY_TO_PTHREAD -sALLOW_MEMORY_GROWTH
     -sINITIAL_MEMORY=256MB -sSTACK_SIZE=8MB -sDEFAULT_PTHREAD_STACK_SIZE=2MB -sPTHREAD_POOL_SIZE=8
     -sEXIT_RUNTIME -sWASMFS
+    # no data below 64 KB, as on Windows: the game takes values below 0x10000 for resource
+    # and ordinal numbers instead of string pointers (IS_INTRESOURCE)
+    -sGLOBAL_BASE=65536
     # a call through a declaration of another type traps in WebAssembly: an error
     -Wl,--fatal-warnings)
 endif()
@@ -103,7 +106,7 @@ if(PORT_TARGET STREQUAL web)
   # the game for the page (port/web): createMickey() starts it; the page reads the shared
   # block (host/web/shared.h) through the heap views
   target_link_options(Steamboat PRIVATE -sMODULARIZE -sEXPORT_NAME=createMickey -sENVIRONMENT=web,worker
-    -sEXPORTED_RUNTIME_METHODS=wasmMemory -sEXPORTED_FUNCTIONS=_main,_host_web_shared)
+    -sEXPORTED_RUNTIME_METHODS=wasmMemory,ENV -sEXPORTED_FUNCTIONS=_main,_host_web_shared)
   # the page next to it
   file(GLOB PORT_WEB_PAGE CONFIGURE_DEPENDS web/*.html web/*.js)
   add_custom_command(TARGET Steamboat POST_BUILD

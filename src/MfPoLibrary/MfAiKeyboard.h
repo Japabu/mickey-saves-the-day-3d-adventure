@@ -8,9 +8,9 @@ class MfAiActor;
 class MfAiKeyboard : public MfAi {
 public:
     virtual void Slot0c() = 0;                                            // 0x0c
-    virtual void SetKeyRoute(int keyCode, MfAiActor *actor) = 0;          // 0x10
+    virtual MfAiActor *SetKeyRoute(int keyCode, MfAiActor *actor) = 0;    // 0x10
     virtual void Slot14() = 0;                                            // 0x14
-    virtual void SetKeyChangeRoute(int keyCode, MfAiActor *actor) = 0;    // 0x18
+    virtual MfAiActor *SetKeyChangeRoute(int keyCode, MfAiActor *actor) = 0;  // 0x18
     virtual void Slot1c() = 0;                                            // 0x1c
     virtual void Slot20() = 0;                                            // 0x20
     virtual int GetRepeatCount() = 0;                                     // 0x24

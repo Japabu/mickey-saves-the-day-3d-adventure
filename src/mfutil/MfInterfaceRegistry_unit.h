@@ -73,12 +73,13 @@ protected:
 };
 
 // Abstract interface (slot names guessed from use): slot 0 writes the interface
-// name into a buffer, slot 1 adds a reference, slot 2 releases one.
+// name into a buffer, slot 1 adds a reference, slot 2 releases one (both return the
+// count, as RuntimeLib's MfAi declares them).
 class MFUTIL_API MfAi {
 public:
     virtual void GetName(char *pszName, int nSize, int *p1, int *p2) = 0;
-    virtual void AddRef() = 0;
-    virtual void Release() = 0;
+    virtual int AddRef() = 0;
+    virtual int Release() = 0;
 };
 
 class MFUTIL_API MfInterfaceRegistry {

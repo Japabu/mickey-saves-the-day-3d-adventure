@@ -292,6 +292,9 @@ async function play() {
       // before the game's main starts on its worker: the shared block, the sound's rate
       mem = m.wasmMemory;
       base = m._host_web_shared() >> 2;
+      // ?log=module,vfs (or ?log=1): the port's diagnostics in the console (PORT_LOG)
+      const log = new URLSearchParams(location.search).get('log');
+      if (log) m.ENV.PORT_LOG = log;
       set(F.PAGE_VISIBLE, document.hidden ? 0 : 1);
       set(F.SOUND_RATE, audio ? Math.round(audio.sampleRate) : 0);
       setupGl();

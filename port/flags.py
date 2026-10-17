@@ -45,11 +45,14 @@ MODULES = {
 
 # The targets: their compiler flags (on top of COMMON) and the prefix of C names in
 # their object files. PORT_TARGET (or CMake: Emscripten builds `web`) picks one.
+_EM = os.path.join(ROOT, 'out', 'emsdk', 'upstream', 'emscripten')
 TARGETS = {
-    'macos': {'flags': ['-target', 'arm64-apple-macos13'], 'prefix': '_'},
-    # WebAssembly through Emscripten: threads (the game's own and the renderer's) and
-    # native wasm exceptions
-    'web': {'flags': ['-pthread', '-fwasm-exceptions'], 'prefix': ''},
+    'macos': {'flags': ['-target', 'arm64-apple-macos13'], 'prefix': '_', 'cxx': 'clang++', 'cc': 'clang'},
+    # WebAssembly through Emscripten (out/emsdk, else on PATH): threads (the game's own and
+    # the renderer's) and native wasm exceptions
+    'web': {'flags': ['-pthread', '-fwasm-exceptions'], 'prefix': '',
+            'cxx': os.path.join(_EM, 'em++') if os.path.isdir(_EM) else 'em++',
+            'cc': os.path.join(_EM, 'emcc') if os.path.isdir(_EM) else 'emcc'},
 }
 TARGET = os.environ.get('PORT_TARGET', 'macos')
 
@@ -117,10 +120,10 @@ EXE = 'Steamboat'
 # src/options.txt options the port does not use: libpng's MMX code is x86 assembly,
 # so the port builds its portable C path
 PORT_DROP_OPTIONS = {'/DPNG_USE_PNGVCRD'}
-CXX = ['clang++', '-std=gnu++14', '-fno-sized-deallocation']
+CXX = ['-std=gnu++14', '-fno-sized-deallocation']
 # -fms-compatibility leaves __STDC__ undefined in C: the SDK's sys/cdefs.h then takes
 # its K&R branch and every __DARWIN_ALIAS(fopen) etc. links against "_x"
-CC = ['clang', '-std=gnu99', '-D__STDC__=1', '-Wno-builtin-macro-redefined']
+CC = ['-std=gnu99', '-D__STDC__=1', '-Wno-builtin-macro-redefined']
 
 
 def sources(module):
@@ -200,7 +203,8 @@ def _write_overlay():
 def command(module, path, extra=()):
     """The clang command line for one source file (its src/ path) of a module."""
     d = os.path.join(SRC, MODULES[module][0])
-    cc = CXX if path.endswith('.cpp') else CC
+    t = TARGETS[TARGET]
+    cc = [t['cxx']] + CXX if path.endswith('.cpp') else [t['cc']] + CC
     inc = ['-ivfsoverlay', overlay(), '-iquote', os.path.dirname(path), '-iquote', d]
     opts = sources_options(path) if path.startswith(SRC + os.sep) else []   # generated files have none
     opts = opts + ['-D%s=%s' % kv for kv in renames(module).items()]

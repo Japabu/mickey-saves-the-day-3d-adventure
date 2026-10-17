@@ -64,6 +64,8 @@ bool set_current_dir(const char *winpath);
 // The directory the process was started in (its own working directory is then the
 // overlay, crtfs.cpp).
 std::string &launch_dir();
+// Makes the overlay the process's working directory (crtfs.cpp).
+void enter_overlay();
 
 // True if the calling thread's message queue (or the host's events) has input
 // (message.cpp).

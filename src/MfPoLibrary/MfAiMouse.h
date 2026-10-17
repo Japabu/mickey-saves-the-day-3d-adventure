@@ -8,8 +8,8 @@ class MfAiActorNode;
 
 class MfAiMouse : public MfAi {
 public:
-    virtual void SetMouseRoute(int mouseCode, MfAiActor *actor) = 0;      // 0x0c
-    virtual void ClearMouseRoute(int mouseCode, MfAiActor *actor) = 0;    // 0x10
+    virtual int SetMouseRoute(int mouseCode, MfAiActor *actor) = 0;       // 0x0c
+    virtual int ClearMouseRoute(int mouseCode, MfAiActor *actor) = 0;     // 0x10
     virtual MfAiActor *GetLastPickedActor() = 0;                          // 0x14
     virtual MfAiActorNode *GetLastPickedFloor() = 0;                      // 0x18
 };
