@@ -12,13 +12,9 @@ namespace Gfx { class IntersectionStack; }
 namespace Gfx { template <class T0> class BVolHierTraverser; }
 namespace Gfx { template <class T0> class BVolHierNodeFactory; }
 
-namespace Gfx {
-// An atom's centre and index, sorted along an axis while a hierarchy is built.
-struct BVolHierCenterRef {
-    Vec3<float> vCenter;
-    int atomIndex;
-};
+#include "BVolHierCenterRef.h"
 
+namespace Gfx {
 // Node of a binary bounding-volume hierarchy over the atoms of a Gfx::Node.
 template <class T>
 class BVolHierNode : public T {

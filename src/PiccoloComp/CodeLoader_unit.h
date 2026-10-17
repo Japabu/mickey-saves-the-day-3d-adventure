@@ -243,22 +243,15 @@ private:
 extern const char *g_pcPathSeparator;
 
 // ---------------------------------------------------------------- MfPcCompiler
-// Only what this unit uses: the compiler through its interface (MfPcCompiler.h
-// needs the full MfString.h).
+// own copy: only what this unit uses (the compiler through its interface).
+// MfPcCompiler.h includes the full MfString.h, which conflicts with this unit's
+// mfutil view above (MfString with an imported MfStringRef constructor and
+// CopyOnWrite, as in the header this unit was built with).
 class __declspec(dllexport) MfPcCompiler : public MfAiCompiler {
 public:
     static MfPcCompiler *GetMainCompiler();
 };
 
-// ---------------------------------------------------------------- MfPcCodeLoader
-class __declspec(dllexport) MfPcCodeLoader {    // no data members, all static
-public:
-    MfPcCodeLoader() {}
-    static void UpdatePiccoloDataPathFiles(int);
-    static void UpdatePiccoloLibFiles(int);
-    static int UpdateSingleFile(const MfString &, int, MfScHandleList *);
-private:
-    static void UpdateFilesInDirectoryPath(const MfString &, int);
-};
+#include "MfPcCodeLoader.h"
 
 #endif

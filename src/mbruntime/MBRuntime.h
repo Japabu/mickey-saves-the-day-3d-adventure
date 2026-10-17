@@ -41,16 +41,7 @@ extern "C" void __cdecl MBDebugBreak(void);
 // MBMemory.cpp
 bool InvokeLowMemHandlers(unsigned long size);
 
-// Runtime/Win: a Win32 critical section.
-class CMBCriticalSection {
-public:
-    CMBCriticalSection(void) { InitializeCriticalSection(&mSection); }
-    ~CMBCriticalSection(void) { DeleteCriticalSection(&mSection); }
-    void Enter(void) { EnterCriticalSection(&mSection); }
-    void Leave(void) { LeaveCriticalSection(&mSection); }
-private:
-    CRITICAL_SECTION mSection;
-};
+#include "CMBCriticalSection.h"
 
 class CMBCriticalSectionLock {
     CMBCriticalSection &mSection;

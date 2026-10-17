@@ -1,7 +1,7 @@
 #pragma once
 // MfVector2. Exported names only; the members are named like MfVector3's.
 #include <math.h>
-#include "MfLinalg.h"
+#include "mflinalg_api.h"
 
 class MFLINALG_API MfVector2 {
 public:

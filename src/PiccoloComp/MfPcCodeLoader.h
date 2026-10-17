@@ -1,19 +1,22 @@
-#pragma once
-template <class T0> class field_;
-template <class T0> class unknown_;
+// MfPcCodeLoader: compiles the Piccolo source files of the data and library
+// paths whose object files are out of date. No data members, all static.
+#ifndef MFPCCODELOADER_H
+#define MFPCCODELOADER_H
+#include "PiccoloComp_api.h"
 class MfScHandleList;
 class MfString;
 
-class MfPcCodeLoader {
+class PICCOLOCOMP_API MfPcCodeLoader {
 public:
-    MfPcCodeLoader & operator=(MfPcCodeLoader const &);
-    MfPcCodeLoader();
-    static int __cdecl UpdateSingleFile(MfString const &, int, MfScHandleList *);
-    static void __cdecl UpdatePiccoloDataPathFiles(int);
-    static void __cdecl UpdatePiccoloLibFiles(int);
+    // 0x10005ad0 (inline, emitted by CodeLoader.cpp); operator= at 0x10005ae0 is
+    // compiler-generated.
+    MfPcCodeLoader() {}
     ~MfPcCodeLoader();
+    static void __cdecl UpdatePiccoloDataPathFiles(int force);
+    static void __cdecl UpdatePiccoloLibFiles(int force);
+    static int __cdecl UpdateSingleFile(const MfString &sourcePath, int force, MfScHandleList *handles);
 private:
-    static void __cdecl UpdateFilesInDirectoryPath(MfString const &, int);
-public:
-    char field_0;
+    static void __cdecl UpdateFilesInDirectoryPath(const MfString &dirPath, int force);
 };
+
+#endif

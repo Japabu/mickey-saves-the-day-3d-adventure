@@ -1,4 +1,4 @@
-#include "EG2_Asset_decl.h"
+#include "Asset.h"
 #include <locale> // evidence: the original unit ends with the std::ctype<unsigned short>::id and std::collate<char>::id initializers
 
 // 0x10112c00 ??0Asset@EG2@@IAE@XZ

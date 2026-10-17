@@ -1,4 +1,5 @@
 #pragma once
+// MfIPcErrorInfo: the error interface of the Piccolo compiler (pure, no code).
 class MfString;
 class MfStringList;
 

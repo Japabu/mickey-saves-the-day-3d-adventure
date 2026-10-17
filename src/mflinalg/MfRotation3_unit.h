@@ -1,5 +1,11 @@
 // MfRotation3 (unit quaternion) unit of mflinalg.dll: reconstructed declarations.
 // Layouts copied from mflinalg.h and from the code of this range.
+// own copy: same layouts as the canonical MfMath.h, MfVector3.h, MfXformMatrix3.h
+// and MfRotation3.h, but MfRotation3.cpp's operand orders depend on VC5's symbol
+// counter, which these exact declarations set; compiled against the canonical
+// headers (members renamed) 4 to 10 of its 28 functions differ for every include
+// order and padding tried (sweep of 2026-10-17), including the inline normalize
+// and scalarMult that this object emits.
 #ifndef MFROTATION3_H
 #define MFROTATION3_H
 
@@ -7,7 +13,7 @@
 // rand is called through the import table (msvcrt.dll).
 extern "C" __declspec(dllimport) int __cdecl rand(void);
 
-#define MFAPI __declspec(dllexport)
+#include "mflinalg_api.h"
 
 // The forward declarations also set VC5's symbol counter (see MfRotation3.cpp).
 class MfVector2;
@@ -16,7 +22,7 @@ class MfMatrix3;
 class MfTransform3;
 class MfXformMatrix3;
 
-class MFAPI MfMath {
+class MFLINALG_API MfMath {
 public:
     MfMath();
     ~MfMath();
@@ -38,7 +44,7 @@ private:
     static MfMath g_math;
 };
 
-class MFAPI MfVector3 {
+class MFLINALG_API MfVector3 {
 public:
     MfVector3() {}
     MfVector3(float x_, float y_, float z_) { x = x_; y = y_; z = z_; }
@@ -92,14 +98,14 @@ public:
 };
 
 // Rows of four floats (operator[] = this + 16 * i).
-class MFAPI MfXformMatrix3 {
+class MFLINALG_API MfXformMatrix3 {
 public:
     float *operator[](int i) { return m[i]; }
     const float *operator[](int i) const { return m[i]; }
     float m[4][4];
 };
 
-class MFAPI MfRotation3 {
+class MFLINALG_API MfRotation3 {
 public:
     MfRotation3() { s = 1.0f; x = 0.0f; y = 0.0f; z = 0.0f; }
     MfRotation3(float s_, float x_, float y_, float z_) { s = s_; x = x_; y = y_; z = z_; }
