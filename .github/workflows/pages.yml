@@ -1,0 +1,63 @@
+# Builds the browser version from source and publishes it on GitHub Pages.
+# It runs only when started by hand (Actions > Web version > Run workflow). The page
+# contains no game data: each player picks their own CD image, which stays in their
+# browser. Needs Settings > Pages > Source: GitHub Actions.
+name: Web version
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Install Emscripten 6.0.12
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk out/emsdk
+          out/emsdk/emsdk install 6.0.12
+          out/emsdk/emsdk activate 6.0.12
+
+      - name: Build
+        run: |
+          source out/emsdk/emsdk_env.sh
+          # without debug info: about 5 MB to download instead of 43 MB
+          cmake -S port -B out/port/build-web -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=$PWD/out/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake \
+            -DCMAKE_C_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG" \
+            -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG"
+          cmake --build out/port/build-web --target Steamboat
+
+      - name: Collect the page
+        run: |
+          mkdir _site
+          cd out/port/build-web
+          cp index.html mickey.js copy-worker.js sound-worklet.js coi-serviceworker.js \
+             Steamboat.js Steamboat.wasm ../../../_site/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

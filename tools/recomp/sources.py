@@ -28,13 +28,14 @@ EQUIV = re.compile(r'^// EQUIV (?:(?P<bin>[\w/]+\.(?:dll|exe)) )?0x(?P<va>[0-9a-
 
 
 def binaries():
-    """{source directory relative to src/: binary path relative to orig/binaries}."""
+    """{source directory relative to src/: binary path relative to orig/binaries}, from the
+    binaries src/options.txt lists (so the port builds without the original files)."""
     out = {}
-    for d in ('', 'plugins'):
-        for f in sorted(os.listdir(os.path.join(BIN, d) if d else BIN)):
-            stem, ext = os.path.splitext(f)
-            if ext.lower() in ('.dll', '.exe'):
-                out[os.path.join(d, stem) if d else stem] = os.path.join(d, f) if d else f
+    for line in open(os.path.join(SRC, 'options.txt')):
+        name = line.split()[0] if line.strip() and not line.startswith('#') else ''
+        stem, ext = os.path.splitext(name)
+        if ext.lower() in ('.dll', '.exe'):
+            out[stem] = name
     return out
 
 
