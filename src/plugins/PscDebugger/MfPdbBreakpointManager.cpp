@@ -609,7 +609,7 @@ MfPdbBreakpoint *MfPdbBreakpointManager::PlantReturn(MfPdbStepContext *ctx)
     MfScVmFrame frame;
     if (ctx->env->FirstFrame(&frame)) {
         ctx->env->NextFrame(&frame);
-        ip = frame.mIP;
+        ip = (unsigned char *)frame.mIP;
     }
     if (ip && *ip != BC_4C && *ip != BC_BREAKPOINT) {
         bp = new MfPdbBreakpoint(ip, kStepTemporary);
@@ -634,7 +634,7 @@ MfPdbBreakpoint *MfPdbBreakpointManager::PlantNext(int, int next, MfPdbStepConte
         MfScVmFrame frame;
         if (ctx->env->FirstFrame(&frame)) {
             ctx->env->NextFrame(&frame);
-            ip = frame.mIP;
+            ip = (unsigned char *)frame.mIP;
         }
     } else
         ip = ctx->routine->mBytecodes + next;
