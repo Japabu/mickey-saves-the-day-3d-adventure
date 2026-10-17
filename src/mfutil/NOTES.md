@@ -12,6 +12,10 @@ Every item was verified by match.sh in the unit named in brackets.
 - Inline bodies are the ones the original objects emitted (MfCopyFolder.cpp keeps
   the copies of the string classes' inline members, MfStringRef.cpp those of
   MfVariantData/MfVariant, MfDirectory.cpp those of MfTime/MfSystemTime/MfFileTime).
+- Own copies: VC5 compiles some functions differently once a file sees the shared
+  headers, even where the text is the same. MfCopyFolder.cpp, MfHashTable.cpp,
+  MfStringRef.cpp (with MfVariant_unit.h) and MfTime.cpp therefore keep the
+  declarations they were matched with (`*_unit.h`, each marked `// own copy`).
 - `MfString::LoadString` takes `void *`: MfStringRef.cpp was compiled without STRICT
   (`?LoadStringA@MfString@@QAEHPAXI@Z`).
 

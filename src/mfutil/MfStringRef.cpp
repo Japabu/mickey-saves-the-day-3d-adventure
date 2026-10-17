@@ -2,7 +2,7 @@
 // The first functions of the range are inline members of MfVariantData/MfVariant
 // (from the headers this file includes); this object keeps their copies.
 #include <stdio.h>
-#include "MfString.h"
+#include "MfStringRef_unit.h"
 
 // 0x1000bee0 ??0MfVariantData@variant_namespace@@QAE@H@Z (inline, header)
 // 0x1000bf00 ??1MfVariantData@variant_namespace@@UAE@XZ (inline, header)
@@ -42,9 +42,9 @@ int MfStringRef::nNumPadChars = 32;
 void MfStringRef::SetMaxLength(int n)
 {
     int newMax = n + nNumPadChars;
-    if (newMax > m_maxLength) {
-        m_maxLength = newMax;
-        char *p = new char(m_maxLength + 1);   // sic: allocates one char
+    if (newMax > m_max) {
+        m_max = newMax;
+        char *p = new char(m_max + 1);   // sic: allocates one char
         strcpy(p, m_str);
         delete m_str;
         m_str = p;
@@ -54,11 +54,11 @@ void MfStringRef::SetMaxLength(int n)
 // 0x1000c200 ?MakeCopy@MfStringRef@@QAEXABV1@@Z
 void MfStringRef::MakeCopy(const MfStringRef &o)
 {
-    m_length = o.m_length;
-    if (m_length > m_maxLength || m_maxLength == 0) {
+    m_len = o.m_len;
+    if (m_len > m_max || m_max == 0) {
         delete m_str;
-        m_maxLength = m_length + nNumPadChars;
-        m_str = new char[m_maxLength + 1];
+        m_max = m_len + nNumPadChars;
+        m_str = new char[m_max + 1];
     }
     strcpy(m_str, o.m_str);
 }
@@ -67,11 +67,11 @@ void MfStringRef::MakeCopy(const MfStringRef &o)
 void MfStringRef::MakeCopy(const char *s)
 {
     if (s) {
-        m_length = strlen(s);
-        if (m_length > m_maxLength || m_maxLength == 0) {
+        m_len = strlen(s);
+        if (m_len > m_max || m_max == 0) {
             delete m_str;
-            m_maxLength = m_length + nNumPadChars;
-            m_str = new char[m_maxLength + 1];
+            m_max = m_len + nNumPadChars;
+            m_str = new char[m_max + 1];
         }
         strcpy(m_str, s);
     }
@@ -81,25 +81,25 @@ void MfStringRef::MakeCopy(const char *s)
 void MfStringRef::MakeCopy(const unsigned short *s)
 {
     if (s) {
-        m_length = wcslen(s);
-        if (m_length > m_maxLength || m_maxLength == 0) {
+        m_len = wcslen(s);
+        if (m_len > m_max || m_max == 0) {
             delete m_str;
-            m_maxLength = m_length + nNumPadChars;
-            m_str = new char[m_maxLength + 1];
+            m_max = m_len + nNumPadChars;
+            m_str = new char[m_max + 1];
         }
-        wcstombs(m_str, s, m_length);
-        m_str[m_length] = 0;
+        wcstombs(m_str, s, m_len);
+        m_str[m_len] = 0;
     }
 }
 
 // 0x1000c360 ?Append@MfStringRef@@QAEXABV1@@Z
 void MfStringRef::Append(const MfStringRef &o)
 {
-    m_length += o.m_length;
-    if (m_length > m_maxLength || m_maxLength == 0) {
-        m_maxLength = m_length + nNumPadChars;
+    m_len += o.m_len;
+    if (m_len > m_max || m_max == 0) {
+        m_max = m_len + nNumPadChars;
         char *old = m_str;
-        m_str = new char[m_maxLength + 1];
+        m_str = new char[m_max + 1];
         strcpy(m_str, old);
         delete old;
     }
@@ -109,12 +109,12 @@ void MfStringRef::Append(const MfStringRef &o)
 // 0x1000c400 ?Append@MfStringRef@@QAEXPBD@Z
 void MfStringRef::Append(const char *s)
 {
-    int oldLen = m_length;
-    m_length += strlen(s);
-    if (m_length > m_maxLength || m_maxLength == 0) {
-        m_maxLength = m_length + nNumPadChars;
+    int oldLen = m_len;
+    m_len += strlen(s);
+    if (m_len > m_max || m_max == 0) {
+        m_max = m_len + nNumPadChars;
         char *old = m_str;
-        m_str = new char[m_maxLength + 1];
+        m_str = new char[m_max + 1];
         strcpy(m_str, old);
         delete old;
     }
@@ -124,47 +124,47 @@ void MfStringRef::Append(const char *s)
 // 0x1000c4b0 ?Append@MfStringRef@@QAEXPBG@Z
 void MfStringRef::Append(const unsigned short *s)
 {
-    int oldLen = m_length;
-    m_length += wcslen(s);
-    if (m_length > m_maxLength || m_maxLength == 0) {
-        m_maxLength = m_length + nNumPadChars;
+    int oldLen = m_len;
+    m_len += wcslen(s);
+    if (m_len > m_max || m_max == 0) {
+        m_max = m_len + nNumPadChars;
         char *old = m_str;
-        m_str = new char[m_maxLength + 1];
+        m_str = new char[m_max + 1];
         strcpy(m_str, old);
         delete old;
     }
-    wcstombs(m_str + oldLen, s, m_length - oldLen);
-    m_str[m_length] = 0;
+    wcstombs(m_str + oldLen, s, m_len - oldLen);
+    m_str[m_len] = 0;
 }
 
 // 0x1000c560 ?Append@MfStringRef@@QAEXD@Z
 void MfStringRef::Append(char c)
 {
-    m_length++;
-    if (m_length > m_maxLength || m_maxLength == 0) {
-        m_maxLength = m_length + nNumPadChars;
+    m_len++;
+    if (m_len > m_max || m_max == 0) {
+        m_max = m_len + nNumPadChars;
         char *old = m_str;
-        m_str = new char[m_maxLength + 1];
+        m_str = new char[m_max + 1];
         strcpy(m_str, old);
         delete old;
     }
-    m_str[m_length - 1] = c;
-    m_str[m_length] = 0;
+    m_str[m_len - 1] = c;
+    m_str[m_len] = 0;
 }
 
 // EQUIV 0x1000c560 ?Append@MfStringRef@@QAEXG@Z: proven (renaming-equivalent); bytes differ: (100% similar) identical code, folded by the linker
 void MfStringRef::Append(unsigned short c)
 {
-    m_length++;
-    if (m_length > m_maxLength || m_maxLength == 0) {
-        m_maxLength = m_length + nNumPadChars;
+    m_len++;
+    if (m_len > m_max || m_max == 0) {
+        m_max = m_len + nNumPadChars;
         char *old = m_str;
-        m_str = new char[m_maxLength + 1];
+        m_str = new char[m_max + 1];
         strcpy(m_str, old);
         delete old;
     }
-    m_str[m_length - 1] = (char)c;
-    m_str[m_length] = 0;
+    m_str[m_len - 1] = (char)c;
+    m_str[m_len] = 0;
 }
 
 // 0x1000c5e0 ?CompareToInternal@MfStringRef@@QBEHPBG@Z
@@ -204,16 +204,16 @@ void MfStringRef::ConvertToLower()
 // 0x1000c730 ?Truncate@MfStringRef@@QAEXH@Z
 void MfStringRef::Truncate(int n)
 {
-    if (n >= 0 && n < m_length) {
+    if (n >= 0 && n < m_len) {
         m_str[n] = 0;
-        m_length = strlen(m_str);
+        m_len = strlen(m_str);
     }
 }
 
 // 0x1000c760 ?SetCharacter@MfStringRef@@QAEHHD@Z
 int MfStringRef::SetCharacter(int i, char c)
 {
-    if (i >= 0 && i < m_length) {
+    if (i >= 0 && i < m_len) {
         m_str[i] = c;
         return 1;
     }
@@ -233,7 +233,7 @@ void MfStringRef::StripWhiteSpace()
         }
     }
     *dst = 0;
-    m_length = n;
+    m_len = n;
 }
 
 // 0x1000c7d0 ?NoLeadingWhiteSpace@MfStringRef@@QAEXXZ
@@ -243,7 +243,7 @@ void MfStringRef::NoLeadingWhiteSpace()
     while (*p && isspace(*p))
         p++;
     if (p != m_str) {
-        m_length += m_str - p;
+        m_len += m_str - p;
         char *d = m_str;
         while (*p)
             *d++ = *p++;
@@ -254,27 +254,27 @@ void MfStringRef::NoLeadingWhiteSpace()
 // 0x1000c830 ?NoTrailingWhiteSpace@MfStringRef@@QAEXXZ
 void MfStringRef::NoTrailingWhiteSpace()
 {
-    char *p = m_str + m_length - 1;
+    char *p = m_str + m_len - 1;
     while (p >= m_str && isspace(*p))
         p--;
     p++;
     *p = 0;
-    m_length = p - m_str;
+    m_len = p - m_str;
 }
 
 // 0x1000c870 ?DuplicateUnicode@MfStringRef@@QBEPAGXZ
 unsigned short *MfStringRef::DuplicateUnicode() const
 {
-    unsigned short *w = new unsigned short[m_length + 1];
-    mbstowcs(w, m_str, m_length);
-    w[m_length] = 0;
+    unsigned short *w = new unsigned short[m_len + 1];
+    mbstowcs(w, m_str, m_len);
+    w[m_len] = 0;
     return w;
 }
 
 // 0x1000c8b0 ?DuplicateAscii@MfStringRef@@QBEPADXZ
 char *MfStringRef::DuplicateAscii() const
 {
-    char *p = new char[m_length + 1];
+    char *p = new char[m_len + 1];
     strcpy(p, m_str);
     return p;
 }
@@ -288,7 +288,7 @@ int MfStringRef::ReadFromFile(const MfString &name)
     BY_HANDLE_FILE_INFORMATION info;
     GetFileInformationByHandle(hFile, &info);
     if (info.nFileSizeLow == 0) {
-        m_length = 0;
+        m_len = 0;
         *m_str = 0;
         CloseHandle(hFile);
         return 1;
@@ -304,15 +304,15 @@ int MfStringRef::ReadFromFile(const MfString &name)
         CloseHandle(hFile);
         return 0;
     }
-    m_length = info.nFileSizeLow;
-    if (m_length > m_maxLength || m_maxLength == 0) {
+    m_len = info.nFileSizeLow;
+    if (m_len > m_max || m_max == 0) {
         delete m_str;
-        m_maxLength = m_length + nNumPadChars;
-        m_str = new char[m_maxLength + 1];
+        m_max = m_len + nNumPadChars;
+        m_str = new char[m_max + 1];
     }
-    memcpy(m_str, view, m_length);
-    m_str[m_length] = 0;
-    m_length = strlen(m_str);
+    memcpy(m_str, view, m_len);
+    m_str[m_len] = 0;
+    m_len = strlen(m_str);
     UnmapViewOfFile(view);
     CloseHandle(hMap);
     CloseHandle(hFile);
@@ -325,11 +325,11 @@ int MfStringRef::WriteToFile(const MfString &name) const
     HANDLE hFile = CreateFile(name, GENERIC_READ | GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
     if (hFile == INVALID_HANDLE_VALUE)
         return 0;
-    if (m_length == 0) {
+    if (m_len == 0) {
         CloseHandle(hFile);
         return 1;
     }
-    HANDLE hMap = CreateFileMapping(hFile, 0, PAGE_READWRITE, 0, m_length, 0);
+    HANDLE hMap = CreateFileMapping(hFile, 0, PAGE_READWRITE, 0, m_len, 0);
     if (hMap == 0) {
         CloseHandle(hFile);
         return 0;
@@ -340,7 +340,7 @@ int MfStringRef::WriteToFile(const MfString &name) const
         CloseHandle(hFile);
         return 0;
     }
-    memcpy(view, m_str, m_length);
+    memcpy(view, m_str, m_len);
     UnmapViewOfFile(view);
     CloseHandle(hMap);
     CloseHandle(hFile);
@@ -348,12 +348,12 @@ int MfStringRef::WriteToFile(const MfString &name) const
 }
 
 // 0x1000cb40 ?LoadStringA@MfString@@QAEHPAXI@Z
-int MfString::LoadString(void *inst, UINT id)
+int MfString::LoadString(HINSTANCE inst, UINT id)
 {
     char buf[1024];
     int ok = 0;
     *this = NULL_STRING;
-    if (::LoadString((HINSTANCE)inst, id, buf, 1024) > 0) {
+    if (::LoadString(inst, id, buf, 1024) > 0) {
         *this = buf;
         ok = 1;
     }
@@ -363,34 +363,34 @@ int MfString::LoadString(void *inst, UINT id)
 // EQUIV 0x1000cba0 ?ReplaceString@MfStringRef@@QAEXABV1@HH@Z: reviewed: register allocation in the final copy loop setup (pos in esi instead of edx)
 void MfStringRef::ReplaceString(const MfStringRef &r, int pos, int len)
 {
-    if (m_length - len + r.m_length > m_maxLength) {
-        m_maxLength += r.m_length - len + nNumPadChars;
+    if (m_len - len + r.m_len > m_max) {
+        m_max += r.m_len - len + nNumPadChars;
         char *old = m_str;
-        m_str = new char[m_maxLength + 1];
+        m_str = new char[m_max + 1];
         strcpy(m_str, old);
         delete old;
     }
-    int tail = m_length - pos - len;
+    int tail = m_len - pos - len;
     int i;
-    if (len < r.m_length) {
-        char *src = m_str + m_length - 1;
-        char *dst = m_str + m_length - len + r.m_length;
+    if (len < r.m_len) {
+        char *src = m_str + m_len - 1;
+        char *dst = m_str + m_len - len + r.m_len;
         *dst-- = 0;
         for (i = 0; i < tail; i++)
             *dst-- = *src--;
-    } else if (len > r.m_length) {
+    } else if (len > r.m_len) {
         char *src = m_str + pos + len;
-        char *dst = m_str + pos + r.m_length;
+        char *dst = m_str + pos + r.m_len;
         for (i = 0; i < tail; i++)
             *dst++ = *src++;
         *dst = 0;
     }
     char *dst = m_str + pos;
     const char *src = r.m_str;
-    int n = r.m_length;
+    int n = r.m_len;
     for (i = 0; i < n; i++)
         *dst++ = *src++;
-    m_length += r.m_length - len;
+    m_len += r.m_len - len;
 }
 
 
