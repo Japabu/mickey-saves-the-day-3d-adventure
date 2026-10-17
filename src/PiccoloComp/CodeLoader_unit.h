@@ -3,7 +3,7 @@
 #ifndef PICCOLOCOMP_CODELOADER_H
 #define PICCOLOCOMP_CODELOADER_H
 #include <windows.h>
-#include "MfAiCompiler.h"
+#include "../PiccoloRT/MfAiCompiler.h"
 #include "MfPcStringListErrorCB.h"
 
 // ---------------------------------------------------------------- imports (mfutil)

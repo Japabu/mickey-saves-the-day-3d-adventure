@@ -2,7 +2,7 @@
 #ifndef PICCOLOCOMP_API
 #define PICCOLOCOMP_API __declspec(dllimport)
 #endif
-#include "MfAiCompiler.h"
+#include "../PiccoloRT/MfAiCompiler.h"
 #include "MfString.h"
 class MfPcBuffer;
 class MfPcBufferManager;

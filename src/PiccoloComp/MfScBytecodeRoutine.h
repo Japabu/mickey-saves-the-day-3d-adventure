@@ -3,15 +3,7 @@ class MfScDataHandle;
 class MfScDebugInfo;
 class MfScLinkData;
 class MfString;
-
-// RuntimeLib: mutex wrapper.
-class __declspec(dllimport) MfLock {
-public:
-    MfLock();
-    ~MfLock();
-private:
-    void *m_handle;
-};
+#include "../mfutil/MfLock.h"
 
 // PiccoloRT.dll: base of everything a data handle can point to.
 class __declspec(dllimport) MfScData {
