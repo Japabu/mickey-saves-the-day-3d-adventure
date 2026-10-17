@@ -115,7 +115,7 @@ EDITS['plugins/PscContentInfo/PscContentInfo.h'] = [
      '    char *m_fastmap;\n'
      '};\n'
      '\n'
-     '#line 338\n', 1),
+     '#line 345\n', 1),
     ('    static MfScDataHandle *CreateData(MfScDataObject *);\n'
      '    static MfScDataHandle *CreateData(MfScMethod, const MfString &, int);\n'
      '    int IsType(unsigned long type) const { return m_flags & type; }\n'
@@ -155,7 +155,7 @@ EDITS['plugins/PscContentInfo/PscContentInfo.h'] = [
      '    void *m_work;\n'
      '    MfScVmEnv *m_env;       // +0x20\n'
      '};\n'
-     '#line 421\n', 1),
+     '#line 436\n', 1),
     ('    virtual void AddRef();\n'
      '    virtual void Release();\n'
      '    int m_4;\n'
@@ -188,7 +188,7 @@ EDITS['plugins/PscContentInfo/PscContentInfo.h'] = [
      '    virtual int GetTreeImage() = 0;\n'
      '};\n'
      '\n'
-     '#line 501\n', 1),
+     '#line 524\n', 1),
     ('    MfScMethodParameterInfo(const MfString &, int);\n'
      '    virtual ~MfScMethodParameterInfo();\n'
      '    int m_8;\n'
@@ -226,5 +226,5 @@ EDITS['plugins/PscContentInfo/PscContentInfo.h'] = [
      '    void *m_14;             // PORT: a pointer like the real member (the item list)\n'
      '};\n'
      '\n'
-     '#line 531\n', 1),
+     '#line 557\n', 1),
 ]

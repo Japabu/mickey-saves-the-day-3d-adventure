@@ -11,6 +11,11 @@
 #include <fstream.h>
 
 // ---- mfutil.dll -------------------------------------------------------------
+// The classes below marked "own copy" keep this plugin's declarations: the
+// canonical ones (src/mfutil) differ where this binary shows otherwise (see each
+// note), and every canonical header that needs MfString (MfString.h itself,
+// MfDblList.h, MfHashTable.h, ...) includes MfCallBack.h, MfListItemInterface.h,
+// MfStringTokenizerCallBack.h or MfTime.h, which differ here.
 
 class MfNullString;
 class MfString;
@@ -19,16 +24,12 @@ class MfCallBack;
 class MfListItemInterface;
 class MfStringList;
 
-class __declspec(dllimport) MfNullString {
-};
-extern __declspec(dllimport) MfNullString NULL_STRING;
+#include "../../mfutil/MfNullString.h"
 
-class __declspec(dllimport) MfStringSize {
-public:
-    MfStringSize(int n) { m_size = n; }
-    int m_size;
-};
+#include "../../mfutil/MfStringSize.h"
 
+// own copy: the copy constructor is imported (??0MfStringRef@@QAE@ABV0@@Z, called
+// by the inline CopyOnWrite); src/mfutil/MfStringRef.h defines it inline.
 // Reference-counted string body: vptr, data, length (+8), allocated size,
 // reference count. The plugin keeps a local copy of the vtable (??_S) because
 // the destructor is inline.
@@ -56,6 +57,8 @@ protected:
     static int nNumPadChars;
 };
 
+// own copy: MfString.h includes MfStringTokenizerCallBack.h and MfTime.h, which
+// differ here.
 class __declspec(dllimport) MfString {
 public:
     MfString();
@@ -118,15 +121,10 @@ private:
 
 __declspec(dllimport) istream &operator>>(istream &is, MfString &s);
 
-class MfDblListItem {
-public:
-    void *GetData() const { return pData; }
-    MfDblListItem *GetNext() const { return pliNext; }
-    void *pData;
-    MfDblListItem *pliPrev;
-    MfDblListItem *pliNext;
-};
+#include "../../mfutil/MfDblListItem.h"
 
+// own copy: MfDblList.h includes MfCallBack.h and MfListItemInterface.h (own copies
+// here); mfutil's GetCurrent is inline, here imported.
 // VC5 lays overloaded virtuals out in reverse order of declaration.
 class __declspec(dllimport) MfDblList {
 public:
@@ -177,6 +175,9 @@ protected:
     int nCount;              // +0xc
 };
 
+// own copy: CallBack is imported, so the inline constructor of MfStringList stores
+// the imported vtable (??_7MfStringTokenizerCallBack@@6B@); mfutil's header
+// defines it inline (all virtuals inline, as MfStringRef: a local vtable).
 class __declspec(dllimport) MfStringTokenizerCallBack {
 public:
     MfStringTokenizerCallBack() {}
@@ -184,6 +185,7 @@ public:
     virtual int CallBack(const MfString &token, MfString &rest);
 };
 
+// own copy: MfStringList.h includes MfString.h and MfDblList.h (own copies here).
 // List of MfString (0x14 bytes); constructor and destructor are inline.
 class __declspec(dllimport) MfStringList : public MfDblList, public MfStringTokenizerCallBack {
 public:
@@ -214,6 +216,8 @@ private:
     virtual int CallBack(const MfString &token, MfString &rest);
 };
 
+// own copy: the CallBack overloads are imported, as is the vtable (??_7MfCallBack@@6B@);
+// src/mfutil/MfCallBack.h defines them inline.
 // The constructor and destructor are inline. VC5 lays overloaded virtuals out
 // in reverse order: the vtable is ??_E, CallBack(3), CallBack(2), CallBack(1).
 class __declspec(dllimport) MfCallBack {
@@ -225,6 +229,8 @@ public:
     virtual int CallBack(void *, void *, void *);
 };
 
+// own copy: the plugin's MfCopyNameListCB overrides only Copy and its vtable holds
+// these default bodies; src/mfutil/MfListItemInterface.h has pure virtuals.
 class MfListItemInterface {
 public:
     virtual void *Copy(void *item) { return 0; }
@@ -233,6 +239,7 @@ public:
     virtual int Matches(void *item, void *key) { return 0; }
 };
 
+// own copy: MfHashTable.h includes MfCallBack.h (own copy here).
 enum MfHTErrorCode { };
 
 class __declspec(dllimport) MfHashTable {
@@ -252,6 +259,7 @@ private:
     MfChainNode **apmfcnChain;
 };
 
+// own copy: MfDictionary.h includes MfCallBack.h and MfString.h (own copies here).
 // Hash table keyed by MfString.
 class __declspec(dllimport) MfDictionary : public MfHashTable {
 public:
@@ -266,6 +274,8 @@ protected:
     virtual void *GetData(void *);
 };
 
+// own copy: the plugin constructs it from a struct timeb (inline), which
+// src/mfutil/MfTime.h does not declare.
 // Seconds and milliseconds; inline members, the destructor is called through
 // the import table only by the unwind funclets.
 class __declspec(dllimport) MfTime {
@@ -278,17 +288,12 @@ public:
 
 __declspec(dllimport) ostream &operator<<(ostream &os, const MfString &s);
 
-// Inline wrapper of a Win32 critical section.
-class __declspec(dllimport) MfCriticalSection {
-public:
-    MfCriticalSection() { InitializeCriticalSection(&m_cs); }
-    ~MfCriticalSection() { DeleteCriticalSection(&m_cs); }
-private:
-    CRITICAL_SECTION m_cs;
-};
+#include "../../mfutil/MfCriticalSection.h"
 
 class MfDirectory;
 
+// own copy: GetFileName is imported here; src/mfutil/MfDirectoryFileInfo.h defines it
+// inline. It also includes MfString.h.
 // One entry of an MfDirectory (size 0x144).
 class __declspec(dllimport) MfDirectoryFileInfo {
 public:
@@ -300,6 +305,7 @@ private:
     MfDirectory *m_dir;
 };
 
+// own copy: MfDirectory.h includes MfString.h and MfDblList.h (own copies here).
 // The files of a folder (size 0x1c).
 class __declspec(dllimport) MfDirectory : public MfDblList {
 public:
@@ -324,6 +330,7 @@ private:
     MfDblListItem *m_pliCur;
 };
 
+// own copy: MfRegularExpression.h includes MfString.h (own copy here).
 // size 0x84
 class __declspec(dllimport) MfRegularExpression {
 public:
@@ -335,18 +342,22 @@ private:
     char m_data[0x80];
 };
 
+// own copy: MfLogger.h includes MfString.h and MfStringList.h (own copies here).
 class __declspec(dllimport) MfLogger {
 public:
     static void __cdecl Log(int, const MfString &, const MfString &, const MfString &);
     static void __cdecl Log(int, const MfString &, const MfString &, int, ...);
 };
 
+// own copy: MfCopyFolder.h includes MfString.h (own copy here).
 class __declspec(dllimport) MfCopyFolder {
 public:
     static int Exists(const MfString &);
     static int CreateFolder(const MfString &);
 };
 
+// own copy: src/mfutil/UtilityApp.h befriends DllMain with C++ linkage, which
+// clashes with this plugin's extern "C" DllMain.
 // Registry access. Constructor and destructor are empty inlines: the unwind
 // funclets call the imported destructor, the normal path nothing.
 class __declspec(dllimport) UtilityApp {
@@ -359,6 +370,9 @@ public:
 
 // ---- PiccoloRT.dll ----------------------------------------------------------
 
+// own copy: the PiccoloRT headers include PiccoloRT's own MfString.h, which
+// conflicts with this plugin's MfString; the same holds for every PiccoloRT
+// class below marked "own copy". MfScPiccolo.h also lacks friend MfContent.
 class __declspec(dllimport) MfScPiccolo {
 public:
     static void LoadPiccoloLibFunctions(int);
@@ -380,6 +394,7 @@ class MfScData;
 class MfScDataObject;
 typedef MfScDataHandle *(MfScData::*MfScMethod)(MfScDataHandle *, int, MfScDataHandle **);
 
+// own copy: MfScDataHandle.h includes PiccoloRT's own MfCriticalSection.h.
 // +0 reference count, +2 type flags, +4 value
 class __declspec(dllimport) MfScDataHandle {
 public:
@@ -400,11 +415,9 @@ public:
     };
 };
 
-class MfScVariableStack {
-public:
-    enum MfScVariableErrorCode { };
-};
+#include "../../PiccoloRT/MfScVariableStack.h"
 
+// own copy: MfScVmEnv.h includes PiccoloRT's MfString.h.
 class __declspec(dllimport) MfScVmEnv {
 public:
     static MfScVariableStack::MfScVariableErrorCode GetGlobalVariable(const MfString &, MfScDataHandle **);
@@ -412,6 +425,8 @@ public:
     void ThrowException(int, const MfString &);
 };
 
+// own copy: m_env is MfScThread's (PiccoloRT) member; src/mfutil/MfThread.h is the
+// base class without it.
 class __declspec(dllimport) MfThread {
 public:
     static MfThread *GetThread();
@@ -419,6 +434,10 @@ public:
     MfScVmEnv *m_env;       // +0x20
 };
 
+// own copy: MfScData.h and the headers deriving from it include PiccoloRT's
+// MfString.h; PiccoloRT's MfScDataObject also defines GetClassNameA,
+// GetPropTokenTable, FilloutPropertyNameList and GetPropertyExtensions inline
+// (imported here).
 class __declspec(dllimport) MfScData {
 public:
     virtual ~MfScData();
@@ -434,6 +453,7 @@ public:
 
 class MfScClassInfo;
 
+// own copy: see MfScData.
 class __declspec(dllimport) MfScDataObject : public MfScData {
 public:
     enum MfPropertyErrorCode { kPropertyOk = 0 };
@@ -453,6 +473,7 @@ public:
     int m_10;
 };
 
+// own copy: see MfScData.
 class __declspec(dllimport) MfScObject : public MfScDataObject {
 public:
     MfScObject() : MfScDataObject(0x200) { }
@@ -462,24 +483,24 @@ protected:
     virtual int GetThroughCount(MfScDataHandle *);
 };
 
+// own copy: see MfScData.
 class __declspec(dllimport) MfScObjString : public MfScObject, public MfString {
 private:
     int m_readOnly;
 };
 
-// The list interface the standard library plugin registers.
-class __declspec(dllimport) MfScStdLibListInterface {
-public:
-    virtual int CreateList(MfDblList **list, MfScDataHandle **handle);
-    virtual int GetList(MfDblList **list, MfScDataHandle *handle);
-};
+#include "../../PiccoloRT/MfScStdLibListInterface.h"
 
+// own copy: PcContent reads the private pslliListInterface (friend below);
+// src/PiccoloRT/MfScStdLib.h befriends only MfScPiccolo.
 class __declspec(dllimport) MfScStdLib {
 private:
     static MfScStdLibListInterface *pslliListInterface;
     friend class PcContent;
 };
 
+// own copy: the binary names the key function GetKey (?GetKey@MfScClassInfo@@UBE...);
+// src/mfutil/MfSortedListItem.h calls it GetSortKey and includes MfString.h.
 // class info (help/browser tree) classes
 class __declspec(dllimport) MfSortedListItem {
 public:
@@ -487,17 +508,20 @@ public:
     virtual MfString GetKey() const = 0;
 };
 
+// own copy: the destructor is imported here, inline in PiccoloRT's header.
 class __declspec(dllimport) MfScClassInfoText {
 public:
     virtual ~MfScClassInfoText();
     MfString *m_text;
 };
 
+// own copy: see MfScData.
 class __declspec(dllimport) MfScClassInfoItem : public MfSortedListItem {
 public:
     virtual MfString GetKey() const;
 };
 
+// own copy: see MfScData.
 class __declspec(dllimport) MfScMethodParameterInfo : public MfScClassInfoText {
 public:
     MfScMethodParameterInfo(const MfString &, int);
@@ -506,6 +530,7 @@ public:
     int m_c;
 };
 
+// own copy: see MfScData.
 class __declspec(dllimport) MfScCiMethod : public MfScClassInfoItem, public MfScClassInfoText {
 public:
     MfScCiMethod(const MfString &);
@@ -518,6 +543,7 @@ public:
     int m_14;
 };
 
+// own copy: see MfScData.
 class __declspec(dllimport) MfScClassInfo : public MfSortedListItem, public MfListItemInterface, public MfScClassInfoText {
 public:
     MfScClassInfo(const MfString &);
@@ -530,6 +556,8 @@ public:
 
 class MfAi;
 
+// own copy: MfInterfaceRegistry.h includes MfString.h and MfDictionary.h (own copies
+// here).
 class __declspec(dllimport) MfInterfaceRegistry {
 public:
     static int AddInterface(MfAi *);
@@ -538,6 +566,8 @@ public:
 
 // ---- interfaces ---------------------------------------------------------------
 
+// own copy: GetInterfaceName takes int * here (?GetInterfaceName@MfContent@@UAEXPADHPAH1@Z);
+// src/mfutil/MfAi.h has int &.
 class MfAi {
 public:
     virtual void GetInterfaceName(char *name, int size, int *major, int *minor) = 0;
@@ -560,6 +590,8 @@ struct MfContentDescription {
 
 typedef void (*MfContentNotify)(int stage);
 
+// own copy: this plugin implements it; src/RuntimeLib/MfAiContent.h derives from
+// RuntimeLib's MfAi (int &) and includes RuntimeLib's MfString.h.
 // "ContentInfoI": the content (data folder) the application works with.
 class MfAiContent : public MfAi {
 public:
