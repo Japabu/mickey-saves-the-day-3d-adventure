@@ -44,3 +44,21 @@ EDITS = {
          '    // (size 0x34 on Windows, new MfSpaceView)\n', 1),
     ],
 }
+
+# RuntimeLib's view of PiccoloRT's MfScVmEnv (the variable stack MfState swaps in, the
+# alternative return MfPoHFSM sets). Visual C++ padded the vtable pointer to 8 bytes
+# because the class holds an __int64 (the timer), so the members began at +8 and the
+# view filled +4 with an int; clang does not pad it (on 32-bit WebAssembly mVarStack was
+# 4 bytes past PiccoloRT's m_varStack, and scripts lost their variables). The view
+# declares PiccoloRT's members, pointer-sized, so both agree on every target.
+EDITS.setdefault('RuntimeLib/MfScVmEnv.h', []).append(
+    ('    int mId;                                                                    // 0x04\n'
+     '    unsigned long mIp;                                                          // 0x08\n'
+     '    MfScDataHandle **mSp;                                                       // 0x0c\n'
+     '    unsigned long *mFrame;                                                      // 0x10\n'
+     '    unsigned long mArgs;                                                        // 0x14\n',
+     '    // PORT: as PiccoloRT declares them (no padding after the vtable pointer)\n'
+     '    unsigned char *mIp;\n'
+     '    MfScDataHandle **mSp;\n'
+     '    uintptr_t *mFrame;\n'
+     '    MfScDataHandle **mArgs;                                                     // the constant pool\n', 1))

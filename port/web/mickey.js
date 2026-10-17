@@ -219,9 +219,15 @@ function key(type, e) {
   if (type === T.KeyDown && e.key.length === 1 && !e.ctrlKey && !e.metaKey) push(T.Text, {}, e.key);
 }
 
+// Full screen when the game's request changes (the options panel), on the next input:
+// only during a user's input does the browser allow it. Leaving it with the browser's
+// own Escape is the player's answer too.
+let fullscreenAsked = 0;
 function fullscreenFollow() {
-  // only during a user's input does the browser allow full screen
-  const want = !!get(F.FULLSCREEN_WANT), is = !!document.fullscreenElement;
+  const want = get(F.FULLSCREEN_WANT) ? 1 : 0;
+  if (want === fullscreenAsked) return;
+  fullscreenAsked = want;
+  const is = !!document.fullscreenElement;
   if (want && !is) $('game').requestFullscreen?.().catch(() => {});
   if (!want && is) document.exitFullscreen?.().catch(() => {});
 }
@@ -243,7 +249,12 @@ function listen() {
     set(F.PAGE_VISIBLE, document.hidden ? 0 : 1);
     if (!document.hidden) push(T.Exposed);
   });
-  document.addEventListener('fullscreenchange', () => set(F.FULLSCREEN_IS, document.fullscreenElement ? 1 : 0));
+  document.addEventListener('fullscreenchange', () => {
+    const is = document.fullscreenElement ? 1 : 0;
+    set(F.FULLSCREEN_IS, is);
+    set(F.FULLSCREEN_WANT, is);
+    fullscreenAsked = is;
+  });
 }
 
 // ---- Sound

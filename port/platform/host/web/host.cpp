@@ -45,6 +45,9 @@ void startup()
     wasmfs_create_directory("/opfs", 0777, opfs);
     setenv("MICKEY_CD", "/opfs/cd.iso", 0);
     setenv("MICKEY_DATA", "/opfs/data", 0);
+    // a page opens in the browser's window: full screen only when the player asks for it
+    // (the options panel), not when the game sets its display mode
+    setenv("MICKEY_WINDOWED", "1", 0);
 }
 
 // ---- The window: the page's canvas
