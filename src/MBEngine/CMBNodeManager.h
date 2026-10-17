@@ -11,17 +11,7 @@ extern "C" __declspec(dllimport) void MBfree_release(void *p);
 inline void *operator new(size_t size) { return MBmalloc_release(size); }
 inline void operator delete(void *p) { if (p) MBfree_release(p); } // ??_G MBComPtr<IMBNode>: test esi before MBfree_release
 
-struct MBGUID {
-    unsigned long data1;
-    unsigned short data2;
-    unsigned short data3;
-    unsigned char data4[8];
-    unsigned char operator==(const MBGUID &o) const {
-        return data1 == o.data1 && data2 == o.data2 && data3 == o.data3 &&
-               ((const unsigned long *)data4)[0] == ((const unsigned long *)o.data4)[0] &&
-               ((const unsigned long *)data4)[1] == ((const unsigned long *)o.data4)[1];
-    }
-};
+#include "../MBCom/MBGUID.h"
 
 // Color constants: internal-linkage objects defined in the colour header; each
 // TU that includes it gets 16 dynamic initializers ($E1..$E47, PDB ldata).
@@ -56,13 +46,6 @@ const MBColor kGrey75(192, 192, 192, 0);
 #include "../MBEngine/MBRect.h"
 
 
-class IMBUnknown {
-public:
-    virtual long QueryInterface(const MBGUID &, void **) = 0;
-    virtual unsigned long AddRef(void) = 0;
-    virtual unsigned long Release(void) = 0;
-};
-
 #include <string>    // evidence: ctype<unsigned short> id pair ($E69/$E70)
 #include <list>
 #include <deque>
@@ -79,8 +62,7 @@ struct MBNodeManagerStandIn {
 };
 
 // PDB ldata order in CMBNodeManager.obj (0x1008f528..0x1008f5b8)
-static const MBGUID MBIID_IMBUnknown =
-    { 0x59d231f0, 0x9c6c, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
+#include "../MBCom/IMBUnknown.h"
 static const MBGUID MBIID_IMBClassFactory =
     { 0x396c7e0b, 0x172d, 0x4182, { 0xa9, 0x09, 0x48, 0xb5, 0x02, 0x3c, 0x7d, 0xea } };
 static const MBGUID MBIID_IMBScreen =

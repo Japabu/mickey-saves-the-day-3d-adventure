@@ -111,20 +111,9 @@ extern "C" __declspec(dllimport) unsigned int MBstrlen(const char *);
 inline void *operator new(size_t size) { return MBmalloc_release(size); }
 inline void operator delete(void *p) { MBfree_release(p); }
 
-struct MBGUID {
-    unsigned long data1;
-    unsigned short data2;
-    unsigned short data3;
-    unsigned char data4[8];
-    unsigned char operator==(const MBGUID &o) const {
-        return data1 == o.data1 && data2 == o.data2 && data3 == o.data3 &&
-               ((const unsigned long *)data4)[0] == ((const unsigned long *)o.data4)[0] &&
-               ((const unsigned long *)data4)[1] == ((const unsigned long *)o.data4)[1];
-    }
-};
+#include "../MBCom/MBGUID.h"
 
-static const MBGUID MBIID_IMBUnknown =
-    { 0x59d231f0, 0x9c6c, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
+#include "../MBCom/IMBUnknown.h"
 static const MBGUID MBIID_IMBFPSMonitor =
     { 0x8f082f50, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 static const MBGUID MBIID_IMBEventManager =
@@ -138,13 +127,6 @@ static const MBGUID MBIID_IMBBitmapFont =
 static const MBGUID MBIID_CMBResourceMgr =
     { 0x8991fec0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 
-class IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBUnknown; }
-    virtual long QueryInterface(const MBGUID &, void **) = 0;
-    virtual unsigned long AddRef(void) = 0;
-    virtual unsigned long Release(void) = 0;
-};
 
 extern "C" IMBUnknown *MBComUtilAddSingleton(IMBUnknown *unk);
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);

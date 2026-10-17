@@ -2,12 +2,7 @@
 #ifndef CMBOBJECT_H
 #define CMBOBJECT_H
 
-struct MBGUID {
-    unsigned long data1;
-    unsigned short data2;
-    unsigned short data3;
-    unsigned char data4[8];
-};
+#include "../MBCom/MBGUID.h"
 
 #include "MBPointStruct3.h"
 
@@ -17,12 +12,7 @@ class MBRect;
 class IMBSurface;
 class IMBObjectGroup;
 
-class IMBUnknown {
-public:
-    virtual long QueryInterface(const MBGUID &, void **) = 0;
-    virtual unsigned long AddRef(void) = 0;
-    virtual unsigned long Release(void) = 0;
-};
+#include "../MBCom/IMBUnknown.h"
 
 static const MBGUID MBIID_IMBObject = { 0x7ed4fc70, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 #include "IMBObject.h"

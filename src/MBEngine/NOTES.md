@@ -4,7 +4,8 @@ Read this before a new MBEngine unit. Every item was verified by match.sh in the
 unit named in brackets. Add a line when you find a new pattern; keep it short.
 
 ## Declarations to copy, not re-derive
-- `MBGUID` + inline `operator==` (field by field), interface classes, inline global
+- `MBGUID` and `IMBUnknown` (with `MBIID_IMBUnknown`, the first GUID of every unit's .rdata):
+  include `../MBCom/IMBUnknown.h` where the unit's GUIDs start. Interface classes, inline global
   `operator new`/`delete` over `extern "C" __declspec(dllimport)` `MBmalloc_release` /
   `MBfree_release`: CMBWinClock.h.
 - `MBComPtr<T>` with `CreateObject`, `Release` inline in the class and
@@ -16,7 +17,7 @@ unit named in brackets. Add a line when you find a new pattern; keep it short.
   keyboard), CMBMemoryBlock.h, CMBResourceStreamLocator.cpp (`MBIID_CMBResourceMgr`).
 - Classes declared in more than one unit have one header each, `<Class>.h` (interfaces, MBPoint/MBRect/
   MBColor..., the owned classes; `<X>_unit.h` holds the rest of a unit header whose name is a class's).
-  Include it where the declaration goes; it needs MBGUID, IMBUnknown and the `MBIID_*` its GetGUID returns
+  Include it where the declaration goes; it needs ../MBCom/IMBUnknown.h and the `MBIID_*` its GetGUID returns
   declared first (still per unit, in the unit's .rdata order), as its first comment lists. A copy marked
   `// own copy:` is a second version this unit's matches depend on; keep it.
 
