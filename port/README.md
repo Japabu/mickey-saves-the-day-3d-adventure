@@ -95,9 +95,12 @@ or as a mounted directory.
    `/Volumes/...`. To set it once instead, put `cd = <path>` in `port.ini` in the data
    directory (see below).
 
-**Where things go.** The CD is never written. Everything the game writes goes to the data
-directory: `~/Library/Application Support/Mickey Saves the Day`, or `MICKEY_DATA` if set.
-Inside it, `C:\` of the game is mirrored as folders:
+**Where things go.** The CD is never written. The data directory is
+`~/Library/Application Support/Mickey Saves the Day`, or `MICKEY_DATA` if set; it holds
+the port's settings (`port.ini`). Everything the game writes goes to its folder for the
+CD's language (`ger`, `eng_gbr`, ..., from the CD's `steamboat.ini`), so CDs of
+different languages keep their own saved games. Inside it, `C:\` of the game is
+mirrored as folders:
 - saved games and the ini files go to `setup/hd/binaries/`;
 - the registry is `registry.ini`.
 
@@ -115,7 +118,7 @@ over.
 | `MICKEY_SMOOTH=1` | smooth (linear) scaling of the picture instead of sharp pixels |
 | `MICKEY_SCALE=n` | the 3D characters are drawn at n times the game's 640x480 (default 3; 1 is the original resolution); the painted backgrounds keep theirs |
 | `MICKEY_TEXT_AA=1` | anti-aliased text |
-| `MICKEY_LANG` | the CD's language, German unless set (`eng`, ...) |
+| `MICKEY_LANG` | the language of the port's texts, the CD's unless set (`ger`, `eng`, ...) |
 | `PORT_LOG` | diagnostics on stderr: `1` for all, or channel names, for example `PORT_LOG=vfs,module,resource`. Channels: `vfs` `module` `resource` `registry` `window` `process` `dx` `media` `stub` `exception` `debug` `debugstring` `defaults` |
 | `PORT_DEBUGSTRINGS=1` | print the game's own debug output (OutputDebugString) |
 

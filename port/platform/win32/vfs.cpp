@@ -2,6 +2,7 @@
 // ISO 9660 reader (Joliet names when the image has them) for running from the .iso.
 #include "vfs.h"
 
+#include <ctype.h>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -267,12 +268,12 @@ static std::string trim(const std::string &s)
     return a == std::string::npos ? "" : s.substr(a, b - a + 1);
 }
 
-// MICKEY_CD, else `cd = <path>` in <overlay>/port.ini.
+// MICKEY_CD, else `cd = <path>` in <data>/port.ini.
 static std::string cd_setting()
 {
     if (const char *e = getenv("MICKEY_CD"))
         return e;
-    FILE *f = fopen((overlay_dir() + "/port.ini").c_str(), "r");
+    FILE *f = fopen((data_dir() + "/port.ini").c_str(), "r");
     std::string out;
     if (f) {
         char line[1024];
@@ -292,9 +293,9 @@ static std::string cd_setting()
 static void cd_problem(const std::string &what)
 {
     std::string text = what +
-                       "\n\nPoint MICKEY_CD at your Micky_auf_Ganovenjagd.iso (or at the folder of the "
+                       "\n\nPoint MICKEY_CD at your game CD image (.iso, or the folder of the "
                        "copied or mounted CD), for example:\n\n  MICKEY_CD=/path/to/Micky_auf_Ganovenjagd.iso\n\n"
-                       "or write cd = <path> into " + overlay_dir() + "/port.ini.";
+                       "or write cd = <path> into " + data_dir() + "/port.ini.";
     fprintf(stderr, "%s\n", text.c_str());
     _exit(1);
 }
@@ -346,7 +347,7 @@ static void init_cd()
         std::string host;
         bool ok = s_iso ? s_iso->find(probe) != 0 : host_resolve(s_cd_dir, probe, host);
         if (!ok) {
-            problem = cd + " does not look like the Micky auf Ganovenjagd CD (no setup\\hd\\binaries on it).";
+            problem = cd + " does not look like the game CD (no setup\\hd\\binaries on it).";
             delete s_iso;
             s_iso = 0;
             s_cd_dir.clear();
@@ -611,7 +612,7 @@ struct IsoCache {
     static const size_t BLOCK = 64 * 1024;
     static const int BLOCKS = 64;  // 4 MB
     struct Block {
-        int fd = -1;
+        bool valid = false;
         uint64_t index = 0;
         size_t length = 0;  // bytes read (less at the end of the image)
         uint64_t used = 0;
@@ -627,7 +628,7 @@ struct IsoCache {
         Block *victim = &blocks[0];
         for (int i = 0; i < BLOCKS; i++) {
             Block &b = blocks[i];
-            if (b.fd == fd && b.index == index) {
+            if (b.valid && b.index == index) {
                 b.used = ++clock;
                 return &b;
             }
@@ -637,7 +638,7 @@ struct IsoCache {
         ssize_t n = pread(fd, victim->data, BLOCK, (off_t)(index * BLOCK));
         if (n < 0)
             return 0;
-        victim->fd = fd;
+        victim->valid = true;
         victim->index = index;
         victim->length = (size_t)n;
         victim->used = ++clock;
@@ -679,7 +680,7 @@ ssize_t read_iso(int fd, void *buf, size_t n, uint64_t off)
 
 // ---------------------------------------------------------------------------------------
 
-const std::string &overlay_dir()
+const std::string &data_dir()
 {
     static std::string dir = [] {
         std::string d;
@@ -689,6 +690,91 @@ const std::string &overlay_dir()
             d = std::string(getenv("HOME") ? getenv("HOME") : "/tmp") +
                 "/Library/Application Support/Mickey Saves the Day";
         ::mkdir(d.c_str(), 0755);
+        return d;
+    }();
+    return dir;
+}
+
+namespace vfs {
+
+// The `locale = ...` of a steamboat.ini text ("ger", "eng_gbr"), or "".
+static std::string ini_locale(const std::string &text)
+{
+    size_t i = 0;
+    while (i < text.size()) {
+        size_t eol = text.find('\n', i);
+        if (eol == std::string::npos)
+            eol = text.size();
+        std::string line = trim(text.substr(i, eol - i));
+        i = eol + 1;
+        size_t eq = line.find('=');
+        if (eq != std::string::npos && same(trim(line.substr(0, eq)), "locale"))
+            return trim(line.substr(eq + 1));
+    }
+    return "";
+}
+
+// The language of the CD (its steamboat.ini), read from the CD itself, not the overlay.
+static std::string cd_locale()
+{
+    init_cd();
+    Path p = {"setup", "hd", "resources", "universal", "ini", "steamboat.ini"};
+    std::string text;
+    if (s_iso) {
+        if (IsoNode *n = s_iso->find(p)) {
+            text.resize(n->size);
+            if (pread(s_iso->fd(), &text[0], n->size, (off_t)n->extent * 2048) != (ssize_t)n->size)
+                text.clear();
+        }
+    } else {
+        std::string host;
+        if (host_resolve(s_cd_dir, p, host))
+            if (FILE *f = fopen(host.c_str(), "rb")) {
+                char buf[4096];
+                size_t n;
+                while ((n = fread(buf, 1, sizeof(buf), f)) > 0)
+                    text.append(buf, n);
+                fclose(f);
+            }
+    }
+    std::string l = ini_locale(text);
+    for (auto &c : l)
+        if (!isalnum((unsigned char)c) && c != '_')
+            c = '_';
+    return l.empty() ? "cd" : l;
+}
+
+}  // namespace vfs
+
+const std::string &overlay_dir()
+{
+    static std::string dir = [] {
+        std::string locale = vfs::cd_locale();
+        const std::string &data = data_dir();
+        std::string d = data + "/" + locale;
+        struct stat st;
+        // Before a directory per language, the overlay was the data directory itself:
+        // its files move to the directory of the language they were made for.
+        if (::stat(d.c_str(), &st) != 0 && ::stat((data + "/setup").c_str(), &st) == 0) {
+            std::string text;
+            if (FILE *f = fopen((data + "/setup/hd/binaries/steamboat.ini").c_str(), "rb")) {
+                char buf[4096];
+                size_t n;
+                while ((n = fread(buf, 1, sizeof(buf), f)) > 0)
+                    text.append(buf, n);
+                fclose(f);
+            }
+            std::string was = vfs::ini_locale(text);
+            if (was.empty() || was == locale) {
+                ::mkdir(d.c_str(), 0755);
+                for (const char *name : {"setup", ".cd-cache", "registry.ini"})
+                    ::rename((data + "/" + name).c_str(), (d + "/" + name).c_str());
+                log("vfs", "moved the game's files of %s into %s\n", locale.c_str(), d.c_str());
+            }
+        }
+        ::mkdir(d.c_str(), 0755);
+        // the language of the port's own texts and the locale queries, unless set
+        setenv("MICKEY_LANG", locale.c_str(), 0);
         return d;
     }();
     return dir;

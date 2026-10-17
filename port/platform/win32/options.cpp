@@ -28,7 +28,7 @@ static std::mutex s_ini_mu;
 static std::vector<std::string> s_ini_lines;
 static bool s_ini_loaded;
 
-static std::string ini_path() { return overlay_dir() + "/port.ini"; }
+static std::string ini_path() { return data_dir() + "/port.ini"; }
 
 static std::string trim(const std::string &s)
 {

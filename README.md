@@ -12,8 +12,11 @@ game.
 
 ## Play
 
-You need the game CD as an `.iso` image. The reference copy is the German CD
-`Micky_auf_Ganovenjagd.iso` (SHA-256 `12d00401229f576b48987ea8b4839a5478bc74b31197258d2d8582fee7c66ae9`).
+You need the game CD as an `.iso` image: the German CD (*Micky auf Ganovenjagd*) or the
+British English one; the port picks the language from the CD.
+
+**Browser**: open **https://japabu.github.io/mickey-saves-the-day-3d-adventure/** and
+pick your ISO. It stays in your browser; nothing is uploaded.
 
 **macOS** (Apple Silicon, with the Xcode command-line tools, `cmake` and `ninja`):
 
@@ -23,8 +26,7 @@ cmake --build out/port/build
 MICKEY_CD=/path/to/Micky_auf_Ganovenjagd.iso out/port/build/Steamboat
 ```
 
-**Browser**: build it as described in [port/README.md](port/README.md#browser), open the
-page and pick your ISO. It stays in your browser; nothing is uploaded.
+To build the browser version yourself, see [port/README.md](port/README.md#browser).
 
 Settings, improvements and troubleshooting: [port/README.md](port/README.md).
 

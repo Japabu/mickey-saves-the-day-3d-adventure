@@ -54,7 +54,11 @@ void release(Object *o);
 // errno to a Win32 error code.
 DWORD error_from_errno(int e);
 
-// Paths: see vfs.h. The overlay directory (~/Library/Application Support/<game>/), created on first use.
+// Paths: see vfs.h. The data directory (MICKEY_DATA, else ~/Library/Application
+// Support/<game>/) holds the port's settings (port.ini); the overlay directory, everything
+// the game writes, is its subdirectory for the CD's language (<data>/ger, <data>/eng_gbr),
+// so CDs of different languages keep their own files and saved games. Created on first use.
+const std::string &data_dir();
 const std::string &overlay_dir();
 // The game's current directory, as a Windows path ending in a backslash.
 std::string current_dir();
