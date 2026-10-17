@@ -23,11 +23,11 @@ class MfCallBack;
 class MfListItemInterface;
 class MfStringTokenizerCallBack;
 
-class __declspec(dllimport) MfNullString {
-};
-extern __declspec(dllimport) MfNullString NULL_STRING;
+#include "../../mfutil/MfNullString.h"
 
 // Reference-counted string body: vptr, data, length, allocated size, count.
+// own copy: this plugin imports the constructor MfStringRef(int)
+// (??0MfStringRef@@QAE@H@Z); mfutil/MfStringRef.h has it inline.
 class __declspec(dllimport) MfStringRef {
 public:
     MfStringRef(int n);
@@ -41,12 +41,10 @@ public:
     int nRefs;
 };
 
-// The initial size of an empty string.
-struct MfStringSize {
-    MfStringSize(int n) : size(n) {}
-    int size;
-};
+#include "../../mfutil/MfStringSize.h"
 
+// own copy: this plugin imports MfString::CopyOnWrite(int) and the MfStringRef
+// constructor (StripWhiteSpace, Truncate); mfutil/MfString.h has both inline.
 class __declspec(dllimport) MfString {
 public:
     MfString();
@@ -101,15 +99,12 @@ private:
     static MfStringRef mfsrNullInitializer;
 };
 
-class MfDblListItem {
-public:
-    void *GetData() const { return pData; }
-    void *pData;
-    MfDblListItem *pliPrev;
-    MfDblListItem *pliNext;
-};
+#include "../../mfutil/MfDblListItem.h"
 
-// The class is not imported (its vtable is emitted here), its members are.
+// own copy: mfutil/MfDblList.h imports the class (and its vtable) and has
+// GetFirst/GetNext/GetCurrent inline; this plugin imports those three and
+// emits the vtable itself. The class is not imported (its vtable is emitted
+// here), its members are.
 // VC5 lays overloaded virtuals out in reverse order of declaration.
 class MfDblList {
 public:
@@ -154,6 +149,8 @@ protected:
 
 // Tag type for the constructor that builds an object only to pass its
 // MfListItemInterface.
+// own copy: 4 bytes here (~MfPdbBreakpointManager copies it as a dword);
+// PiccoloRT/LiiExemplar.h declares it without data.
 class LiiExemplar {
 public:
     ~LiiExemplar() {}
@@ -162,6 +159,9 @@ private:
 };
 
 // How MfDblList copies, visits, destroys and compares its items.
+// own copy: the plugin's classes override only some slots and their vtables
+// hold these default bodies; mfutil/MfListItemInterface.h has the four slots
+// pure.
 class MfListItemInterface {
 public:
     virtual void *Copy(void *item) { return 0; }
@@ -170,23 +170,12 @@ public:
     virtual int Matches(void *item, void *key) { return 0; }
 };
 
-class __declspec(dllimport) MfCallBack {
-public:
-    MfCallBack() {}
-    virtual ~MfCallBack() {}
-    virtual int CallBack(void *);
-    virtual int CallBack(void *, void *);
-    virtual int CallBack(void *, void *, void *);
-};
-
-class __declspec(dllimport) MfStringTokenizerCallBack {
-public:
-    MfStringTokenizerCallBack() {}
-    virtual ~MfStringTokenizerCallBack() {}
-    virtual int CallBack(const MfString &token, MfString &rest);
-};
+#include "../../mfutil/MfCallBack.h"
+#include "../../mfutil/MfStringTokenizerCallBack.h"
 
 // List of MfString (0x14 bytes); constructor and destructor are inline.
+// own copy: derived from this plugin's own MfDblList (mfutil/MfStringList.h
+// includes mfutil/MfDblList.h).
 class __declspec(dllimport) MfStringList : public MfDblList, public MfStringTokenizerCallBack {
 public:
     MfStringList() {}
@@ -207,42 +196,12 @@ public:
     }
 };
 
-enum MfHTErrorCode { };
-
-class __declspec(dllimport) MfHashTable {
-public:
-    class MfChainNode;
-    virtual ~MfHashTable();
-protected:
-    virtual MfHTErrorCode Search(void *, void **, int *, int *, MfChainNode **) = 0;
-    void ClearItems(MfCallBack *);
-    virtual void DeleteDataItem(void *, MfCallBack *) = 0;
-    virtual void *GetKey(void *) = 0;
-    virtual void *GetData(void *) = 0;
-private:
-    int nNumberOfBuckets;
-    int nBucketSize;
-    void **apBuckets;
-    MfChainNode **apmfcnChain;
-};
-
-// Hash table keyed by an unsigned long (0x14 bytes).
-class __declspec(dllimport) MfIndex : public MfHashTable {
-public:
-    MfIndex(int nBuckets);
-    virtual ~MfIndex();
-    void *Add(unsigned long key, void *pData);
-    void *Delete(unsigned long key);
-    void *Find(unsigned long key);
-    void Clear(MfCallBack *cb = 0) { ClearItems(cb); }
-protected:
-    virtual MfHTErrorCode Search(void *, void **, int *, int *, MfChainNode **);
-    virtual void DeleteDataItem(void *, MfCallBack *);
-    virtual void *GetKey(void *);
-    virtual void *GetData(void *);
-};
+#include "../../mfutil/MfHashTable.h"
+#include "../../mfutil/MfIndex.h"
 
 // Registry access. Constructor and destructor are empty inlines.
+// own copy: mfutil/UtilityApp.h befriends DllMain with C++ linkage; this
+// plugin's DllMain (MFC extension DLL) is extern "C".
 class __declspec(dllimport) UtilityApp {
 public:
     UtilityApp() {}
@@ -262,14 +221,13 @@ class MfAiPdbDebugger;
 class MfPeMetaCustomToolbar;
 class MfScVirtualMachine;
 
-class MfAi {
-public:
-    virtual void GetInterfaceName(char *name, int size, int &major, int &minor) = 0;
-    virtual int AddRef() = 0;
-    virtual int Release() = 0;
-};
+// MfAi: PiccoloRT/MfAiFunctionRegistry.h still declares its own (it cannot be
+// included together with mfutil/MfAi.h).
+#include "../../PiccoloRT/MfAiFunctionRegistry.h"
 
 // A reference-counted, typed value of the script VM (8 bytes).
+// own copy: PiccoloRT/MfScDataHandle.h includes PiccoloRT's own
+// MfCriticalSection copy, which conflicts with mfutil/MfCriticalSection.h.
 class __declspec(dllimport) MfScDataHandle {
 public:
     MfScData *GetData() const { return (m_flags & 0xfc0) ? m_data : 0; }
@@ -287,21 +245,10 @@ private:
 class MfScLinkData;
 class MfStringList;
 
-class __declspec(dllimport) MfScData {
-public:
-    virtual ~MfScData();
-    virtual MfScLinkData *CountCircLinks(MfScDataHandle *);
-    virtual void ReleaseCircLinks(MfScLinkData *);
-    virtual int GetThroughCount(MfScDataHandle *);
-    virtual void AddRef();
-    virtual void Release();
-    MfString &Name() { return *m_name; }
-protected:
-    int m_lock;         // +4
-    MfString *m_name;   // +8
-};
+#include "../../PiccoloRT/MfScData.h"
 
 // A script object: properties by name.
+// own copy: PiccoloRT/MfScDataObject.h includes PiccoloRT's own MfString copy.
 class __declspec(dllimport) MfScDataObject : public MfScData {
 public:
     virtual ~MfScDataObject();
@@ -312,6 +259,7 @@ public:
     virtual void GetInstanceProperties(MfStringList *names, int);
 };
 
+// own copy: PiccoloRT/MfScDataArray.h includes PiccoloRT/MfScDataObject.h.
 class __declspec(dllimport) MfScDataArray : public MfScDataObject {
 public:
     virtual ~MfScDataArray();
@@ -326,6 +274,7 @@ public:
     int mCount;         // +0x14
 };
 
+// own copy: PiccoloRT/MfScDataMethod.h includes PiccoloRT/MfScDataHandle.h.
 class __declspec(dllimport) MfScDataMethod : public MfScData {
 public:
     virtual ~MfScDataMethod();
@@ -336,6 +285,7 @@ public:
 };
 
 // A routine compiled to Piccolo bytecode (0x3c bytes).
+// own copy: PiccoloRT/MfScBytecodeRoutine.h includes PiccoloRT/MfScDataMethod.h.
 class __declspec(dllimport) MfScBytecodeRoutine : public MfScDataMethod {
 public:
     virtual ~MfScBytecodeRoutine();
@@ -351,18 +301,10 @@ public:
     MfString *mFunctionParams;      // +0x38
 };
 
-class __declspec(dllimport) MfScDebugInfo {
-public:
-    virtual ~MfScDebugInfo();
-    int FindLine(int offset);
-    int FindOffsetOfFirstLine();
-    int FindOffsetOfNextLine(int offset);
-    int ComputeOffsetRange(int offset, int *first, int *last);
-    int FindLevel(int offset);
-    int FindOffset(int line);
-    int GetVariable(const MfString &name, unsigned long *frame, int level, MfScDataHandle **value);
-};
+#include "../../PiccoloRT/MfScDebugInfo.h"
 
+// own copy: the plugin reads the private aiBytecodeSize through an inline
+// Size(); PiccoloRT/MfScBytecodes.h has no such inline (and is not dllimport).
 class __declspec(dllimport) MfScBytecodes {
 public:
     static int __cdecl IsJump(unsigned char);
@@ -383,19 +325,12 @@ enum {
     BC_BREAKPOINT = 0xfa
 };
 
-class __declspec(dllimport) MfScVmFrame {
-public:
-    MfScVmFrame();
-    ~MfScVmFrame();
-    unsigned char *mIP;             // +0x00
-    MfScDataHandle *mObject;        // +0x04
-    MfScDataHandle *mFunction;      // +0x08
-    unsigned long mArgs;            // +0x0c
-    unsigned long *mFrame;          // +0x10
-};
+#include "../../PiccoloRT/MfScVmFrame.h"
 
-// A script thread's virtual machine state.
 // High-resolution timer (mfutil.dll).
+// own copy: Start, Stop and AccumTimer are inline here (the plugin imports
+// none of them) and MfPdbVmListDlg reads liFrequency; mfutil/MfHPTimer.h
+// declares them out of line.
 class __declspec(dllimport) MfHPTimer {
     friend class MfPdbVmListDlg;
 public:
@@ -408,11 +343,11 @@ private:
     static LARGE_INTEGER liFrequency;
 };
 
-class MfScVariableStack {
-public:
-    enum MfScVariableErrorCode { kVarOk = 0 };
-};
+#include "../../PiccoloRT/MfScVariableStack.h"
 
+// A script thread's virtual machine state.
+// own copy: PiccoloRT/MfScVmEnv.h includes PiccoloRT's own MfString and
+// MfHPTimer copies.
 // Packed to 4: the vptr is followed directly by m_4 although the class holds
 // 64-bit timer fields (offsets from the code: m_stop +0x50, m_timer +0x60).
 #pragma pack(push, 4)
@@ -444,14 +379,10 @@ public:
 };
 #pragma pack(pop)
 
-// "VMManagerI": the script threads.
-class MfAiVmManager : public MfAi {
-public:
-    virtual int Count() = 0;
-    virtual MfScVmEnv *First() = 0;
-    virtual MfScVmEnv *Next() = 0;
-};
+#include "../../PiccoloRT/MfAiVmManager.h"
 
+// own copy: PiccoloRT/MfScFunctionRegistryEntry.h includes PiccoloRT's own
+// MfListItemInterface copy.
 class __declspec(dllimport) MfScFunctionRegistryEntry : public MfListItemInterface {
 public:
     MfScFunctionRegistryEntry(MfScDataHandle *function);
@@ -461,6 +392,8 @@ public:
 };
 
 // The functions of one module, by name.
+// own copy: PiccoloRT/MfScFunctionRegistryModule.h includes PiccoloRT's own
+// MfListItemInterface and MfString copies.
 class __declspec(dllimport) MfScFunctionRegistryModule : public MfListItemInterface {
 public:
     MfScFunctionRegistryModule();
@@ -475,41 +408,16 @@ public:
 };
 
 // The lock of the runtime's tables.
-class __declspec(dllimport) MfCriticalSection {
-public:
-    void Enter() { EnterCriticalSection(&mSection); }
-    void Leave() { LeaveCriticalSection(&mSection); }
-private:
-    CRITICAL_SECTION mSection;
-};
+#include "../../mfutil/MfCriticalSection.h"
 
 class MfScHandleList;
 
-class MfCbRegistryFunctionEnumerator {
-public:
-    virtual int Enumerate(MfScDataHandle *function, void *data) = 0;
-};
-
-class MfCbRegistryModuleEnumerator {
-public:
-    virtual int Enumerate(const MfString &module, const MfString &moduleType, void *data) = 0;
-};
-
-// "FunctionRegistry". VC5 lays overloaded virtuals out in reverse order.
-class MfAiFunctionRegistry : public MfAi {
-public:
-    virtual int Add(MfScDataHandle *function) = 0;
-    virtual int Remove(MfScDataHandle *function) = 0;
-    virtual int Find(const MfString &module, const MfString &name, MfScDataHandle **function) = 0;
-    virtual int Find(const MfString &module, int line, MfScDataHandle **function) = 0;
-    virtual int Find(const MfString &module, MfScHandleList *functions) = 0;
-    virtual void EnumFunctions(MfCbRegistryFunctionEnumerator *enumerator, void *data) = 0;
-    virtual void EnumModules(MfCbRegistryModuleEnumerator *enumerator, void *data) = 0;
-    virtual int Clear() = 0;
-    virtual int CheckOrphans() = 0;
-};
+#include "../../PiccoloRT/MfCbRegistryFunctionEnumerator.h"
+#include "../../PiccoloRT/MfCbRegistryModuleEnumerator.h"
+#include "../../PiccoloRT/MfAiFunctionRegistry.h"
 
 // A list of script function handles with an internal position.
+// own copy: PiccoloRT/MfScHandleList.h includes PiccoloRT's own MfDblList copy.
 class __declspec(dllimport) MfScHandleList : public MfDblList {
 public:
     MfScHandleList() : mPos(0) {}
@@ -531,6 +439,8 @@ private:
     MfDblListItem *mPos;    // +0x10
 };
 
+// own copy: PiccoloRT/MfScFunctionRegistry.h includes PiccoloRT's own
+// MfCriticalSection copy.
 class __declspec(dllimport) MfScFunctionRegistry : public MfAiFunctionRegistry {
 public:
     MfScFunctionRegistry();
@@ -618,13 +528,7 @@ public:
     int mEnabled;           // +0x0c
 };
 
-// Where a script thread stopped: its VM state and the routine it runs.
-struct MfPdbStepContext {
-    MfScVmEnv *env;
-    MfScDataHandle *function;
-    MfScBytecodeRoutine *routine;
-    MfScVirtualMachine *vm;
-};
+#include "../../PiccoloRT/MfPdbStepContext.h"
 
 // Flags of the breakpoints planted for stepping.
 enum {
@@ -638,32 +542,8 @@ enum {
     kStepTemporary = 0x20000
 };
 
-// What GetBreakpointInfo reports about a planted breakpoint.
-struct MfPdbBreakpointInfo {
-    unsigned long data;
-    unsigned char bytecode;
-    MfPdbFunctionRegistryEntry *entry;
-};
-
-class MfAiPdbBreakpointManager : public MfAi {
-public:
-    virtual int AddBreakpoint(const MfString &module, int line) = 0;
-    virtual int RemoveBreakpoint(const MfString &module, int line) = 0;
-    virtual int ToggleBreakpoint(const MfString &module, int line) = 0;
-    virtual int EnableBreakpoint(const MfString &module, int line) = 0;
-    virtual int DisableBreakpoint(const MfString &module, int line) = 0;
-    virtual int ToggleEnabled(const MfString &module, int line) = 0;
-    virtual void RemoveAll() = 0;
-    virtual void RemoveModule(const MfString &module) = 0;
-    virtual void DisableAll() = 0;
-    virtual void DisableModule(const MfString &module) = 0;
-    virtual int PlantAll() = 0;
-    virtual int UnplantAll() = 0;
-    virtual int BreakpointHit(unsigned long address, int, MfScVmEnv *env) = 0;
-    virtual int GetBreakpointInfo(unsigned long address, int, MfPdbBreakpointInfo *info) = 0;
-    virtual int PlantModule(const MfString &module) = 0;
-    virtual int Save() = 0;
-};
+#include "../../PiccoloRT/MfPdbBreakpointInfo.h"
+#include "../../PiccoloRT/MfAiPdbBreakpointManager.h"
 
 // The breakpoint manager (0x14 bytes).
 class MfPdbBreakpointManager : public MfAiPdbBreakpointManager {
@@ -727,57 +607,20 @@ private:
 
 // ---- mfutil.dll: threads and events ---------------------------------------------
 
-// A Win32 auto-reset event. The class is imported; `new MfEvent` stores the
-// plugin's own copy of the vtable.
-class __declspec(dllimport) MfEvent {
-public:
-    MfEvent();
-    virtual ~MfEvent();
-    int Signal() { return SetEvent(mHandle); }
-    void Wait(unsigned long timeout)
-    {
-        mWaiting = 1;
-        WaitForSingleObject(mHandle, timeout);
-        mWaiting = 0;
-    }
-    int IsWaiting() { return mWaiting; }
-private:
-    HANDLE mHandle;     // +0x04
-    int mWaiting;       // +0x08
-};
+// A Win32 auto-reset event.
+#include "../../mfutil/MfEvent.h"
+#include "../../mfutil/MfThreadWork.h"
+#include "../../mfutil/MfThread.h"
 
-// Work item of an MfThread: DoWork runs on that thread.
-class MfThreadWork {
-public:
-    virtual ~MfThreadWork() {}
-    virtual void DoWork() = 0;
-};
-
-class __declspec(dllimport) MfThread {
-public:
-    enum { MF_THREAD_CURRENT = 1, MF_THREAD_AUTODELETE = 2 };
-    MfThread(int flags = 0);
-    virtual ~MfThread();
-    int AssignWork(MfThreadWork *work);
-    void SignalShutdown(int);
-protected:
-    virtual void ThreadEntry();
-private:
-    unsigned long mThreadId;
-    int mFlags;
-    MfThread *mThread;
-    HANDLE mHandle;
-    unsigned int mState;
-    MfEvent *mWork;
-    MfThreadWork *mWorkItem;
-};
-
+// own copy: mfutil/MfInterfaceRegistry.h includes mfutil/MfString.h.
 class __declspec(dllimport) MfInterfaceRegistry {
 public:
     static int GetInterface(const MfString &name, MfAi **ai);
 };
 
 // "ApplicationI".
+// own copy: RuntimeLib/MfAiApplication.h includes RuntimeLib/MfAi.h, which
+// conflicts with the MfAi of PiccoloRT/MfAiFunctionRegistry.h.
 class MfAiApplication : public MfAi {
 public:
     virtual int GetApplicationType() = 0;
@@ -786,6 +629,9 @@ public:
 // ---- PiccoloRT.dll: the source of modules ----------------------------------------
 
 // The source of one kind of module (by module type).
+// own copy: PiccoloRT/MfAiSourceType.h has five other slots (GetType,
+// ReadSource(.., int flags), WriteSource, SplitPath, IsSameModule); this
+// plugin passes an MfScVmEnv * where it has the flags.
 class MfAiSourceType : public MfAi {
 public:
     virtual int GetModuleNames(MfStringList *names) = 0;
@@ -794,6 +640,7 @@ public:
     virtual int SplitModuleName(const MfString &module, MfStringList *parts) = 0;
 };
 
+// own copy: PiccoloRT/MfAiSourceResolver.h includes PiccoloRT/MfAiSourceType.h.
 class MfAiSourceResolver : public MfAi {
 public:
     virtual int Register(const MfString &type, MfAiSourceType *sourceType) = 0;
@@ -801,6 +648,8 @@ public:
     virtual int Find(const MfString &type, MfAiSourceType **sourceType) = 0;
 };
 
+// own copy: MfPdbDebugger reads the private bIsRunning; PiccoloRT/MfScPiccolo.h
+// does not befriend it and includes PiccoloRT/MfScDataObject.h.
 class __declspec(dllimport) MfScPiccolo {
     friend class MfPdbDebugger;
 public:
@@ -809,6 +658,8 @@ private:
     static int bIsRunning;
 };
 
+// own copy: PiccoloRT/MfScVirtualMachine.h includes PiccoloRT's own
+// MfCriticalSection copy.
 class __declspec(dllimport) MfScVirtualMachine {
 public:
     void FormatException(int code, const MfString &message, MfStringList *lines);
@@ -817,6 +668,8 @@ public:
 extern "C" __declspec(dllexport) int __stdcall PscInitialize(int, MfString *errors);
 extern "C" __declspec(dllexport) int __stdcall PscShutdown(MfString *errors);
 
+// own copy: PscInitialize and PscShutdown set the private pdbgTheDebugger;
+// PiccoloRT/MfScDebugger.h does not befriend them.
 class __declspec(dllimport) MfScDebugger {
     friend int __stdcall PscInitialize(int, MfString *errors);
     friend int __stdcall PscShutdown(MfString *errors);
@@ -825,6 +678,8 @@ private:
 };
 
 // ---- PiccoloConsole.dll: editors and toolbars -----------------------------------
+// own copies: PiccoloConsole/PiccoloConsole.h declares its own mfutil classes
+// and exports MfPeCodeEditor and CConsoleEdit with a hard-coded dllexport.
 
 class CConsoleEdit;
 class CConsoleOutput;
@@ -1063,18 +918,7 @@ public:
     virtual void Notify(int event) = 0;
 };
 
-class MfAiPdbDebugger : public MfAi {
-public:
-    virtual int SignalBreakpoint(MfPdbStepContext *ctx, unsigned char *bytecode) = 0;
-    virtual int SignalException(int code, const MfString &message, MfPdbStepContext *ctx) = 0;
-    virtual void Initialize() = 0;
-    virtual void Shutdown() = 0;
-    virtual int IsActive() = 0;
-    virtual void ProgramState(int state) = 0;
-    virtual int GetInterface(int id, MfAi **ai) = 0;
-    virtual void AddListener(MfPdbListener *listener) = 0;
-    virtual void RemoveListener(MfPdbListener *listener) = 0;
-};
+#include "../../PiccoloRT/MfAiPdbDebugger.h"
 
 // Loads the bitmap of the debugger's toolbar.
 class MfPdbToolbarBitmapLoader : public MfAiToolbarBitmapLoader {
