@@ -59,8 +59,8 @@ static MfStreamObject *fn_10004f10()
     return new MfCamera;
 }
 
-// 0x10004f70 _$E2 (jumps to _$E1)
-// 0x10004f80 _$E1 (constructs the stream constructor entry below)
+// 0x10004f70 _$E9 (jumps to _$E8; the shared headers take the lower numbers)
+// 0x10004f80 _$E8 (constructs the stream constructor entry below)
 static MfStreamConstructorEntry s_cameraEntry('Cam2', fn_10004f10);
 
 // 0x10004fa0 ?StreamType@MfCamera@@UBEJXZ
