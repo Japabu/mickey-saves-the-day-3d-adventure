@@ -10,6 +10,10 @@
 #include <string>
 #include <vector>
 
+// Skips the line being spoken: the game's (improve/SteamboatApp/dialogue.cpp); nothing in
+// the tests, which have no game.
+extern "C" __attribute__((weak)) void port_skip_dialogue(void) {}
+
 namespace win32 {
 
 struct Queue {
@@ -317,6 +321,9 @@ void pump_events()
                         (was_down ? (1 << 30) : 0) | (down ? 0 : (1u << 31));
             UINT msg = alt || vk == VK_MENU || vk == VK_F10 ? (down ? WM_SYSKEYDOWN : WM_SYSKEYUP)
                                                            : (down ? WM_KEYDOWN : WM_KEYUP);
+            // Space or Enter skips the line being spoken (improve/SteamboatApp/dialogue.cpp)
+            if (down && !was_down && (vk == VK_SPACE || vk == VK_RETURN))
+                port_skip_dialogue();
             post((HWND)w, msg, (WPARAM)vk, lp);
             break;
         }

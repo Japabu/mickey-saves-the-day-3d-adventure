@@ -98,6 +98,77 @@ static void set_windowed(std::string &text)
         text.replace(eq + 1, eol - eq - 1, " 0\r");
 }
 
+// ---- Improvements of the game's dialogue files (an improvement over the original)
+
+// Goofy reads the recipe on Von Drake's tissue only once (PPdialogue.ini, PPSection6_3, which
+// clears the flags that lead to it), and the soup machine needs it. Using the tissue under
+// the magnifying glass (PRmglassAndHankie, which the original gives to nobody) on him makes
+// him read it again: a block of his four lines, first in the list so that it wins.
+static const char kRecipeMarker[] = "[blockPortRecipeAgain]";
+
+static std::string improve_park_dialogue(const std::string &text)
+{
+    if (text.find(kRecipeMarker) != std::string::npos)
+        return text;
+    std::string out;
+    size_t i = 0;
+    int last_prop = -1;
+    bool in_props = false, in_dialogue = false, added_prop = false, added_block = false;
+    while (i < text.size()) {
+        size_t eol = text.find('\n', i);
+        std::string line = text.substr(i, eol == std::string::npos ? std::string::npos : eol - i + 1);
+        i = eol == std::string::npos ? text.size() : eol + 1;
+        std::string t = trim(line.substr(0, line.find('\n')));
+        if (!t.empty() && t[0] == '[') {
+            in_props = same(t, "[DialogueProperties]");
+            in_dialogue = same(t, "[Dialogue]");
+        }
+        int n;
+        if (in_props && sscanf(t.c_str(), "prop%d", &n) == 1) {
+            last_prop = n > last_prop ? n : last_prop;
+        } else if (in_props && !added_prop && last_prop >= 0) {
+            // after the last propN: declare the item's flag
+            out += "prop" + std::to_string(last_prop + 1) + " = PRmglassAndHankie\r\n";
+            added_prop = true;
+        }
+        if (in_dialogue && sscanf(t.c_str(), "dblock%d", &n) == 1) {
+            if (!added_block) {
+                out += "dblock0 = blockPortRecipeAgain\r\n";
+                added_block = true;
+            }
+            size_t eq = t.find('=');
+            out += "dblock" + std::to_string(n + 1) + " " + t.substr(eq) + "\r\n";
+            continue;
+        }
+        out += line;
+    }
+    if (!added_prop || !added_block)
+        return text;  // not the file this was written for
+    out += "\r\n"
+           "[blockPortRecipeAgain]\r\n"
+           "lineGroup0 = groupPortRecipeAgain\r\n"
+           "conditional = PRmglassAndHankie\r\n"
+           "section id = PPSection6_3Again\r\n"
+           "trigger = GDgoofy\r\n"
+           "block type = in order\r\n"
+           "\r\n"
+           "[groupPortRecipeAgain]\r\n"
+           "line0 = pp06xgf0050\r\n"
+           "line1 = pp06xgf0060\r\n"
+           "line2 = pp06xxx0070\r\n"
+           "line3 = pp06xgf0080\r\n"
+           "false = PRmglassAndHankie\r\n";
+    return out;
+}
+
+// The improved text of one of the game's ini files (the text unchanged if it has none).
+static std::string improve(const std::string &name, const std::string &text)
+{
+    if (same(name, "PPdialogue.ini"))
+        return improve_park_dialogue(text);
+    return text;
+}
+
 void install_defaults()
 {
     Path ini = {"setup", "hd", "resources", "universal", "ini"};
@@ -112,8 +183,20 @@ void install_defaults()
         Path dst = {"setup", "hd", "binaries", f.name};
         Path probe = dst;
         Entry e;
-        if (stat(probe, e) && e.from_overlay)
+        if (stat(probe, e) && e.from_overlay) {
+            // installed before: it still gets the improvements made since
+            std::string text, host;
+            if (read_all(dst, text) && host_file(dst, host)) {
+                std::string better = improve(f.name, text);
+                log("defaults", "%s: %s\n", f.name.c_str(), better != text ? "improved" : "as it is");
+                if (better != text)
+                    if (FILE *out = fopen(host.c_str(), "wb")) {
+                        fwrite(better.data(), 1, better.size(), out);
+                        fclose(out);
+                    }
+            }
             continue;
+        }
         Path src = ini;
         src.push_back(f.name);
         std::string text;
@@ -124,6 +207,7 @@ void install_defaults()
         const char *windowed = getenv("MICKEY_WINDOWED");
         if (same(f.name, "engine.ini") && windowed && *windowed && *windowed != '0')
             set_windowed(text);
+        text = improve(f.name, text);
         std::string host;
         if (!overlay_path(dst, host, false))
             continue;
