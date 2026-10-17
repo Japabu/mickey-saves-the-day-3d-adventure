@@ -171,7 +171,7 @@ EDITS['PiccoloRT/MfScConsoleManager.h'] = [
 EDITS['PiccoloRT/MfScDataHandle_2.cpp'] = [
     ('#include "MfScThreadManager.h"\n'
      '#include "MfScPiccolo.h"\n'
-     '#include "MfAiFunctionRegistry.h"\n'
+     '#include "MfScDataHandle_2_MfAiFunctionRegistry.h"\n'
      '#include "MfScLinkData.h"\n'
      '#include "MfScData.h"\n'
      '#include <typeinfo.h>\n'
@@ -204,7 +204,7 @@ EDITS['PiccoloRT/MfScDataHandle_2.cpp'] = [
      '{\n',
      '#include "MfScThreadManager.h"\n'
      '#include "MfScPiccolo.h"\n'
-     '#include "MfAiFunctionRegistry.h"\n'
+     '#include "MfScDataHandle_2_MfAiFunctionRegistry.h"\n'
      '#include "MfScLinkData.h"\n'
      '#include "MfScData.h"\n'
      '#include <typeinfo.h>\n'
