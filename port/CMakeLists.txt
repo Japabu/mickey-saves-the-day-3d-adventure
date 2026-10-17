@@ -1,5 +1,5 @@
-# The macOS port: one shared library per original DLL, the Steamboat executable, and
-# the platform library that implements the Windows, DirectX and media APIs.
+# The macOS port: one executable, Steamboat, of an object library per original binary
+# (port/flags.py) and the platform, which implements the Windows, DirectX and media APIs.
 #   cmake -S port -B out/port/build -G Ninja && cmake --build out/port/build
 cmake_minimum_required(VERSION 3.24)
 project(MickeyPort C CXX)
@@ -15,8 +15,6 @@ find_package(SDL3 REQUIRED CONFIG)
 
 set(CMAKE_OSX_ARCHITECTURES arm64)
 set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0)
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-set(CMAKE_C_VISIBILITY_PRESET hidden)
 
 # optional sanitizer build, for precise crash reports from playtests:
 #   cmake -S port -B out/port/build-asan -G Ninja -DPORT_SANITIZE=address,undefined
@@ -30,23 +28,21 @@ endif()
 
 # Win32, DirectDraw/Direct3D 7, Miles, Bink and Smacker for the game
 file(GLOB_RECURSE PLATFORM_SOURCES CONFIGURE_DEPENDS platform/*.cpp platform/*.c)
-add_library(platform SHARED ${PLATFORM_SOURCES} platform/README.md)
+add_library(platform OBJECT ${PLATFORM_SOURCES} platform/README.md)
 target_include_directories(platform SYSTEM PRIVATE compat/include)
-# the platform library exists to export the API the modules call
-set_target_properties(platform PROPERTIES C_VISIBILITY_PRESET default CXX_VISIBILITY_PRESET default)
 # the platform sees the game's own headers (d3d7.h, ...) as the modules do: through the
 # overlay (written when flags.py generates modules.cmake below)
 target_compile_options(platform PRIVATE -ivfsoverlay ${CMAKE_CURRENT_SOURCE_DIR}/../out/port/overlay.yaml)
 target_compile_options(platform PRIVATE "SHELL:-Xclang -mconstructor-aliases")
 target_compile_options(platform PRIVATE -include ${CMAKE_CURRENT_SOURCE_DIR}/compat/prelude.h
   $<$<COMPILE_LANGUAGE:CXX>:-std=gnu++17>)
-target_link_libraries(platform PRIVATE SDL3::SDL3 "-framework CoreText" "-framework CoreGraphics" "-framework CoreFoundation")
+target_link_libraries(platform PUBLIC SDL3::SDL3 "-framework CoreText" "-framework CoreGraphics" "-framework CoreFoundation")
 # FFmpeg decodes Bink, Smacker and the sounds (platform/media)
 find_path(FFMPEG_INCLUDE_DIR libavformat/avformat.h REQUIRED)
 target_include_directories(platform SYSTEM PRIVATE ${FFMPEG_INCLUDE_DIR})
 foreach(lib avformat avcodec avutil swresample swscale)
   find_library(FFMPEG_${lib} ${lib} REQUIRED)
-  target_link_libraries(platform PRIVATE ${FFMPEG_${lib}})
+  target_link_libraries(platform PUBLIC ${FFMPEG_${lib}})
 endforeach()
 
 # the modules, from port/flags.py

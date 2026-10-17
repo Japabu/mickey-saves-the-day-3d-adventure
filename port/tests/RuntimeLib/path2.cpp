@@ -1,5 +1,4 @@
 // MfPath2: the headings along a planned path.
-// port-test-sources: MfPath2.cpp
 #include "../test.h"
 #include "MfPath2.h"
 

@@ -6,11 +6,18 @@ Nothing here changes `src/`: the decompilation stays byte-verifiable by
 
 ## How the port relates to `src/`
 
-- **One library per original binary.** Every original DLL becomes a macOS dylib built
-  with hidden symbols; what the DLL exported (`__declspec(dllexport)`) is exported. The
-  DLLs carry private copies of shared classes, so they cannot share one link. The
-  executable is `Steamboat`; plugins are loaded with `dlopen` where the game calls
-  `LoadLibrary`. Module table and flags: `port/flags.py`.
+- **One executable, no DLLs.** Every original binary is a module (an object library),
+  and all of them link into the one executable `Steamboat`. Each module has a generated
+  table of what Windows knew of its DLL (name, DllMain, the DLLs it imports from, the
+  functions `GetProcAddress` finds), so `LoadLibrary` and `GetProcAddress` work as
+  before, and DllMains run when Windows ran them: at start for the DLLs the executable
+  imports from, at `LoadLibrary` for the plugins (`platform/win32/module.cpp`). Names
+  that several DLLs each defined for themselves (DllMain, the plugin entry points, the
+  parsers' `yy` names, SteamboatApp's copies of MBEngine classes) get the module's name
+  as prefix in that module (`RENAMES`). Module table and flags: `port/flags.py`.
+- **Code every DLL had its own copy of** (inline functions, templates, vtables) is
+  linked once. `python3 port/tools/mergecheck.py` checks that the modules' copies agree
+  and `python3 port/tools/vtablecensus.py --cross` that their vtables do.
 - **Microsoft C++ is compiled by clang** in Microsoft-compatibility mode
   (`-fms-extensions -fms-compatibility -fdelayed-template-parsing`);
   `compat/prelude.h` (force-included) maps the remaining language extensions.
@@ -58,7 +65,7 @@ Requirements: Xcode command-line tools, Homebrew `cmake`, `ninja`, `sdl3`, `ffmp
 ```
 python3 port/tools/census.py                        # how many source files compile, per module
 cmake -S port -B out/port/build -G Ninja            # configure (module table: port/flags.py)
-cmake --build out/port/build                        # or --target <module>
+cmake --build out/port/build                        # or --target Steamboat, port_tests, <module>
 ```
 
 For crash reports with exact locations, build a second tree with sanitizers:

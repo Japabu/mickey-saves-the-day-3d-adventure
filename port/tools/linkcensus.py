@@ -77,7 +77,7 @@ def duplicates(paths):
 
 
 def objects(module):
-    return sorted(glob.glob(os.path.join(BUILD, 'CMakeFiles', module + '.dir', '**', '*.o'), recursive=True))
+    return sorted(glob.glob(os.path.join(BUILD, 'CMakeFiles', (flags.target(module) if module in flags.MODULES else module) + '.dir', '**', '*.o'), recursive=True))
 
 
 def system_symbols():

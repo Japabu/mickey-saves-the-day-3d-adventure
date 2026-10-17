@@ -1,12 +1,16 @@
 """The port's modules and compiler flags, shared by the build (CMakeLists.txt reads the
 module table through `python3 port/flags.py cmake`) and by port/tools.
 
-Each original binary becomes one macOS library (the executable for Steamboat.exe).
-Its sources are the files of src/<dir>/; a file (source or header) under
-port/override/<same path> is used instead of the original, through a clang VFS overlay.
+Every original binary (the DLLs and Steamboat.exe) is a module: its sources are the files
+of src/<dir>/; a file (source or header) under port/override/<same path> is used instead
+of the original, through a clang VFS overlay. All modules link into one executable;
+each module's table (module_table(), generated from its objects) gives the platform what
+the Windows loader knew of the DLL: its name, DllMain, the DLLs it imports from, and the
+functions GetProcAddress finds.
 """
 import glob
 import os
+import subprocess
 import sys
 
 PORT = os.path.dirname(os.path.abspath(__file__))
@@ -14,7 +18,7 @@ ROOT = os.path.dirname(PORT)
 SRC = os.path.join(ROOT, 'src')
 sys.path.insert(0, os.path.join(ROOT, 'tools', 'recomp'))
 
-# module: (source directory under src/, dependencies). Order is link order.
+# module: (source directory under src/, the modules it imports from). Order is link order.
 MODULES = {
     'mbruntime': ('mbruntime', []),
     'zlib': ('zlib', []),
@@ -48,9 +52,7 @@ COMMON = [
     # below 19 clang drops the char16_t/char32_t keywords, which libc++ needs; this
     # changes language features only (_MSC_VER stays the source's 1200, below)
     '-fms-compatibility-version=19.00',
-    # functions and variables hidden, types (vtables, RTTI) visible, as across Windows
-    # DLLs: dynamic_cast and exceptions compare type_info across the game's libraries
-    '-fvisibility-ms-compat', '-fno-strict-aliasing', '-fwrapv', '-g', '-O1',
+    '-fno-strict-aliasing', '-fwrapv', '-g', '-O1',
     # every float operation rounds on its own, as on the x87: no fused multiply-add
     # (port/difftest compares the game's math with the original's bit for bit)
     '-ffp-contract=off',
@@ -68,11 +70,40 @@ COMMON = [
     '-isystem', os.path.join(PORT, 'compat', 'include'),
     '-D_WIN32', '-DWIN32', '-D_X86_', '-D_M_IX86=500', '-D_MSC_VER=1200', '-DPORT_MACOS',
 ]
-# Modules whose original exported plain C names through a .def file rather than
-# __declspec(dllexport) (their export tables have only undecorated names): everything
-# they define is exported
-DEFAULT_VISIBILITY = {'zlib', 'mbruntime', 'MBCom', 'MBEngine', 'SteamboatApp',
-                      'PscStdlib', 'PxtMath', 'PscCompiler', 'PscContentInfo'}
+# Names that several DLLs each defined for themselves, which one link would merge: in
+# these modules they get the module's name as prefix (`-DName=Module_Name`), so each
+# module keeps its own, as each DLL did. module_table() takes the prefix off again for
+# GetProcAddress.
+# - DllMain: every DLL has its own.
+# - the plugin entry points, which Piccolo finds by name in each plugin.
+# - flex and bison's yy names: MBEngine, RuntimeLib and SteamboatApp each have a parser.
+# - SteamboatApp's own copies of MBEngine's SimpleNode, ScriptHelpNode, ScriptManager and
+#   DatabaseMgr (both DLLs were linked with the same helper sources).
+# - PscContentInfo's g_hInstance (RuntimeLib has one too).
+YY = ['yyparse', 'yylex', 'yyerror', 'yylval', 'yychar', 'yynerrs', 'yydebug', 'yytext', 'yyleng',
+      'yyin', 'yyout', 'yywrap', 'yyrestart', 'yy_load_buffer_state', 'yy_create_buffer',
+      'yy_delete_buffer', 'yy_flush_buffer', 'yy_init_buffer', 'yy_switch_to_buffer',
+      'yy_scan_buffer', 'yy_scan_string', 'yy_scan_bytes', 'yy_flex_alloc', 'yy_flex_realloc',
+      'yy_flex_free', 'yy_fatal_error']
+PSC = ['PscLoad', 'PscUnload', 'PscInitialize', 'PscShutdown']
+RENAMES = {
+    'MBEngine': YY,
+    'RuntimeLib': YY,
+    'SteamboatApp': YY + ['SimpleNode', 'ScriptHelpNode', 'ScriptManager', 'DatabaseMgr'],
+    'PscStdlib': PSC,
+    'PxtMath': PSC,
+    'PscCompiler': PSC,
+    'PscContentInfo': PSC + ['g_hInstance'],
+}
+
+
+def renames(module):
+    """{name: renamed} of a module (DllMain for every module but the executable)."""
+    names = RENAMES.get(module, []) + ([] if module == EXE else ['DllMain'])
+    return {n: module + '_' + n for n in names}
+
+
+EXE = 'Steamboat'
 
 # src/options.txt options the port does not use: libpng's MMX code is x86 assembly,
 # so the port builds its portable C path
@@ -92,8 +123,9 @@ def sources(module):
 
 
 # Sources of the libraries' own distributions that the game's DLLs never contained:
-# libpng's test program (its main and its use of the iCCP reader the game left out).
-NOT_IN_GAME = {'SteamboatApp/libpng/pngtest.c'}
+# libpng's test program (its main and its use of the iCCP reader the game left out) and
+# zlib's table generator (a main of its own).
+NOT_IN_GAME = {'SteamboatApp/libpng/pngtest.c', 'zlib/maketree.c'}
 
 
 _OVERLAY = None
@@ -158,14 +190,8 @@ def command(module, path, extra=()):
     cc = CXX if path.endswith('.cpp') else CC
     inc = ['-ivfsoverlay', overlay(), '-iquote', os.path.dirname(path), '-iquote', d]
     opts = sources_options(path) if path.startswith(SRC + os.sep) else []   # generated files have none
-    if module in DEFAULT_VISIBILITY:
-        opts = opts + ['-fvisibility=default']
+    opts = opts + ['-D%s=%s' % kv for kv in renames(module).items()]
     return cc + COMMON + inc + opts + list(extra) + [path]
-
-
-# options.txt options the port leaves out: libpng's MMX filters (pngvcrd.c, x86 inline
-# assembly) are replaced by its portable C path.
-PORT_DROP_OPTIONS = {'/DPNG_USE_PNGVCRD'}
 
 
 def sources_options(path):
@@ -183,37 +209,81 @@ def sources_options(path):
     return out
 
 
-DLLMAIN_STUB = """// generated by port/flags.py: the module's process attach, as the Windows loader did it
-#include <windows.h>
-// a module without a DllMain of its own gets this one; the module's definition wins
-extern "C" __attribute__((weak)) BOOL WINAPI DllMain(HINSTANCE, DWORD, LPVOID) { return TRUE; }
-extern "C" HINSTANCE port_module_attach(const char *name, const void *anchor);
-static char port_anchor;
-static HINSTANCE port_instance;
-// linked after every other object of the module, so it runs after its static
-// initializers, like DllMain after the CRT's
-__attribute__((constructor)) static void port_attach()
-{
-    port_instance = port_module_attach("%(dll)s", &port_anchor);
-    DllMain(port_instance, DLL_PROCESS_ATTACH, 0);
-}
-__attribute__((destructor)) static void port_detach()
-{
-    DllMain(port_instance, DLL_PROCESS_DETACH, 0);
-}
-"""
+def dll_name(module):
+    """The original binary's file name: "PxtMath.dll", "Steamboat.exe"."""
+    return os.path.basename(MODULES[module][0]) + ('.exe' if module == EXE else '.dll')
 
 
-def dllmain_stub(module):
-    """The generated attach stub of a library module (out/port/dllmain/<module>.cpp)."""
-    dll = os.path.basename(MODULES[module][0]) + '.dll'
-    path = os.path.join(ROOT, 'out', 'port', 'dllmain', module + '.cpp')
-    text = DLLMAIN_STUB % {'dll': dll}
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    if not os.path.isfile(path) or open(path).read() != text:
-        with open(path, 'w') as f:
+def imported_closure(module):
+    """The module and every module it imports from, directly or not."""
+    seen = []
+
+    def visit(m):
+        if m not in seen:
+            seen.append(m)
+            for d in MODULES[m][1]:
+                visit(d)
+    visit(module)
+    return seen
+
+
+def module_table(module, out, nm, objects):
+    """Write the module table of a module (platform/win32/module_table.h) from its objects:
+    the functions they define with a C name or as free C++ functions (what GetProcAddress
+    can be asked for), its DllMain, the DLLs it imports from. module 'platform' is the
+    platform library, which stands for the Windows system DLLs."""
+    import re
+    syms = set()
+    for i in range(0, len(objects), 200):
+        text = subprocess.run([nm, '-g', '--defined-only'] + objects[i:i + 200],
+                              capture_output=True, text=True, check=True).stdout
+        for line in text.splitlines():
+            f = line.split()
+            if len(f) == 3 and f[1] == 'T':
+                syms.add(f[2])
+    prefix = '_' if sys.platform == 'darwin' else ''    # Mach-O's C symbol prefix
+    names = renames(module) if module in MODULES else {}
+    undo = {v: k for k, v in names.items()}
+    dll_main, exports = None, []
+    for raw in sorted(syms):
+        name = raw[len(prefix):]
+        if names.get('DllMain') == name:
+            dll_main = raw
+            continue
+        m = re.match(r'_Z(\d+)', name)
+        if m:                                           # free function: _Z<length><name>...
+            n = int(m.group(1))
+            ident, rest = name[m.end():m.end() + n], name[m.end() + n:]
+            ident = undo.get(ident, ident)
+            name = '_Z%d%s%s' % (len(ident), ident, rest)
+        elif name.startswith('_Z') or not re.fullmatch(r'[A-Za-z_]\w*', name):
+            continue
+        else:
+            name = undo.get(name, name)
+        exports.append((name, raw))
+    lines = ['// generated by port/flags.py from the objects of %s: its module table' % module,
+             '#include "%s"' % os.path.join(PORT, 'platform', 'win32', 'module_table.h'),
+             'extern "C" {']
+    lines += ['void port_x%d(void) __asm__("%s");' % (i, raw) for i, (_, raw) in enumerate(exports)]
+    if dll_main:
+        lines.append('int port_dll_main(void *, unsigned, void *) __asm__("%s");' % dll_main)
+    lines.append('}')
+    entries = ['{"%s", port_x%d}' % (name, i) for i, (name, _) in enumerate(exports)]
+    lines.append('static const port_export exports[] = {%s};' % ',\n    '.join(entries or ['{0, 0}']))
+    if module in MODULES:
+        imports = ['"%s"' % dll_name(d) for d in MODULES[module][1]]
+        at_start = int(module in imported_closure(EXE))
+        dll = '"%s"' % dll_name(module)
+    else:
+        imports, at_start, dll = [], 1, '0'
+    lines.append('static const char *const imports[] = {%s};' % ', '.join(imports + ['0']))
+    lines.append('static const port_module module = {%s, %s, imports, exports, %d, %d};'
+                 % (dll, 'port_dll_main' if dll_main else '0', len(exports), at_start))
+    lines.append('__attribute__((constructor)) static void port_register() { port_module_register(&module); }')
+    text = '\n'.join(lines) + '\n'
+    if not os.path.isfile(out) or open(out).read() != text:
+        with open(out, 'w') as f:
             f.write(text)
-    return path
 
 
 # Improvements over the original game: port/improve/<module>/*.cpp, hooked into the
@@ -225,22 +295,26 @@ def improvements(module):
     return sorted(glob.glob(os.path.join(IMPROVE, module, '*.cpp')))
 
 
+def target(module):
+    """A module's CMake target: its name, but Steamboat.exe for the executable's own (the
+    executable is the target Steamboat)."""
+    return dll_name(module) if module == EXE else module
+
+
 def cmake(path):
-    """Write the CMake description of the modules: one target per module, with every
-    source file's own flags (include directories and src/options.txt defines)."""
+    """Write the CMake description of the modules: an object library per module, with
+    every source file's own flags (include directories and src/options.txt defines), its
+    module table, and the two executables that link them: Steamboat (the game) and
+    port_tests."""
     def q(s):
         return '"' + s.replace('\\', '/').replace('"', '\\"') + '"'
     lines = ['# generated by port/flags.py; do not edit']
+    tables = {}
     for m, (d, deps) in MODULES.items():
-        srcs = sources(m)
-        if m != 'Steamboat':
-            srcs = srcs + [dllmain_stub(m)]
-        else:
-            srcs = srcs + [os.path.join(PORT, 'launcher', 'main.cpp')]    # main() -> WinMain
-        srcs = srcs + improvements(m)
-        kind = 'add_executable' if m == 'Steamboat' else 'add_library'
-        lines.append(f'{kind}({m}{"" if m == "Steamboat" else " SHARED"} ' + ' '.join(q(s) for s in srcs) + ')')
-        lines.append(f'target_link_libraries({m} PRIVATE ' + ' '.join(deps + ['platform']) + ')')
+        srcs = sources(m) + improvements(m)
+        if m == EXE:
+            srcs.append(os.path.join(PORT, 'launcher', 'main.cpp'))    # main() -> WinMain
+        lines.append(f'add_library({target(m)} OBJECT ' + ' '.join(q(s) for s in srcs) + ')')
         # clang's dependency files name the src/ path of an overlaid file, whose time
         # never changes: the module's objects also depend on every port version of a
         # file in its directory (overrides and rewritten copies), so a change rebuilds
@@ -254,17 +328,28 @@ def cmake(path):
             props = 'COMPILE_OPTIONS ' + q(';'.join(opts))
             if deps_of:
                 props += ' OBJECT_DEPENDS ' + q(';'.join(deps_of))
-            lines.append(f'set_source_files_properties({q(s)} TARGET_DIRECTORY {m} PROPERTIES {props})')
-    lines += tests_cmake(q)
+            lines.append(f'set_source_files_properties({q(s)} TARGET_DIRECTORY {target(m)} PROPERTIES {props})')
+    for m in list(MODULES) + ['platform']:
+        tables[m] = '${CMAKE_BINARY_DIR}/tables/%s.cpp' % m
+        lines.append(f'add_custom_command(OUTPUT {q(tables[m])} COMMAND ${{Python3_EXECUTABLE}} '
+                     f'{q(os.path.join(PORT, "flags.py"))} table {m} {q(tables[m])} ${{CMAKE_NM}} '
+                     f'"$<TARGET_OBJECTS:{target(m)}>" DEPENDS {target(m)} "$<TARGET_OBJECTS:{target(m)}>" {q(os.path.join(PORT, "flags.py"))} '
+                     f'COMMAND_EXPAND_LISTS VERBATIM)')
+    # the modules link in MODULES order, the executable's own last, as the DLLs loaded
+    # before it: their static initializers run in that order
+    game = list(MODULES)
+    lines.append('add_executable(Steamboat ' + ' '.join(q(tables[m]) for m in game + ['platform']) + ')')
+    lines.append('target_link_libraries(Steamboat PRIVATE ' + ' '.join(target(m) for m in game) + ' platform)')
+    lines += tests_cmake(q, [m for m in game if m != EXE], tables)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w') as f:
         f.write('\n'.join(lines) + '\n')
 
 
-def tests_cmake(q):
+def tests_cmake(q, mods, tables):
     """port_tests: the headless tests of port/tests/<Module>/*.cpp, each compiled as if it
-    were a source of that module (its includes, defines and flags), linked against the
-    game's libraries; port/tests/main.cpp runs them (see port/tests/test.h)."""
+    were a source of that module (its includes, defines and flags), linked with every
+    module but the executable's; port/tests/main.cpp runs them (see port/tests/test.h)."""
     tests = os.path.join(PORT, 'tests')
     srcs, props = [os.path.join(tests, 'main.cpp')], []
     for m in sorted(MODULES):
@@ -273,22 +358,13 @@ def tests_cmake(q):
             srcs.append(t)
             props.append(f'set_source_files_properties({q(t)} TARGET_DIRECTORY port_tests PROPERTIES '
                          f'COMPILE_OPTIONS {q(";".join(cmd[1:-1]))})')
-            # "// port-test-sources: a.cpp b.cpp": sources of the module compiled into the
-            # tests as well, for classes the module does not export
-            for line in open(t):
-                if line.startswith('// port-test-sources:'):
-                    for name in line.split(':', 1)[1].split():
-                        src = os.path.join(SRC, MODULES[m][0], name)
-                        if src not in srcs:
-                            srcs.append(src)
-                            props.append(f'set_source_files_properties({q(src)} TARGET_DIRECTORY port_tests '
-                                         f'PROPERTIES COMPILE_OPTIONS {q(";".join(command(m, src)[1:-1]))})')
-    libs = [m for m in MODULES if m != 'Steamboat']
-    return ([f'add_executable(port_tests {" ".join(q(s) for s in srcs)})',
-             f'target_link_libraries(port_tests PRIVATE {" ".join(libs)} platform)',
+    return ([f'add_executable(port_tests {" ".join(q(s) for s in srcs + [tables[m] for m in mods + ["platform"]])})',
+             f'target_link_libraries(port_tests PRIVATE {" ".join(mods)} platform)',
              f'set_source_files_properties({q(srcs[0])} TARGET_DIRECTORY port_tests PROPERTIES '
              f'COMPILE_OPTIONS "-std=gnu++17")'] + props)
 
 
 if __name__ == '__main__' and len(sys.argv) == 3 and sys.argv[1] == 'cmake':
     cmake(sys.argv[2])
+elif __name__ == '__main__' and len(sys.argv) >= 5 and sys.argv[1] == 'table':
+    module_table(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5:])

@@ -1,5 +1,4 @@
 // Differential probes of mflinalg (the cases: port/difftest/cases.py).
-// port-test-sources: MfTransform3.cpp MfRotation3.cpp MfVector3.cpp
 #include "../test.h"
 #include "MfTransform3.h"
 

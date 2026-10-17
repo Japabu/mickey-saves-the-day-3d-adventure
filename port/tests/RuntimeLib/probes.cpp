@@ -1,5 +1,4 @@
 // Differential probes of RuntimeLib functions (the cases: port/difftest/cases.py).
-// port-test-sources: MfPath2.cpp
 #include "../test.h"
 #include "MfPath2.h"
 

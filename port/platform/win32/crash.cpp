@@ -1,7 +1,7 @@
 // crash.cpp - what a crash prints to the terminal: the signal and faulting address, the
-// thread, and a backtrace with each frame's library and symbol (the game's libraries are
-// lib<DLL name>.dylib, so the frame names the original DLL). Also for an uncaught C++
-// exception and for abort(). The player's report of this output is our runtime data.
+// thread, and a backtrace with each frame's binary and symbol (the game is one executable:
+// the symbol says which module). Also for an uncaught C++ exception and for abort(). The
+// player's report of this output is our runtime data.
 #include <cxxabi.h>
 #include <dlfcn.h>
 #include <exception>

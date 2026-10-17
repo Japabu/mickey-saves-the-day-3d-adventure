@@ -1,6 +1,6 @@
 // test.h - the port's headless tests: TEST(name) { ... CHECK(...); } in any file of
-// port/tests/<Module>/, compiled with that module's flags and linked against the game's
-// libraries (see port/flags.py, port_tests). port_tests [substring] runs the tests whose
+// port/tests/<Module>/, compiled with that module's flags and linked with the game's
+// modules, none of them loaded (no DllMain runs; see port/flags.py, port_tests). port_tests [substring] runs the tests whose
 // name contains the substring (all without one) and exits non-zero on a failure.
 #ifndef PORT_TESTS_TEST_H
 #define PORT_TESTS_TEST_H

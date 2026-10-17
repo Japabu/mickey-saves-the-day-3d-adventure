@@ -50,9 +50,6 @@ int port_chdir(const char *path);
 char *port_getcwd(char *buf, size_t size);
 int port_host_path(const char *path, int for_write, char *out, size_t outsize);
 
-// Modules: called by each library's attach stub (port/flags.py) before its DllMain.
-HINSTANCE port_module_attach(const char *dllname, const void *anchor);
-
 #ifdef __cplusplus
 }
 #endif
