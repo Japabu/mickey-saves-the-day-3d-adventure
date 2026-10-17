@@ -1,5 +1,5 @@
 // MfJpgHandler: JPEG reader/writer (MfImageLib.dll 0x10002ac0-0x10003040).
-#include "MfJpgHandler_unit.h"
+#include "MfJpgHandler.h"
 
 #define MF_JPEG_EXCEPTION 0xE0000001
 

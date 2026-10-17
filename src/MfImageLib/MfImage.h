@@ -2,6 +2,8 @@
 #ifndef MFIMAGE_H
 #define MFIMAGE_H
 
+#include "MfImageLib_api.h"
+
 // return codes; 3 is what the conversion functions return for unsupported formats
 enum MfImageError {
     MfImageOk = 0,
@@ -10,12 +12,18 @@ enum MfImageError {
     MfImageBadFile = 3
 };
 
+// what an MfImageHandler is asked to do
+enum MfImageOp {
+    MfImageRead = 0,
+    MfImageWrite = 1
+};
+
 // format: low byte = pixel kind (1: 8 bit, 2/4: 16 bit, 8: 24 bit, 0x10: 32 bit),
 // 0xff00 = component order/kind (0x200 palettized, 0x400/0x800 the two RGB orders),
 // 16 bit sub-formats: 2 = 555, 0x40000 = 1555, 0x20000 = 565, 0x80000 = 4444,
 // 0x10000 = has alpha.
 // 0x24 bytes; implicit operator= (memberwise, rep movsd)
-class __declspec(dllexport) MfImage {
+class MFIMAGE_API MfImage {
 public:
     MfImage();
     MfImage(const MfImage &other);

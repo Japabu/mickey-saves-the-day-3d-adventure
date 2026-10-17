@@ -1,7 +1,7 @@
 // MfImage: in-memory image (MfImageLib.dll 0x10001490-0x10002200, VC5 /O2 /MD: floor is called through the MSVCRT import).
 #include <math.h>
 #include <string.h>
-#include "MfImage_unit.h"
+#include "MfImage.h"
 
 // 0x10001490 ??0MfImage@@QAE@XZ
 MfImage::MfImage()

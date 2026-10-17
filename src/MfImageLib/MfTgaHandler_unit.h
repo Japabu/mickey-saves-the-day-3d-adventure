@@ -1,6 +1,7 @@
+// own copy: VC5 compiles MfTgaHandler::Write differently with the shared headers
 // MfTgaHandler: Truevision TGA reader/writer of MfImageLib (MfImageLib.dll, VC5, no PDB).
-#ifndef MFTGAHANDLER_H
-#define MFTGAHANDLER_H
+#ifndef MFTGAHANDLER_UNIT_H
+#define MFTGAHANDLER_UNIT_H
 
 #include <windows.h>
 #include <stdio.h>
