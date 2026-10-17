@@ -3,18 +3,10 @@ class MfScDataHandle;
 class MfScDebugInfo;
 class MfScLinkData;
 class MfString;
-
-// RuntimeLib: mutex wrapper.
-class __declspec(dllimport) MfLock {
-public:
-    MfLock();
-    ~MfLock();
-private:
-    void *m_handle;
-};
+#include "../mfutil/MfLock.h"
 
 // PiccoloRT.dll: base of everything a data handle can point to.
-class __declspec(dllimport) MfScData {
+class __declspec(dllimport) MfScData {   // own copy: src/PiccoloRT/MfScData.h opens PiccoloRT's MfLock copy, and MfScDataMethod.h windows.h (through MfScDataHandle.h), in MfPcChunkList.cpp
 public:
     MfScData();
     virtual ~MfScData();
@@ -29,7 +21,7 @@ protected:
 };
 
 // PiccoloRT.dll: base of the callable data, with the constant pool.
-class __declspec(dllimport) MfScDataMethod : public MfScData {
+class __declspec(dllimport) MfScDataMethod : public MfScData {   // own copy: see MfScData
 public:
     enum MfScMethodType { kNone, kFunction, kMethod, kExtMethod };
     MfScDataMethod(MfScMethodType type, int numArgs);
@@ -45,7 +37,7 @@ protected:
 };
 
 // PiccoloRT.dll: a routine compiled to Piccolo bytecode (0x3c bytes).
-class __declspec(dllimport) MfScBytecodeRoutine : public MfScDataMethod {
+class __declspec(dllimport) MfScBytecodeRoutine : public MfScDataMethod {   // own copy: see MfScData
 public:
     MfScBytecodeRoutine(int numArgs);
     virtual ~MfScBytecodeRoutine();

@@ -3,7 +3,7 @@
 class MfScDataHandle;
 
 // PiccoloRT.dll: a list of data handles with a cursor of its own (0x14 bytes).
-class __declspec(dllimport) MfScHandleList : public MfDblList {
+class __declspec(dllimport) MfScHandleList : public MfDblList {   // own copy: src/PiccoloRT/MfScHandleList.h includes PiccoloRT's MfDblList, which conflicts with the MfDblList kept here
 public:
     MfScHandleList() : mCurrentPos(0) {}
     virtual ~MfScHandleList();

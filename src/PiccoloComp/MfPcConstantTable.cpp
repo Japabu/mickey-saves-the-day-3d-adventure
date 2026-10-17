@@ -8,7 +8,7 @@
 class MfScDataHandle;
 
 // PiccoloRT.dll
-class __declspec(dllimport) MfScDataHandle {
+class __declspec(dllimport) MfScDataHandle {   // own copy: src/PiccoloRT/MfScDataHandle.h opens windows.h, which this unit does not
 public:
     static MfScDataHandle *CreateData(MfVariant const &value, int flags);
 };

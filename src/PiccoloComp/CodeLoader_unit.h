@@ -3,15 +3,11 @@
 #ifndef PICCOLOCOMP_CODELOADER_H
 #define PICCOLOCOMP_CODELOADER_H
 #include <windows.h>
-#include "MfAiCompiler.h"
+#include "../PiccoloRT/MfAiCompiler.h"
 #include "MfPcStringListErrorCB.h"
 
-// ---------------------------------------------------------------- imports (mfutil)
-class __declspec(dllimport) MfNullString {
-public:
-    int m_dummy;
-};
-extern __declspec(dllimport) MfNullString NULL_STRING;
+// ---------------------------------------------------------------- imports (mfutil)   // own copy (all classes up to MfPcCompiler): the mfutil and PiccoloRT headers this unit was built with (imported MfStringRef constructor and CopyOnWrite, inline iteration helpers tuned to its frame)
+#include "../mfutil/MfNullString.h"
 
 class MfStringTokenizerCallBack;
 class MfString;
@@ -64,12 +60,7 @@ private:
     MfStringRef *mfsr;  // +0
 };
 
-class MfDblListItem {
-public:
-    void *m_data;               // +0
-    MfDblListItem *m_prev;      // +4
-    MfDblListItem *m_next;      // +8
-};
+#include "../mfutil/MfDblListItem.h"
 
 class MfCallBack;
 class MfListItemInterface;
@@ -112,13 +103,13 @@ public:
     void *First(MfDblListItem *&i) const
     {
         i = m_head;
-        void *p = i ? i->m_data : 0;
+        void *p = i ? i->pData : 0;
         return p;
     }
     void *Next(MfDblListItem *&i) const
     {
-        if (i) i = i->m_next;
-        void *p = i ? i->m_data : 0;
+        if (i) i = i->pliNext;
+        void *p = i ? i->pData : 0;
         return p;
     }
     MfDblListItem *m_head;      // +0x04

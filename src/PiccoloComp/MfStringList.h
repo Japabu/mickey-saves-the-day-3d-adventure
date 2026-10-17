@@ -2,16 +2,10 @@
 #include "MfDblList.h"
 class MfString;
 
-// mfutil.dll
-class __declspec(dllimport) MfStringTokenizerCallBack {
-public:
-    MfStringTokenizerCallBack() {}
-    virtual ~MfStringTokenizerCallBack() {}
-    virtual int CallBack(const MfString &token, MfString &rest);
-};
+#include "../mfutil/MfStringTokenizerCallBack.h"
 
 // mfutil.dll: list of MfString (0x14 bytes).
-class __declspec(dllimport) MfStringList : public MfDblList, public MfStringTokenizerCallBack {
+class __declspec(dllimport) MfStringList : public MfDblList, public MfStringTokenizerCallBack {   // own copy: src/mfutil/MfStringList.h includes src/mfutil/MfString.h, which conflicts with the older MfString kept here (and MfDblList)
 public:
     MfStringList() {}
     virtual ~MfStringList() { Clear(); }

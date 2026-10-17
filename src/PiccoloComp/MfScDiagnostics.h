@@ -5,7 +5,7 @@ class MfString;
 
 // PiccoloRT.dll: diagnostic output of the runtime. Active() is inline here:
 // the compiler reads the output list and the level itself.
-class __declspec(dllimport) MfScDiagnostics {
+class __declspec(dllimport) MfScDiagnostics {   // own copy: inline Active(); src/PiccoloRT/MfScDiagnostics.h includes PiccoloRT's MfDblList, which conflicts with the MfDblList kept here
 public:
     enum { kAlways = 5 };
     static int Active(int level)

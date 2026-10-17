@@ -1,6 +1,8 @@
 #pragma once
 #include <stdlib.h>
 
+// own copy (MfStringSize, MfStringRef, MfNullString): with mfutil's headers VC5
+// compiles a function of MfPcLexer.cpp differently.
 // mfutil.dll: the initial capacity of an MfString.
 class __declspec(dllimport) MfStringSize {
 public:
@@ -40,7 +42,7 @@ class MfSystemTime;
 class MfTime;
 class MfVariant;
 
-class __declspec(dllimport) MfString {
+class __declspec(dllimport) MfString {   // own copy: the older mfutil header: CopyOnWrite, ReadFromFile, +=, MaxLength, operator[] etc. are imported (src/mfutil/MfString.h has them inline)
 public:
     MfString & operator+=(MfString const &);
     MfString & operator+=(char const *);

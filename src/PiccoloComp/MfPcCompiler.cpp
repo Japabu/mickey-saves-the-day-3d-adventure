@@ -22,11 +22,11 @@
 #include "MfPcSwitchElement.h"
 #include "MfPcSymbolTable.h"
 #include "MfPcTokenInfo.h"
-#include "MfAiFunctionRegistry.h"
+#include "../PiccoloRT/MfAiFunctionRegistry.h"
 #include "MfInterfaceRegistry.h"
 #include "MfScBytecodeRoutine.h"
-#include "MfScDataHandle.h"
-#include "MfScDebugInfo.h"
+#include "../PiccoloRT/MfScDataHandle.h"
+#include "../PiccoloRT/MfScDebugInfo.h"
 #include "MfScHandleList.h"
 #include "MfScPiccolo.h"
 #include "MfScPiccoloObjectFile.h"
@@ -109,10 +109,10 @@ MfPcCompiler *MfPcCompiler::pcMainCompiler;
 // 0x10006d20 ??0MfPcErrorInfo@@QAE@ABV0@@Z (compiler-generated)
 // 0x10006da0 ??4MfPcErrorInfo@@QAEAAV0@ABV0@@Z (compiler-generated)
 // 0x10006de0 ??1MfPcErrorInfo@@QAE@XZ (compiler-generated)
-// 0x10006e40 _$E14 (static initializer: aErrors)
-// 0x10006e50 _$E11 (constructs aErrors)
-// 0x10007990 _$E13 (registers _$E12 with atexit)
-// 0x100079a0 _$E12 (destroys aErrors)
+// 0x10006e40 _$E25 (static initializer: aErrors)
+// 0x10006e50 _$E22 (constructs aErrors)
+// 0x10007990 _$E24 (registers _$E12 with atexit)
+// 0x100079a0 _$E23 (destroys aErrors)
 
 // 0x100079d0 ?CallBack@MfPcStringErrorCB@@UAEXPAVMfIPcErrorInfo@@@Z
 void MfPcStringErrorCB::CallBack(MfIPcErrorInfo *info)
