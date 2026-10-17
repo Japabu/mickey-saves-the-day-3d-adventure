@@ -14,16 +14,19 @@
 // by the implicit copy members. MfLocoPlanCache holds three mflinalg
 // MfTransform2 (inline dllimport ctor/copy/op=/dtor; EH funclets jump to
 // __imp_??1MfTransform2) and three mfutil MfIndex(0x35).
-#ifndef RUNTIMELIB_MFLOCOPLANCACHE_H
-#define RUNTIMELIB_MFLOCOPLANCACHE_H
+// own copy: the classes of this unit stay a view of their own. Its MfLiveActor::GetName
+// expands MfActor::InstanceName and Name inline, as the original header had them;
+// MfActor.h declares them out of line (inline there, every unit that calls them would
+// expand them), and MfActivity.h, MfManagerActivity.h, MfOverlayActivity.h and
+// MfPlanCache.h include MfActor.h or the mfutil headers this
+// view declares itself, so none of the canonical headers can join it. Only MfMsg
+// comes from its own header.
+#ifndef RUNTIMELIB_MFLOCOPLANCACHE_UNIT_H
+#define RUNTIMELIB_MFLOCOPLANCACHE_UNIT_H
 
 #define MFLOCO_API __declspec(dllexport)
 
-class MfMsg {
-public:
-    virtual ~MfMsg();
-    int m_id;                                               // 0x04
-};
+#include "MfMsg.h"
 
 // ---- mfutil.dll ------------------------------------------------------------
 class __declspec(dllimport) MfNullString {
@@ -112,7 +115,7 @@ public:
     int IsLocoPlugin() { return m_locoPlugin; }
     virtual void CatchMsg(MfMsg &msg)
     {
-        MsgHandler handler = m_msgTable[msg.m_id];
+        MsgHandler handler = m_msgTable[msg.mID];
         (this->*handler)(msg);
     }
 

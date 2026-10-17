@@ -1,4 +1,7 @@
-#pragma once
+// MfManagerActivity: an activity that runs subactivities (the base of the
+// overlay, sequential and random activities); exported.
+#ifndef RUNTIMELIB_MFMANAGERACTIVITY_H
+#define RUNTIMELIB_MFMANAGERACTIVITY_H
 #include "MfActivity.h"
 #include "MfDblList.h"
 #include "enums.h"
@@ -52,3 +55,5 @@ public:
 
     MfDblList mSubactivities;                               // 0x60
 };
+
+#endif

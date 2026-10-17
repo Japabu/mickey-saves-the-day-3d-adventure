@@ -1,4 +1,7 @@
-#pragma once
+// MfOverlayActivity: a manager activity that runs its subactivities side by
+// side; exported.
+#ifndef RUNTIMELIB_MFOVERLAYACTIVITY_H
+#define RUNTIMELIB_MFOVERLAYACTIVITY_H
 #include "MfManagerActivity.h"
 #include "enums.h"
 class MfActor;
@@ -27,3 +30,5 @@ public:
     static long const STREAM_TYPE;
     int mKeepRunning;                                       // 0x70 never finishes by itself
 };
+
+#endif

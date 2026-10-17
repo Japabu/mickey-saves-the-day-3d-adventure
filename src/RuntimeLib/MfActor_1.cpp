@@ -1,6 +1,6 @@
 // MfActor_1 unit (RuntimeLib.dll 10002210-10002890). All functions of this
 // range are inline members of the exported classes MfActor and MfActivity
-// (declared in MfActor_1.h), emitted here because the classes are
+// (declared in MfActor_1_unit.h), emitted here because the classes are
 // __declspec(dllexport); MfRootObj::fn_100026b0 comes with MfActor's vtable.
 //
 // 0x10002210 ?Name@MfActor@@QAEABVMfString@@XZ

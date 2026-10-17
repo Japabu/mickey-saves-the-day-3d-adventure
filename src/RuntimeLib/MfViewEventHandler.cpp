@@ -9,6 +9,7 @@
 #include "MfHookManager.h"
 #include "MfInterfaceRegistry.h"
 #include "MfMsgDispatcher.h"
+#include "MfOptionHookData.h"
 #include "MfProtoGeomInfo.h"
 #include "MfProtoNode.h"
 #include "MfRenderView.h"
@@ -16,12 +17,6 @@
 #include "MfWorld.h"
 
 MfViewEventHandler *g_viewEventHandler;
-
-// the data of the 'VOpt' hook: a menu entry of a view was chosen
-struct MfOptionHookData : public MfHookData {
-    MfRenderView *view;                                     // 0x10
-    int option;                                             // 0x14
-};
 
 static int LButtonDownHook(MfHookData *data, void *handler);
 static int LButtonUpHook(MfHookData *data, void *handler);

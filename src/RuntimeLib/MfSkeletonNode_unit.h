@@ -1,3 +1,5 @@
+// own copy: VC5 compiles FindFilesWithExtension, ??_GMfStringRef, MfSpaceList's destructor and
+// MfColNode::operator= differently with the shared headers (MfColNode.h, MfSkeletonNode.h ...).
 // RuntimeLib.dll, first object file (10001000-10001aa0): a directory scan
 // helper plus the inline members of the exported classes whose headers it
 // includes (the linker keeps the first COMDAT copy, so they land here).
