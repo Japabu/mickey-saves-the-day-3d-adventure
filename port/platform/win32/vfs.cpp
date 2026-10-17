@@ -603,6 +603,78 @@ bool host_file(const Path &path, std::string &host)
 
 // install_defaults() is in defaults.cpp.
 
+// ---- Reading the ISO image: a small cache of 64 KB blocks for the game's many tiny reads
+
+namespace {
+
+struct IsoCache {
+    static const size_t BLOCK = 64 * 1024;
+    static const int BLOCKS = 64;  // 4 MB
+    struct Block {
+        int fd = -1;
+        uint64_t index = 0;
+        size_t length = 0;  // bytes read (less at the end of the image)
+        uint64_t used = 0;
+        char data[BLOCK];
+    };
+    std::mutex lock;
+    Block *blocks = new Block[BLOCKS];
+    uint64_t clock = 0;
+
+    // The block holding byte index * BLOCK of fd, read if needed (0 on a read error).
+    Block *get(int fd, uint64_t index)
+    {
+        Block *victim = &blocks[0];
+        for (int i = 0; i < BLOCKS; i++) {
+            Block &b = blocks[i];
+            if (b.fd == fd && b.index == index) {
+                b.used = ++clock;
+                return &b;
+            }
+            if (b.used < victim->used)
+                victim = &b;
+        }
+        ssize_t n = pread(fd, victim->data, BLOCK, (off_t)(index * BLOCK));
+        if (n < 0)
+            return 0;
+        victim->fd = fd;
+        victim->index = index;
+        victim->length = (size_t)n;
+        victim->used = ++clock;
+        return victim;
+    }
+};
+
+IsoCache &iso_cache()
+{
+    static IsoCache c;
+    return c;
+}
+
+}  // namespace
+
+ssize_t read_iso(int fd, void *buf, size_t n, uint64_t off)
+{
+    if (n >= IsoCache::BLOCK)
+        return pread(fd, buf, n, (off_t)off);
+    IsoCache &c = iso_cache();
+    std::lock_guard<std::mutex> g(c.lock);
+    size_t done = 0;
+    while (done < n) {
+        uint64_t at = off + done;
+        IsoCache::Block *b = c.get(fd, at / IsoCache::BLOCK);
+        if (!b)
+            return done ? (ssize_t)done : -1;
+        size_t in = (size_t)(at % IsoCache::BLOCK);
+        if (in >= b->length)
+            break;  // the end of the image
+        size_t k = b->length - in < n - done ? b->length - in : n - done;
+        memcpy((char *)buf + done, b->data + in, k);
+        done += k;
+    }
+    return (ssize_t)done;
+}
+
 }  // namespace vfs
 
 // ---------------------------------------------------------------------------------------

@@ -205,7 +205,7 @@ BOOL WINAPI ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, 
         uint64_t pos = lpOverlapped ? ((uint64_t)lpOverlapped->OffsetHigh << 32 | lpOverlapped->Offset) : f->pos;
         uint64_t left = pos < f->size ? f->size - pos : 0;
         size_t want = nNumberOfBytesToRead < left ? nNumberOfBytesToRead : (size_t)left;
-        n = want ? pread(f->fd, lpBuffer, want, (off_t)(f->base + pos)) : 0;
+        n = want ? vfs::read_iso(f->fd, lpBuffer, want, f->base + pos) : 0;
         if (n > 0 && !lpOverlapped)
             f->pos = pos + (uint64_t)n;
     } else if (lpOverlapped) {

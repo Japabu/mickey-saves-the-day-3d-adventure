@@ -49,6 +49,10 @@ struct Reader {
     uint64_t size = 0;    // the file's size (ISO)
     bool iso = false;
 };
+// Reads n bytes at off of the ISO image (fd is Reader::fd of an ISO file), like pread.
+// The game reads its files a few bytes at a time; small reads come from a cache of
+// 64 KB blocks, so they do not each reach the host (a cross-thread call in a browser).
+ssize_t read_iso(int fd, void *buf, size_t n, uint64_t off);
 // Opens a CD or overlay file for reading.
 bool open_read(const Path &p, Reader &r);
 // The host path of the file in the overlay (creating the directories). With copy, the
