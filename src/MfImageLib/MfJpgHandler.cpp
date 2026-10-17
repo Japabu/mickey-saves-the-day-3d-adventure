@@ -8,7 +8,7 @@ struct HWND__;  // MfLogger::LoggerWindow (MfImageLib includes windows.h without
 #define MF_JPEG_EXCEPTION 0xE0000001
 
 // 0x10002ac0 ?GetExtensions@MfJpgHandler@@UAEABVMfString@@XZ (original MfJpgHandler::GetExtensions)
-// 0x10002b00 _$E2 (original (atexit) destructor of the local static)
+// 0x10002b00 _$E33 (original (atexit) destructor of the local static)
 const MfString &MfJpgHandler::GetExtensions()
 {
     static MfString extensions(".jpg .jpeg .jpe");

@@ -10,7 +10,7 @@
 // 0x100010a0 ??1MfImageParams@@QAE@XZ (implicit)
 
 // 0x100010b0 ?GetExtensions@MfBmpHandler@@UAEABVMfString@@XZ (original MfBmpHandler::GetExtensions)
-// 0x100010f0 _$E2 (original (atexit) destructor of the local static)
+// 0x100010f0 _$E15 (original (atexit) destructor of the local static)
 const MfString &MfBmpHandler::GetExtensions()
 {
     static MfString extensions(".bmp");

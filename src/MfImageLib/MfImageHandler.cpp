@@ -36,9 +36,9 @@ public:
     int nCount;              // +0xc
 };
 
-// 0x10002200 _$E4 (static initializer: construct + atexit)
-// 0x10002210 _$E1
-// 0x10002230 _$E3 (atexit(_$E2))
+// 0x10002200 _$E17 (static initializer: construct + atexit)
+// 0x10002210 _$E14
+// 0x10002230 _$E16 (atexit(_$E2))
 static MfDblList s_handlers;
 
 // 0x10002250 ??0MfImageParams@@QAE@XZ (inline, emitted here: an exported inline function
@@ -81,4 +81,4 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved)
 
 
 // Matched by this code:
-// 0x10002240 _$E2
+// 0x10002240 _$E15
