@@ -63,10 +63,10 @@ MfScStdLibListInterface *MfScStdLib::GetListInterface()
 
 MfScStdLibListInterface *MfScStdLib::pslliListInterface = &MfScStdLib::slliDefault;
 
-// 0x1000f260 _$E48 (static initializer of fsDataPath, with the three below)
-// 0x1000f270 _$E44
-// 0x1000f290 _$E47
-// 0x1000f2a0 _$E45
+// 0x1000f260 _$E55 (static initializer of fsDataPath, with the three below)
+// 0x1000f270 _$E51
+// 0x1000f290 _$E54
+// 0x1000f2a0 _$E52
 MfString MfScPiccolo::fsDataPath((MfStringSize(256)));
 int MfScPiccolo::bInitialized;                     // 0x10035238
 MfScThread *MfScPiccolo::pthrdMainThread;
@@ -77,10 +77,10 @@ MfScSourceResolver *MfScPiccolo::psrResolver;
 MfScFunctionRegistry *MfScPiccolo::pfrRegistry;
 int MfScPiccolo::bIsRunning;                       // 0x10035254
 
-// 0x1000f2c0 _$E53 (static initializer of sPiccoloName, with the three below)
-// 0x1000f2d0 _$E50
-// 0x1000f2f0 _$E52
-// 0x1000f300 _$E51
+// 0x1000f2c0 _$E60 (static initializer of sPiccoloName, with the three below)
+// 0x1000f2d0 _$E57
+// 0x1000f2f0 _$E59
+// 0x1000f300 _$E58
 static MfString sPiccoloName("Piccolo");
 
 // 0x1000f310 ??0MfScPiccoloDll@@QAE@ABVMfString@@@Z
