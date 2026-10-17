@@ -2,7 +2,6 @@
 #include "internal.h"
 
 #include <atomic>
-#include <mach/mach_time.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <sys/time.h>
@@ -13,10 +12,9 @@ namespace win32 {
 
 static uint64_t now_ns()
 {
-    static mach_timebase_info_data_t tb;
-    if (!tb.denom)
-        mach_timebase_info(&tb);
-    return mach_absolute_time() * tb.numer / tb.denom;
+    timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (uint64_t)ts.tv_sec * 1000000000u + (uint64_t)ts.tv_nsec;
 }
 
 static const uint64_t s_start_ns = now_ns();

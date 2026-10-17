@@ -4,11 +4,9 @@
 #include <mutex>
 #include "internal.h"
 
-#include <mach/mach.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
-#include <sys/sysctl.h>
 #include <unistd.h>
 
 namespace {
@@ -224,9 +222,7 @@ BOOL WINAPI IsBadCodePtr(FARPROC lpfn) { return !lpfn; }
 
 void WINAPI GlobalMemoryStatus(LPMEMORYSTATUS m)
 {
-    uint64_t total = 0;
-    size_t len = sizeof(total);
-    sysctlbyname("hw.memsize", &total, &len, 0, 0);
+    uint64_t total = (uint64_t)sysconf(_SC_PHYS_PAGES) * (uint64_t)sysconf(_SC_PAGESIZE);
     // The game was written for at most 4 GB: report what fits.
     SIZE_T cap = 0x7FFFFFFF;
     m->dwLength = sizeof(*m);
@@ -242,15 +238,13 @@ void WINAPI GlobalMemoryStatus(LPMEMORYSTATUS m)
 void WINAPI GetSystemInfo(LPSYSTEM_INFO si)
 {
     memset(si, 0, sizeof(*si));
-    int ncpu = 1;
-    size_t len = sizeof(ncpu);
-    sysctlbyname("hw.ncpu", &ncpu, &len, 0, 0);
+    long ncpu = sysconf(_SC_NPROCESSORS_ONLN);
     si->wProcessorArchitecture = 0;  // PROCESSOR_ARCHITECTURE_INTEL, as the game expects
     si->dwPageSize = (DWORD)getpagesize();
     si->lpMinimumApplicationAddress = (LPVOID)0x10000;
     si->lpMaximumApplicationAddress = (LPVOID)0x7FFEFFFF;
     si->dwActiveProcessorMask = 1;
-    si->dwNumberOfProcessors = (DWORD)ncpu;
+    si->dwNumberOfProcessors = ncpu > 0 ? (DWORD)ncpu : 1;
     si->dwProcessorType = 586;  // PROCESSOR_INTEL_PENTIUM
     si->dwAllocationGranularity = 0x10000;
     si->wProcessorLevel = 6;

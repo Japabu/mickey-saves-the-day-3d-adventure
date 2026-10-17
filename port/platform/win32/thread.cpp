@@ -2,6 +2,7 @@
 #include "internal.h"
 #include "sync.h"
 
+#include <atomic>
 #include <pthread.h>
 #include <signal.h>
 #include <spawn.h>
@@ -34,17 +35,23 @@ struct ThreadExit {
     DWORD code;
 };
 
-static DWORD thread_id(pthread_t t)
+// Thread ids: numbered as threads first need one (CreateThread numbers its thread
+// before it runs).
+static std::atomic<DWORD> s_next_id{1};
+static thread_local DWORD t_id;
+
+static DWORD current_thread_id()
 {
-    uint64_t id = 0;
-    pthread_threadid_np(t, &id);
-    return (DWORD)id;
+    if (!t_id)
+        t_id = s_next_id++;
+    return t_id;
 }
 
 static void *thread_main(void *arg)
 {
     ThreadObject *t = (ThreadObject *)arg;
     t_self = t;
+    t_id = t->id;
     pthread_mutex_lock(&g_wait_lock);
     while (t->suspended)
         pthread_cond_wait(&g_wait_cond, &g_wait_lock);
@@ -70,7 +77,7 @@ HANDLE thread_self_handle()
         // A thread the platform did not start (the main thread, SDL's threads).
         t_self = new ThreadObject;
         t_self->thread = pthread_self();
-        t_self->id = thread_id(pthread_self());
+        t_self->id = current_thread_id();
         t_self->refs = 1 << 30;
     }
     retain(t_self);
@@ -102,6 +109,7 @@ HANDLE WINAPI CreateThread(LPSECURITY_ATTRIBUTES, SIZE_T dwStackSize, LPTHREAD_S
     pthread_attr_init(&attr);
     pthread_attr_setstacksize(&attr, dwStackSize > (1 << 20) ? dwStackSize : (8 << 20));
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+    t->id = s_next_id++;
     int err = pthread_create(&t->thread, &attr, thread_main, t);
     pthread_attr_destroy(&attr);
     if (err) {
@@ -110,7 +118,6 @@ HANDLE WINAPI CreateThread(LPSECURITY_ATTRIBUTES, SIZE_T dwStackSize, LPTHREAD_S
         SetLastError(ERROR_NOT_ENOUGH_MEMORY);
         return 0;
     }
-    t->id = thread_id(t->thread);
     if (lpThreadId)
         *lpThreadId = t->id;
     return handle(t);
@@ -144,7 +151,7 @@ void WINAPI ExitThread(DWORD dwExitCode)
     pthread_exit(0);
 }
 
-DWORD WINAPI GetCurrentThreadId(void) { return thread_id(pthread_self()); }
+DWORD WINAPI GetCurrentThreadId(void) { return current_thread_id(); }
 DWORD WINAPI GetCurrentProcessId(void) { return (DWORD)getpid(); }
 
 BOOL WINAPI SetThreadPriority(HANDLE, int) { return TRUE; }
