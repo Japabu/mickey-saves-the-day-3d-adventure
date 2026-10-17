@@ -117,9 +117,10 @@ template <> struct char_traits<unsigned short> {
 // pass the temporary through this (see port/rewrite.py).
 #ifdef __cplusplus
 template <class T> inline T &port_lvalue(const T &t) { return const_cast<T &>(t); }
-// VC6's vector iterators are element pointers; code that uses them as such gets these.
-template <class V> inline typename V::value_type *port_begin(V &v) { return v.empty() ? 0 : &v[0]; }
-template <class V> inline typename V::value_type *port_end(V &v) { return v.empty() ? 0 : &v[0] + v.size(); }
+// VC6's vector iterators are element pointers; code that uses them as such gets these
+// (an emptied vector keeps its buffer, so begin == end there, as in VC6).
+template <class V> inline typename V::value_type *port_begin(V &v) { return v.data(); }
+template <class V> inline typename V::value_type *port_end(V &v) { return v.data() + v.size(); }
 #endif
 
 // The source's classes have members named like Win32 functions that <windows.h> maps

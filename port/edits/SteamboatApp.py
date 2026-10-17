@@ -171,7 +171,9 @@ EDITS['SteamboatApp/libpng/pngconf.h'] = [
 EDITS['SteamboatApp/MBContainers.h'] = [
     ('template <class T> class MBVector : public std::vector<T, MBAllocator<T> > {\n',
      "// The game walks MBVectors with plain pointers (VC6's vector iterator is T *): the port's\n"
-     '// MBVector hands out pointers too and takes them back in insert and erase.\n'
+     '// MBVector hands out pointers too and takes them back in insert and erase. As in VC6 an\n'
+     '// emptied vector keeps its buffer: begin() == end() there, not 0, for the loops that\n'
+     '// erase at a pointer they keep (SBTrashBashNode::ClearBoard).\n'
      'template <class T> class MBVector : public std::vector<T, MBAllocator<T> > {\n'
      '    typedef std::vector<T, MBAllocator<T> > Base;\n'
      '    typename Base::iterator at(T *p) { return Base::begin() + (p - begin()); }\n'
@@ -179,10 +181,10 @@ EDITS['SteamboatApp/MBContainers.h'] = [
      '    typedef T *iterator;\n'
      '    typedef const T *const_iterator;\n'
      '    typedef typename Base::size_type size_type;\n'
-     '    T *begin() { return Base::empty() ? 0 : Base::data(); }\n'
-     '    T *end() { return Base::empty() ? 0 : Base::data() + Base::size(); }\n'
-     '    const T *begin() const { return Base::empty() ? 0 : Base::data(); }\n'
-     '    const T *end() const { return Base::empty() ? 0 : Base::data() + Base::size(); }\n'
+     '    T *begin() { return Base::data(); }\n'
+     '    T *end() { return Base::data() + Base::size(); }\n'
+     '    const T *begin() const { return Base::data(); }\n'
+     '    const T *end() const { return Base::data() + Base::size(); }\n'
      '    T *erase(T *p) { size_type i = p - begin(); Base::erase(at(p)); return begin() + i; }\n'
      '    T *erase(T *first, T *last)\n'
      '    {\n'
