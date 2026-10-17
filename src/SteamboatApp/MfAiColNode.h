@@ -12,6 +12,7 @@ struct MfColResultRay;
 struct MfColResultSphere;
 struct MfDistResult;
 
+// own copy: MfPoLibrary's MfAiColNode.h opens MfPoLibrary/MfAi.h, a second MfAi next to mfutil's.
 class MfAiColNode : public MfAi {
 public:
     virtual MfTransform3 &Transform() = 0;              // vftable+0x0c

@@ -7,6 +7,8 @@ class MfScData;
 class MfScDataObject;
 class MfString;
 
+// own copy: the game calls PiccoloRT through its import thunks (no dllimport) and emits its own copies of
+// inline members; the owner's header declares the class PICCOLORT_API, dllimport here.
 class MfScDataHandle {
 public:
     MfScDataHandle();

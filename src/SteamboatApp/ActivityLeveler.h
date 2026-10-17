@@ -1,6 +1,4 @@
 #pragma once
-#define OFS(t, m) ((unsigned int)&(((t *)0)->m))
-struct PDB_Layout;
 class CSBRenderManager;
 class FlipWatcher;
 class IMBAnim;
@@ -54,8 +52,3 @@ extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBU
 
 extern "C" __declspec(dllimport) void *__cdecl MBmalloc_release(unsigned long size);
 extern "C" __declspec(dllimport) void __cdecl MBfree_release(void *ptr);
-
-// sizes and member offsets recorded in the PDB
-struct PDB_Layout {
-};
-#undef OFS

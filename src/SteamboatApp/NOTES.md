@@ -151,8 +151,8 @@ Source patterns known to match (vc6 `/O2 /GX /MT`).
 
 - Shared headers, one per original header where the PDB names it: `MBPoint.h`, `MBRect.h`, `MBColor.h`,
   `MBContainers.h` (MBAllocator, MBVector, MBList, MBMap, MBMultimap, MBString, MBString16),
-  `MBNew.h`, `MBGUID.h`, `MBComPtr.h`, `MBInterfaces.h` (all IMB* interfaces with their GUID statics
-  in the order the objects' ldata shows), `SBInterfaces.h` (ISB*, IMBScreenPoly), `MBRuntime.h`,
+  `MBNew.h`, `MBGUID.h`, `MBComPtr.h`, `MBInterfaces.h` (the GUID statics in the order the objects' ldata shows,
+  then MBEngine's IMB* interface headers; wave 2 of one declaration per class), `SBInterfaces.h` (ISB*, IMBScreenPoly), `MBRuntime.h`,
   `MBSoundUtils.h`, `SBMouseEvent.h`, then one header per class: `SimpleNode.h`,
   `ScriptHelpNode.h`, `SteamboatNode.h`, `SBActivityNode.h`, `SBDialogue.h`, `CSBWorld.h`,
   `SBObjectGroup.h`, `CSBAnimButton.h`, `CSBClickable.h`. Units converted: SBActivityNode,
@@ -603,7 +603,7 @@ Source patterns known to match (vc6 `/O2 /GX /MT`).
 - CSBLLDoorTile::CanMoveTo: `if (IsWalkable() && GetType(*this) == kDoor) {...} else if
   (IsWalkable()) bCanMove = true;` (the second test is not folded, as in the original).
 - dllmain.h is real now; OnMBEngineCreateScreen returns through `long err = 0; ... err = -2;`.
-  MBScreenAttributes (width, height, depth) is defined in MBInterfaces.h.
+  MBScreenAttributes (width, height, depth) is MBEngine's (MBInterfaces.h includes it).
 - SBCursorItems.h holds `static MBString kCursorItemString[31]` (every including unit has its own
   copy and initializer, as SteamboatNode.obj, dllmain.obj and SBCursorItems.obj do).
 - SBActorManager: LoadActor(name) is declared before LoadActor(name, actor) (VC6 gives the later
@@ -855,8 +855,8 @@ Source patterns known to match (vc6 `/O2 /GX /MT`).
 
 ## Minigames (wave 10, worker E)
 
-- `IMBWorld::AddObject/RemoveObject` are inline helpers (`GetRoot().AddObject(o)`, defined in MBInterfaces.h
-  now): `mWorld->AddObject(button)` loads the argument before the GetRoot call, `mWorld->GetRoot().AddObject`
+- `IMBWorld::AddObject/RemoveObject` are inline helpers (`GetRoot().AddObject(o)`, defined in MBEngine's
+  IMBWorld.h): `mWorld->AddObject(button)` loads the argument before the GetRoot call, `mWorld->GetRoot().AddObject`
   after it (SBSongbirdNode::OnStart and LoadSongs matched only with the helper form).
 - Virtuals reached through a secondary base get `this` adjusted in the listing: Idle (IMBPeriodical, +4) and
   ListenToEvent (IMBEventListener, +8) address members 4/8 bytes lower than the class layout says.
@@ -926,7 +926,7 @@ Source patterns known to match (vc6 `/O2 /GX /MT`).
   GetBitmapBuffer; Begin/EndRenderView index mViewMap directly (no claim changed).
 - SetView is not no-alias code (`#pragma optimize("a", off)` around it): the original reloads
   mMfCameraNode after the calls and calls map::find out of line.
-- MBLocale.h (from the PDB; inline ctors, generated dtor whose out-of-line copy SteamboatNode.obj
+- MBLocale (MBEngine's MBLocale.h now; inline ctors, generated dtor whose out-of-line copy SteamboatNode.obj
   emits), MfCamera.h, MfAiViewEventHandler (MfAi.h), MBsrand / MBGetCurrentDirectory (MBRuntime.h).
 
 ## Game classes (wave 13, worker A)

@@ -653,18 +653,7 @@ static void __yy_memcpy(char *to, char *from, int count)
 
 // ---- the conditional scanner: flex 2.5 skeleton (%option never-interactive), the tokens
 // the parser above reads; tables copied from the binary ----
-struct yy_buffer_state {
-    FILE *yy_input_file;
-    char *yy_ch_buf;
-    char *yy_buf_pos;
-    unsigned int yy_buf_size;
-    int yy_n_chars;
-    int yy_is_our_buffer;
-    int yy_is_interactive;
-    int yy_at_bol;
-    int yy_fill_buffer;
-    int yy_buffer_status;
-};
+#include "../MBEngine/yy_buffer_state.h" // flex's buffer, as in the script compiler
 
 #define YY_BUF_SIZE 16384
 #define YY_READ_BUF_SIZE 8192

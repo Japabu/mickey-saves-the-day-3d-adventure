@@ -10,6 +10,9 @@ class MfScHandleDict;
 class MfScPropertyExtList;
 class MfStringList;
 
+// own copy: the game calls PiccoloRT and MfPoLibrary through its import thunks (no dllimport) and emits its own copies of
+// inline members; the owner's header declares the class PICCOLORT_API / MFPO_API, dllimport here,
+// and they open PiccoloRT's and MfPoLibrary's MfString copies.
 class MfScData {
 public:
     MfScData();
@@ -25,6 +28,7 @@ private:
     MfString *pfsName;                                  // +0x0008
 };
 
+// own copy: as above.
 class MfScDataObject : public MfScData {
 public:
     enum MfPropertyErrorCode {
@@ -45,11 +49,13 @@ protected:
     unsigned int uiFlags;                               // +0x0010
 };
 
+// own copy: as above.
 class MfScObject : public MfScDataObject {
 public:
     MfScObject(unsigned int);
 };
 
+// own copy: as above.
 class MfPoBase : public MfScObject {
 public:
     MfPoBase(unsigned int);

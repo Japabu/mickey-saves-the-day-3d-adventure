@@ -1,10 +1,10 @@
 #pragma once
 // muffin/include/Runtime/MBPoint.h: points and sizes of the engine (layouts from SteamboatApp.pdb).
+// The plain structs are MBEngine's. MBPoint, MBPoint3 and MBSize are own copies: the game uses inline
+// operators MBEngine's MBPoint.h/MBPoint3.h do not declare (unary and binary minus, -=, ==), its
+// MBSize names the members w and h and has SetSize, and MBRect.h builds on these.
 
-struct MBPointStruct {
-    long x;
-    long y;
-};
+#include "../MBEngine/MBPointStruct.h"
 
 class MBPoint : public MBPointStruct {
 public:
@@ -16,11 +16,7 @@ public:
     bool operator==(const MBPoint &p) const { return x == p.x && y == p.y; }
 };
 
-struct MBPointStruct3 {
-    long x;
-    long y;
-    long z;
-};
+#include "../MBEngine/MBPointStruct3.h"
 
 class MBPoint3 : public MBPointStruct3 {
 public:

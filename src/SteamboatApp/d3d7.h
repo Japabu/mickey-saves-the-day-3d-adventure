@@ -133,6 +133,9 @@ typedef struct _DDSURFACEDESC2 {
 
 typedef HRESULT(__stdcall *LPDDENUMSURFACESCALLBACK7)(struct IDirectDrawSurface7 *, DDSURFACEDESC2 *, void *);
 
+// own copy: the whole DirectX 7 vtable; MBEngine's IDirectDrawSurface7.h declares the slots up to
+// Unlock only, and MBEngine's DirectDraw headers do not declare DDSURFACEDESC2 and the other
+// DirectX 7 types this header adds.
 struct IDirectDrawSurface7 : public IUnknown {
     virtual HRESULT __stdcall AddAttachedSurface(IDirectDrawSurface7 *) = 0;
     virtual HRESULT __stdcall AddOverlayDirtyRect(RECT *) = 0;
@@ -397,6 +400,8 @@ typedef struct tagDDDEVICEIDENTIFIER2 {
     DWORD dwWHQLLevel;
 } DDDEVICEIDENTIFIER2;
 
+// own copy: the whole DirectX 7 vtable; MBEngine's IDirectDraw7.h ends at SetDisplayMode and
+// declares GetCaps with the DirectX 5 DDCAPS.
 struct IDirectDraw7 : public IUnknown {
     virtual HRESULT __stdcall Compact() = 0;
     virtual HRESULT __stdcall CreateClipper(DWORD, IDirectDrawClipper **, IUnknown *) = 0;

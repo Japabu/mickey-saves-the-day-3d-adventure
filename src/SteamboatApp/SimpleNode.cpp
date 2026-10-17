@@ -65,6 +65,7 @@
 // 0x10115270 ?GetNamedString@SimpleNode@@QAEXPBDAAV?$basic_string@GU?$char_traits@G@std@@V?$MBAllocator@G@@@std@@@Z
 // 0x10115360 ?SetLocale@SimpleNode@@QAEXAAVMBLocale@@@Z
 // 0x101155b0 ?LoadStringTable@SimpleNode@@UAEXPBD@Z
+// 0x10115740 ?AddDBRef@Database@DatabaseMgr@@QAEKXZ
 // 0x10115750 ?ReleaseDBRef@Database@DatabaseMgr@@QAEKXZ
 // 0x10115a30 ?AddZipDatabase@DatabaseMgr@@IAE_NPAVIMBFileSpec@@PBD@Z
 // 0x10115c70 ?AddDirDatabase@DatabaseMgr@@IAE_NPAVIMBFileSpec@@PBD@Z

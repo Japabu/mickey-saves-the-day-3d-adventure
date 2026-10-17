@@ -4,6 +4,9 @@
 // the code is MBEngine's SimpleNode.cpp, compiled into this binary by SimpleNode.cpp).
 #include "MBInterfaces.h"
 
+// own copy: MBEngine's SimpleNode.h is its units' whole prologue (its own MBGUID, MBAllocator,
+// operator new, colour and MBIID_* statics) and cannot be included next to MBContainers.h and
+// MBInterfaces.h; the game's units see SimpleNode through this declaration.
 class SimpleNode : public IMBNode, public IMBPeriodical, public IMBEventListener {
 public:
     SimpleNode(const SimpleNode &);

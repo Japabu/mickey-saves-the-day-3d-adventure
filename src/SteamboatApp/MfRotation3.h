@@ -7,6 +7,8 @@
 class MfMath;
 class MfXformMatrix3;
 
+// own copy: the game calls mflinalg through its import thunks (no dllimport) and emits its own copies of
+// inline members; the owner's header declares the class MFLINALG_API, dllimport here.
 class MfRotation3 {
 public:
     MfRotation3(const MfXformMatrix3 &);
