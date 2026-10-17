@@ -60,7 +60,7 @@ extern FILE *yyin, *yyout;
 
 #define unput(c) yyunput( c, yytext_ptr )
 
-struct yy_buffer_state
+struct yy_buffer_state   // own copy: flex 2.4's (int yy_buf_size; unsigned in src/MBEngine/yy_buffer_state.h)
 	{
 	FILE *yy_input_file;
 

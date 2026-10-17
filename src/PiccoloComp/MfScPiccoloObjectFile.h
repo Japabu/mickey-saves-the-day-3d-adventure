@@ -4,7 +4,7 @@ class MfScDataHandle;
 
 // PiccoloRT.dll: a compiled module on disk (.pob). Its default constructor and
 // ObjectFileName() are inline here.
-class __declspec(dllimport) MfScPiccoloObjectFile {
+class __declspec(dllimport) MfScPiccoloObjectFile {   // own copy: inline constructor; src/PiccoloRT/MfScPiccoloObjectFile.h includes PiccoloRT's MfString, which conflicts with the MfString kept here
 public:
     enum MfScPOFErrorCode { kOk = 0 };
     MfScPiccoloObjectFile()

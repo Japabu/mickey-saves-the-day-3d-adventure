@@ -4,7 +4,7 @@
 class MfCallBack;
 class MfString;
 
-class __declspec(dllimport) MfDictionary : public MfHashTable {
+class __declspec(dllimport) MfDictionary : public MfHashTable {   // own copy: src/mfutil/MfDictionary.h includes src/mfutil/MfString.h, which conflicts with the older MfString kept here
 public:
     virtual ~MfDictionary();
 protected:

@@ -6,7 +6,7 @@ class MfListItemInterface;
 
 // mfutil.dll: doubly linked list of void *. The constructor is inline here.
 // VC5 lays overloaded virtuals out in reverse order of declaration.
-class __declspec(dllimport) MfDblList {
+class __declspec(dllimport) MfDblList {   // own copy: the header this DLL was built with: GetFirst/GetNext/GetCurrent imported (inline in src/mfutil/MfDblList.h) and the inline First/Next/Last/Prev
 public:
     enum EnumListPosition { LP_BEFORE = 0, LP_AFTER = 1 };
 

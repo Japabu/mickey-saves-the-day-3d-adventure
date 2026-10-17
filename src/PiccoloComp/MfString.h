@@ -13,7 +13,7 @@ class MfSystemTime;
 class MfTime;
 class MfVariant;
 
-class __declspec(dllimport) MfString {
+class __declspec(dllimport) MfString {   // own copy: the older mfutil header: CopyOnWrite, ReadFromFile, +=, MaxLength, operator[] etc. are imported (src/mfutil/MfString.h has them inline)
 public:
     MfString & operator+=(MfString const &);
     MfString & operator+=(char const *);

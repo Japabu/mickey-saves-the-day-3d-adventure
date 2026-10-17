@@ -2,7 +2,7 @@
 class MfPcCodeChunk;
 
 // PiccoloRT.dll: the bytecode set. The compiler reads the instruction sizes.
-class __declspec(dllimport) MfScBytecodes {
+class __declspec(dllimport) MfScBytecodes {   // own copy: src/PiccoloRT/MfScBytecodes.h is not dllimport and has no friend for MfPcCodeChunk (aiBytecodeSize)
     friend class MfPcCodeChunk;
 public:
     static int BytecodeSize(unsigned char);

@@ -5,7 +5,7 @@ class MfString;
 // mfutil.dll: a list of heap MfStrings handed out by AllocString. Only the
 // members are imported: the constructor is inline and PiccoloComp has its own
 // copy of the vtable.
-class MfStringHeap : public MfStringList {
+class MfStringHeap : public MfStringList {   // own copy: inline constructor and a vtable of this DLL's own; src/mfutil/MfStringHeap.h is fully exported
 public:
     MfStringHeap() {}
     __declspec(dllimport) virtual ~MfStringHeap();

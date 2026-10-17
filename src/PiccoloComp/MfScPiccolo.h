@@ -6,7 +6,7 @@ class MfPcConstSet;
 class MfString;
 
 // PiccoloRT.dll: the script runtime's globals.
-class __declspec(dllimport) MfScPiccolo {
+class __declspec(dllimport) MfScPiccolo {   // own copy: src/PiccoloRT/MfScPiccolo.h has no friends for the compiler (fsDataPath, bIsRunning) and opens MfScDataObject.h/PiccoloRT's MfString
     friend class MfPcCodeLoader;
     friend class MfPcCompiler;
     friend class MfPcConstSet;

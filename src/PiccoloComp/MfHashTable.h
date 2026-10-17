@@ -4,7 +4,7 @@ template <class T0> class field_;
 template <class T0> class unknown_;
 class MfCallBack;
 
-class __declspec(dllimport) MfHashTable {
+class __declspec(dllimport) MfHashTable {   // own copy: src/mfutil/MfHashTable.h includes src/mfutil/MfCallBack.h, which conflicts with the MfCallBack kept here
 public:
     class MfChainNode;
     virtual ~MfHashTable();

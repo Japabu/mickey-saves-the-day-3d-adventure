@@ -3,7 +3,7 @@ class MfString;
 
 // mfutil.dll: the typed body of an MfVariant.
 namespace variant_namespace {
-class MfVariantData {
+class MfVariantData {   // own copy: src/mfutil/MfVariantData.h includes src/mfutil/MfString.h, which conflicts with the older MfString kept here
 public:
     virtual ~MfVariantData();
     int Type() const { return iType; }
@@ -12,7 +12,7 @@ public:
 }
 
 // mfutil.dll: a number or a string. The type tests are inline.
-class __declspec(dllimport) MfVariant {
+class __declspec(dllimport) MfVariant {   // own copy: src/mfutil/MfVariant.h includes src/mfutil/MfString.h, which conflicts with the older MfString kept here
 public:
     MfVariant();
     MfVariant(int);

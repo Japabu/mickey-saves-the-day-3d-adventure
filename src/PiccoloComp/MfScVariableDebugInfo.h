@@ -3,7 +3,7 @@
 
 // PiccoloRT.dll: name of a local variable, its frame slot and the code level
 // it is declared at (0xc bytes).
-class MfScVariableDebugInfo {
+class MfScVariableDebugInfo {   // own copy: src/PiccoloRT/MfScVariableDebugInfo.h includes PiccoloRT's MfString, which conflicts with the MfString kept here
 public:
     MfScVariableDebugInfo(MfString const &name, int slot, int level)
         : mName(name), mSlot(slot), mLevel(level) {}

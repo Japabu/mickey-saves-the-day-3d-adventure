@@ -64,7 +64,7 @@ EDITS['PiccoloComp/CodeLoader_unit.h'] = [
      "    virtual int CallBack(const MfString &token, MfString &rest);    // PORT: mfutil's slot (this unit emits the vtable)\n"
      '};\n'
      '\n'
-     '#line 134\n', 1),
+     '#line 125\n', 1),
     ('    ~MfStringList() { Clear(); }\n'
      '    virtual void Add(const MfString &);         // +0x70\n'
      '    // The local copies in these inline helpers leave no code, but each one takes a\n'
@@ -76,7 +76,7 @@ EDITS['PiccoloComp/CodeLoader_unit.h'] = [
      '    virtual int CallBack(const MfString &token, MfString &rest);\n'
      '    // The local copies in these inline helpers leave no code, but each one takes a\n'
      "    // temporary slot: together they put the EH funclets' cast temporaries at the\n"
-     '#line 142\n', 1),
+     '#line 133\n', 1),
     ('    void Optimize();\n'
      '    int Matches(const MfString &);\n'
      '    char m_body[0x80];\n'
@@ -119,7 +119,7 @@ EDITS['PiccoloComp/CodeLoader_unit.h'] = [
      "    MfString GetFilePath() const; WIN32_FIND_DATAA m_fd;    // PORT: mfutil's first member (+0), for GetFileName\n"
      '};\n'
      '\n'
-     '#line 164\n', 1),
+     '#line 155\n', 1),
     ('    MfDirectoryFileInfo *GetFirstFile() { MfDirectoryFileInfo *f = (MfDirectoryFileInfo *)First(m_cursor); return f; }\n'
      '    MfDirectoryFileInfo *GetNextFile() { MfDirectoryFileInfo *f = (MfDirectoryFileInfo *)Next(m_cursor); return f; }\n'
      '    int m_10;\n'
@@ -180,7 +180,7 @@ EDITS['PiccoloComp/CodeLoader_unit.h'] = [
      '    MfScPiccoloObjectFile *mDebugFile;  // +0x34\n'
      '};\n'
      '\n'
-     '#line 236\n', 1),
+     '#line 227\n', 1),
 ]
 
 # PiccoloComp/MfHashTable.h: declared with the real member types of mfutil's MfHashTable (two of them are pointers), so the size agrees on 64-bit.
