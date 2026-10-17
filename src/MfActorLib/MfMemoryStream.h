@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfMemoryStream: a stream in a memory buffer, its own (growing) or the caller's.
-#include "MfActorLib_api.h"
 #include "MfStream.h"
 
 // size 0x2c

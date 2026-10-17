@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfTreeNode: a node with a first child, a next sibling and a parent.
-#include "MfActorLib_api.h"
 class MFACTOR_API MfTreeNode {
 public:
     enum { TYPE = 'Tree' };

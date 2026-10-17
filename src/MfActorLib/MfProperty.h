@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProperty: a named MfTypedValue ('Prop'). Declaration from the SteamboatApp PDB.
-#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfString.h"
 class MfStream;

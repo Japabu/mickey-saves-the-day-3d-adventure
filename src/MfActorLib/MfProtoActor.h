@@ -1,8 +1,10 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoActor: the prototype of an actor ('PrtA'): its skeleton of
 // MfProtoNodes, properties, skills, proximity definitions and the behavior
 // maps of its spaces. Declaration from the SteamboatApp PDB.
-#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfString.h"
 #include "MfStringList.h"

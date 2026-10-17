@@ -7,7 +7,6 @@
 #include "MfFileStream.h"
 #include "MfMemoryStream.h"
 #include "MfAnimEvent.h"
-#include "MfAnimEventList.h"
 
 // 0x100012e0 ??0MfStream@@QAE@ABV0@@Z            (implicit copy ctor)
 // 0x10001320 ??4MfJLTranslate@@QAEAAV0@ABV0@@Z         (implicit operator=)

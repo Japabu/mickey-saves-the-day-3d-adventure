@@ -1,10 +1,12 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoNode: a node of a prototype actor's skeleton ('PrtN'): a joint, a
 // geometry, a handle, a floor, a camera, a light or a spline (the style says
 // which info object it carries). Exported names only (the SteamboatApp PDB
 // has no record of the class); the accessors are inline (the first object
 // including this header emits them in declaration order).
-#include "MfActorLib_api.h"
 #include "MfTreeNode.h"
 #include "MfStreamObject.h"
 #include "MfString.h"
@@ -27,7 +29,13 @@ class MfStream;
 class MfTriangleSet;
 class MfVector3;
 
-#include "MfColSphere.h"
+// A collision sphere of a node (MfProtoNode::ColSpheres()).
+struct MfColSphere {
+    MfColSphere() { data = 0; }
+    MfVector3 center;   // +0x00
+    float radius;       // +0x0c
+    int data;           // +0x10
+};
 
 // size 0x84
 class MFACTOR_API MfProtoNode : public MfTreeNode, public MfStreamObject {

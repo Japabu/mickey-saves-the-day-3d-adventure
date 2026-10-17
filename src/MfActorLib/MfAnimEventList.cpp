@@ -4,8 +4,7 @@
 #include "MfStreamObject.h"
 #include "MfStream.h"
 #include "MfAnimEvent.h"
-#include "MfAnimEventList.h"
-#include "MfFileType.h"
+#include "MfFile.h"
 
 // 0x10001690 ??0MfAnimEvent@@QAE@XZ
 MfAnimEvent::MfAnimEvent()
@@ -77,7 +76,7 @@ MfStreamError MfAnimEventList::ReadFromStream(MfStream &)
     return (MfStreamError)3;
 }
 
-// MfFileType's inline members (MfFileType.h), emitted here:
+// MfFileType's inline members (MfFile.h), emitted here:
 // 0x10001820 ??0MfFileType@@QAE@J@Z
 // 0x10001830 ??1MfFileType@@QAE@XZ
 // 0x10001840 ??8MfFileType@@QAEHV0@@Z

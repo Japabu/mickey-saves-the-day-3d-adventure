@@ -1,7 +1,9 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfPropertySet: a set of named properties (MfPropertyList, MfPropertyTable).
 // Declaration from the SteamboatApp PDB.
-#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 class MfCallBack;
 class MfProperty;

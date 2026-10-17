@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoDB: the loaded proto actors, by upper-case name. Exported names only.
-#include "MfActorLib_api.h"
 #include "MfString.h"
 #include "MfHashTable.h"
 #include "MfFile.h"

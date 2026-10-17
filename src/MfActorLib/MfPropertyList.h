@@ -1,7 +1,9 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfPropertyList: properties in a list ('PLst'). Declaration from the
 // SteamboatApp PDB.
-#include "MfActorLib_api.h"
 #include "MfPropertySet.h"
 #include "MfDblList.h"
 class MfStream;

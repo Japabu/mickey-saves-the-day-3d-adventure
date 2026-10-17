@@ -1,7 +1,9 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfListValue: a property value holding a list of values ('VLis'). The SteamboatApp
 // PDB names the class only; layout from the code.
-#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 #include "MfDblList.h"
 #include "MfListItemInterface.h"
@@ -28,4 +30,9 @@ protected:
     int flags;  // +0x1c (cleared by the constructors, otherwise unused)
 };
 
-#include "MfListValueSearchItr.h"
+// Matches the list values that compare equal to the key.
+class MFACTOR_API MfListValueSearchItr : public MfListItemInterface {
+public:
+    MfListValueSearchItr() {}
+    virtual int Matches(void *pKey, void *pData);
+};

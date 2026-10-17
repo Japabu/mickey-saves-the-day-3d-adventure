@@ -4,7 +4,6 @@
 #include "MfPropertyTable.h"
 #include "MfFSMSpaceToBhvr.h"
 #include "MfColor.h"
-#include "MfTexture.h"
 #include "MfMaterial.h"
 #include "MfProtoTextureKeyframe.h"
 #include "MfProtoSoundKeyframe.h"

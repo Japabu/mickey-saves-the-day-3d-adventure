@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoAnchorData: an anchor node of a skill ('PrAD').
-#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 
 struct MFACTOR_API MfProtoAnchorData : public MfStreamObject {

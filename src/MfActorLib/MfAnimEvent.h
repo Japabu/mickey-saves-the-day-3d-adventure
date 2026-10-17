@@ -1,9 +1,14 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfAnimEvent: an event recorded in an MfAnimSequence ('AnEv'): its type, the
-// frame time and the actor it concerns. Member names from the SteamboatApp PDB.
-#include "MfActorLib_api.h"
+// frame time and the actor it concerns (member names from the SteamboatApp PDB);
+// MfAnimEventList: the events of a sequence, in a list that owns them ('AnEL';
+// reading one is not supported).
 #include "MfStreamObject.h"
 #include "MfString.h"
+#include "MfDblList.h"
 #include "enums.h"
 class MfStream;
 
@@ -26,4 +31,18 @@ protected:
     int mType;                  // 0x04
     unsigned int mFrameTime;    // 0x08
     MfString mActorName;        // 0x0c
+};
+
+// size 0x14: MfDblList at 0, MfStreamObject at 0x10
+class MFACTOR_API MfAnimEventList : public MfDblList, public MfStreamObject {
+public:
+    static const long STREAM_TYPE;
+    MfAnimEventList() {}
+    virtual ~MfAnimEventList() { Clear(); }
+    // Deletes the events, then empties the list.
+    virtual void Clear();
+    void AddEvent(const MfAnimEvent *);
+    virtual MfStreamError ReadFromStream(MfStream &);
+    virtual MfStreamError WriteToStream(MfStream &) const;
+    virtual long StreamType() const;
 };

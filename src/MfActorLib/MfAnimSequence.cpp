@@ -3,9 +3,8 @@
 #include "MfDblList.h"
 #include "MfStreamObject.h"
 #include "MfStreamSizedObject.h"
-#include "MfFileType.h"
 #include "MfActorRecordList.h"
-#include "MfAnimEventList.h"
+#include "MfAnimEvent.h"
 #include "MfTypedValue.h"
 #include "MfAnimSequence.h"
 

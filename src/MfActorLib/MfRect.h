@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfRect: an axis-aligned rectangle (declaration from the SteamboatApp PDB).
-#include "MfActorLib_api.h"
 class MfTriangleSet;
 class MfVector2;
 

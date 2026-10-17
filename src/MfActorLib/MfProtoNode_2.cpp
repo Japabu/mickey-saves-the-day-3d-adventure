@@ -15,7 +15,7 @@
 #include "MfStream.h"
 #include "MfAiHook.h"
 
-// Compiler-generated members of the triangle primitives:
+// Compiler-generated members of MfTriPrimitives.h:
 // 0x10015e60 ??0MfTriSquare@@QAE@ABV0@@Z
 // 0x10015e80 ??0MfTriCube@@QAE@ABV0@@Z
 // 0x10015ea0 ??0MfTriSphere@@QAE@ABV0@@Z

@@ -1,7 +1,9 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfVector3Value: a MfVector3 property value ('VVe3'). The inline members are the
 // ones MfTransform3Value.cpp emits.
-#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 #include "MfVector3.h"
 class MfStream;

@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfLight: a light source description ('Lit2').
-#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 #include "MfColor.h"
 #include "MfPropertyList.h"

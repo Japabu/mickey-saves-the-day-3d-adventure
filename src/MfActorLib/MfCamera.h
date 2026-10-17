@@ -1,7 +1,9 @@
 #pragma once
-// MfCamera: a camera's settings ('Camr' value of a camera node, stream type
-// 'Cam2'). Exported names only; layout from the code (MfCamera.cpp).
-#include "MfActorLib_api.h"
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
+// MfCamera: a camera's settings ('Camr' value of a camera node). Exported
+// names only; layout as in MfCamera_unit.h (MfCamera.cpp).
 #include "MfTypedValue.h"
 #include "MfString.h"
 #include "MfPropertyList.h"

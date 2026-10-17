@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfColor: an RGBA colour value ('Colr').
-#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 class MfStream;
 

@@ -1,7 +1,9 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfTransform2Value: a MfTransform2 property value ('VTr2'). The inline members are the
 // ones MfTransform3Value.cpp emits.
-#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 #include "MfTransform2.h"
 class MfStream;

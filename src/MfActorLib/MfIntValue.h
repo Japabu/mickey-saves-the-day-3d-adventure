@@ -1,7 +1,9 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfIntValue: an int property value ('VInt'). Declaration from the SteamboatApp
 // PDB; the inline members are the ones the first users emit (MfStringValue.cpp).
-#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 class MfStream;
 

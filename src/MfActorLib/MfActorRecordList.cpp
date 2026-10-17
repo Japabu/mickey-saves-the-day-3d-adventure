@@ -1,12 +1,11 @@
 // MfActorRecordList.cpp - MfActorLib.dll 0x10001000-0x100012e0
 #include "MfString.h"
 #include "MfDblList.h"
-#include "MfActorRecord.h"
 #include "MfActorRecordList.h"
 #include "MfStream.h"
 #include "MfStreamObject.h"
 #include "MfStreamSizedObject.h"
-#include "MfFileProgress.h"
+#include "MfFile.h"
 
 // Inline members (MfActorRecord.h, MfActorRecordList.h), emitted here:
 // 0x10001000 ??0MfActorRecord@@QAE@PAVMfProtoActor@@AAVMfString@@@Z

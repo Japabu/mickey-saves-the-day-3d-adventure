@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoSoundKeyframe: a sound a skill plays at a time ('PrSK').
-#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfString.h"
 

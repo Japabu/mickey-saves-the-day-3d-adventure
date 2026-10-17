@@ -1,7 +1,9 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfFloatValue: a float property value ('VFlo'), declared like MfIntValue (the
 // SteamboatApp PDB names the class but has no record of it).
-#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 class MfStream;
 

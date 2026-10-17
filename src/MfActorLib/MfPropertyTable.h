@@ -1,7 +1,9 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfPropertyTable: properties in a dictionary keyed by name ('PTab').
 // Declaration from the SteamboatApp PDB.
-#include "MfActorLib_api.h"
 #include "MfPropertySet.h"
 #include "MfHashTable.h"
 class MfStream;

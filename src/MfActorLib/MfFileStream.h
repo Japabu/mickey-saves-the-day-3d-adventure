@@ -1,7 +1,9 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfFileStream: a stream on a Win32 file, optionally buffered (2 KB buffers kept
 // in a free list). A MF_HOOK_FILE_HANDLE hook can supply the file handle.
-#include "MfActorLib_api.h"
 #include "MfStream.h"
 class MfString;
 

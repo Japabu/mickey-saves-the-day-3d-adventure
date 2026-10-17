@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfFSMSpaceToBhvr: the behaviours an actor's state machine runs in one space.
-#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfStringList.h"
 

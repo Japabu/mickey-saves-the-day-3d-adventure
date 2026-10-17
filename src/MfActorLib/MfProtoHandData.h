@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoHandData: a hand of a skill ('PrHD').
-#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 
 struct MFACTOR_API MfProtoHandData : public MfStreamObject {

@@ -1,7 +1,9 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfStringValue: a string property value ('VStr'). Declaration from the
 // SteamboatApp PDB; the inline members are the ones MfStringValue.cpp emits.
-#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 #include "MfString.h"
 class MfStream;

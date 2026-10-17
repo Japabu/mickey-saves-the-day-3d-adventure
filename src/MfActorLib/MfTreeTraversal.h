@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfTreeTraversal: the nodes of a tree (optionally of one type) in preorder.
-#include "MfActorLib_api.h"
 class MfTreeNode;
 
 class MFACTOR_API MfTreeTraversal {

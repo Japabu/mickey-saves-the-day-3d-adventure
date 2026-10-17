@@ -11,12 +11,9 @@
 #include "MfStreamSizedObject.h"
 #include "MfTypedValue.h"
 #include "MfListValue.h"
-#include "MfFileType.h"
 #include "MfProtoActor.h"
-#include "MfActorRecord.h"
 #include "MfActorRecordList.h"
-#include "MfAnimEventList.h"
-#include "MfAnimFile.h"
+#include "MfAnimEvent.h"
 #include "MfAnimSequence.h"
 
 // 0x10003740 ??0MfAnimSequence@@QAE@XZ

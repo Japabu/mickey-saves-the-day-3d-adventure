@@ -1,6 +1,6 @@
 // MfFile unit: MfActorLib.dll 0x10001880-0x10002230.
 // Inline header members of MfFileObject and MfFile (emitted at the start of the
-// object that holds MfAnimSequence) followed by MfAnimFile (MfAnimFile.h), the
+// object that holds MfAnimSequence) followed by MfAnimFile (MfAnimSequence.h), the
 // file class MfAnimSequence uses for per-frame node transforms. mflinalg's
 // classes as this object sees them.
 #ifndef MFACTORLIB_MFFILE_H
@@ -37,7 +37,6 @@ public:
 };
 
 // ---- MfActorLib ----
-#include "MfAnimFile.h"
 #include "MfAnimSequence.h"
 
 #endif

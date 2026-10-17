@@ -1,7 +1,9 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoProxDef: the proximity region of a proto actor ('PPrD'). Declaration from
 // the SteamboatApp PDB.
-#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfString.h"
 class MfDblList;

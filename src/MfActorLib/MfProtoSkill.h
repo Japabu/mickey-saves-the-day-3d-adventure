@@ -1,9 +1,11 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoSkill: the prototype of a skill (gesture, locomotion or
 // manipulation): a keyframe track per joint of the actor's skeleton plus the
 // skill's subclass objects (keyframes for textures, sounds and events, feet,
 // hands, anchors, manipulation handles). Declaration from the SteamboatApp PDB.
-#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfAiSkill.h"
 #include "MfString.h"

@@ -1,8 +1,10 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfSpline: a path of transforms through timed control points ('Spli'),
 // interpolated as a cubic Bezier between neighbouring points; Integrate
 // measures it so it can also be sampled by distance.
-#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfDblList.h"
 #include "MfTransform3.h"

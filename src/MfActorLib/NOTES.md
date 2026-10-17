@@ -4,25 +4,25 @@ Read this before a new MfActorLib unit. Every item was verified by match.sh in t
 unit named in brackets. Add a line when you find a new pattern; keep it short.
 
 ## Shared headers (use them, do not redeclare the class in a unit header)
-- One header per MfActorLib class, `<Class>.h`, declared as the owner's code sees it.
-  A header that used to declare several classes includes the split-off headers at
-  the classes' old positions: VC5's output (`$E` numbers, even code) changes with what
-  a file sees and in which order, so every file keeps seeing the same declarations.
-  MfCamera.cpp keeps its own copy (MfCamera_unit.h): its `$E` functions differ with
-  the shared headers.
+- Every MfActorLib class is declared once, in the header that held it (classes of a
+  family share one: MfColModel.h, MfJLimit.h, MfFile.h, MfAiHook.h, MfTriPrimitives.h,
+  MfActorRecordList.h, MfAnimEvent.h, MfAnimSequence.h, ...). Do not split them: VC5's
+  output (`$E` numbers, register choices) changes with the number of files a source
+  opens, even when the tokens are the same.
+- Exports: `MFACTOR_API`, defined by src/options.txt (`/DMFACTOR_API=__declspec(dllexport)`)
+  while MfActorLib.dll is compiled; each header that uses it defines it as dllimport
+  otherwise (`#ifndef MFACTOR_API` after `#pragma once`), with no extra header file.
 - `MfStreamObject.h` (vtable StreamType, ReadFromStream, WriteToStream, WriteAsObject;
-  MfStreamConstructorEntry.h), `MfStreamSizedObject.h`, `MfStream.h` (m_version at
-  +4 is public: the stream objects test it directly) [MfColModel, MfJL*].
+  MfStreamConstructorEntry), `MfStreamSizedObject.h`, `MfStream.h` (m_version at +4 is
+  public: the stream objects test it directly) [MfColModel, MfJL*].
 - mfutil imports: `MfString.h` (inline Length() through MfStringRef), `MfDblList.h`
   (inline ctor, GetFirst/GetNext, Prepend/Add), `MfStringList.h` (inline dtor
   `{ Clear(); }`, First/Next) [MfFile_2, MfFSMSpaceToBhvr_2].
 - mflinalg imports: `MfVector3.h`, `MfRotation3.h`, `MfTransform3.h`, declared from the
   SteamboatApp PDB (`_x`, accessors `x()`) with the members mflinalg's first object
   emits made inline. MfTransform3::operator= assigns the rotation first [MfColModel].
-- `MfAiHook.h`: MfAi, MfInterfaceRegistry and the MF_HOOK_* ids (PDB), then
-  `MfHookData.h`, `MfFileHookData.h`, `MfActorRWHookData.h`, `MfAiHookManager.h`.
-- `MfFile.h` (with `MfFileType.h`, `MfFileProgress.h`), `MfColModel.h`, `MfJLimit.h`
-  (with all five joint limits), `MfFSMSpaceToBhvr.h`.
+- `MfAiHook.h`: MfAi, MfInterfaceRegistry, MfAiHookManager and the MF_HOOK_* ids (PDB).
+- `MfFile.h`, `MfColModel.h`, `MfJLimit.h` (all five joint limits), `MfFSMSpaceToBhvr.h`.
 
 ## Vtables
 - Overloaded virtuals: VC5 lays an overload group out in reverse declaration order.
@@ -171,7 +171,7 @@ unit named in brackets. Add a line when you find a new pattern; keep it short.
 ## Wave 8 (MfTriangleSet, primitives, MfProtoNode streaming, old node format)
 - MfTriangleSet.h has the real layout (mSource shares vertices and triangles;
   MF_TRISET_* flags; MfTriangleSetType values in enums.h). MfTriangle,
-  MfTextureVertex and MfOrientedBox have their own headers.
+  MfTextureVertex and MfOrientedBox stay in MfColModel.h.
 - MfVector3.h: lengthSquared and normalize are inline as in mflinalg
   (normalize divides by sqrt(lengthSquared())); it includes <math.h>.
 - `$E` names of statics are ours: take them from the failing `--sym` list and

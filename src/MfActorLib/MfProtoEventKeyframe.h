@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoEventKeyframe: an event a skill posts at a time ('PrEK').
-#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfString.h"
 

@@ -1,7 +1,9 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfOpaqueValue: the raw bytes of a stream object of a type that is not
 // registered ('VOpq'); it writes itself back under the original type.
-#include "MfActorLib_api.h"
 #include "MfTypedValue.h"
 class MfStream;
 

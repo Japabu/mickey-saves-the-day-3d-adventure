@@ -1,8 +1,10 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfStream: abstract byte stream with typed operators and object records.
 // ReadObject/WriteObject records: -2 = null object; -1, type, size, data for
 // sized objects; otherwise type, data.
-#include "MfActorLib_api.h"
 #include "enums.h"
 class MfCallBack;
 class MfStreamObject;

@@ -1,6 +1,8 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoManipData: the handle of a manipulation skill ('Prmd').
-#include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfVector3.h"
 #include "MfTransform3.h"
