@@ -1,17 +1,14 @@
-#pragma once
 // MfThread: a worker thread that runs MfThreadWork items handed to it, or a
 // wrapper for the calling thread. Exported names only; layout from the code.
+#ifndef MFUTIL_MFTHREAD_H
+#define MFUTIL_MFTHREAD_H
+
+#include "mfutil_api.h"
 #include <windows.h>
+#include "MfThreadWork.h"
 class MfEvent;
 
-// Work item: slot 1 runs it.
-class MfThreadWork {
-public:
-    virtual ~MfThreadWork() {}
-    virtual void DoWork() = 0;
-};
-
-class __declspec(dllexport) MfThread {
+class MFUTIL_API MfThread {
 public:
     // Creation flags
     enum {
@@ -55,3 +52,5 @@ private:
     MfEvent *pevtWork;
     MfThreadWork *pWork;
 };
+
+#endif

@@ -1,7 +1,7 @@
 // mfutil.dll MfPathSearch (0x1000acf0-0x1000b100), with the local tokenizer
 // callback that Search() uses (vtable 0x1001767c).
 #include <windows.h>
-#include "MfPathSearch_unit.h"
+#include "MfPathSearch.h"
 
 // Not exported: tries "<dir>\<name>" for every directory token.
 // size 0xc: vptr, m_name +4, m_found +8

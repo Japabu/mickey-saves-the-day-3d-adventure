@@ -2,7 +2,7 @@
 // The first functions are inline/implicit members of the exported classes that this
 // object emitted (no source of their own here; they come from MfDictionary.h):
 #include <stdlib.h>
-#include "MfDictionary_unit.h"
+#include "MfDictionary.h"
 
 // 0x100029e0 ?BucketIndex@MfHashTable@@IAEHHH@Z           (inline, MfDictionary.h)
 // 0x10002a00 ??0MfHashTable@@QAE@ABV0@@Z                   (implicit)

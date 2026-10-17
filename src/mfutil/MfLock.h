@@ -1,7 +1,10 @@
-#pragma once
 // MfLock: a spin lock on one word. Declaration from the SteamboatApp PDB.
+#ifndef MFUTIL_MFLOCK_H
+#define MFUTIL_MFLOCK_H
 
-class __declspec(dllexport) MfLock {
+#include "mfutil_api.h"
+
+class MFUTIL_API MfLock {
 public:
     MfLock();
     ~MfLock();
@@ -11,3 +14,5 @@ public:
 private:
     long lwLockWord;
 };
+
+#endif

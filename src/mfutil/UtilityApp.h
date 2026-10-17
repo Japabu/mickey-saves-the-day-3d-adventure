@@ -1,14 +1,17 @@
-#pragma once
 // UtilityApp: per-application settings of mfutil's users: the registry keys for
 // the profile ("Software\<RegKey>\<AppName>") and the machine-wide data
 // ("Software\<RegKey>\Global Data"), and the directory the plugins load from.
 // Exported names only (no PDB); the DLL entry point fills in the statics.
+#ifndef MFUTIL_UTILITYAPP_H
+#define MFUTIL_UTILITYAPP_H
+
+#include "mfutil_api.h"
 #include <windows.h>
 
 class MfString;
 class MfStringList;
 
-class __declspec(dllexport) UtilityApp {
+class MFUTIL_API UtilityApp {
     friend class MfKeyDialog;
     friend class MfNameDialog;
     friend BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved);
@@ -46,3 +49,5 @@ private:
     static MfString fsRegKey;
     static HINSTANCE hLibInstance;
 };
+
+#endif

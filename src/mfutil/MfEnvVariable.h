@@ -9,7 +9,7 @@
 
 // size 0xc, vtable 0x1001742c: ??_E, ReadVariable, WriteVariable.
 // The constructor/destructor are inline (MfEnvVariable's unit keeps the exported copies).
-class MFAPI MfEnvVariable {
+class MFUTIL_API MfEnvVariable {
 public:
     MfEnvVariable(const MfString &name) : m_name(name) { ReadVariable(); }
     virtual ~MfEnvVariable() {}

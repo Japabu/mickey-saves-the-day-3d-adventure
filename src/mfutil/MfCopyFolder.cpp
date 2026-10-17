@@ -1,7 +1,7 @@
 // mfutil.dll 0x10001000-0x10002100: MfCopyFolder, preceded by the out-of-line
-// copies of the inline members of the exported classes in MfCopyFolder.h
+// copies of the inline members of the exported classes in MfString.h
 // (0x10001000-0x10001820; this is the first object of the DLL).
-#include "MfCopyFolder_unit.h"
+#include "MfCopyFolder.h"
 
 // 0x10001000 ??0MfCallBack@@QAE@XZ                      (inline, header)
 // 0x10001010 ?CallBack@MfCallBack@@UAEHPAX@Z            (inline, header)

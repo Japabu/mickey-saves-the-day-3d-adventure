@@ -1,7 +1,7 @@
 // MfIndex (mfutil.dll 0x10004410-0x10004760)
 // GetKey/GetData of MfIndex are folded with MfDictionary's (0x10002dd0, 0x10002de0).
 #include <stdlib.h>
-#include "MfIndex_unit.h"
+#include "MfIndex.h"
 
 // 0x10004410 ??0MfIndex@@QAE@ABV0@@Z    (implicit copy constructor)
 // 0x10004440 ??_FMfIndex@@QAEXXZ        (default ctor closure)

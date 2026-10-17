@@ -1,5 +1,5 @@
 // MfIntList (mfutil.dll, 0x100049a0-0x10004a40)
-#include "MfIntList_unit.h"
+#include "MfIntList.h"
 
 // 0x100049a0 ?GetPrev@MfDblList@@UBEPAXAAPAVMfDblListItem@@@Z (original ?Prev@MfIntList@@QAEHAAPAVMfDblListItem@@@Z)
 // (folded with ?GetPrev@MfDblList and ?Prev@MfStringList)

@@ -1,7 +1,7 @@
-// Motion Factory utility library (mfutil.dll): MfString and the reference-counted
-// MfStringRef it points to. Reconstructed declarations (no PDB): layouts from the
-// code, signatures from the export names, inline bodies from the copies the first
-// object (MfCopyFolder, 0x10001xxx) kept.
+// Motion Factory utility library (mfutil.dll): MfString, a pointer to a shared,
+// reference-counted MfStringRef. Reconstructed declarations (no PDB): layouts from
+// the code, signatures from the export names, inline bodies from the copies the
+// first object (MfCopyFolder, 0x10001xxx) kept.
 #ifndef MFUTIL_MFSTRING_H
 #define MFUTIL_MFSTRING_H
 
@@ -13,121 +13,21 @@
 #endif
 #include <windows.h>
 
-#define MFAPI __declspec(dllexport)
+#include "mfutil_api.h"
+#include "MfNullString.h"
+#include "MfStringSize.h"
+#include "MfStringCursor.h"
+#include "MfStringScanner.h"
+#include "MfStringRef.h"
+#include "MfStringTokenizerCallBack.h"
 
 class MfString;
 class MfVariant;
 class MfTime;
 class MfSystemTime;
 class MfStringList;
-class MfStringCursor;
-class MfStringScanner;
-class MfStringTokenizerCallBack;
 class MfPointerStorageString;
 struct tm;
-
-class MFAPI MfNullString {
-public:
-};
-
-// MfString(const MfStringSize &) reserves room for GetSize() characters.
-class MFAPI MfStringSize {
-public:
-    MfStringSize(int n) { m_size = n; }
-    int GetSize() const { return m_size; }
-private:
-    int m_size;
-};
-
-// Cursor over the tab-expanded display of a string (SteamboatApp PDB).
-class MFAPI MfStringCursor {
-    friend class MfString;
-public:
-    MfStringCursor(int tabSize);
-    MfStringCursor(const MfStringCursor &c);
-    MfStringCursor &operator=(const MfStringCursor &c);
-    void Reset();
-    unsigned int CursorPos() const { return nCursPos; }
-    unsigned int CharPos() const { return nCharPos; }
-    int OutsideString() const;
-    unsigned int TabSize() const { return nTabSize; }
-    unsigned int ExpandedSize() const { return nExpandedLength; }
-private:
-    unsigned int nCursPos;
-    unsigned int nCharPos;
-    unsigned int nTabSize;
-    unsigned int nExpandedLength;
-};
-
-// Character class for the cursor scans.
-class MfStringScanner {
-public:
-    virtual int TestChar(char c) = 0;
-};
-
-// Shared string body, size 0x14. m_count is the number of MfStrings using it.
-class MFAPI MfStringRef {
-public:
-    MfStringRef() : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(""); }
-    MfStringRef(const char *s) : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(s); }
-    MfStringRef(const wchar_t *s) : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(s); }
-    MfStringRef(const MfStringRef &r) : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(r); }
-    MfStringRef(int n) : m_count(0)
-    {
-        m_maxLength = n + nNumPadChars;
-        m_str = new char[m_maxLength + 1];
-        m_str[0] = 0;
-        m_length = 0;
-    }
-    // The first n characters of s.
-    MfStringRef(const char *s, int n) : m_count(0)
-    {
-        m_maxLength = n;
-        m_length = n;
-        m_str = new char[n + 1];
-        strncpy(m_str, s, n);
-        m_str[m_maxLength] = 0;
-    }
-    virtual ~MfStringRef() { delete[] m_str; }
-
-    int IncrementCount() { return ++m_count; }
-    int DecrementCount() { return --m_count; }
-    int GetCount() { return m_count; }
-    int GetLength() const { return m_length; }
-    int GetMaxLength() const { return m_maxLength; }
-    const char *GetInternal() const { return m_str; }
-    MfStringRef *CopyOnWrite();
-
-    void MakeCopy(const MfStringRef &r);
-    void MakeCopy(const char *s);
-    void MakeCopy(const wchar_t *s);
-    void Append(const MfStringRef &r);
-    void Append(const char *s);
-    void Append(const wchar_t *s);
-    void Append(char c);
-    int CompareToInternal(const wchar_t *s) const;
-    int CompareToInternal(const char *s) const;
-    void SetMaxLength(int n);
-    void ConvertToUpper();
-    void ConvertToLower();
-    void Truncate(int n);
-    void ReplaceString(const MfStringRef &r, int start, int len);
-    int SetCharacter(int i, char c);
-    void StripWhiteSpace();
-    void NoLeadingWhiteSpace();
-    void NoTrailingWhiteSpace();
-    wchar_t *DuplicateUnicode() const;
-    char *DuplicateAscii() const;
-    int ReadFromFile(const MfString &name);
-    int WriteToFile(const MfString &name) const;
-
-    char *m_str;        // +4
-    int m_length;       // +8
-    int m_maxLength;    // +0xc
-    int m_count;        // +0x10
-protected:
-    static int nNumPadChars;
-};
 
 // Not exported: an MfStringRef that also keeps the last char/wchar_t copies handed
 // out by MfString::operator const char * / const wchar_t * (size 0x1c).
@@ -143,7 +43,7 @@ public:
     char *m_ascii;      // +0x18
 };
 
-class MFAPI MfString {
+class MFUTIL_API MfString {
 public:
     MfString();
     MfString(const MfString &s);
@@ -186,6 +86,13 @@ public:
     MfString &operator<<(float f);
     MfString &operator<<(double d);
     MfString &operator+=(const MfString &s) { return *this << s; }
+    MfString &operator+=(const char *s) { return *this << s; }
+    MfString &operator+=(const wchar_t *s) { return *this << s; }
+    MfString &operator+=(char c) { return *this << c; }
+    MfString &operator+=(unsigned short c) { return *this << (char)c; }
+    MfString &operator+=(int n) { return *this << n; }
+    MfString &operator+=(float f) { return *this << f; }
+    MfString &operator+=(double d) { return *this << d; }
 
     MfString operator+(const MfString &s) const;
     MfString operator^(const MfString &s) const;
@@ -236,8 +143,9 @@ public:
     void MakePath(const MfString &drive, const MfString &dir, const MfString &fname, const MfString &ext);
     void Tokenize(const MfString &delimiters, MfStringTokenizerCallBack &cb) const;
     void ConvertToLines(MfStringList *list) const;
-    int LoadString(HINSTANCE hInstance, UINT id);
-    friend MFAPI ostream &operator<<(ostream &os, const MfString &s);
+    // void *: mfutil.dll's MfStringRef.cpp was compiled without STRICT (?LoadStringA@MfString@@QAEHPAXI@Z)
+    int LoadString(void *hInstance, UINT id);
+    friend MFUTIL_API ostream &operator<<(ostream &os, const MfString &s);
     unsigned int CuMoveLeft(MfStringCursor *c) const;
     unsigned int CuMoveRight(MfStringCursor *c) const;
     unsigned int CuBeginningOfString(MfStringCursor *c) const;
@@ -296,21 +204,14 @@ inline void MfString::CopyOnWrite(int extra)
     }
 }
 
-inline MfStringRef *MfStringRef::CopyOnWrite()
-{
-    return new MfStringRef(*this);
-}
-
 inline void MfString::Truncate(int n)
 {
     CopyOnWrite(0);
     mfsr->Truncate(n);
 }
 
-MFAPI ostream &operator<<(ostream &os, const MfString &s);
-MFAPI istream &operator>>(istream &is, MfString &s);
-
-extern MFAPI MfNullString NULL_STRING;
+MFUTIL_API ostream &operator<<(ostream &os, const MfString &s);
+MFUTIL_API istream &operator>>(istream &is, MfString &s);
 
 #include "MfVariant.h"
 

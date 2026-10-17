@@ -1,10 +1,13 @@
-#pragma once
 // MfStopWatch: millisecond timer on GetTickCount. Exported names only; all
 // members are inline (MfSleeper inlines them).
+#ifndef MFUTIL_MFSTOPWATCH_H
+#define MFUTIL_MFSTOPWATCH_H
+
+#include "mfutil_api.h"
 #include <windows.h>
 #include "MfTime.h"
 
-class __declspec(dllexport) MfStopWatch {
+class MFUTIL_API MfStopWatch {
 public:
     MfStopWatch() { dwStart = 0; dwStop = 0; dwEnd = 0; }
     ~MfStopWatch() {}
@@ -43,3 +46,5 @@ private:
     DWORD dwStop;
     DWORD dwEnd;
 };
+
+#endif

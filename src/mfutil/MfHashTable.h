@@ -5,17 +5,8 @@
 #ifndef MFUTIL_MFHASHTABLE_H
 #define MFUTIL_MFHASHTABLE_H
 
-#define MFUTIL_API __declspec(dllexport)
-
-// vtable 0x100172d4: ??_E, CallBack(3), CallBack(2), CallBack(1)
-class MFUTIL_API MfCallBack {
-public:
-    MfCallBack() {}
-    virtual ~MfCallBack() {}
-    virtual int CallBack(void *p1) { return 0; }
-    virtual int CallBack(void *p1, void *p2) { return 0; }
-    virtual int CallBack(void *p1, void *p2, void *p3) { return 0; }
-};
+#include "mfutil_api.h"
+#include "MfCallBack.h"
 
 enum MfHTErrorCode {
     MFHT_EC_NO_ERROR,

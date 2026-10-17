@@ -1,11 +1,14 @@
-#pragma once
 // MfSystemTime: a Win32 SYSTEMTIME that knows whether it holds local time or UTC.
 // Declaration from the SteamboatApp PDB.
+#ifndef MFUTIL_MFSYSTEMTIME_H
+#define MFUTIL_MFSYSTEMTIME_H
+
+#include "mfutil_api.h"
 #include <windows.h>
 #include <time.h>
 #include "MfTime.h"
 
-class __declspec(dllexport) MfSystemTime : public SYSTEMTIME {
+class MFUTIL_API MfSystemTime : public SYSTEMTIME {
     enum {
         STM_LOCAL = 0,
         STM_UNIVERSAL = 1
@@ -28,3 +31,5 @@ public:
 private:
     int iMode;  // +0x10
 };
+
+#endif

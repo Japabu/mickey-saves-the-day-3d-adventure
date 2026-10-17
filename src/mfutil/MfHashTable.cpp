@@ -1,6 +1,6 @@
 // MfHashTable (mfutil.dll 0x10003c20-0x10004240)
 #include <string.h>
-#include "MfHashTable_unit.h"
+#include "MfHashTable.h"
 
 int MfHashTable::aiPrimes[50] = {
     53, 101, 151, 211, 251, 307, 353, 401, 457, 503,

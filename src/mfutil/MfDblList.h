@@ -1,50 +1,14 @@
 // MfDblList: doubly linked list of void* (mfutil.dll, Motion Factory utility classes).
-// Member names from the type records in SteamboatApp.pdb.
+// Member names from the type records in SteamboatApp.pdb. The constructor and
+// GetFirst/GetNext/GetCurrent are inline: ??0MfSortedList, ??0MfIntList and
+// ??0MfStack inline the base constructor, MfStringList::Sort inlines the accessors.
 #ifndef MFUTIL_MFDBLLIST_H
 #define MFUTIL_MFDBLLIST_H
 
-#define MFUTIL_API __declspec(dllexport)
-
-// vtable: ~, CallBack(a,b,c) +4, CallBack(a,b) +8, CallBack(a) +0xc
-class MFUTIL_API MfCallBack {
-public:
-    MfCallBack() {}
-    virtual ~MfCallBack() {}
-    virtual int CallBack(void *a) { return 0; }
-    virtual int CallBack(void *a, void *b) { return 0; }
-    virtual int CallBack(void *a, void *b, void *c) { return 0; }
-};
-
-// vtable: Copy +0, Iterate +4, Destroy +8, Matches +0xc
-class MfListItemInterface {
-public:
-    virtual void *Copy(void *pData) = 0;
-    virtual int Iterate(void *pData) = 0;
-    virtual void Destroy(void *pData) = 0;
-    virtual int Matches(void *pKey, void *pData) = 0;
-};
-
-class MfDblListItem {
-public:
-    MfDblListItem(void *p) { pliPrev = 0; pData = p; pliNext = 0; }
-    void *GetData() const { return pData; }
-    MfDblListItem *GetPrev() const { return pliPrev; }
-    MfDblListItem *GetNext() const { return pliNext; }
-    void SetData(void *p) { pData = p; }
-    void SetPrev(MfDblListItem *p) { pliPrev = p; }
-    void SetNext(MfDblListItem *p) { pliNext = p; }
-    void SetLinks(MfDblListItem *prev, MfDblListItem *next)
-    {
-        pliPrev = prev;
-        pliNext = next;
-        if (pliPrev) pliPrev->pliNext = this;
-        if (pliNext) pliNext->pliPrev = this;
-    }
-
-    void *pData;            // +0
-    MfDblListItem *pliPrev; // +4
-    MfDblListItem *pliNext; // +8
-};
+#include "mfutil_api.h"
+#include "MfCallBack.h"
+#include "MfListItemInterface.h"
+#include "MfDblListItem.h"
 
 class MFUTIL_API MfDblList {
 public:

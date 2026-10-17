@@ -1,5 +1,5 @@
 // MfTimer (mfutil.dll 0x10010610-0x10010650)
-#include "MfTimer_unit.h"
+#include "MfTimer.h"
 
 // 0x10010610 ??0MfTimer@@QAE@XZ
 MfTimer::MfTimer()

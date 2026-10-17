@@ -6,54 +6,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-
-#define MFUTIL_API __declspec(dllexport)
-
-class MFUTIL_API MfNullString {
-};
-
-class MFUTIL_API MfStringSize {
-public:
-    MfStringSize(int n) { m_size = n; }
-    int GetSize() const { return m_size; }
-private:
-    int m_size;
-};
-
-// only the layout part MfString::Length() needs
-class MfStringRef {
-public:
-    void *m_vtbl;       // +0
-    char *m_str;        // +4
-    int m_length;       // +8
-};
-
-// size 4 (pointer to the shared MfStringRef); only what this unit uses
-class MFUTIL_API MfString {
-public:
-    MfString();
-    MfString(const MfString &s);
-    MfString(const char *s);
-    MfString(const MfStringSize &size);
-    ~MfString();
-    MfString &operator=(const MfString &s);
-    MfString &operator=(const char *s);
-    operator char *() const;
-    MfString &operator<<(const MfString &s);
-    MfString &operator<<(const char *s);
-    MfString &operator<<(char c);
-    int operator==(const MfNullString &n) const;
-    int HaveCharactersInSet(const MfString &set, int start) const;
-    MfString RightString(int n) const;
-    MfString MidString(int start, int n) const;
-    char GetCharacter(int i) const;
-    int Length() const { return mfsr->m_length; }
-private:
-    MfStringRef *mfsr;
-};
-
-extern MFUTIL_API MfNullString NULL_STRING;
-
+#include "mfutil_api.h"
+#include "MfString.h"
 #include "regexpr.h"
 
 // size 0x84, vtable 0x1001768c (only the destructor)
