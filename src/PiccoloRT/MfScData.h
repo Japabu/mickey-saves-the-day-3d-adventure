@@ -1,6 +1,8 @@
 // MfScData: the base of everything a data handle can point to.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfLock.h"
 class MfScDataHandle;
 class MfScLinkData;

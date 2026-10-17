@@ -3,7 +3,9 @@
 #ifndef MFUTIL_MFSTRINGSIZE_H
 #define MFUTIL_MFSTRINGSIZE_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 
 class MFUTIL_API MfStringSize {
 public:

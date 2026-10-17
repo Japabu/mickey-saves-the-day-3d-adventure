@@ -1,5 +1,7 @@
 #pragma once
-#include "PiccoloComp_api.h"
+#ifndef PICCOLOCOMP_API
+#define PICCOLOCOMP_API __declspec(dllimport)
+#endif
 #include "MfAiCompiler.h"
 #include "MfString.h"
 class MfPcBuffer;

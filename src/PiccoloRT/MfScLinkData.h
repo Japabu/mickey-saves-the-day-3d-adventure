@@ -1,6 +1,8 @@
 // MfScLinkData: the result of counting the circular links of a data object.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 
 // Result of counting the circular links of a data object (see
 // MfScData::CountCircLinks). There is only ever one alive: operator new

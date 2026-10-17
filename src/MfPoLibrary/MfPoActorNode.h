@@ -2,7 +2,9 @@
 // the base of the camera and light objects.
 #ifndef MFPOLIBRARY_MFPOACTORNODE_H
 #define MFPOLIBRARY_MFPOACTORNODE_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfPoBase.h"
 class MfAiActorNode;
 

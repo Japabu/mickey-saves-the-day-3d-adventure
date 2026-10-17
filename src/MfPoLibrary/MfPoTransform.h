@@ -3,7 +3,9 @@
 // pointer.
 #ifndef MFPOLIBRARY_MFPOTRANSFORM_H
 #define MFPOLIBRARY_MFPOTRANSFORM_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfPoBase.h"
 #include "MfTransform3.h"
 class MfPoRotation3;

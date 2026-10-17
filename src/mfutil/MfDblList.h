@@ -5,7 +5,9 @@
 #ifndef MFUTIL_MFDBLLIST_H
 #define MFUTIL_MFDBLLIST_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 #include "MfCallBack.h"
 #include "MfListItemInterface.h"
 #include "MfDblListItem.h"

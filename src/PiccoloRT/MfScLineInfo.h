@@ -1,6 +1,8 @@
 // MfScLineInfo: bytecode offset -> source line (debug information).
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 
 // Bytecode offset -> source line (8 bytes).
 class PICCOLORT_API MfScLineInfo {

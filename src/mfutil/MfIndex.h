@@ -3,7 +3,9 @@
 #ifndef MFUTIL_MFINDEX_H
 #define MFUTIL_MFINDEX_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 #include "MfCallBack.h"
 #include "MfHashTable.h"
 

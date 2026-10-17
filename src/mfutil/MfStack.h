@@ -3,7 +3,9 @@
 #ifndef MFUTIL_MFSTACK_H
 #define MFUTIL_MFSTACK_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 #include "MfDblList.h"
 
 // size 0x14

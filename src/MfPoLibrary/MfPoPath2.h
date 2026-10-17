@@ -1,7 +1,9 @@
 // MfPoPath2: the Piccolo object of a path ("Path2").
 #ifndef MFPOLIBRARY_MFPOPATH2_H
 #define MFPOLIBRARY_MFPOPATH2_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfPoBase.h"
 class MfAiPath2;
 

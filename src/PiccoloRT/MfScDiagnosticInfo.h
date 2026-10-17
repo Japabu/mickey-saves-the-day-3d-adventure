@@ -1,6 +1,8 @@
 // MfScDiagnosticInfo: one diagnostic message and its level.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfString.h"
 
 // One diagnostic message and its level.

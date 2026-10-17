@@ -1,6 +1,8 @@
 // MfScObject: the base of the script objects proper (with the boxed MfScObjInteger and MfScObjFloat, and MfScObjString).
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfScDataObject.h"
 #include "MfString.h"
 

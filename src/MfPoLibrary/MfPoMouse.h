@@ -2,7 +2,9 @@
 // actors, reports the last picked actor and floor.
 #ifndef MFPOLIBRARY_MFPOMOUSE_H
 #define MFPOLIBRARY_MFPOMOUSE_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfPoBase.h"
 
 class MFPO_API MfPoMouse : public MfPoBase {

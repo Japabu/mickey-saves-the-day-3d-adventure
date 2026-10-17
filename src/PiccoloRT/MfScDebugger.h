@@ -1,6 +1,8 @@
 // MfScDebugger: the debugger the runtime reports to.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfAiFunctionRegistry.h"
 class MfPdbListener;
 class MfScBytecodeRoutine;

@@ -1,7 +1,9 @@
 // MfPoKChain: the Piccolo object of a kinematic chain ("KChain").
 #ifndef MFPOLIBRARY_MFPOKCHAIN_H
 #define MFPOLIBRARY_MFPOKCHAIN_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfPoBase.h"
 class MfAiKChain;
 

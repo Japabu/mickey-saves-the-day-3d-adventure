@@ -1,5 +1,8 @@
 // mflinalg_api.h - mflinalg.dll's exports: MFLINALG_API exports a declaration when mflinalg.dll is
 // compiled (MFLINALG_BUILD, src/options.txt) and imports it everywhere else.
+// The other modules define <NAME>_API inline (dllexport from src/options.txt); mflinalg
+// keeps this header because VC5 compiles 14 of its functions differently when its
+// headers do not open it.
 #ifndef MFLINALG_API
 #ifdef MFLINALG_BUILD
 #define MFLINALG_API __declspec(dllexport)

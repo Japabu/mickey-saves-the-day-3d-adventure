@@ -1,6 +1,8 @@
 // MfScStdLib: the list interface the standard library plugin registers.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfScStdLibListInterface.h"
 class MfDblList;
 class MfScDataHandle;

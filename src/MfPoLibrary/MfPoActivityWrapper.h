@@ -3,7 +3,9 @@
 // Piccolo.
 #ifndef MFPOLIBRARY_MFPOACTIVITYWRAPPER_H
 #define MFPOLIBRARY_MFPOACTIVITYWRAPPER_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfScObject.h"
 #include "MfScDataHandle.h"
 #include "MfPoActorNode.h"

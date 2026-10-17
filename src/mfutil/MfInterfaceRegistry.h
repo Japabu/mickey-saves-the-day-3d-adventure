@@ -3,7 +3,9 @@
 #ifndef MFUTIL_MFINTERFACEREGISTRY_H
 #define MFUTIL_MFINTERFACEREGISTRY_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 #include "MfString.h"
 #include "MfDictionary.h"
 #include "MfAi.h"

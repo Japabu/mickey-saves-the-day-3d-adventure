@@ -1,7 +1,9 @@
 // MfPoActivity: the Piccolo object of an activity ("Activity").
 #ifndef MFPOLIBRARY_MFPOACTIVITY_H
 #define MFPOLIBRARY_MFPOACTIVITY_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfPoBase.h"
 class MfAiActivity;
 

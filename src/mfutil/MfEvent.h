@@ -4,7 +4,9 @@
 #ifndef MFUTIL_MFEVENT_H
 #define MFUTIL_MFEVENT_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 #include <windows.h>
 
 class MFUTIL_API MfEvent {

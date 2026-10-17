@@ -1,6 +1,8 @@
 // MfScStdLibListInterface: how the standard library plugin makes script lists.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 class MfDblList;
 class MfScDataHandle;
 

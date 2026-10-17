@@ -3,7 +3,9 @@
 // from the SteamboatApp PDB.
 #ifndef MFPOLIBRARY_MFPOEVENT_H
 #define MFPOLIBRARY_MFPOEVENT_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfScObject.h"
 #include "MfPiccoloMessageHandler.h"
 class MfAiActor;

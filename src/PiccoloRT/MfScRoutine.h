@@ -1,7 +1,9 @@
 // MfScFunctionRoutine, MfScExtRoutine: the routines that call C++ code (with
 // MfScMethodRoutine, the method of the object the calling script runs on).
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfScDataMethod.h"
 
 typedef MfScDataHandle *(__cdecl *MfScFunction)(MfScDataHandle *, int, MfScDataHandle **);

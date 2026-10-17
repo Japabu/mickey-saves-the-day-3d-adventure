@@ -2,7 +2,9 @@
 // ("PropertyArray").
 #ifndef MFPOLIBRARY_MFPOARRAY_H
 #define MFPOLIBRARY_MFPOARRAY_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfScDataArray.h"
 class MfArrayValue;
 

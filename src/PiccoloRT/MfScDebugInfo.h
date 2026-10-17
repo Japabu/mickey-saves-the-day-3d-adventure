@@ -1,6 +1,8 @@
 // MfScDebugInfo: the debug information of a bytecode routine.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 class MfScCodeLevelInfo;
 class MfScConstUsageInfo;
 class MfScDataHandle;

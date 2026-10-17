@@ -2,7 +2,9 @@
 // the application interfaces they use.
 #ifndef MFPOLIBRARY_MFPOLIBRARY_H
 #define MFPOLIBRARY_MFPOLIBRARY_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 class MfAiAppWorld;
 class MfAiKeyboard;
 class MfAiMouse;

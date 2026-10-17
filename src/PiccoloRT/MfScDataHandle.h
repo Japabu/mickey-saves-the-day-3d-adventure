@@ -1,6 +1,8 @@
 // MfScDataHandle: a reference-counted, typed value of the script VM.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfCriticalSection.h"
 class MfScData;
 class MfScDataArray;

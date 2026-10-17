@@ -1,31 +1,32 @@
 # Compiler options of each original project: one line per binary, plus a line for
 # each library that was built as a project of its own and linked into the binary
 # (its subdirectory, ending in /). Every source file is compiled with the line of
-# its directory; see tools/msvc/COMPILERS.md for the evidence. The /D<NAME>_BUILD at the
-# end of each binary's line is not the original's: it tells the binary's own headers
-# (<module>_api.h) that their classes are exported here and imported elsewhere.
+# its directory; see tools/msvc/COMPILERS.md for the evidence. The /D<NAME>_API at the
+# end of each binary's line is not the original's: the binary's own headers export their
+# classes here; everywhere else those headers define <NAME>_API as dllimport.
+# mflinalg.dll keeps /DMFLINALG_BUILD and mflinalg_api.h (see there).
 #
 # binary                     [subdirectory/]  options
-Steamboat.exe                                 /O2 /MT /DSTEAMBOAT_BUILD
-SteamboatApp.dll                              /O2 /GX /MT /DSTEAMBOATAPP_BUILD
+Steamboat.exe                                 /O2 /MT /DSTEAMBOAT_API=__declspec(dllexport)
+SteamboatApp.dll                              /O2 /GX /MT /DSTEAMBOATAPP_API=__declspec(dllexport)
 SteamboatApp.dll             libpng/          /Ox /GX /MT /I../../zlib /DPNG_USE_PNGVCRD /DZLIB_DLL /D_WINDOWS
-MBEngine.dll                                  /O2 /MT /DMBENGINE_BUILD
-MBCom.dll                                     /O2 /MT /DMBCOM_BUILD
-mbruntime.dll                                 /O2 /MT /DMBRUNTIME_BUILD
-zlib.dll                                      /O2 /MT /DZLIB_DLL /DWIN32 /D_WINDOWS /DZLIBDLL_BUILD
-RuntimeLib.dll                                /O2 /GX /MD /GR /DRUNTIME_BUILD
+MBEngine.dll                                  /O2 /MT /DMBENGINE_API=__declspec(dllexport)
+MBCom.dll                                     /O2 /MT /DMBCOM_API=__declspec(dllexport)
+mbruntime.dll                                 /O2 /MT /DMBRUNTIME_API=__declspec(dllexport)
+zlib.dll                                      /O2 /MT /DZLIB_DLL /DWIN32 /D_WINDOWS
+RuntimeLib.dll                                /O2 /GX /MD /GR /DRUNTIME_API=__declspec(dllexport)
 MfActorLib.dll                                /O2 /GX /MD /GR /DMFACTOR_API=__declspec(dllexport)
-MfPoLibrary.dll                               /O2 /GX /MD /GR /DMFPO_BUILD
-MfImageLib.dll                                /O2 /GX /MD /GR /Gy /DMFIMAGE_BUILD
+MfPoLibrary.dll                               /O2 /GX /MD /GR /DMFPO_API=__declspec(dllexport)
+MfImageLib.dll                                /O2 /GX /MD /GR /Gy /DMFIMAGE_API=__declspec(dllexport)
 MfImageLib.dll               jpeg/            /O2 /Gy /DUSE_WINDOWS_MESSAGEBOX
 mflinalg.dll                                  /O2 /GX /MD /GR /DMFLINALG_BUILD
-mfutil.dll                                    /O2 /GX /MD /GR /DMFUTIL_BUILD
-PiccoloRT.dll                                 /O2 /GX /MD /GR /DPICCOLORT_BUILD
-PiccoloComp.dll                               /O2 /GX /MD /GR /DPICCOLOCOMP_BUILD
-PiccoloConsole.dll                            /O2 /GX /MD /GR /D_AFXDLL /DPICCOLOCONSOLE_BUILD
-plugins/PscClassInfo.dll                      /O2 /GX /MD /GR /D_AFXDLL /D_AFXEXT /DNDEBUG /DPSCCLASSINFO_BUILD
-plugins/PscCompiler.dll                       /O2 /GX /MD /GR /DPSCCOMPILER_BUILD
-plugins/PscContentInfo.dll                    /O2 /GX /MD /GR /DPSCCONTENTINFO_BUILD
-plugins/PscDebugger.dll                       /O2 /GX /MD /GR /DPSCDEBUGGER_BUILD
-plugins/PscStdlib.dll                         /O2 /GX /MD /GR /DPSCSTDLIB_BUILD
-plugins/PxtMath.dll                           /O2 /GX /MD /GR /DPXTMATH_BUILD
+mfutil.dll                                    /O2 /GX /MD /GR /DMFUTIL_API=__declspec(dllexport)
+PiccoloRT.dll                                 /O2 /GX /MD /GR /DPICCOLORT_API=__declspec(dllexport)
+PiccoloComp.dll                               /O2 /GX /MD /GR /DPICCOLOCOMP_API=__declspec(dllexport)
+PiccoloConsole.dll                            /O2 /GX /MD /GR /D_AFXDLL /DPICCOLOCONSOLE_API=__declspec(dllexport)
+plugins/PscClassInfo.dll                      /O2 /GX /MD /GR /D_AFXDLL /D_AFXEXT /DNDEBUG /DPSCCLASSINFO_API=__declspec(dllexport)
+plugins/PscCompiler.dll                       /O2 /GX /MD /GR /DPSCCOMPILER_API=__declspec(dllexport)
+plugins/PscContentInfo.dll                    /O2 /GX /MD /GR /DPSCCONTENTINFO_API=__declspec(dllexport)
+plugins/PscDebugger.dll                       /O2 /GX /MD /GR /DPSCDEBUGGER_API=__declspec(dllexport)
+plugins/PscStdlib.dll                         /O2 /GX /MD /GR /DPSCSTDLIB_API=__declspec(dllexport)
+plugins/PxtMath.dll                           /O2 /GX /MD /GR /DPXTMATH_API=__declspec(dllexport)

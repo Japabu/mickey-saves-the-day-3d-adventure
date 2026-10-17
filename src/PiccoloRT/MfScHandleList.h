@@ -1,6 +1,8 @@
 // MfScHandleList: a list of data handles with a cursor of its own.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfDblList.h"
 class MfScDataHandle;
 

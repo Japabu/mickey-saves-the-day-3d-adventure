@@ -2,7 +2,9 @@
 // actors, reports the key state.
 #ifndef MFPOLIBRARY_MFPOKEYBOARD_H
 #define MFPOLIBRARY_MFPOKEYBOARD_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfPoBase.h"
 
 class MFPO_API MfPoKeyboard : public MfPoBase {

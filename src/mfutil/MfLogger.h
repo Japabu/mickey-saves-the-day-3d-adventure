@@ -2,7 +2,9 @@
 // MfLogger: process-wide log with a window and a log file, run by a logger
 // thread. Exported names only; the static members are named in the exports,
 // MfLogMessage, MfLoggerFrame and MfLogMessageDialog too.
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 #include "MfString.h"     // first: it defines STRICT before windows.h
 #include "MfStringList.h"
 #include "MfSystemTime.h"

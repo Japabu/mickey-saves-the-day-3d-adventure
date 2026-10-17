@@ -5,7 +5,9 @@
 #ifndef MFUTIL_MFHASHTABLE_H
 #define MFUTIL_MFHASHTABLE_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 #include "MfCallBack.h"
 
 enum MfHTErrorCode {

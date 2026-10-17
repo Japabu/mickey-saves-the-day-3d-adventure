@@ -1,6 +1,8 @@
 // MfScMethodRoutine: a script routine that calls a method of the object the script runs on.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfScDataMethod.h"
 
 typedef MfScDataHandle *(MfScData::*MfScMethod)(MfScDataHandle *, int, MfScDataHandle **);

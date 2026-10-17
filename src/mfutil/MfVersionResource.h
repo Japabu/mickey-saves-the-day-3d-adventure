@@ -3,7 +3,9 @@
 #ifndef MFUTIL_MFVERSIONRESOURCE_H
 #define MFUTIL_MFVERSIONRESOURCE_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 
 struct HINSTANCE__;
 

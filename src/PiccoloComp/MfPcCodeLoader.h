@@ -2,7 +2,9 @@
 // paths whose object files are out of date. No data members, all static.
 #ifndef MFPCCODELOADER_H
 #define MFPCCODELOADER_H
-#include "PiccoloComp_api.h"
+#ifndef PICCOLOCOMP_API
+#define PICCOLOCOMP_API __declspec(dllimport)
+#endif
 class MfScHandleList;
 class MfString;
 

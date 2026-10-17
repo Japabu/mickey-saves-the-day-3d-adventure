@@ -24,7 +24,7 @@ this before a new unit; add a line for a new pattern.
   RuntimeLib's vtables), `MfCollisionData.h`, `MfProximityData.h`,
   `MfPickData.h`, `MfContourFailDownData.h`, `MfUserHookData.h`,
   `MfMiscHookData.h`, `MfFilterItem.h`; the exported classes use `MFPO_API`
-  (`MfPoLibrary_api.h`).
+  (dllexport from src/options.txt in MfPoLibrary.dll, dllimport elsewhere).
   `MfAiMouse.h`, `MfAiKeyboard.h`, `MfAiPath2.h` are not in the PDB: slot
   layout from the calls, names descriptive.
 - `MfPoBase.h` and one header per script class (`MfPoColor.h` ...).

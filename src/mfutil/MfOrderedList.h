@@ -3,7 +3,9 @@
 #ifndef MFUTIL_MFORDEREDLIST_H
 #define MFUTIL_MFORDEREDLIST_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 
 class Mf23TreeBase;
 class Mf23TreeLeaf;

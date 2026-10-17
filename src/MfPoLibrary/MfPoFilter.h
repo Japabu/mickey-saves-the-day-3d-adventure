@@ -1,7 +1,9 @@
 // MfPoFilter: the Piccolo object of a collision filter entry ("Filter").
 #ifndef MFPOLIBRARY_MFPOFILTER_H
 #define MFPOLIBRARY_MFPOFILTER_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfPoBase.h"
 #include "MfFilterItem.h"
 

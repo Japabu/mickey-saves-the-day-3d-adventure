@@ -1,6 +1,8 @@
 // MfScPiccolo: the Piccolo runtime: startup, shutdown and the script environment.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfScDataObject.h"
 class MfAiFunctionRegistry;
 class MfAiSourceResolver;

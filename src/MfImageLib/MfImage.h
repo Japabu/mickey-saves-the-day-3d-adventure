@@ -2,7 +2,9 @@
 #ifndef MFIMAGE_H
 #define MFIMAGE_H
 
-#include "MfImageLib_api.h"
+#ifndef MFIMAGE_API
+#define MFIMAGE_API __declspec(dllimport)
+#endif
 
 // return codes; 3 is what the conversion functions return for unsupported formats
 enum MfImageError {

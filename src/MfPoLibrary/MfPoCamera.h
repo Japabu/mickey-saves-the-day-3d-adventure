@@ -1,7 +1,9 @@
 // MfPoCamera: the Piccolo object of a camera node ("CameraNode").
 #ifndef MFPOLIBRARY_MFPOCAMERA_H
 #define MFPOLIBRARY_MFPOCAMERA_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfPoActorNode.h"
 class MfCamera;
 

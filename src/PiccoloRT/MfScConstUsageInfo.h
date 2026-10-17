@@ -1,6 +1,8 @@
 // MfScConstUsageInfo: a named constant a routine uses (debug information).
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfString.h"
 #include "MfVariant.h"
 

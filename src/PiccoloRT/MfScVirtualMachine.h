@@ -1,6 +1,8 @@
 // MfScVirtualMachine: executes bytecode functions on the calling thread's MfScVmEnv.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfCriticalSection.h"
 class MfScDataHandle;
 class MfString;

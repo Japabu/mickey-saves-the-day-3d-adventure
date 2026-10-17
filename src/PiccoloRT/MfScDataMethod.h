@@ -1,6 +1,8 @@
 // MfScDataMethod: the base of the callable script data (routines).
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfScData.h"
 #include "MfScDataHandle.h"
 

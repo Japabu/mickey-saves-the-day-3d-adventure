@@ -1,6 +1,8 @@
 // MfScPropertyExtList: the property extensions of a script class.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfDblList.h"
 class MfScPropertyExt;
 

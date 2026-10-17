@@ -1,6 +1,8 @@
 // MfScDataObject: the base of the script objects (properties).
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfScData.h"
 #include "MfString.h"
 class CWnd;

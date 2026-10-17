@@ -1,6 +1,8 @@
 // MfScBytecodeRoutine: a script routine compiled to Piccolo bytecode.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfScDataMethod.h"
 class MfScDebugInfo;
 class MfString;

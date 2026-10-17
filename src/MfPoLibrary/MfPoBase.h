@@ -4,7 +4,9 @@
 // SteamboatApp PDB; constructor, copy, assignment and destructor are inline.
 #ifndef MFPOLIBRARY_MFPOBASE_H
 #define MFPOLIBRARY_MFPOBASE_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfScObject.h"
 class MfProperty;
 class MfTypedValue;

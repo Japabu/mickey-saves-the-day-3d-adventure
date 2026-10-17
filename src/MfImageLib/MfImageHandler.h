@@ -2,7 +2,9 @@
 #ifndef MFIMAGEHANDLER_H
 #define MFIMAGEHANDLER_H
 
-#include "MfImageLib_api.h"
+#ifndef MFIMAGE_API
+#define MFIMAGE_API __declspec(dllimport)
+#endif
 #include "MfImageLib_mfutil.h"
 #include "MfImage.h"
 #include "MfImageParams.h"

@@ -2,7 +2,9 @@
 // axis, angle). It owns the rotation unless it wraps one given by pointer.
 #ifndef MFPOLIBRARY_MFPOROTATION3_H
 #define MFPOLIBRARY_MFPOROTATION3_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfPoBase.h"
 #include "MfRotation3.h"
 #include "MfVector3.h"

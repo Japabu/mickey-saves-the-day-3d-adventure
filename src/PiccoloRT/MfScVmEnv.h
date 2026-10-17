@@ -1,6 +1,8 @@
 // MfScVmEnv: the execution state of one script thread.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfScVariableStack.h"
 #include "MfString.h"
 #include "MfScDataHandle.h"

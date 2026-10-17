@@ -1,7 +1,9 @@
 // MfPoSkill: the Piccolo object of a skill ("Skill").
 #ifndef MFPOLIBRARY_MFPOSKILL_H
 #define MFPOLIBRARY_MFPOSKILL_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfPoBase.h"
 class MfAiSkill;
 

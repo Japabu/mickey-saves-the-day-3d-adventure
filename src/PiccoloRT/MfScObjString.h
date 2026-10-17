@@ -1,6 +1,8 @@
 // MfScObjString: the script string object.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfScObject.h"
 #include "MfString.h"
 

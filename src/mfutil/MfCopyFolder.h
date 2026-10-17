@@ -4,7 +4,9 @@
 #ifndef MFUTIL_MFCOPYFOLDER_H
 #define MFUTIL_MFCOPYFOLDER_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 #include "MfString.h"
 
 // size 0x10, vtable 0x10017304 (only the destructor)

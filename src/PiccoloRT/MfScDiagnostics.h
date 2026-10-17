@@ -1,6 +1,8 @@
 // MfScDiagnostics: the diagnostic output of the runtime.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfDblList.h"
 class MfScDiagnosticCallBack;
 class MfString;

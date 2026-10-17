@@ -1,6 +1,8 @@
 #pragma once
 // MfPcErrorCallBack: the receiver of a compilation's errors (pure, no code).
-#include "PiccoloComp_api.h"
+#ifndef PICCOLOCOMP_API
+#define PICCOLOCOMP_API __declspec(dllimport)
+#endif
 class MfIPcErrorInfo;
 
 // Receives the errors of a compilation.

@@ -1,6 +1,8 @@
 // MfScClassInfoText: the description text of a class-info browser entry.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfString.h"
 struct HWND__;
 struct _TREEITEM;

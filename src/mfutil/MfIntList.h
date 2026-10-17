@@ -4,7 +4,9 @@
 #ifndef MFUTIL_MFINTLIST_H
 #define MFUTIL_MFINTLIST_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 #include "MfDblList.h"
 
 // size 0x10. The accessors return the data cast to int; their copies are

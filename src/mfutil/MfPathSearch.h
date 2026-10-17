@@ -4,7 +4,9 @@
 #ifndef MFUTIL_MFPATHSEARCH_H
 #define MFUTIL_MFPATHSEARCH_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 #include "MfString.h"
 
 // size 0xc, vtable 0x10017674 (only the destructor)

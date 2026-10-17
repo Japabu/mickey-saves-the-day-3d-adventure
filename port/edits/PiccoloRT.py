@@ -484,11 +484,15 @@ EDITS['PiccoloRT/MfScDebugInfo.cpp'] = [
 # PiccoloRT/MfScDebugInfo.h: stack words are uintptr_t (pointer-sized): the 32-bit source used unsigned long, which was the size of a pointer there.
 EDITS['PiccoloRT/MfScDebugInfo.h'] = [
     ('#pragma once\n'
-     '#include "PiccoloRT_api.h"\n'
+     '#ifndef PICCOLORT_API\n'
+     '#define PICCOLORT_API __declspec(dllimport)\n'
+     '#endif\n'
      'class MfScCodeLevelInfo;\n'
      'class MfScConstUsageInfo;\n',
      '#pragma once\n'
-     '#include "PiccoloRT_api.h"\n'
+     '#ifndef PICCOLORT_API\n'
+     '#define PICCOLORT_API __declspec(dllimport)\n'
+     '#endif\n'
      '#include <stdint.h> // PORT: uintptr_t\n'
      'class MfScCodeLevelInfo;\n'
      'class MfScConstUsageInfo;\n'
@@ -1315,11 +1319,15 @@ EDITS['PiccoloRT/MfScVirtualMachine.cpp'] = [
 # PiccoloRT/MfScVmEnv.h: stack words are uintptr_t (pointer-sized): the 32-bit source used unsigned long, which was the size of a pointer there.
 EDITS['PiccoloRT/MfScVmEnv.h'] = [
     ('#pragma once\n'
-     '#include "PiccoloRT_api.h"\n'
+     '#ifndef PICCOLORT_API\n'
+     '#define PICCOLORT_API __declspec(dllimport)\n'
+     '#endif\n'
      '#include "MfScVariableStack.h"\n'
      '#include "MfString.h"\n',
      '#pragma once\n'
-     '#include "PiccoloRT_api.h"\n'
+     '#ifndef PICCOLORT_API\n'
+     '#define PICCOLORT_API __declspec(dllimport)\n'
+     '#endif\n'
      '#include <stdint.h> // PORT: uintptr_t\n'
      '#include "MfScVariableStack.h"\n'
      '#include "MfString.h"\n'
@@ -1487,11 +1495,15 @@ EDITS['PiccoloRT/MfScVmEnv_3.cpp'] = [
 # PiccoloRT/MfScVmFrame.h: stack words are uintptr_t (pointer-sized): the 32-bit source used unsigned long, which was the size of a pointer there.
 EDITS['PiccoloRT/MfScVmFrame.h'] = [
     ('#pragma once\n'
-     '#include "PiccoloRT_api.h"\n'
+     '#ifndef PICCOLORT_API\n'
+     '#define PICCOLORT_API __declspec(dllimport)\n'
+     '#endif\n'
      'class MfScDataHandle;\n'
      '\n',
      '#pragma once\n'
-     '#include "PiccoloRT_api.h"\n'
+     '#ifndef PICCOLORT_API\n'
+     '#define PICCOLORT_API __declspec(dllimport)\n'
+     '#endif\n'
      '#include <stdint.h> // PORT: uintptr_t\n'
      'class MfScDataHandle;\n'
      '\n'

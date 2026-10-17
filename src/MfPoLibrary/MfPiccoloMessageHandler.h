@@ -3,7 +3,9 @@
 // members are inline (the exported copies are emitted by MfPoActivity.cpp).
 #ifndef MFPOLIBRARY_MFPICCOLOMESSAGEHANDLER_H
 #define MFPOLIBRARY_MFPICCOLOMESSAGEHANDLER_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfString.h"
 #include "MfScDataHandle.h"
 class MfAiActor;

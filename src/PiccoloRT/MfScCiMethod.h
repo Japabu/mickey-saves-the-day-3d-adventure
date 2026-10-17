@@ -1,6 +1,8 @@
 // MfScCiMethod: a method of a script class in the class-info browser.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfScClassInfoItem.h"
 #include "MfScMethodParameterInfo.h"
 class MfSortedList;

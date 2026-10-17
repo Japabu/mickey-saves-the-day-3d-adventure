@@ -5,7 +5,7 @@ Every item was verified by match.sh in the unit named in brackets.
 ## Shared headers
 - One declaration per class: `<Class>.h` (MfString.h, MfStringRef.h, MfDblList.h,
   MfCallBack.h, MfHashTable.h, ...), each self-contained, exports through
-  `MFUTIL_API` (mfutil_api.h). `MfString.h` defines STRICT before windows.h, includes
+  `MFUTIL_API` (dllexport from src/options.txt in mfutil.dll, dllimport elsewhere). `MfString.h` defines STRICT before windows.h, includes
   the small string classes (MfNullString, MfStringSize, MfStringCursor,
   MfStringScanner, MfStringRef, MfStringTokenizerCallBack) and, after MfString,
   MfVariant.h, MfTime.h and MfSystemTime.h.

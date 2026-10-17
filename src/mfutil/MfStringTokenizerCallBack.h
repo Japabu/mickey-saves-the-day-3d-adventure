@@ -4,7 +4,9 @@
 #ifndef MFUTIL_MFSTRINGTOKENIZERCALLBACK_H
 #define MFUTIL_MFSTRINGTOKENIZERCALLBACK_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 
 class MfString;
 

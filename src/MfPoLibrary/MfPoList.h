@@ -2,7 +2,9 @@
 // iterated with First/Next/... through the list's cursor.
 #ifndef MFPOLIBRARY_MFPOLIST_H
 #define MFPOLIBRARY_MFPOLIST_H
-#include "MfPoLibrary_api.h"
+#ifndef MFPO_API
+#define MFPO_API __declspec(dllimport)
+#endif
 #include "MfScObject.h"
 #include "MfListValue.h"
 

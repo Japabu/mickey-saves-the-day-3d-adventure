@@ -1,7 +1,9 @@
 #pragma once
 // MfList: doubly linked list of MfListItem pointers, with forward and
 // backward iterators. Exported names only; members named from their use.
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 class MfListItem;
 
 struct MfListNode {

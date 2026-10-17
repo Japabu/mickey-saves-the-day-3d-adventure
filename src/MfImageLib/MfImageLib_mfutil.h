@@ -5,7 +5,9 @@
 #ifndef MFIMAGELIB_MFUTIL_H
 #define MFIMAGELIB_MFUTIL_H
 
-#include "../mfutil/mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 
 // mfutil.dll
 class MFUTIL_API MfString {

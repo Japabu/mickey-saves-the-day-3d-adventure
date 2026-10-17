@@ -1,6 +1,8 @@
 // MfScMethodParameterInfo: a parameter of a method in the class-info browser.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfString.h"
 #include "MfScClassInfoText.h"
 struct HWND__;

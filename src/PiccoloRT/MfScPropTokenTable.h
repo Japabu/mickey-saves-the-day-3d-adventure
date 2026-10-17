@@ -1,6 +1,8 @@
 // MfScPropTokenTable: a dictionary property name -> MfScPropToken.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 #include "MfDictionary.h"
 #include "MfCallBack.h"
 #include "MfScPropToken.h"

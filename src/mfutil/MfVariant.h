@@ -8,7 +8,9 @@
 #ifndef MFUTIL_MFVARIANT_H
 #define MFUTIL_MFVARIANT_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 #include "MfVariantData.h"
 
 // vtable 0x10017a5c, size 8

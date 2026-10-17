@@ -5,7 +5,9 @@
 #define MFUTIL_MFDIRECTORY_H
 
 #include <windows.h>
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 #include "MfString.h"
 #include "MfDblList.h"
 #include "MfFileTime.h"

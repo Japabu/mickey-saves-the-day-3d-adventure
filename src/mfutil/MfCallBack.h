@@ -4,7 +4,9 @@
 #ifndef MFUTIL_MFCALLBACK_H
 #define MFUTIL_MFCALLBACK_H
 
-#include "mfutil_api.h"
+#ifndef MFUTIL_API
+#define MFUTIL_API __declspec(dllimport)
+#endif
 
 class MFUTIL_API MfCallBack {
 public:

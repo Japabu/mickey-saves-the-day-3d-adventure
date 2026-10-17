@@ -1,6 +1,8 @@
 // MfScVariableStack: the variable pools visible to running script code.
 #pragma once
-#include "PiccoloRT_api.h"
+#ifndef PICCOLORT_API
+#define PICCOLORT_API __declspec(dllimport)
+#endif
 class MfScDataHandle;
 class MfScHandleDict;
 class MfString;
