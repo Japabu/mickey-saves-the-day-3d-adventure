@@ -1,80 +1,44 @@
-# Mickey Saves the Day 3D Adventure — decompilation and macOS port
+# Mickey Saves the Day 3D Adventure
 
-A decompilation of the PC game *Disney's Mickey Saves the Day 3D Adventure* (2000;
-German title *Micky auf Ganovenjagd*): C/C++ source that the original Microsoft
-compilers turn into the game's code, verified function by function against the
-original binaries, and a native macOS port built from that source.
+A decompilation of *Disney's Mickey Saves the Day 3D Adventure* (2000; German title
+*Micky auf Ganovenjagd*), and a port that plays it on macOS and in the browser.
 
-This repository contains **no game files and no Microsoft software**: no binaries, no
-debug symbols, no data, no compilers. Everyone brings their own copy of the game (and,
-to work on the decompilation, of the compilers); the scripts here check those copies by
-SHA-256 and put them where the tools expect them.
+- **`src/`**: C/C++ source that the original Microsoft compilers turn into the game's
+  exact bytes, checked function by function.
+- **`port/`**: the same source built natively for macOS and for WebAssembly.
 
-## Requirements
+No game files and no Microsoft software are included. You need your own copy of the
+game.
 
-### To play the macOS port
+## Play
 
-The port plays the game natively on Apple Silicon Macs, with a few improvements over
-the original (sharper 3D characters, a cursor that shows what a click will do).
-[port/README.md](port/README.md) has the build steps, settings and improvements. It
-needs:
+You need the game CD as an `.iso` image. The reference copy is the German CD
+`Micky_auf_Ganovenjagd.iso` (SHA-256 `12d00401229f576b48987ea8b4839a5478bc74b31197258d2d8582fee7c66ae9`).
 
-- A Mac with Apple Silicon and macOS, the Xcode command-line tools (`xcode-select
-  --install`), `cmake` and `ninja` (for example from [Homebrew](https://brew.sh)). The
-  first configure downloads and builds SDL3 and FFmpeg (pinned releases, checked by
-  hash); the game is one statically linked program.
-- The game CD. The reference copy is the German CD image `Micky_auf_Ganovenjagd.iso`,
-  SHA-256 `12d00401229f576b48987ea8b4839a5478bc74b31197258d2d8582fee7c66ae9`. The port
-  reads the game data from the CD's `setup/hd/resources` and `setup/cd/resources`
-  directories; nothing is copied into this repository.
-
-### To work on the decompilation
-
-- macOS or Linux, Python 3, and Wine with 32-bit support (it runs the original
-  compilers).
-- The game's binaries and debug symbols: the 27 files listed in
-  `tools/manifest/game.sha256`. All of them are in `setup/hd/binaries` on the German CD
-  above.
-- Microsoft Visual C++ 5.0 with Visual Studio 97 Service Pack 3, and Visual C++ 6.0
-  with Visual Studio 6 Service Pack 3 plus the RTM (no service pack) `c1.dll` and
-  `c1xx.dll`: the files listed in `tools/manifest/vc5.sha256` and `vc6.sha256`, taken
-  from an installed copy or the extracted discs.
-
-Then:
+**macOS** (Apple Silicon, with the Xcode command-line tools, `cmake` and `ninja`):
 
 ```
-python3 tools/import.py all <mounted CD> <your VC5 directory> <your VC6 directory>
+cmake -S port -B out/port/build -G Ninja
+cmake --build out/port/build
+MICKEY_CD=/path/to/Micky_auf_Ganovenjagd.iso out/port/build/Steamboat
+```
+
+**Browser**: build it as described in [port/README.md](port/README.md#browser), open the
+page and pick your ISO. It stays in your browser; nothing is uploaded.
+
+Settings, improvements and troubleshooting: [port/README.md](port/README.md).
+
+## Work on the decompilation
+
+You need Wine, the original compilers (Visual C++ 5.0 and 6.0) and the game's binaries
+from the CD. [HACKING.md](HACKING.md) lists exactly what, and covers setup and workflow.
+In short:
+
+```
+python3 tools/import.py all <mounted CD> <VC5 directory> <VC6 directory>
 tools/setup.sh
-tools/msvc/check.sh          # every claimed function; exit 0 when all match
+tools/msvc/check.sh          # checks every claimed function
 ```
-
-`import.py` matches files by content, so names and layout of your copies do not
-matter, and it lists anything still missing. The imported directories are git-ignored.
-[HACKING.md](HACKING.md) describes the workflow.
-
-## How the decompilation works
-
-Every function is compiled with the original compiler (Visual C++ 5.0 for the Motion
-Factory engine DLLs, Visual C++ 6.0 for the rest) under Wine and compared byte for byte
-with the original. A line `// 0x<address> <symbol>` above a function claims it; the
-checker accepts the claim only if the bytes are identical. Functions that are written
-but do not compile to the same bytes yet are marked `// TODO` with their similarity,
-or `// EQUIV` when they were shown to be the same logic. Statically linked library code
-(CRT, STL, MFC, DirectX utility code; listed in `src/lib/`) is not decompiled.
-
-## Layout
-
-| path | what it is |
-|---|---|
-| `src/<Bin>/` | the source, one directory per original binary |
-| `src/options.txt` | the compiler options of each original project |
-| `tools/import.py`, `tools/manifest/` | import of your own game binaries and compilers, by SHA-256 |
-| `tools/msvc/` | the matching tools (`check.sh`, `match.sh`, `logicdiff.sh`, ...) and, once imported, the compilers |
-| `tools/recomp/` | function boundaries and the byte comparison behind the tools |
-| `tools/re/` | debug symbol (PDB) reader: types, prototypes, locals |
-| `port/` | the macOS port: Win32, DirectX, Miles and Bink on SDL3 and FFmpeg |
-| `orig/binaries/` | your imported game binaries (not committed) |
-| `out/` | everything generated (not committed) |
 
 ## Progress
 
@@ -113,6 +77,6 @@ or `// EQUIV` when they were shown to be the same logic. Statically linked libra
 ## Legal
 
 *Mickey Saves the Day 3D Adventure* and its characters belong to Disney; the engine
-belongs to its authors. This is a non-commercial preservation project; it contains no
-original binaries, data or assets. You need your own copy of the game. Third-party
-open-source code included in the source is listed in [THIRD_PARTY.md](THIRD_PARTY.md).
+belongs to its authors. This is a non-commercial preservation project with no original
+binaries, data or assets. Third-party open-source code in the source is listed in
+[THIRD_PARTY.md](THIRD_PARTY.md).

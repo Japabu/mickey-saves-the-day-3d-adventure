@@ -105,6 +105,30 @@ For crash reports with exact locations, build a second tree with sanitizers:
 Not ported: the developers' tools (Piccolo script console, debugger, class browser),
 which use MFC and are not part of the game.
 
+## Browser
+
+The same source builds for WebAssembly with [Emscripten](https://emscripten.org)
+6.0.12, installed into `out/emsdk`:
+
+```
+git clone https://github.com/emscripten-core/emsdk out/emsdk
+out/emsdk/emsdk install 6.0.12 && out/emsdk/emsdk activate 6.0.12
+source out/emsdk/emsdk_env.sh
+cmake -S port -B out/port/build-web -G Ninja \
+  -DCMAKE_TOOLCHAIN_FILE=$PWD/out/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake
+cmake --build out/port/build-web --target Steamboat
+python3 port/web/serve.py               # then open http://localhost:8000/
+```
+
+The page (`port/web/`) asks for the ISO and copies it into the browser's private
+storage for the site (OPFS) once; saved games stay there too. Nothing is uploaded. The
+game needs shared memory, so the server must send COOP/COEP headers: `serve.py` does,
+and on hosts that cannot (GitHub Pages) `coi-serviceworker.js` adds them. Add
+`?log=1` (or `?log=<channels>`) to the address for the `PORT_LOG` output in the
+browser console. For a smaller download (about 5 MB instead of 43 MB), configure
+without debug info: `-DCMAKE_C_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG"
+-DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG"`.
+
 ## Run
 
 You need the game's CD (the German release, "Micky auf Ganovenjagd") as an `.iso` image,

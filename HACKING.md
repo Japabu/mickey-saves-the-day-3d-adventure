@@ -6,8 +6,19 @@ eye. This page is the reference for the workflow, the tools and the rules.
 
 ## Setup (once)
 
-First import your own copies of the game binaries and the compilers (README.md,
-Requirements, says exactly which):
+You need:
+
+- macOS or Linux, Python 3, and Wine with 32-bit support (it runs the original
+  compilers).
+- The game's binaries and debug symbols: the 27 files listed in
+  `tools/manifest/game.sha256`. All of them are in `setup/hd/binaries` on the German CD
+  (see README.md).
+- Microsoft Visual C++ 5.0 with Visual Studio 97 Service Pack 3, and Visual C++ 6.0
+  with Visual Studio 6 Service Pack 3 plus the RTM (no service pack) `c1.dll` and
+  `c1xx.dll`: the files listed in `tools/manifest/vc5.sha256` and `vc6.sha256`, taken
+  from an installed copy or the extracted discs.
+
+Import your copies:
 
 ```
 python3 tools/import.py all /Volumes/MICKEY3D /path/to/vc5 /path/to/vc6
@@ -25,6 +36,16 @@ creates the Wine prefix in `out/wine`, extracts PDB types to `out/types/` and ch
 that one known function still matches. It installs no host software. On
 Debian/Ubuntu, Wine with 32-bit support is
 `dpkg --add-architecture i386 && apt-get update && apt-get install wine wine32:i386`.
+
+## How matching works
+
+Every function is compiled with the original compiler (Visual C++ 5.0 for the Motion
+Factory engine DLLs, Visual C++ 6.0 for the rest) under Wine and compared byte for byte
+with the original. A line `// 0x<address> <symbol>` above a function claims it; the
+checker accepts the claim only if the bytes are identical. Functions that do not compile
+to the same bytes yet are marked `// TODO` with their similarity, or `// EQUIV` when
+they were shown to be the same logic. Statically linked library code (CRT, STL, MFC,
+DirectX utility code; listed in `src/lib/`) is not decompiled.
 
 ## Workflow
 
