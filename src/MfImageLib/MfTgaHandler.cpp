@@ -2,7 +2,7 @@
 #include "MfTgaHandler_unit.h"
 
 // 0x10002440 ?GetExtensions@MfTgaHandler@@UAEABVMfString@@XZ (original MfTgaHandler::GetExtensions)
-// 0x10002480 _$E2 (original (atexit) destructor of the local static)
+// 0x10002480 _$E15 (original (atexit) destructor of the local static)
 const MfString &MfTgaHandler::GetExtensions()
 {
     static MfString extensions(".tga .vda .icb .vst");

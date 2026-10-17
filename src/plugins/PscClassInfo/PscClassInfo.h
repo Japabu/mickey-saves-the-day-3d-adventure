@@ -10,197 +10,43 @@
 #include <string.h>
 #include <ctype.h>
 
-// ---- Motion Factory runtime (mfutil.dll / RuntimeLib.dll), imported ---------
+// ---- Motion Factory runtime (mfutil.dll / PiccoloRT.dll), imported ----------
 
-class MfNullString;
-class MfString;
-class MfDblListItem;
-class MfListItemInterface;
-class MfCallBack;
+#include "../../mfutil/MfString.h"
+#include "../../mfutil/MfStringList.h"
 
-// Reference-counted string body. Layout from the inline code in this DLL:
-// vptr, data, length (+8), allocated size (+0xc), reference count (+0x10).
-class __declspec(dllimport) MfStringRef {
-public:
-    MfStringRef(int nSize) : nRefs(0)
-    {
-        nAlloc = nSize + nNumPadChars;
-        pData = new char[nAlloc + 1];
-        pData[0] = 0;
-        nLength = 0;
-    }
-    virtual ~MfStringRef() { delete pData; }
-    MfStringRef *CopyOnWrite();
-    void Truncate(int n);
-
-    char *pData;
-    int nLength;
-    int nAlloc;
-    int nRefs;
-protected:
-    static int nNumPadChars;
-};
-
-class __declspec(dllimport) MfString {
-public:
-    MfString();
-    MfString(const MfString &);
-    MfString(const char *);
-    ~MfString();
-    MfString &operator=(const MfString &);
-    MfString &operator=(const char *);
-    MfString &operator=(const MfNullString &);
-    MfString &operator<<(const char *);
-    operator char *() const;
-    operator const char *() const;
-    char GetCharacter(int) const;
-
-    int GetLength() const { return pRef->nLength; }
-    void MakeUnique()
-    {
-        if (pRef == &mfsrNullInitializer) {
-            pRef = new MfStringRef(0);
-            pRef->nRefs++;
-        } else if (pRef->nRefs > 1) {
-            pRef->nRefs--;
-            pRef = pRef->CopyOnWrite();
-            pRef->nRefs++;
-        }
-    }
-    void Truncate(int n)
-    {
-        MakeUnique();
-        pRef->Truncate(n);
-    }
-
-private:
-    MfStringRef *pRef;
-    static MfStringRef mfsrNullInitializer;
-};
-
-class MfDblListItem {
-public:
-    void *pData;
-    MfDblListItem *pPrev;
-    MfDblListItem *pNext;
-};
-
-enum EnumListPosition { ListBefore, ListAfter };
-
-// Virtual slots as in mfutil.dll's ??_7MfDblList@@6B@ (28 entries).
-class __declspec(dllimport) MfDblList {
-public:
-    MfDblList() : pHead(0), pTail(0), nCount(0) {}
-    virtual ~MfDblList();
-    virtual void Prepend(void *const);
-    virtual void Append(void *const);
-    virtual void Insert(void *, EnumListPosition, MfDblListItem *);
-    virtual void Merge(MfDblList &, EnumListPosition, MfDblListItem *);
-    virtual void Add(void *);
-    virtual void Copy3(const MfDblList &, MfListItemInterface &);
-    virtual void Copy2(const MfDblList &, MfCallBack &);
-    virtual void Copy(const MfDblList &);
-    virtual void *GetFirst(MfDblListItem *&) const;
-    virtual void *GetNext(MfDblListItem *&) const;
-    virtual void *GetCurrent(MfDblListItem *&) const;
-    virtual void *GetPrev(MfDblListItem *&) const;
-    virtual void *GetLast(MfDblListItem *&) const;
-    virtual void Iterate2(MfListItemInterface &) const;
-    virtual void Iterate(MfCallBack &) const;
-    virtual void *DeleteFirst();
-    virtual void *DeleteLast();
-    virtual void *Delete(MfDblListItem *&);
-    virtual void Clear3(MfListItemInterface &);
-    virtual void Clear2(MfCallBack &);
-    virtual void Clear();
-    virtual MfDblListItem *Find6(void *, MfDblListItem *, int, MfListItemInterface &) const;
-    virtual MfDblListItem *Find5(void *, MfDblListItem *, int, MfCallBack &) const;
-    virtual MfDblListItem *Find4(void *, MfDblListItem *, int) const;
-    virtual MfDblListItem *Find3(void *, MfListItemInterface &) const;
-    virtual MfDblListItem *Find2(void *, MfCallBack &) const;
-    virtual MfDblListItem *Find(void *) const;
-
-    MfDblListItem *pHead;
-    MfDblListItem *pTail;
-    int nCount;
-};
-
-class __declspec(dllimport) MfStringTokenizerCallBack {
-public:
-    virtual ~MfStringTokenizerCallBack() {}
-    virtual int CallBack(const MfString &, MfString &);
-};
-
-class __declspec(dllimport) MfStringList : public MfDblList, public MfStringTokenizerCallBack {
-public:
-    virtual ~MfStringList() { Clear(); }
-    virtual void Clear();
-    virtual MfString *Add(const MfString &);
-    virtual void Delete(const MfString &);
-    virtual MfDblListItem *Search(const MfString &) const;
-
-    MfString *First(MfDblListItem *&pos) const
-    {
-        pos = pHead;
-        return pos ? (MfString *)pos->pData : 0;
-    }
-    MfString *Next(MfDblListItem *&pos) const
-    {
-        if (pos) {
-            pos = pos->pNext;
-            return pos ? (MfString *)pos->pData : 0;
-        }
-        return 0;
-    }
-};
-
+// own copy: PiccoloRT/MfScClassInfo.h brings PiccoloRT's own MfString, which cannot be
+// included with mfutil's (until PiccoloRT includes mfutil's).
 class __declspec(dllimport) MfScClassInfo {
 public:
     void InsertIntoTree(HWND, HTREEITEM);
 };
 
-class __declspec(dllimport) MfNullString {
-};
-extern __declspec(dllimport) MfNullString NULL_STRING;
-
 // ---- interfaces (header-defined, all pure) -----------------------------------
 
-class MfAi {
-public:
-    virtual void GetInterfaceName(char *name, int size, int *major, int *minor) = 0;
-    virtual int AddRef() = 0;
-    virtual int Release() = 0;
-};
+// MfAi as the class-info interfaces have it (version numbers by pointer; mfutil's MfAi
+// takes them by reference), with MfAiClassTree and MfAiClassInfo.
+#include "../../PiccoloRT/MfAiClassInfo.h"
 
+// own copy: mfutil/MfInterfaceRegistry.h brings mfutil's MfAi (by reference), which
+// cannot be included with the class-info one.
 class __declspec(dllimport) MfInterfaceRegistry {
 public:
     static int GetInterface(const MfString &name, MfAi **ppInterface);
 };
 
+// own copy: RuntimeLib/MfAiApplication.h derives from mfutil's MfAi (by reference).
 // "ApplicationI" interface; only slot 3 is used here.
 class MfAiApplication : public MfAi {
 public:
     virtual int GetApplicationType() = 0;
 };
 
-class MfAiClassTree : public MfAi {
-public:
-    virtual void InsertClass(MfScClassInfo *info) = 0;
-    virtual CWnd *GetWindow() = 0;
-    virtual void Show() = 0;
-    virtual void Hide() = 0;
-};
-
-class MfAiClassInfo : public MfAi {
-public:
-    virtual void ShowClassInfo(CWnd *pParent) = 0;
-    virtual int CreateClassTree(CWnd *pParent, DWORD dwStyle, MfAiClassTree **ppTree) = 0;
-};
-
 extern "C" __declspec(dllexport) int __stdcall PscInitialize(int, MfString *err);
 extern "C" __declspec(dllexport) int __stdcall PscShutdown(MfString *err);
 extern "C" __declspec(dllexport) int __stdcall PscLoad();
 
+// own copy: PiccoloRT/MfScDataObject.h brings PiccoloRT's own MfString (see MfScClassInfo).
 class __declspec(dllimport) MfScDataObject {
 public:
     static CWnd *CreateClassTree(CWnd *, int);

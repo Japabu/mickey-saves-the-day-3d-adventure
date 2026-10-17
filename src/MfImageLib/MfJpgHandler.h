@@ -11,12 +11,6 @@ extern "C" {
 
 #include "MfImageHandler.h"
 
-// mfutil.dll
-class MFUTIL_API MfLogger {
-public:
-    static void Log(int level, const MfString &title, const MfString &context, const MfString &message);
-};
-
 // 0x240 bytes (DllMain: new 0x240)
 class MfJpgHandler : public MfImageHandler {
 public:

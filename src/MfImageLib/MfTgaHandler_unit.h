@@ -7,17 +7,7 @@
 #include <stdio.h>
 
 // mfutil.dll
-class __declspec(dllimport) MfString {
-public:
-    MfString();
-    MfString(const char *s);
-    MfString(const MfString &s);
-    ~MfString();
-    MfString &operator=(const MfString &s);
-    operator const char *() const;
-private:
-    char *m_str;
-};
+#include "../mfutil/MfString.h"
 
 enum MfImageError {
     MfImageOk = 0,

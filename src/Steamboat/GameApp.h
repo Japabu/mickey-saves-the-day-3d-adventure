@@ -15,55 +15,11 @@ extern "C" __declspec(dllimport) void __cdecl MBDebugStr(const char *fmt, ...);
 void *__cdecl operator new(unsigned int size);
 void __cdecl operator delete(void *ptr);
 
-struct MBGUID {
-    unsigned long data1;
-    unsigned short data2;
-    unsigned short data3;
-    unsigned char data4[8];
-};
+#include "../MBCom/MBGUID.h"
 
 // Colour constants of the MBEngine colour header: internal-linkage objects, 16
 // dynamic initializers per unit ($E1..$E47).
-class MBColorMask {
-public:
-    MBColorMask(unsigned long r, unsigned long g, unsigned long b, unsigned long a) { Set(r, g, b, a); }
-    void Set(unsigned long redmask, unsigned long greenmask, unsigned long bluemask, unsigned long alphamask) {
-        mRedMask = redmask;
-        mBlueMask = bluemask;
-        mGreenMask = greenmask;
-        mAlphaMask = alphamask;
-        mRedShift = GetShiftCount(redmask) + GetBitCount(redmask) - 8;
-        mBlueShift = GetShiftCount(bluemask) + GetBitCount(bluemask) - 8;
-        mGreenShift = GetShiftCount(greenmask) + GetBitCount(greenmask) - 8;
-        mAlphaShift = GetShiftCount(alphamask) + GetBitCount(alphamask) - 8;
-    }
-    unsigned long mRedMask;
-    unsigned long mBlueMask;
-    unsigned long mGreenMask;
-    unsigned long mAlphaMask;
-    char mRedShift;
-    char mBlueShift;
-    char mGreenShift;
-    char mAlphaShift;
-    static unsigned char GetShiftCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (!(mask & 1)) {
-            if (count >= 32)
-                break;
-            mask >>= 1;
-            count++;
-        }
-        return count;
-    }
-    static unsigned char GetBitCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (mask) {
-            mask &= mask - 1;
-            count++;
-        }
-        return count;
-    }
-};
+#include "../MBEngine/MBColorMask.h"
 
 const MBColorMask kCM_RGBA32(0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 const MBColorMask kCM_ARGB32(0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
@@ -71,42 +27,7 @@ const MBColorMask kCM_ARGB16(0x7c00, 0x03e0, 0x001f, 0x8000);
 const MBColorMask kCM_RGB16(0xf800, 0x07e0, 0x001f, 0);
 const MBColorMask kCM_BGR16(0x001f, 0x07e0, 0xf800, 0);
 
-class MBColor {
-public:
-    MBColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) { Set(r, g, b, a); }
-    void Set(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-        mRed = r;
-        mBlue = b;
-        mGreen = g;
-        mAlpha = a;
-        mColor = Convert(kCM_ARGB32);
-    }
-    unsigned long Convert(MBColorMask mask) {
-        mColor = 0;
-        if (mask.mRedShift > 0)
-            mColor |= (mRed << mask.mRedShift) & mask.mRedMask;
-        else
-            mColor |= (mRed >> (char)-mask.mRedShift) & mask.mRedMask;
-        if (mask.mGreenShift > 0)
-            mColor |= (mGreen << mask.mGreenShift) & mask.mGreenMask;
-        else
-            mColor |= (mGreen >> (char)-mask.mGreenShift) & mask.mGreenMask;
-        if (mask.mBlueShift > 0)
-            mColor |= (mBlue << mask.mBlueShift) & mask.mBlueMask;
-        else
-            mColor |= (mBlue >> (char)-mask.mBlueShift) & mask.mBlueMask;
-        if (mask.mAlphaShift > 0)
-            mColor |= (mAlpha << mask.mAlphaShift) & mask.mAlphaMask;
-        else
-            mColor |= (mAlpha >> (char)-mask.mAlphaShift) & mask.mAlphaMask;
-        return mColor;
-    }
-    unsigned char mRed;
-    unsigned char mGreen;
-    unsigned char mBlue;
-    unsigned char mAlpha;
-    unsigned long mColor;
-};
+#include "../MBEngine/MBColor.h"
 
 const MBColor kWhite(255, 255, 255, 0);
 const MBColor kBlack(0, 0, 0, 0);
@@ -134,7 +55,6 @@ public:
 typedef std::basic_string<char, std::char_traits<char>, MBAllocator<char> > MBString;
 typedef std::basic_string<unsigned short, std::char_traits<unsigned short>, MBAllocator<unsigned short> > MBString16;
 
-static const MBGUID MBIID_IMBUnknown = {0x59d231f0, 0x9c6c, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 static const MBGUID MBIID_IMBClassFactory = {0x396c7e0b, 0x172d, 0x4182, {0xa9, 0x09, 0x48, 0xb5, 0x02, 0x3c, 0x7d, 0xea}};
 static const MBGUID MBIID_IMBGameClock = {0x04e3c980, 0x9ea1, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 static const MBGUID MBIID_IMBNode = {0x795ecbe0, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
@@ -155,6 +75,10 @@ static const MBGUID MBIID_IMBFileSpec = {0x897e2150, 0x9ea2, 0x11d3, {0xbe, 0xdb
 static const MBGUID MBIID_IMBFPSMonitor = {0x8f082f50, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 static const MBGUID MBIID_CMBFPSMonitor = {0x8f0e4c10, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 
+// own copy: this binary's MBPoint() writes x = y = 0 (y first); MBEngine/MBPoint.h's
+// constructor stores x first, which swaps two stores in ProcessMouseEvent
+#define MBENGINE_MBPOINTSTRUCT_H
+#define MBENGINE_MBPOINT_H
 struct MBPointStruct {
     long x;
     long y;
@@ -173,153 +97,37 @@ class IMBNodeManager;
 class IMBEventListener;
 template <class T> class MBComPtr;
 
-class IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBUnknown; }
-    virtual long QueryInterface(const MBGUID &, void **) = 0;
-    virtual unsigned long AddRef(void) = 0;
-    virtual unsigned long Release(void) = 0;
-};
+// MBIID_IMBUnknown comes with the interface.
+#include "../MBCom/IMBUnknown.h"
 
-class IMBFileSpec : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBFileSpec; }
-    virtual void SetPath(const char *) = 0;
-    virtual void SetPath(const IMBFileSpec *, const char *) = 0;
-    virtual MBString GetName(void) const = 0;
-    virtual MBString GetExtension(void) const = 0;
-    virtual MBString GetPath(void) const = 0;
-    virtual MBString GetTitle(void) const = 0;
-    virtual unsigned long GetType(void) const = 0;
-    virtual void GetParent(IMBFileSpec **) const = 0;
-    virtual unsigned long Hash(void) const = 0;
-};
+#include "../MBEngine/IMBFileSpec.h"
 
-enum IMBStreamSeekValues {
-    kIMBStreamSeekStart = 1,
-    kIMBStreamSeekEnd = 2,
-    kIMBStreamSeekCurrent = 3
-};
+#include "../MBEngine/IMBStream.h"
 
-enum IMBStreamError {
-    kIMBStreamNoError = 0,
-    kIMBStreamReadError = 1,
-    kIMBStreamWriteError = 2,
-    kIMBStreamOpenError = 3,
-    kIMBStreamCloseError = 4,
-    kIMBStreamSeekError = 5,
-    kIMBStreamEOF = 6
-};
+#include "../MBEngine/IMBPref.h"
 
-class IMBStream : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBStream; }
-    virtual bool Read(void *, unsigned long &) = 0;
-    virtual bool Write(const void *, unsigned long) = 0;
-    virtual bool Seek(long, IMBStreamSeekValues) = 0;
-    virtual unsigned long GetPosition(void) = 0;
-    virtual bool Flush(void) = 0;
-    virtual bool SetLastError(IMBStreamError) = 0;
-    virtual IMBStreamError GetLastError(void) = 0;
-    virtual unsigned long GetStreamSize(void) = 0;
-    virtual void Clone(IMBStream **) = 0;
-};
+#include "../MBEngine/MBScreenAttributes.h"
 
-// Overloaded virtuals are laid out in reverse declaration order (MBEngine NOTES).
-class IMBPref : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBPref; }
-    virtual long GetString(IMBStream *, const MBString &, const MBString &, MBString16 &, const MBString16 &) = 0;
-    virtual long GetString(IMBStream *, const MBString &, const MBString &, MBString &, const MBString &) = 0;
-    virtual long GetLong(IMBStream *, const MBString &, const MBString &, long) = 0;
-    virtual long SetString(IMBStream *, const MBString &, const MBString &, MBString16 &) = 0;
-    virtual long SetString(IMBStream *, const MBString &, const MBString &, MBString &) = 0;
-    virtual long SetLong(IMBStream *, const MBString &, const MBString &, long) = 0;
-};
-
-struct MBScreenAttributes {
-    unsigned long width;
-    unsigned long height;
-    unsigned long depth;
-};
-
-enum MBScreenState {
-    kScreenStateActive = 0,
-    kScreenStatePaused = 1,
-    kScreenStateInactive = 2
-};
+#include "../MBEngine/MBScreenState.h"
 
 class IMBScreen;
 
-class IMBScreenManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBScreenManager; }
-    virtual bool RequestScreen(long, MBScreenAttributes &) = 0;
-    virtual void Activate(void) = 0;
-    virtual void Deactivate(void) = 0;
-    virtual MBPoint GetGlobalMouseLocation(void) = 0;
-    virtual bool ProcessSystemEvent(void *) = 0;
-    virtual void RemoveScreen(long) = 0;
-    virtual void RemoveAllScreens(void) = 0;
-    virtual unsigned short GetNumScreens(void) = 0;
-    virtual void GetScreenByIndex(unsigned short, IMBScreen **) = 0;
-    virtual void GetScreenByID(long, IMBScreen **) = 0;
-    virtual void FindScreenContainingPoint(const MBPoint &, IMBScreen **) = 0;
-};
+#include "../MBEngine/IMBScreenManager.h"
 
 struct HMONITOR__;
 typedef BOOL (WINAPI *MBDDEnumCallback)(GUID *, char *, char *, void *, HMONITOR__ *);
 
-class IMBDirectDrawScreenManager : public IMBScreenManager {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBScreenManager; }
-    virtual bool EnableDirect3D(bool) = 0;
-    virtual void EnterWindowedMode(void) = 0;
-    virtual void EnterFullScreenMode(void) = 0;
-    virtual void SetHWND(HWND) = 0;
-    virtual void SetDirectDrawEnumerator(MBDDEnumCallback) = 0;
-};
+#include "../MBEngine/IMBDirectDrawScreenManager.h"
 
-class IMBGameEngine : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBGameEngine; }
-    virtual void Init(void) = 0;
-    virtual void ShutDown(void) = 0;
-    virtual MBComPtr<IMBNodeManager> GetNodeMgr(void) const = 0;
-    virtual long CreateScreen(IMBScreenManager *) = 0;
-    virtual void Start(void) = 0;
-    virtual void Idle(void) = 0;
-    virtual void UpdateScreen(const MBRect &) = 0;
-    virtual bool IsQuitting(void) const = 0;
-    virtual void Quit(void) = 0;
-    virtual void SetOnEngineStartupFunction(void (*)(IMBGameEngine *)) = 0;
-    virtual void SetOnEngineShutdownFunction(void (*)(IMBGameEngine *)) = 0;
-    virtual void SetOnEngineCreateScreenFunction(long (*)(IMBGameEngine *, IMBScreenManager *)) = 0;
-    virtual void GetStringTable(IMBStringTable **) = 0;
-};
+#include "../MBEngine/IMBGameEngine.h"
 
-class IMBGameClock : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBGameClock; }
-    virtual unsigned long GetRealTime(void) = 0;
-    virtual unsigned long GetGameTime(void) = 0;
-    virtual long Pause(void) = 0;
-    virtual long Unpause(void) = 0;
-    virtual void SetTime(unsigned long) = 0;
-    virtual void AddTime(unsigned long) = 0;
-    virtual void SetMSPerSecond(long) = 0;
-};
+#include "../MBEngine/IMBGameClock.h"
 
-class IMBFPSMonitor : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBFPSMonitor; }
-    virtual void SetEventLoopTime(unsigned long) = 0;
-    virtual void SetDrawLoopTime(unsigned long) = 0;
-    virtual unsigned long GetEventLoopFPS(void) const = 0;
-    virtual unsigned long GetDrawLoopFPS(void) const = 0;
-    virtual void Enable(bool) = 0;
-};
+#include "../MBEngine/IMBFPSMonitor.h"
 
+// own copy: MBComPtr<IMBWinSoundManager>::_QueryInterface (0x004042a0) asks for
+// T::GetGUID(), MBIID_IMBWinSoundManager; MBEngine's IMBWinSoundManager.h has no GetGUID
+// (it would inherit IMBUnknown's).
 class IMBWinSoundManager : public IMBUnknown {
 public:
     static const MBGUID &GetGUID(void) { return MBIID_IMBWinSoundManager; }
@@ -327,52 +135,16 @@ public:
     virtual void SetHWND(HWND) = 0;
 };
 
-class IMBEventManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventManager; }
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    virtual void RemoveListener(long, IMBEventListener *) = 0;
-    virtual void RemoveListener(IMBEventListener *) = 0;
-};
+#include "../MBEngine/IMBEventManager.h"
 
-class IMBScreen : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBScreen; }
-    virtual void SetScreenState(MBScreenState) = 0;
-    virtual MBScreenState GetScreenState(void) = 0;
-    virtual bool CreateSurface(unsigned short, unsigned short, unsigned long, IMBSurface **) = 0;
-    virtual void GetBackBuffer(IMBSurface **) = 0;
-    virtual void Flip(void) = 0;
-    virtual unsigned short GetWidth(void) = 0;
-    virtual unsigned short GetHeight(void) = 0;
-    virtual MBRect GetGlobalBounds(void) = 0;
-    virtual MBPoint GlobalToScreenPoint(const MBPoint &) = 0;
-};
+#include "../MBEngine/IMBScreen.h"
 
-class IMBWinScreen : public IMBScreen {
-public:
-    virtual void SetHWND(HWND) = 0;
-    virtual HWND GetHWND(void) = 0;
-    virtual bool EnterWindowedMode(unsigned short, unsigned short) = 0;
-    virtual bool EnterFullscreenMode(unsigned short, unsigned short, unsigned short) = 0;
-};
+#include "../MBEngine/IMBWinScreen.h"
 
 struct IDirectDraw7;
 struct IDirectDrawSurface7;
 
-class IMBDirectXScreen : public IMBWinScreen {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBDirectXScreen; }
-    virtual bool IsFullscreen(void) = 0;
-    virtual void SetDirectDrawEnumerator(MBDDEnumCallback) = 0;
-    virtual IDirectDraw7 *GetDirectDraw7(void) = 0;
-    virtual GUID *GetDeviceGUID(void) = 0;
-    virtual IDirectDrawSurface7 *GetBackBuffer(void) = 0;
-    virtual IDirectDrawSurface7 *GetFrontBuffer(void) = 0;
-    virtual bool IsInGDIMode(void) = 0;
-    virtual void GDIModeUpdateRect(RECT &) = 0;
-};
+#include "../MBEngine/IMBDirectXScreen.h"
 
 // MBCom (through import thunks) and MBEngine exports
 extern "C" long __cdecl MBComInitialize(void);
@@ -534,16 +306,9 @@ private:
     T *mInterface;
 };
 
-struct MBKeyboardEvent {
-    unsigned short mCharCode;
-    unsigned short mSpecialCode;
-};
+#include "../MBEngine/MBKeyboardEvent.h"
 
-struct MBMouseEvent {
-    MBPoint mMousePos;
-    IMBScreen *mScreen;
-    short mButton;
-};
+#include "../MBEngine/MBMouseEvent.h"
 
 enum MBSpecialKeyEnum {
     kSpecialKeyF1 = 0,

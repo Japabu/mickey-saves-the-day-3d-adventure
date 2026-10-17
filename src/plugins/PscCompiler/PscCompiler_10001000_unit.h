@@ -2,19 +2,8 @@
 #ifndef PSCCOMPILER_10001000_H
 #define PSCCOMPILER_10001000_H
 
-class MfNullString;
-
-class __declspec(dllimport) MfString {
-public:
-    MfString &operator=(const MfNullString &);
-};
-
-extern __declspec(dllimport) MfNullString NULL_STRING;
-
-class __declspec(dllimport) MfPcCompiler {
-public:
-    static void Initialize();
-    static void Shutdown();
-};
+// PiccoloComp.dll; its header brings mfutil's MfString and NULL_STRING (PiccoloComp's
+// declarations of them until PiccoloComp includes mfutil's).
+#include "../../PiccoloComp/MfPcCompiler.h"
 
 #endif

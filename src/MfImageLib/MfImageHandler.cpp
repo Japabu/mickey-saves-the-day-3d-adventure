@@ -5,16 +5,13 @@
 #include "MfJpgHandler.h"
 
 // mfutil.dll
-class MfDblListItem {
-public:
-    void *pData;            // +0
-    MfDblListItem *pliPrev; // +4
-    MfDblListItem *pliNext; // +8
-};
+#include "../mfutil/MfDblListItem.h"
 
-// MfImageLib's view of mfutil's MfDblList: the constructor is inline here
-// (stores the imported vtable), the destructor/Insert/Clear are imported.
-// The inline helpers stand for whatever inline accessors the original header had.
+// own copy: MfImageLib's view of mfutil's MfDblList: the constructor is inline here
+// (stores the imported vtable), the destructor/Insert/Clear are imported. DllMain calls
+// Insert(p, LP_AFTER, pliLast) and walks the list inline: the inline helpers stand for
+// whatever inline accessors the original header had, and mfutil/MfDblList.h has none
+// that reach the protected pliLast.
 class MFUTIL_API MfDblList {
 public:
     enum EnumListPosition { LP_BEFORE = 0, LP_AFTER = 1 };
@@ -39,9 +36,9 @@ public:
     int nCount;              // +0xc
 };
 
-// 0x10002200 _$E4 (static initializer: construct + atexit)
-// 0x10002210 _$E1
-// 0x10002230 _$E3 (atexit(_$E2))
+// 0x10002200 _$E17 (static initializer: construct + atexit)
+// 0x10002210 _$E14
+// 0x10002230 _$E16 (atexit(_$E2))
 static MfDblList s_handlers;
 
 // 0x10002250 ??0MfImageParams@@QAE@XZ (inline, emitted here: an exported inline function
@@ -84,4 +81,4 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved)
 
 
 // Matched by this code:
-// 0x10002240 _$E2
+// 0x10002240 _$E15

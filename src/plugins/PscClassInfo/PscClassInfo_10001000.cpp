@@ -179,10 +179,10 @@ void CClassTree::CopyToClipboard(const MfString &s)
 {
     if (!OpenClipboard())
         return;
-    if (EmptyClipboard() && s.GetLength() > 0) {
-        HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, s.GetLength() + 1);
+    if (EmptyClipboard() && s.Length() > 0) {
+        HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, s.Length() + 1);
         char *p = (char *)GlobalLock(hMem);
-        memcpy(p, (char *)s, s.GetLength() + 1);
+        memcpy(p, (char *)s, s.Length() + 1);
         GlobalUnlock(hMem);
         SetClipboardData(CF_TEXT, hMem);
     }
@@ -210,7 +210,7 @@ void CClassTree::BuildAlphabeticMenu(CMenu *pMenu)
                     pSub = new CMenu;
                     pSub->CreatePopupMenu();
                 }
-                if (name.GetLength() > 60) {
+                if (name.Length() > 60) {
                     name.Truncate(59);
                     name << "...";
                 }
@@ -241,7 +241,7 @@ void CClassTree::BuildMenu(CMenu *pMenu)
         UINT nID = 0xd000;
         do {
             MfString name(*p);
-            if (name.GetLength() > 60) {
+            if (name.Length() > 60) {
                 name.Truncate(59);
                 name << "...";
             }
@@ -309,7 +309,7 @@ void CClassTree::OnRButtonUp(UINT nFlags, CPoint point)
                 m_list.Add(s);
                 hChild = GetNextSiblingItem(hChild);
             }
-            if (m_list.nCount > 25)
+            if (m_list.GetCount() > 25)
                 BuildAlphabeticMenu(&menu);
             else
                 BuildMenu(&menu);
