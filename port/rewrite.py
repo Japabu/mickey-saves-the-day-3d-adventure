@@ -194,7 +194,7 @@ EDITS = load_edits()
 # own (the original's COMDATs): in the port such a view's layout differs from the real
 # class (layoutcensus.py), and its inline copies could win at link time over the real
 # ones. They compile empty; the inline members are emitted where they are used.
-EMPTY_UNITS = ['MfActorLib/MfAnimEvent.cpp', 'MfActorLib/MfFSMSpaceToBhvr.cpp', 'MfActorLib/MfProtoActor.cpp', 'PiccoloRT/MfScDataHandle.cpp', 'PiccoloRT/MfScVmEnv.cpp', 'RuntimeLib/MfActor_1.cpp', 'RuntimeLib/MfLocoPlanCache.cpp']
+EMPTY_UNITS = ['PiccoloRT/MfScVmEnv.cpp', 'RuntimeLib/MfActor_1.cpp', 'RuntimeLib/MfLocoPlanCache.cpp']
 for _u in EMPTY_UNITS:
     FILE_RULES.setdefault(_u, []).append(
         (re.compile(r'^#include "(\w+_unit\.h)"', re.M), r'/* port: #include "\1", see rewrite.EMPTY_UNITS */'))
