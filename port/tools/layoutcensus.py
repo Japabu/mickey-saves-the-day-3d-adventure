@@ -17,6 +17,9 @@ member lists of the differing copies. A copy that only declares fewer trailing m
 is reported only with --shorter (it matters where that module creates, embeds or
 copies such objects); a member both copies have at different offsets always counts.
 Output of every file: out/port/layouts/<module>/<file>.txt.
+
+Exits non-zero when a difference is not one of REVIEWED (port/tools/consistency.py runs
+this for every target).
 """
 import collections
 import concurrent.futures
@@ -35,6 +38,30 @@ BLOCK = re.compile(r'\*\*\* Dumping AST Record Layout\n(.*?)\[sizeof=(\d+),', re
 LINE = re.compile(r'^\s*(\d+)(?::[\d-]+)? \|( +)(.*)$')
 
 
+# Differences that were looked at: (module, class) within a module, or class across
+# modules. A new difference fails the check until it is fixed or added here with why it
+# is harmless.
+SKELETON = 'RuntimeLib/MfSkeletonNode.cpp keeps its own copy (VC5 matching); it emits only ' \
+           'FindFilesWithExtension and MfStringRef/MfString members, whose layouts agree'
+REVIEWED = {
+    ('zlib', 'internal_state'): "zlib's own design: inflate.c and deflate.c each define the opaque state",
+    ('RuntimeLib', 'MfColNode'): SKELETON,
+    ('RuntimeLib', 'MfColor'): SKELETON,
+    ('RuntimeLib', 'MfProtoNode'): SKELETON,
+    ('RuntimeLib', 'MfRenderFogInfo'): SKELETON,
+    ('RuntimeLib', 'MfRenderGridInfo'): SKELETON,
+    ('RuntimeLib', 'MfSkeletonNode'): SKELETON,
+    ('RuntimeLib', 'MfStringList'): SKELETON,
+    ('RuntimeLib', 'MfTypedValue'): SKELETON,
+    ('RuntimeLib', 'MfTreeNode'): SKELETON,
+    'MfHashTable': "PiccoloRT's and RuntimeLib's copies name the fields differently; neither uses them",
+    'MfScVmEnv': "RuntimeLib's view (MfScThread.h) swaps the names of two pointers it never uses",
+    'MfThread': "PxtMath's and PscContentInfo's copies add MfScThread's mVmEnv at its real offset",
+    'YYSTYPE': "each parser (PiccoloComp, RuntimeLib, MBEngine) has its own value type",
+    'yy_buffer_state': "flex 2.4 (PiccoloComp, RuntimeLib) and MBEngine's flex differ; each lexer uses its own",
+}
+
+
 def records(module, path):
     cmd = flags.command(module, path, ['-fsyntax-only', '-w', '-Xclang', '-fdump-record-layouts-complete'])
     res = subprocess.run(cmd, capture_output=True, text=True)
@@ -51,7 +78,7 @@ def records(module, path):
             continue
         head = lines[0].group(3)
         name = re.sub(r'^(class|struct|union) ', '', head)
-        if name.startswith(('std::', '__', '(anonymous')) or '<' in name and name.startswith('std'):
+        if name.startswith(('std::', '__', '(anonymous', '(lambda')) or '<' in name and name.startswith('std'):
             continue
         indent0 = len(lines[0].group(2))
         members = []
@@ -117,14 +144,16 @@ def main():
                 per[m][name][s].append(os.path.relpath(path, flags.SRC))
                 full[(m, name, s)] = layout
     total = 0
+    found = set()
     for m in mods:
         bad = {c: l for c, l in per[m].items() if len(l) > 1 and any(
             relation(a, b) in (('conflict', 'shorter') if shorter else ('conflict',)) for a in l for b in l)}
         total += len(bad)
         print(f'{m:16s} {len(per[m]):5d} classes, {len(bad)} with differing layouts')
         for c in sorted(bad):
+            found.add((m, c))
             lays = sorted(bad[c].items(), key=lambda kv: -kv[0][0])
-            print(f'    {c}: ' + '; '.join(f'size {s[0]} in {len(fs)} files ({fs[0]}{", ..." if len(fs) > 1 else ""})'
+            print(f'    {mark((m, c))}{c}: ' + '; '.join(f'size {s[0]} in {len(fs)} files ({fs[0]}{", ..." if len(fs) > 1 else ""})'
                                           for s, fs in lays))
             if verbose:
                 for s, fs in lays:
@@ -142,14 +171,34 @@ def main():
             kinds = {relation(a, b) for a in vals for b in vals} - {'same', 'split'}
             if kinds and (shorter or 'conflict' in kinds):
                 xbad += 1
+                found.add(c)
                 order = sorted(ms.items(), key=lambda kv: -kv[1][0])
-                print(f'    {c} ({"conflict" if "conflict" in kinds else "shorter"}): '
+                print(f'    {mark(c)}{c} ({"conflict" if "conflict" in kinds else "shorter"}): '
                       + '; '.join(f'{m} size {s[0]}' for m, s in order))
                 if verbose:
                     for m, s in order:
                         print(f'        {m}: ' + ', '.join(f'{o} {w}' for o, k, w in s[1])[:600])
     print(f'all: {total} classes differ within a module' + (f', {xbad} across modules' if cross else ''))
+    return verdict(found, cross and not only and not shorter and mods == list(flags.MODULES))
+
+
+def mark(key):
+    return '' if key in REVIEWED else 'NEW '
+
+
+def verdict(found, complete):
+    """0 when every difference found is reviewed (with complete, also reports reviewed
+    entries this target no longer shows: they may be stale)."""
+    new = sorted(str(k) for k in found if k not in REVIEWED)
+    if complete:
+        gone = sorted(str(k) for k in REVIEWED if k not in found)
+        if gone:
+            print(f'reviewed but not found for {flags.TARGET}: ' + ', '.join(gone))
+    if new:
+        print(f'not reviewed: ' + ', '.join(new))
+        return 1
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

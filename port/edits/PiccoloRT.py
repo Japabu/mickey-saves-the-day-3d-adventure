@@ -80,6 +80,12 @@ EDITS = {
         ('    virtual MfString GetClassName() { return MfString("Object"); }\n', '    virtual MfString GetClassName();' + OUT + '\n', 1),
         ('    virtual MfScPropTokenTable *GetPropTokenTable() { return 0; }\n', '    virtual MfScPropTokenTable *GetPropTokenTable();' + OUT + '\n', 1),
         ('    virtual MfScPropertyExtList *GetPropertyExtensions() { return 0; }\n', '    virtual MfScPropertyExtList *GetPropertyExtensions();' + OUT + '\n', 1),
+        # its view of MfScDebugInfo: the four longs are the real class's pointers
+        # (MfScDebugInfo.h), so the counts after them sit where the real ones are
+        ('    long m_unk08;              // +0x08\n', '    void *m_unk08;             // PORT: MfScLineInfo *\n', 1),
+        ('    long m_unk10;              // +0x10\n', '    void *m_unk10;             // PORT: MfScVariableDebugInfo *\n', 1),
+        ('    long m_unk18;              // +0x18\n', '    void *m_unk18;             // PORT: MfScCodeLevelInfo *\n', 1),
+        ('    long m_unk20;              // +0x20\n', '    void *m_unk20;             // PORT: MfScConstUsageInfo *\n', 1),
     ],
     'PiccoloRT/MfScBytecodeRoutine.cpp': [
         ('void MfScDataObject::FilloutPropertyNameList(MfStringList *) {}\n',

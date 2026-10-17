@@ -19,6 +19,9 @@ calls the first slots only) is not reported, unless --shorter is given: that mat
 where the module derives from the class. Within a module a shorter copy is reported
 when its unit emits the vtable ([emits] after the file name). -v prints the differing entries.
 Output of every file: out/port/vtables/<module>/<file>.txt.
+
+Exits non-zero when a difference is not one of REVIEWED, or a file does not compile
+(port/tools/consistency.py runs this for every target).
 """
 import collections
 import concurrent.futures
@@ -136,6 +139,11 @@ def layouts(module, path):
     return path, found, res.returncode, emits
 
 
+# Differences that were looked at: (module, class) within a module, or class across
+# modules, with why each is harmless. None at the moment.
+REVIEWED = {
+}
+
 def main():
     args = sys.argv[1:]
     cross = '--cross' in args or '--shorter' in args
@@ -154,6 +162,7 @@ def main():
                 rel = os.path.relpath(path, flags.SRC)
                 per[m][name][entries].append(rel + (' [emits]' if name in emits else ''))
     total = 0
+    found = set()
     for m in mods:
         def wild(e):
             return '?' if PLACEHOLDER.match(e) else e
@@ -183,6 +192,7 @@ def main():
                 bad[c] = l
             per[m][c] = l
         total += len(bad)
+        found.update((m, c) for c in bad)
         print(f'{m:16s} {len(per[m]):5d} classes, {len(bad)} with differing vtables' + (' (or shorter)' if shorter else ''))
         for c in sorted(bad):
             lays = sorted(bad[c].items(), key=lambda kv: -len(kv[0]))
@@ -208,6 +218,7 @@ def main():
             kind = 'shorter' if all(same(longest, v, True) for v in vals) else 'differs'
             if any(not same(vals[0], v) for v in vals[1:]) and (kind == 'differs' or shorter):
                 xbad += 1
+                found.add(c)
                 order = sorted(ms.items(), key=lambda kv: -len(kv[1]))
                 print(f'    {c} ({kind}): ' + '; '.join(f'{m} {len(l)}' for m, l in order))
                 if verbose:
@@ -220,7 +231,11 @@ def main():
     if failed:
         print(f'{len(failed)} files did not compile: ' + ', '.join(failed[:10]))
     print(f'all: {total} classes differ within a module' + (f', {xbad} across modules' if cross else ''))
+    new = sorted(str(k) for k in found if k not in REVIEWED)
+    if new:
+        print('not reviewed: ' + ', '.join(new))
+    return 1 if new or failed else 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

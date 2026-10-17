@@ -16,8 +16,9 @@ Nothing here changes `src/`: the decompilation stays byte-verifiable by
   parsers' `yy` names, SteamboatApp's copies of MBEngine classes) get the module's name
   as prefix in that module (`RENAMES`). Module table and flags: `port/flags.py`.
 - **Code every DLL had its own copy of** (inline functions, templates, vtables) is
-  linked once. `python3 port/tools/mergecheck.py` checks that the modules' copies agree
-  and `python3 port/tools/vtablecensus.py --cross` that their vtables do.
+  linked once. `python3 port/tools/consistency.py` checks, for macOS and the web, that
+  every declaration of a class agrees on its data layout and vtable, and that the
+  modules' copies of the merged code agree (see below).
 - **Microsoft C++ is compiled by clang** in Microsoft-compatibility mode
   (`-fms-extensions -fms-compatibility -fdelayed-template-parsing`);
   `compat/prelude.h` (force-included) maps the remaining language extensions.
@@ -74,6 +75,15 @@ names (`DWORD`, `LONG`, `UINT`, `HRESULT`, ...) are 32 bits wide in `compat/`, b
 `long` of the source is 64 bits here, and pointers no longer fit in 32-bit integers.
 Structures read from files, the script VM's data handles, and pointer/integer casts are
 where this bites; fixes go into edits with a comment.
+
+Many classes are declared more than once (unit views, copies kept for byte matching;
+see `// own copy:` in `src/`). A copy with an `int` where the real class has a pointer
+lays the object out differently here. `python3 port/tools/consistency.py` (about two
+minutes, after a macOS build) compares every declaration of every class for both
+targets and fails on a difference that is not in the `REVIEWED` table of
+`port/tools/layoutcensus.py`, `vtablecensus.py` or `mergecheck.py`. A new one is either
+a bug (usually fixed by an edit giving the view the real member types) or, once
+understood, an entry in that table saying why it is harmless.
 
 ## Building
 
