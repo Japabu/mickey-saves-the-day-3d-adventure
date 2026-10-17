@@ -3,10 +3,9 @@
 // and sound effects have a volume each, the window can be full screen, and the 3D can
 // be drawn sharper. The choices are kept in port.ini in the data
 // directory, next to `cd = <path>`.
-#include <SDL3/SDL.h>
 
 #include "internal.h"
-#include "text.h"
+#include "../host/host.h"
 #include "user.h"
 #include "../port.h"
 
@@ -174,11 +173,11 @@ static void set_paused(bool paused)
     if (paused) {
         post(h, WM_ACTIVATE, WA_INACTIVE, 0);
         post(h, WM_ACTIVATEAPP, FALSE, 0);
-        SDL_ShowCursor();
+        host::cursor_visible(true);
     } else {
         post(h, WM_ACTIVATEAPP, TRUE, 0);
         post(h, WM_ACTIVATE, WA_ACTIVE, 0);
-        SDL_HideCursor();
+        host::cursor_visible(false);
     }
 }
 
@@ -200,13 +199,12 @@ bool options_open() { return s_open; }
 
 static bool fullscreen()
 {
-    return s_window && s_window->sdl && (SDL_GetWindowFlags(s_window->sdl) & SDL_WINDOW_FULLSCREEN);
+    return host::window_is_fullscreen();
 }
 
 static void set_fullscreen(bool on)
 {
-    if (s_window && s_window->sdl)
-        SDL_SetWindowFullscreen(s_window->sdl, on);
+    host::window_fullscreen(on);
     ini_set("fullscreen", on ? 1 : 0);
 }
 
@@ -244,9 +242,6 @@ static void change(int row, int delta)
     redraw();
 }
 
-// Where the mouse is, in the game's coordinates.
-static void mouse(Window *w, float x, float y, int *cx, int *cy) { display_to_client(w, x, y, cx, cy); }
-
 static int row_at(int x, int y)
 {
     if (x < PX || x >= PX + PW)
@@ -275,49 +270,46 @@ static void click(int x, int y)
     redraw();
 }
 
-bool options_event(Window *w, const SDL_Event &e)
+bool options_event(Window *w, const host::Event &e)
 {
-    if (e.type == SDL_EVENT_KEY_DOWN && !e.key.repeat &&
-        (e.key.key == SDLK_ESCAPE || (e.key.key == SDLK_COMMA && (e.key.mod & SDL_KMOD_GUI)))) {
+    if (e.type == host::Event::KeyDown && !e.repeat &&
+        (e.vk == host::KeyEscape || (e.vk == host::KeyComma && e.command))) {
         open_panel(w, !s_open);
         return true;
     }
     if (!s_open)
         return false;
-    int x, y;
     switch (e.type) {
-    case SDL_EVENT_KEY_DOWN:
-        switch (e.key.key) {
-        case SDLK_UP: s_row = (s_row + ROWS - 1) % ROWS; redraw(); break;
-        case SDLK_DOWN: s_row = (s_row + 1) % ROWS; redraw(); break;
-        case SDLK_LEFT: change(s_row, -1); break;
-        case SDLK_RIGHT: change(s_row, 1); break;
-        case SDLK_RETURN:
-        case SDLK_SPACE: change(s_row, 0); break;
+    case host::Event::KeyDown:
+        switch (e.vk) {
+        case host::KeyUp: s_row = (s_row + ROWS - 1) % ROWS; redraw(); break;
+        case host::KeyDown: s_row = (s_row + 1) % ROWS; redraw(); break;
+        case host::KeyLeft: change(s_row, -1); break;
+        case host::KeyRight: change(s_row, 1); break;
+        case host::KeyReturn:
+        case host::KeySpace: change(s_row, 0); break;
         }
         return true;
-    case SDL_EVENT_MOUSE_BUTTON_DOWN:
-        if (e.button.button == SDL_BUTTON_LEFT) {
-            mouse(w, e.button.x, e.button.y, &x, &y);
-            click(x, y);
-        }
+    case host::Event::MouseDown:
+        if (e.button == 0)
+            click(e.x, e.y);
         return true;
-    case SDL_EVENT_MOUSE_BUTTON_UP:
+    case host::Event::MouseUp:
         s_dragging = -1;
         return true;
-    case SDL_EVENT_MOUSE_MOTION:
+    case host::Event::MouseMove:
         if (s_dragging >= 0) {
-            mouse(w, e.motion.x, e.motion.y, &x, &y);
-            set_volume(s_dragging, (int)lround((x - BAR_X) * 100.0 / BAR_W));
+            set_volume(s_dragging, (int)lround((e.x - BAR_X) * 100.0 / BAR_W));
             redraw();
         }
         return true;
-    case SDL_EVENT_KEY_UP:
-    case SDL_EVENT_TEXT_INPUT:
-    case SDL_EVENT_MOUSE_WHEEL:
+    case host::Event::KeyUp:
+    case host::Event::Text:
+    case host::Event::Wheel:
         return true;
+    default:
+        return false;
     }
-    return false;
 }
 
 // ---- drawing, into the frame the window shows (k times the game's 640x480)
@@ -364,15 +356,15 @@ struct Canvas {
         int key = (int)(size * k) * 2 + bold;
         void *&font = fonts[key];
         if (!font)
-            font = text::font_create("Arial", size * k, bold, false);
+            font = host::font_create("Arial", size * k, bold, false);
         if (!font)
             return;
-        int n = (int)strlen(s), tw = text::width(font, s, n) + 2;
+        int n = (int)strlen(s), tw = host::text_width(font, s, n) + 2;
         int ascent, descent, leading;
-        text::font_metrics(font, &ascent, &descent, &leading);
+        host::font_metrics(font, &ascent, &descent, &leading);
         int th = ascent + descent;
         std::vector<uint8_t> mask((size_t)tw * th);
-        text::render(font, s, n, mask.data(), tw, th, descent, true);
+        host::text_render(font, s, n, mask.data(), tw, th, descent, true);
         int ox = (int)(x * k) - (align == 2 ? tw : align == 1 ? tw / 2 : 0), oy = (int)(y * k) - th / 2;
         for (int j = 0; j < th; j++)
             for (int i = 0; i < tw; i++)

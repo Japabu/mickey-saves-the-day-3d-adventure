@@ -1,7 +1,7 @@
-// text.cpp - GDI text through CoreText (see text.h). Windows faces map to the macOS
+// text.cpp - the host's fonts through CoreText (macOS). Windows faces map to the macOS
 // fonts of the same name (Arial, Arial Black, Times New Roman, Comic Sans MS, Verdana,
 // Courier New are on every Mac); the system faces become Arial.
-#include "text.h"
+#include "../host.h"
 
 #include <CoreText/CoreText.h>
 #include <math.h>
@@ -9,10 +9,7 @@
 #include <strings.h>
 #include <vector>
 
-#pragma GCC visibility push(hidden)
-
-namespace win32 {
-namespace text {
+namespace host {
 
 void *font_create(const char *face, double px, bool bold, bool italic)
 {
@@ -65,7 +62,7 @@ static CTLineRef line_of(void *font, const char *s, int n)
     return line;
 }
 
-int width(void *font, const char *s, int n)
+int text_width(void *font, const char *s, int n)
 {
     if (n <= 0)
         return 0;
@@ -77,7 +74,7 @@ int width(void *font, const char *s, int n)
     return w;
 }
 
-void render(void *font, const char *s, int n, uint8_t *mask, int w, int h, int descent, bool aa)
+void text_render(void *font, const char *s, int n, uint8_t *mask, int w, int h, int descent, bool aa)
 {
     std::vector<uint8_t> buf((size_t)w * (size_t)h);
     CGColorSpaceRef gray = CGColorSpaceCreateDeviceGray();
@@ -98,5 +95,4 @@ void render(void *font, const char *s, int n, uint8_t *mask, int w, int h, int d
     memcpy(mask, buf.data(), buf.size());
 }
 
-}  // namespace text
-}  // namespace win32
+}  // namespace host

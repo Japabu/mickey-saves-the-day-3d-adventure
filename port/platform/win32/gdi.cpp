@@ -4,7 +4,7 @@
 // and text through CoreText (fonts by their Windows names; macOS has Arial and the other
 // faces the game asks for).
 #include "user.h"
-#include "text.h"
+#include "../host/host.h"
 #include "../port.h"
 
 #include <math.h>
@@ -64,7 +64,7 @@ struct PenObject : GdiObject {
 
 struct FontObject : GdiObject {
     explicit FontObject(const LOGFONTA &lf) : GdiObject(Font), lf(lf) {}
-    ~FontObject() { text::font_release(ct); }
+    ~FontObject() { host::font_release(ct); }
     LOGFONTA lf;
     void *ct = 0;
 };
@@ -496,21 +496,21 @@ static void *ct_font(FontObject *f)
     if (!f->ct) {
         // lfHeight < 0: the character height; > 0: the cell height (about 1.15 times as large).
         double px = f->lf.lfHeight < 0 ? -f->lf.lfHeight : f->lf.lfHeight > 0 ? f->lf.lfHeight / 1.15 : 13;
-        f->ct = text::font_create(f->lf.lfFaceName, px, f->lf.lfWeight >= FW_SEMIBOLD, f->lf.lfItalic != 0);
+        f->ct = host::font_create(f->lf.lfFaceName, px, f->lf.lfWeight >= FW_SEMIBOLD, f->lf.lfItalic != 0);
     }
     return f->ct;
 }
 
 static void text_metrics(FontObject *f, int &ascent, int &descent, int &leading)
 {
-    text::font_metrics(ct_font(f), &ascent, &descent, &leading);
+    host::font_metrics(ct_font(f), &ascent, &descent, &leading);
 }
 
 static SIZE text_extent(FontObject *f, const char *s, int n)
 {
     int a, de, l;
     text_metrics(f, a, de, l);
-    SIZE sz = {text::width(ct_font(f), s, n), a + de};
+    SIZE sz = {host::text_width(ct_font(f), s, n), a + de};
     return sz;
 }
 
@@ -539,7 +539,7 @@ static void draw_text(DC *d, int x, int y, const char *text, int n)
         fill_rect(d, x, y, x + ext.cx, y + ext.cy, d->bk);
     std::vector<uint8_t> mask((size_t)w * (size_t)h);
     bool smooth = getenv("MICKEY_TEXT_AA") != 0 && f->lf.lfQuality != NONANTIALIASED_QUALITY;
-    text::render(ct_font(f), text, n, mask.data(), w, h, de, smooth);
+    host::text_render(ct_font(f), text, n, mask.data(), w, h, de, smooth);
     int tr = GetRValue(d->text), tg = GetGValue(d->text), tb = GetBValue(d->text);
     uint32_t solid = raw_of(*p, d->text);
     for (int yy = 0; yy < h; yy++) {

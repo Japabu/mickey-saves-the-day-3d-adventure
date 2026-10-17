@@ -25,6 +25,7 @@ extern "C" {
 
 __attribute__((visibility("default"))) void port_set_command_line(int argc, char **argv)
 {
+    set_main_thread();
     s_cmdline = "\"C:\\setup\\hd\\binaries\\Steamboat.exe\"";
     for (int i = 1; i < argc; i++) {
         s_cmdline += " ";

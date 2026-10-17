@@ -68,9 +68,14 @@ bool set_current_dir(const char *winpath);
 // overlay, crtfs.cpp).
 std::string &launch_dir();
 
-// True if the calling thread's message queue (or the SDL event pump) has input
+// True if the calling thread's message queue (or the host's events) has input
 // (message.cpp).
 bool messages_pending();
+
+// The game's main thread: the one that started it (port_set_command_line); the window,
+// its frames and the host's events belong to it (thread.cpp).
+void set_main_thread();
+bool on_main_thread();
 
 // Milliseconds since the process started (GetTickCount, timeGetTime).
 DWORD ticks();

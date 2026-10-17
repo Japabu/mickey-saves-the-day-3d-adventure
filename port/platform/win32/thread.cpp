@@ -47,6 +47,10 @@ static DWORD current_thread_id()
     return t_id;
 }
 
+static std::atomic<DWORD> s_main_id{0};
+void set_main_thread() { s_main_id = current_thread_id(); }
+bool on_main_thread() { return s_main_id && s_main_id == current_thread_id(); }
+
 static void *thread_main(void *arg)
 {
     ThreadObject *t = (ThreadObject *)arg;

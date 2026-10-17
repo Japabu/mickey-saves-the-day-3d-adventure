@@ -118,7 +118,7 @@ void WINAPI Sleep(DWORD ms)
 {
     // the game's loop sleeping: virtual time passes instead (other threads, the script's
     // collector or the walk planners, sleep for real: they wait for each other)
-    if (s_virtual && pthread_main_np()) {
+    if (s_virtual && on_main_thread()) {
         s_virtual_ns += (uint64_t)ms * 1000000;
         sched_yield();
         return;

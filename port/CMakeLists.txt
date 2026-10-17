@@ -26,8 +26,18 @@ if(PORT_SANITIZE)
 endif()
 
 
-# Win32, DirectDraw/Direct3D 7, Miles, Bink and Smacker for the game
-file(GLOB_RECURSE PLATFORM_SOURCES CONFIGURE_DEPENDS platform/*.cpp platform/*.c)
+# Win32, DirectDraw/Direct3D 7, Miles, Bink and Smacker for the game, on the host
+# backends of the target (platform/host/host.h)
+set(PORT_HOST_BACKENDS sdl coretext posix)
+set(PLATFORM_DIRS platform platform/win32 platform/dx platform/media)
+foreach(b ${PORT_HOST_BACKENDS})
+  list(APPEND PLATFORM_DIRS platform/host/${b})
+endforeach()
+set(PLATFORM_SOURCES)
+foreach(d ${PLATFORM_DIRS})
+  file(GLOB s CONFIGURE_DEPENDS ${d}/*.cpp ${d}/*.c)
+  list(APPEND PLATFORM_SOURCES ${s})
+endforeach()
 add_library(platform OBJECT ${PLATFORM_SOURCES} platform/README.md)
 target_include_directories(platform SYSTEM PRIVATE compat/include)
 # the platform sees the game's own headers (d3d7.h, ...) as the modules do: through the

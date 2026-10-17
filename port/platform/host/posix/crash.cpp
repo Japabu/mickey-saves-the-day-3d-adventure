@@ -1,7 +1,8 @@
-// crash.cpp - what a crash prints to the terminal: the signal and faulting address, the
-// thread, and a backtrace with each frame's binary and symbol (the game is one executable:
-// the symbol says which module). Also for an uncaught C++ exception and for abort(). The
-// player's report of this output is our runtime data.
+// crash.cpp - the host's crash report (POSIX signals): what a crash prints to the
+// terminal: the signal and faulting address, the thread, and a backtrace with each
+// frame's binary and symbol (the game is one executable: the symbol says which module).
+// Also for an uncaught C++ exception and for abort(). The player's report of this
+// output is our runtime data. Installed before main.
 #include <cxxabi.h>
 #include <dlfcn.h>
 #include <exception>
@@ -15,8 +16,6 @@
 #include <typeinfo>
 #include <sys/ucontext.h>
 #include <unistd.h>
-
-#pragma GCC visibility push(hidden)
 
 namespace {
 
@@ -77,14 +76,12 @@ void on_signal(int sig, siginfo_t *si, void *uc)
         raise(sig);
         return;
     }
-    uint64_t tid = 0;
-    pthread_threadid_np(0, &tid);
-    fprintf(stderr, "\n==== Mickey Saves the Day (macOS port) crashed ====\n");
-    fprintf(stderr, "%s at address %p, thread %llu%s\n", signal_name(sig), si ? si->si_addr : 0, (unsigned long long)tid,
-            pthread_main_np() ? " (main)" : "");
+    fprintf(stderr, "\n==== Mickey Saves the Day crashed ====\n");
+    fprintf(stderr, "%s at address %p, thread %p\n", signal_name(sig), si ? si->si_addr : 0, (void *)pthread_self());
     fprintf(stderr, "Backtrace (library, offset in library, function):\n");
     // The faulting instruction and its caller (from the registers), then the stack walk
     // above the signal frame.
+#if defined(__APPLE__) && defined(__aarch64__)
     if (uc) {
         ucontext_t *ctx = (ucontext_t *)uc;
         void *at[2] = {(void *)ctx->uc_mcontext->__ss.__pc, (void *)ctx->uc_mcontext->__ss.__lr};
@@ -92,6 +89,9 @@ void on_signal(int sig, siginfo_t *si, void *uc)
         print_frames(at, 2, 0);
         fprintf(stderr, "  stack:\n");
     }
+#else
+    (void)uc;
+#endif
     print_backtrace(2);
     fprintf(stderr, "==== please send this text with your report ====\n");
     fflush(stderr);
@@ -101,7 +101,7 @@ void on_signal(int sig, siginfo_t *si, void *uc)
 
 void on_terminate()
 {
-    fprintf(stderr, "\n==== Mickey Saves the Day (macOS port): uncaught exception ====\n");
+    fprintf(stderr, "\n==== Mickey Saves the Day: uncaught exception ====\n");
     if (std::type_info *t = abi::__cxa_current_exception_type()) {
         int status = -1;
         char *name = abi::__cxa_demangle(t->name(), 0, 0, &status);

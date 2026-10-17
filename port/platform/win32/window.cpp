@@ -1,9 +1,8 @@
 // window.cpp - window classes and windows: creation and destruction, window longs, text,
 // position and visibility, rectangles, system metrics, message boxes, and the dialog,
 // menu and tray calls of the developer tools (logged stubs).
-#include <SDL3/SDL.h>
-
 #include "user.h"
+#include "../host/host.h"
 #include <commctrl.h>
 
 #include <mutex>
@@ -47,7 +46,7 @@ HWND main_window()
 {
     std::lock_guard<std::recursive_mutex> lock(s_mu);
     for (Window *w : s_windows)
-        if (!w->parent && !w->destroyed && w->sdl)
+        if (!w->parent && !w->destroyed && w->on_host)
             return (HWND)w;
     return 0;
 }
@@ -211,7 +210,7 @@ BOOL WINAPI IsWindowVisible(HWND hWnd)
 BOOL WINAPI IsIconic(HWND hWnd)
 {
     Window *w = window(hWnd);
-    return w && w->sdl && (SDL_GetWindowFlags(w->sdl) & SDL_WINDOW_MINIMIZED);
+    return w && w->on_host && host::window_is_minimized();
 }
 BOOL WINAPI IsZoomed(HWND) { return FALSE; }
 
@@ -247,10 +246,10 @@ BOOL WINAPI ShowWindow(HWND hWnd, int nCmdShow)
             }
         }
     }
-    if (w->sdl && nCmdShow == SW_MINIMIZE)
-        SDL_MinimizeWindow(w->sdl);
-    if (w->sdl && nCmdShow == SW_RESTORE)
-        SDL_RestoreWindow(w->sdl);
+    if (w->on_host && nCmdShow == SW_MINIMIZE)
+        host::window_minimize(true);
+    if (w->on_host && nCmdShow == SW_RESTORE)
+        host::window_minimize(false);
     return was;
 }
 
@@ -639,74 +638,24 @@ DWORD WINAPI GetSysColor(int nIndex)
 
 BOOL WINAPI SystemParametersInfoA(UINT, UINT, PVOID, UINT) { return FALSE; }
 
-// Message boxes.
-int WINAPI MessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
+// Message boxes: the game shows them only for fatal errors and in the developer tools.
+// The text goes to stderr and the answer is the button Escape would choose (Cancel, No,
+// Ignore: the game carries on where it can).
+int WINAPI MessageBoxA(HWND, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
 {
-    Window *w = hWnd ? window(hWnd) : 0;
-    SDL_MessageBoxButtonData buttons[3];
-    int n = 0;
-    auto add = [&](int id, const char *label, Uint32 flags) {
-        buttons[n].flags = flags;
-        buttons[n].buttonID = id;
-        buttons[n].text = label;
-        n++;
-    };
+    fprintf(stderr, "MessageBox: %s: %s\n", lpCaption ? lpCaption : "", lpText ? lpText : "");
     switch (uType & MB_TYPEMASK) {
     case MB_OKCANCEL:
-        add(IDOK, "OK", SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT);
-        add(IDCANCEL, "Cancel", SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT);
-        break;
-    case MB_YESNO:
-        add(IDYES, "Yes", SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT);
-        add(IDNO, "No", SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT);
-        break;
     case MB_YESNOCANCEL:
-        add(IDYES, "Yes", SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT);
-        add(IDNO, "No", 0);
-        add(IDCANCEL, "Cancel", SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT);
-        break;
     case MB_RETRYCANCEL:
-        add(IDRETRY, "Retry", SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT);
-        add(IDCANCEL, "Cancel", SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT);
-        break;
+        return IDCANCEL;
+    case MB_YESNO:
+        return IDNO;
     case MB_ABORTRETRYIGNORE:
-        add(IDABORT, "Abort", 0);
-        add(IDRETRY, "Retry", SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT);
-        add(IDIGNORE, "Ignore", SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT);
-        break;
+        return IDIGNORE;
     default:
-        add(IDOK, "OK", SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT | SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT);
+        return IDOK;
     }
-    // The texts are in code page 1252; SDL wants UTF-8.
-    auto utf8 = [](LPCSTR s) {
-        std::string out;
-        if (!s)
-            return out;
-        int nw = MultiByteToWideChar(CP_ACP, 0, s, -1, 0, 0);
-        std::vector<WCHAR> wbuf((size_t)nw);
-        MultiByteToWideChar(CP_ACP, 0, s, -1, wbuf.data(), nw);
-        int nb = WideCharToMultiByte(CP_UTF8, 0, wbuf.data(), nw, 0, 0, 0, 0);
-        out.resize((size_t)nb);
-        WideCharToMultiByte(CP_UTF8, 0, wbuf.data(), nw, &out[0], nb, 0, 0);
-        if (!out.empty() && out.back() == 0)
-            out.pop_back();
-        return out;
-    };
-    std::string text = utf8(lpText), title = utf8(lpCaption);
-    fprintf(stderr, "MessageBox: %s: %s\n", title.c_str(), text.c_str());
-    SDL_MessageBoxData data = {};
-    data.flags = (uType & MB_ICONMASK) == MB_ICONHAND ? SDL_MESSAGEBOX_ERROR
-                 : (uType & MB_ICONMASK) == MB_ICONEXCLAMATION ? SDL_MESSAGEBOX_WARNING
-                                                                 : SDL_MESSAGEBOX_INFORMATION;
-    data.window = w ? w->sdl : 0;
-    data.title = title.c_str();
-    data.message = text.c_str();
-    data.numbuttons = n;
-    data.buttons = buttons;
-    int id = buttons[0].buttonID;
-    if (!SDL_ShowMessageBox(&data, &id))
-        log("window", "MessageBox: %s\n", SDL_GetError());
-    return id;
 }
 
 int WINAPI MessageBoxW(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType)

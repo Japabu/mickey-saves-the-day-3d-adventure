@@ -296,8 +296,6 @@ static void cd_problem(const std::string &what)
                        "copied or mounted CD), for example:\n\n  MICKEY_CD=/path/to/Micky_auf_Ganovenjagd.iso\n\n"
                        "or write cd = <path> into " + overlay_dir() + "/port.ini.";
     fprintf(stderr, "%s\n", text.c_str());
-    // The text goes through code page 1252 in MessageBoxA; keep it ASCII.
-    MessageBoxA(0, text.c_str(), "Micky auf Ganovenjagd", MB_OK | MB_ICONHAND);
     _exit(1);
 }
 

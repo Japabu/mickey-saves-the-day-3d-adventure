@@ -1,37 +1,23 @@
-// display.cpp - the game window on screen: one SDL window and renderer, the frames of
-// the DirectDraw layer (port_frame_changed, port_frame_pixels), scaled to fit with
-// letterboxing, vsync, and the "screen" size the game sees.
-#include <SDL3/SDL.h>
-
+// display.cpp - the game's top-level window on the host's window (host.h): the frames of
+// the DirectDraw layer (port_frame_changed, port_frame_pixels) shown at most once per
+// display refresh, full screen or not, and the "screen" size the game sees.
 #include "user.h"
 #include "../port.h"
+#include "../host/host.h"
 
 #include <atomic>
-#include <mutex>
-#include <pthread.h>
+#include <chrono>
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
 
 namespace win32 {
 
-static SDL_Renderer *s_renderer;
-static SDL_Texture *s_texture;
-static int s_tex_w, s_tex_h, s_tex_scale;
-static Window *s_window;
+static Window *s_window;   // the window the host shows
 
 // The primary surface changed since the window last showed it (port_frame_changed);
 // shown when the game's thread next pumps messages or waits for the vertical blank.
 static std::atomic<bool> s_frame_new;
-
-static void init_video()
-{
-    if (SDL_WasInit(SDL_INIT_VIDEO))
-        return;
-    SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
-    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS))
-        fprintf(stderr, "SDL_Init: %s\n", SDL_GetError());
-}
 
 int display_width()
 {
@@ -60,47 +46,30 @@ static bool fullscreen_wanted()
     return s_fullscreen_request != 0;
 }
 
+static std::string utf8_title(const std::string &ansi)
+{
+    int n = MultiByteToWideChar(CP_ACP, 0, ansi.c_str(), -1, 0, 0);
+    std::vector<WCHAR> wt((size_t)n);
+    MultiByteToWideChar(CP_ACP, 0, ansi.c_str(), -1, wt.data(), n);
+    int nb = WideCharToMultiByte(CP_UTF8, 0, wt.data(), n, 0, 0, 0, 0);
+    std::string title((size_t)nb, 0);
+    WideCharToMultiByte(CP_UTF8, 0, wt.data(), n, &title[0], nb, 0, 0);
+    return title.c_str();
+}
+
+bool display_open() { return s_window != 0; }
+
 void display_show(Window *w)
 {
-    init_video();
-    if (!w->sdl) {
+    if (!w->on_host) {
+        if (s_window)
+            return;  // the host shows one window, the game's first
         int cw = w->client_w ? w->client_w : 640, ch = w->client_h ? w->client_h : 480;
-        std::string title;
-        int n = MultiByteToWideChar(CP_ACP, 0, w->text.c_str(), -1, 0, 0);
-        std::vector<WCHAR> wt((size_t)n);
-        MultiByteToWideChar(CP_ACP, 0, w->text.c_str(), -1, wt.data(), n);
-        int nb = WideCharToMultiByte(CP_UTF8, 0, wt.data(), n, 0, 0, 0, 0);
-        title.resize((size_t)nb);
-        WideCharToMultiByte(CP_UTF8, 0, wt.data(), n, &title[0], nb, 0, 0);
-        SDL_WindowFlags flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-        if (getenv("PORT_HIDDEN") && atoi(getenv("PORT_HIDDEN")))
-            flags |= SDL_WINDOW_HIDDEN;
-        // The window is twice the game's size on a large display, and stays 4:3.
-        w->sdl = SDL_CreateWindow(title.c_str(), cw * 2, ch * 2, flags);
-        if (!w->sdl) {
-            fprintf(stderr, "SDL_CreateWindow: %s\n", SDL_GetError());
+        if (!host::window_open(utf8_title(w->text).c_str(), cw, ch, fullscreen_wanted()))
             return;
-        }
-        // resizing keeps the game's shape, so the picture fills the window while it is
-        // dragged and after (no stretching, no bars)
-        if (ch > 0)
-            SDL_SetWindowAspectRatio(w->sdl, (float)cw / ch, (float)cw / ch);
-        if (!s_renderer) {
-            s_renderer = SDL_CreateRenderer(w->sdl, 0);
-            if (!s_renderer)
-                fprintf(stderr, "SDL_CreateRenderer: %s\n", SDL_GetError());
-            else
-                // no vsync wait: presenting blocks the game's thread (its message loop
-                // presents), and Metal blocks for long while the window is covered
-                SDL_SetRenderVSync(s_renderer, 0);
-        }
-        if (s_renderer)
-            SDL_SetRenderLogicalPresentation(s_renderer, cw, ch, SDL_LOGICAL_PRESENTATION_LETTERBOX);
-        if (fullscreen_wanted())
-            SDL_SetWindowFullscreen(w->sdl, true);
+        w->on_host = true;
         s_window = w;
-        SDL_HideCursor();  // the game draws its own cursor
-        SDL_StartTextInput(w->sdl);
+        host::cursor_visible(false);  // the game draws its own cursor
     }
     // PORT_HIDDEN=1 (tests): the window stays hidden and the game is told it is active,
     // as a shown window with the focus would make it
@@ -110,59 +79,28 @@ void display_show(Window *w)
         PostMessageA((HWND)w, WM_ACTIVATE, WA_ACTIVE, 0);
         return;
     }
-    SDL_ShowWindow(w->sdl);
-    SDL_RaiseWindow(w->sdl);
+    host::window_show(true);
 }
 
 void display_hide(Window *w)
 {
-    if (w->sdl)
-        SDL_HideWindow(w->sdl);
+    if (w->on_host)
+        host::window_show(false);
 }
 
 void display_destroy(Window *w)
 {
-    if (!w->sdl)
+    if (!w->on_host)
         return;
-    if (s_window == w) {
-        if (s_texture)
-            SDL_DestroyTexture(s_texture);
-        if (s_renderer)
-            SDL_DestroyRenderer(s_renderer);
-        s_texture = 0;
-        s_renderer = 0;
-        s_window = 0;
-    }
-    SDL_DestroyWindow(w->sdl);
-    w->sdl = 0;
+    host::window_close();
+    w->on_host = false;
+    s_window = 0;
 }
 
 void display_title(Window *w)
 {
-    if (w->sdl)
-        SDL_SetWindowTitle(w->sdl, w->text.c_str());
-}
-
-void display_to_client(Window *w, float x, float y, int *cx, int *cy)
-{
-    float lx = x, ly = y;
-    if (s_renderer && w == s_window)
-        SDL_RenderCoordinatesFromWindow(s_renderer, x, y, &lx, &ly);
-    int ix = (int)lx, iy = (int)ly;
-    if (ix < 0) ix = 0;
-    if (iy < 0) iy = 0;
-    if (w->client_w && ix >= w->client_w) ix = w->client_w - 1;
-    if (w->client_h && iy >= w->client_h) iy = w->client_h - 1;
-    *cx = ix;
-    *cy = iy;
-}
-
-void display_from_client(Window *w, int cx, int cy, float *x, float *y)
-{
-    *x = (float)cx;
-    *y = (float)cy;
-    if (s_renderer && w == s_window)
-        SDL_RenderCoordinatesToWindow(s_renderer, (float)cx, (float)cy, x, y);
+    if (w->on_host)
+        host::window_title(utf8_title(w->text).c_str());
 }
 
 // PORT_SHOTS="<dir>:<ms>": every <ms> milliseconds the shown frame is saved as
@@ -184,69 +122,73 @@ static bool shots_due()
     return (int)(ticks() - s_shot_next) >= 0;
 }
 
+// A 32-bit BMP, bottom row first.
+static void write_bmp(const char *path, const uint32_t *px, int w, int h)
+{
+    FILE *f = fopen(path, "wb");
+    if (!f)
+        return;
+    uint32_t size = 54 + (uint32_t)w * (uint32_t)h * 4;
+    uint8_t hd[54] = {'B', 'M'};
+    auto put32 = [&](int at, uint32_t v) { memcpy(hd + at, &v, 4); };
+    put32(2, size);
+    put32(10, 54);
+    put32(14, 40);
+    put32(18, (uint32_t)w);
+    put32(22, (uint32_t)h);
+    hd[26] = 1;
+    hd[28] = 32;
+    put32(34, size - 54);
+    fwrite(hd, 1, sizeof(hd), f);
+    for (int y = h - 1; y >= 0; y--)
+        fwrite(px + (size_t)y * (size_t)w, 4, (size_t)w, f);
+    fclose(f);
+}
+
 static void save_shot(const uint32_t *frame, int w, int h)
 {
     if (!shots_due())
         return;
     DWORD now = ticks();
     s_shot_next = now + s_shot_every;
-    SDL_Surface *surface = SDL_CreateSurfaceFrom(w, h, SDL_PIXELFORMAT_XRGB8888, (void *)frame, w * 4);
-    if (!surface)
-        return;
     char path[1024];
     snprintf(path, sizeof(path), "%s/shot_%06u.bmp", s_shot_dir.c_str(), (unsigned)(now - s_shot_start));
-    SDL_SaveBMP(surface, path);
-    SDL_DestroySurface(surface);
+    write_bmp(path, frame, w, h);
 }
 
-// Shows the latest frame, if there is a new one. Only the main thread draws (SDL's
-// renderer belongs to it); frames presented by other threads (the game's cursor thread)
+// Shows the latest frame, if there is a new one. Only the main thread draws (the host's
+// window belongs to it); frames presented by other threads (the game's cursor thread)
 // are shown by the main thread's next message pump.
 static void show_frame()
 {
-    if (!s_renderer || !pthread_main_np())
+    if (!s_window || !on_main_thread())
         return;
     if (!s_frame_new)
         return;
-    // at most one frame per 60 Hz refresh; a newer one waits for the next pump
-    static Uint64 s_last;
-    Uint64 now = SDL_GetTicksNS();
-    if (now - s_last < 16000000)
+    // at most one frame per 60 Hz refresh (real time, also on the virtual clock); a newer
+    // one waits for the next pump
+    static std::chrono::steady_clock::time_point s_last;
+    auto now = std::chrono::steady_clock::now();
+    if (now - s_last < std::chrono::milliseconds(16))
         return;
     // nothing to show while the window can't be seen: the frame stays new for later
     // (PORT_SHOTS still saves it)
-    bool unseen = s_window && s_window->sdl &&
-        (SDL_GetWindowFlags(s_window->sdl) & (SDL_WINDOW_OCCLUDED | SDL_WINDOW_MINIMIZED | SDL_WINDOW_HIDDEN));
+    bool unseen = !host::window_visible();
     if (unseen && !shots_due())
         return;
     s_last = now;
     if (!unseen)
         s_frame_new = false; // a change while the pixels are taken shows next time
     const uint32_t *pixels;
-    int s_frame_w, s_frame_h, s_frame_scale;
-    if (!port_frame_pixels(&pixels, &s_frame_w, &s_frame_h, &s_frame_scale))
+    int w, h, scale;
+    if (!port_frame_pixels(&pixels, &w, &h, &scale))
         return;
-    options_draw((uint32_t *)pixels, s_frame_w, s_frame_h, s_frame_scale);  // a copy made for this frame
-    save_shot(pixels, s_frame_w, s_frame_h);
+    options_draw((uint32_t *)pixels, w, h, scale);  // a copy made for this frame
+    save_shot(pixels, w, h);
     if (unseen)
         return;
-    if (!s_texture || s_tex_w != s_frame_w || s_tex_h != s_frame_h || s_tex_scale != s_frame_scale) {
-        if (s_texture)
-            SDL_DestroyTexture(s_texture);
-        s_texture = SDL_CreateTexture(s_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, s_frame_w, s_frame_h);
-        SDL_SetTextureScaleMode(s_texture, getenv("MICKEY_SMOOTH") ? SDL_SCALEMODE_LINEAR : SDL_SCALEMODE_NEAREST);
-        s_tex_w = s_frame_w;
-        s_tex_h = s_frame_h;
-        s_tex_scale = s_frame_scale;
-        // the logical size is the game's screen (mouse positions are in it)
-        SDL_SetRenderLogicalPresentation(s_renderer, s_frame_w / s_frame_scale, s_frame_h / s_frame_scale,
-                                         SDL_LOGICAL_PRESENTATION_LETTERBOX);
-    }
-    SDL_UpdateTexture(s_texture, 0, pixels, s_frame_w * 4);
-    SDL_SetRenderDrawColor(s_renderer, 0, 0, 0, 255);
-    SDL_RenderClear(s_renderer);
-    SDL_RenderTexture(s_renderer, s_texture, 0, 0);
-    SDL_RenderPresent(s_renderer);
+    static const bool smooth = getenv("MICKEY_SMOOTH") != 0;
+    host::present(pixels, w, h, scale, smooth);
 }
 
 void display_pump() { show_frame(); }
@@ -268,14 +210,14 @@ void port_frame_changed(void)
 void port_set_fullscreen(int fullscreen)
 {
     s_fullscreen_request = fullscreen != 0;
-    if (s_window && s_window->sdl)
-        SDL_SetWindowFullscreen(s_window->sdl, fullscreen_wanted());
+    if (s_window)
+        host::window_fullscreen(fullscreen_wanted());
 }
 
 void port_wait_vblank(void)
 {
-    if (s_frame_new && pthread_main_np()) {
-        show_frame();  // presents with vsync
+    if (s_frame_new && on_main_thread()) {
+        show_frame();
         return;
     }
     // Sleep to the next 60 Hz boundary.
