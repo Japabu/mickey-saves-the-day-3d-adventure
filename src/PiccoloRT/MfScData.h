@@ -1,11 +1,13 @@
+// MfScData: the base of everything a data handle can point to.
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfLock.h"
 class MfScDataHandle;
 class MfScLinkData;
 class MfString;
 
 // Base of everything a data handle can point to: a lockable, named object.
-class __declspec(dllexport) MfScData {
+class PICCOLORT_API MfScData {
 public:
     MfScData();
     virtual ~MfScData();

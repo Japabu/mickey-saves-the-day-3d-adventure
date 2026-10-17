@@ -1,9 +1,11 @@
+// MfScVmFrame: a saved call frame of an MfScVmEnv.
 #pragma once
+#include "PiccoloRT_api.h"
 class MfScDataHandle;
 
 // A saved call frame of an MfScVmEnv (MfScVmEnv::FirstFrame / NextFrame /
 // RestoreFrame); holds references on the function and object handles.
-class __declspec(dllexport) MfScVmFrame {
+class PICCOLORT_API MfScVmFrame {
 public:
     MfScVmFrame();
     ~MfScVmFrame();

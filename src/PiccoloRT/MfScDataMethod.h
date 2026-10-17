@@ -1,10 +1,12 @@
+// MfScDataMethod: the base of the callable script data (routines).
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfScData.h"
 #include "MfScDataHandle.h"
 
 // Base of the callable data (bytecode routines, C functions, C++ methods)
 // with the routine's constant pool.
-class __declspec(dllexport) MfScDataMethod : public MfScData {
+class PICCOLORT_API MfScDataMethod : public MfScData {
 public:
     enum MfScMethodType { kNone, kFunction, kMethod, kExtMethod };
     MfScDataMethod(MfScMethodType type, int numArgs);

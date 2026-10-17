@@ -1,4 +1,6 @@
+// MfScDebugInfo: the debug information of a bytecode routine.
 #pragma once
+#include "PiccoloRT_api.h"
 class MfScCodeLevelInfo;
 class MfScConstUsageInfo;
 class MfScDataHandle;
@@ -8,7 +10,7 @@ class MfString;
 
 // Debug information of a bytecode routine: line table, local variables,
 // code levels and the constants it uses.
-class __declspec(dllexport) MfScDebugInfo {
+class PICCOLORT_API MfScDebugInfo {
 public:
     MfScDebugInfo();
     virtual ~MfScDebugInfo();

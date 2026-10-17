@@ -1,3 +1,4 @@
+// MfScCodeLevelInfo: bytecode offset -> block nesting level (debug information).
 #pragma once
 
 // Bytecode offset -> block nesting level (8 bytes).

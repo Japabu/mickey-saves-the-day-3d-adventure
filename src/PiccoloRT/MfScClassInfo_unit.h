@@ -87,10 +87,7 @@ public:
     static int IsJumpNotZero(unsigned char op) { return op >= 0x48 && op <= 0x4a; }
 };
 
-class LiiExemplar {
-public:
-    ~LiiExemplar() {}
-};
+#include "LiiExemplar.h"
 
 class PICAPI MfScClassInfoText {
 public:

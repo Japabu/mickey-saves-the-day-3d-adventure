@@ -196,6 +196,8 @@ protected:
 };
 
 // Private implementation (vtable 0x1002079c, RTTI .?AVMfScDataArrayImp@@).
+// own copy: this unit declares its own views of MfString, MfScData and
+// MfScDataObject, which conflict with the headers MfScDataArrayImp.h includes.
 class MfScDataArrayImp : public MfScDataArray {
 public:
     MfScDataArrayImp(int size);

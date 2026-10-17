@@ -1,19 +1,11 @@
+// MfAiFunctionRegistry: the "FunctionRegistry" interface (with the MfAi base the
+// runtime's interfaces share, until mfutil has its own header).
 #pragma once
 class MfScDataHandle;
 class MfScHandleList;
 class MfString;
-
-// Callbacks of MfAiFunctionRegistry::EnumFunctions / EnumModules; returning 0
-// stops the enumeration.
-class MfCbRegistryFunctionEnumerator {
-public:
-    virtual int Enumerate(MfScDataHandle *function, void *data) = 0;
-};
-
-class MfCbRegistryModuleEnumerator {
-public:
-    virtual int Enumerate(const MfString &module, const MfString &moduleType, void *data) = 0;
-};
+#include "MfCbRegistryFunctionEnumerator.h"
+#include "MfCbRegistryModuleEnumerator.h"
 
 // Interface base: name and reference counting. The registry's export takes the
 // version numbers by reference, the class-info plugin's by pointer

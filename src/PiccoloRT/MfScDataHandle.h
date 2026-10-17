@@ -1,4 +1,6 @@
+// MfScDataHandle: a reference-counted, typed value of the script VM.
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfCriticalSection.h"
 class MfScData;
 class MfScDataArray;
@@ -15,7 +17,7 @@ class MfVariant;
 
 // A reference-counted, typed value of the script VM (8 bytes, allocated from
 // the handle heaps by operator new).
-class __declspec(dllexport) MfScDataHandle {
+class PICCOLORT_API MfScDataHandle {
 public:
     // thrown by operator new when a heap is exhausted even after collecting
     class MfScMemoryException {

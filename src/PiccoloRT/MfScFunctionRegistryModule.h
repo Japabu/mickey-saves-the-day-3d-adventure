@@ -1,4 +1,6 @@
+// MfScFunctionRegistryModule: the functions of one module of the function registry.
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfListItemInterface.h"
 #include "MfString.h"
 class MfCbRegistryFunctionEnumerator;
@@ -10,7 +12,7 @@ class MfScFunctionRegistryEntry;
 class MfScHandleList;
 
 // The functions of one module, by name.
-class __declspec(dllexport) MfScFunctionRegistryModule : public MfListItemInterface {
+class PICCOLORT_API MfScFunctionRegistryModule : public MfListItemInterface {
 public:
     MfScFunctionRegistryModule();
     MfScFunctionRegistryModule(LiiExemplar);

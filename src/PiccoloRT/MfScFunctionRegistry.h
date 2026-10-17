@@ -1,4 +1,6 @@
+// MfScFunctionRegistry: the function registry of the runtime.
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfAiFunctionRegistry.h"
 #include "MfCriticalSection.h"
 class MfDblList;
@@ -7,7 +9,7 @@ class MfScFunctionRegistryEntry;
 class MfScFunctionRegistryModule;
 
 // The function registry of the runtime (MfScPiccolo::GetFunctionRegistry).
-class __declspec(dllexport) MfScFunctionRegistry : public MfAiFunctionRegistry {
+class PICCOLORT_API MfScFunctionRegistry : public MfAiFunctionRegistry {
 public:
     MfScFunctionRegistry();
     virtual void GetInterfaceName(char *name, int size, int &major, int &minor);

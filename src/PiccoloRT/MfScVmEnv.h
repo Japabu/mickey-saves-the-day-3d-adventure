@@ -1,4 +1,6 @@
+// MfScVmEnv: the execution state of one script thread.
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfScVariableStack.h"
 #include "MfString.h"
 #include "MfScDataHandle.h"
@@ -27,7 +29,7 @@ public:
 // variable pools and pending exception. Call frames are pushed on the data
 // stack as ip, object, function, constant pool and the previous frame pointer
 // (MfScVirtualMachine::ExecuteCode reads and writes the state directly).
-class __declspec(dllexport) MfScVmEnv {
+class PICCOLORT_API MfScVmEnv {
 public:
     MfScVmEnv();
     virtual ~MfScVmEnv();

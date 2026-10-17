@@ -1,3 +1,4 @@
+// MfScBytecodes: what the runtime knows about the Piccolo bytecodes.
 #pragma once
 
 class MfScBytecodes {

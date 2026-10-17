@@ -1,11 +1,13 @@
+// MfScFunctionRegistryEntry: one function of a function registry module.
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfListItemInterface.h"
 class MfCbRegistryFunctionEnumerator;
 class MfScDataHandle;
 class MfString;
 
 // One function of a MfScFunctionRegistryModule; holds a reference.
-class __declspec(dllexport) MfScFunctionRegistryEntry : public MfListItemInterface {
+class PICCOLORT_API MfScFunctionRegistryEntry : public MfListItemInterface {
 public:
     MfScFunctionRegistryEntry(MfScDataHandle *function);
     MfScFunctionRegistryEntry(LiiExemplar);

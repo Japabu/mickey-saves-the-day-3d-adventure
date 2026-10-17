@@ -1,16 +1,11 @@
+// MfScStdLib: the list interface the standard library plugin registers.
 #pragma once
+#include "PiccoloRT_api.h"
+#include "MfScStdLibListInterface.h"
 class MfDblList;
 class MfScDataHandle;
 
-// How the standard library plugin (PscStdlib) makes script lists; the default
-// one, used until the plugin registers its own, makes none.
-class __declspec(dllexport) MfScStdLibListInterface {
-public:
-    virtual int CreateList(MfDblList **list, MfScDataHandle **handle);
-    virtual int GetList(MfDblList **list, MfScDataHandle *handle);
-};
-
-class __declspec(dllexport) MfScStdLib {
+class PICCOLORT_API MfScStdLib {
 public:
     static void RegisterListInterface(MfScStdLibListInterface *);
     static MfScStdLibListInterface *GetListInterface();

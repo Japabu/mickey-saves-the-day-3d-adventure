@@ -1,4 +1,6 @@
+// MfScPiccoloObjectFile: a Piccolo object file (.pobj, .pexe, .plib, .pdbg).
 #pragma once
+#include "PiccoloRT_api.h"
 #include <windows.h>
 #include "MfString.h"
 class MfDblList;
@@ -11,7 +13,7 @@ class MfStringList;
 // A Piccolo object file (.pobj, .pexe, .plib, .pdbg): compiled script
 // functions grouped by module, mapped into memory for reading, collected in
 // lists for writing.
-class __declspec(dllexport) MfScPiccoloObjectFile {
+class PICCOLORT_API MfScPiccoloObjectFile {
 public:
     enum MfScPOFErrorCode {
         kPOFOk = 0,

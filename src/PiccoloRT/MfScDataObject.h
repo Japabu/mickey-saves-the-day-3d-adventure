@@ -1,4 +1,6 @@
+// MfScDataObject: the base of the script objects (properties).
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfScData.h"
 #include "MfString.h"
 class CWnd;
@@ -14,7 +16,7 @@ class MfStringList;
 
 // Base of the script objects: properties come from the class (token table and
 // property extensions) and from a per-instance variable pool.
-class __declspec(dllexport) MfScDataObject : public MfScData {
+class PICCOLORT_API MfScDataObject : public MfScData {
 public:
     enum MfPropertyErrorCode {
         kPropOk = 0,

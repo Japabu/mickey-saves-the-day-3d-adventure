@@ -1,11 +1,13 @@
+// MfScPropTokenTable: a dictionary property name -> MfScPropToken.
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfDictionary.h"
 #include "MfCallBack.h"
 #include "MfScPropToken.h"
 class MfString;
 
 // Dictionary property name -> MfScPropToken; it is its own delete callback (0x18 bytes).
-class __declspec(dllexport) MfScPropTokenTable : public MfDictionary, public MfCallBack {
+class PICCOLORT_API MfScPropTokenTable : public MfDictionary, public MfCallBack {
 public:
     MfScPropTokenTable() : MfDictionary(0x35) {}
     virtual ~MfScPropTokenTable();

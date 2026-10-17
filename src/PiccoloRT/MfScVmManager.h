@@ -1,15 +1,9 @@
+// MfScVmManager: the runtime's VM manager (MfAiVmManager).
 #pragma once
 #include "MfAiFunctionRegistry.h"
 #include "MfDblList.h"
 class MfScVmEnv;
-
-// "VMManagerI": the script environments (threads) that exist.
-class MfAiVmManager : public MfAi {
-public:
-    virtual int Count() = 0;
-    virtual MfScVmEnv *First() = 0;
-    virtual MfScVmEnv *Next() = 0;
-};
+#include "MfAiVmManager.h"
 
 // The runtime's VM manager: every MfScVmEnv adds itself on construction and
 // removes itself on destruction. Registered as an interface while it exists.
