@@ -1,10 +1,12 @@
 // MfPoArray: the Piccolo array wrapping an array property value
 // ("PropertyArray").
-#pragma once
+#ifndef MFPOLIBRARY_MFPOARRAY_H
+#define MFPOLIBRARY_MFPOARRAY_H
+#include "MfPoLibrary_api.h"
 #include "MfScDataArray.h"
 class MfArrayValue;
 
-class __declspec(dllexport) MfPoArray : public MfScDataArray {
+class MFPO_API MfPoArray : public MfScDataArray {
 public:
     MfPoArray(MfArrayValue *value);
     virtual ~MfPoArray();
@@ -21,3 +23,5 @@ private:
     static MfPoArray *poExemplar;
     MfArrayValue *mArray;                                   // 0x18
 };
+
+#endif

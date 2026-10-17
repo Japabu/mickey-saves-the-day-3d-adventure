@@ -1,10 +1,12 @@
 // MfPoActor: the Piccolo object of an actor ("Actor"): its properties, the
 // activities, plans and skills a script can request, events and timers.
-#pragma once
+#ifndef MFPOLIBRARY_MFPOACTOR_H
+#define MFPOLIBRARY_MFPOACTOR_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 class MfAiActor;
 
-class __declspec(dllexport) MfPoActor : public MfPoBase {
+class MFPO_API MfPoActor : public MfPoBase {
 public:
     MfPoActor(MfAiActor *actor);
     virtual ~MfPoActor();
@@ -94,3 +96,5 @@ private:
     static int nExemplarRef;
     MfAiActor *mActor;                                      // 0x14
 };
+
+#endif

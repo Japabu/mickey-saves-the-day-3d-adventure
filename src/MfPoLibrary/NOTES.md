@@ -17,10 +17,14 @@ this before a new unit; add a line for a new pattern.
   `MfPropertySet.h`, `MfPropertyList.h`, `MfIntValue.h`, `MfFloatValue.h`,
   `MfStringValue.h`, `MfVector3Value.h`, `MfTransform3Value.h`,
   `MfTriangleSet.h`, `MfColModel.h` (MfActorLib); `MfScStdLib.h`,
-  `MfScDataArray.h`, `MfScMethodRoutine.h` (PiccoloRT); `MfActorData.h`,
-  `MfHookData.h` (structs from the SteamboatApp PDB); `MfVector3.h`,
-  `MfRotation3.h`, `MfTransform3.h` (mflinalg); `MfAi*.h` (application
-  interfaces; copies of RuntimeLib's, from the SteamboatApp PDB).
+  `MfScDataArray.h`, `MfScMethodRoutine.h` (PiccoloRT); `MfHookData.h`
+  (MfActorLib); `MfVector3.h`, `MfRotation3.h`, `MfTransform3.h` (mflinalg).
+  Canonical here (the lowest module that declares them; other modules include
+  them): `MfAi*.h` (application interfaces, from the SteamboatApp PDB and
+  RuntimeLib's vtables), `MfCollisionData.h`, `MfProximityData.h`,
+  `MfPickData.h`, `MfContourFailDownData.h`, `MfUserHookData.h`,
+  `MfMiscHookData.h`, `MfFilterItem.h`; the exported classes use `MFPO_API`
+  (`MfPoLibrary_api.h`).
   `MfAiMouse.h`, `MfAiKeyboard.h`, `MfAiPath2.h` are not in the PDB: slot
   layout from the calls, names descriptive.
 - `MfPoBase.h` and one header per script class (`MfPoColor.h` ...).

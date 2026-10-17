@@ -1,9 +1,11 @@
 // MfPoSystem: the Piccolo object of the computer ("System"; properties osName,
 // ramSize, availableRamSize).
-#pragma once
+#ifndef MFPOLIBRARY_MFPOSYSTEM_H
+#define MFPOLIBRARY_MFPOSYSTEM_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 
-class __declspec(dllexport) MfPoSystem : public MfPoBase {
+class MFPO_API MfPoSystem : public MfPoBase {
 public:
     MfPoSystem();
     virtual ~MfPoSystem();
@@ -23,3 +25,5 @@ private:
     static MfPoSystem *poExemplar;
     static MfScPropTokenTable *pttPropTokens;
 };
+
+#endif

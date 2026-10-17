@@ -1,9 +1,11 @@
 // MfPoActivity: the Piccolo object of an activity ("Activity").
-#pragma once
+#ifndef MFPOLIBRARY_MFPOACTIVITY_H
+#define MFPOLIBRARY_MFPOACTIVITY_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 class MfAiActivity;
 
-class __declspec(dllexport) MfPoActivity : public MfPoBase {
+class MFPO_API MfPoActivity : public MfPoBase {
 public:
     MfPoActivity();
     virtual ~MfPoActivity();
@@ -39,3 +41,5 @@ private:
     static MfScPropertyExtList *pelPropExtensions;
     MfAiActivity *mActivity;                                // 0x14
 };
+
+#endif

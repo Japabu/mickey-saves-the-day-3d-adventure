@@ -1,7 +1,8 @@
 // MfAiPath2: a path of configurations as the application sees it. The
 // SteamboatApp PDB does not describe it: the names are descriptive, the slots
 // are those MfPoPath2 calls.
-#pragma once
+#ifndef MFPOLIBRARY_MFAIPATH2_H
+#define MFPOLIBRARY_MFAIPATH2_H
 #include "MfAi.h"
 class MfAiActorNode;
 class MfTransform3;
@@ -13,3 +14,5 @@ public:
     virtual void SetTransform(int index, const MfTransform3 &xform) = 0;  // 0x14
     virtual MfAiActorNode *GetParentNode() = 0;                           // 0x18
 };
+
+#endif

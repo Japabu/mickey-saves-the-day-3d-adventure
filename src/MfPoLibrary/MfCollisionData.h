@@ -1,7 +1,7 @@
-// What an actor reports about its last collision, proximity event, pick and
-// contour failure (structs from the SteamboatApp PDB).
-#ifndef MFPOLIBRARY_MFACTORDATA_H
-#define MFPOLIBRARY_MFACTORDATA_H
+// MfCollisionData: what an actor reports about its last collision (struct
+// from the SteamboatApp PDB).
+#ifndef MFPOLIBRARY_MFCOLLISIONDATA_H
+#define MFPOLIBRARY_MFCOLLISIONDATA_H
 #include "MfString.h"
 #include "MfVector3.h"
 class MfAiActor;
@@ -16,20 +16,6 @@ struct MfCollisionData {
     MfAiActor *plaOther;                                    // 0x2c
     MfAiActorNode *psnOtherNode;                            // 0x30
     float playBack;                                         // 0x34
-};
-
-struct MfProximityData {
-    MfAiActor *plaOther;                                    // 0x00
-};
-
-struct MfPickData {
-    MfAiActorNode *pickedNode;                              // 0x00
-    MfVector3 pickPoint;                                    // 0x04
-    int triIndex;                                           // 0x10
-};
-
-struct MfContourFailDownData {
-    MfAiActorNode *failNode;                                // 0x00
 };
 
 #endif

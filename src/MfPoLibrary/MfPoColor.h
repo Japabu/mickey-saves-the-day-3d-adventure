@@ -1,10 +1,12 @@
 // MfPoColor: the Piccolo object of a colour value ("Color"; properties red,
 // green, blue, alpha in [0, 1]).
-#pragma once
+#ifndef MFPOLIBRARY_MFPOCOLOR_H
+#define MFPOLIBRARY_MFPOCOLOR_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 #include "MfColor.h"
 
-class __declspec(dllexport) MfPoColor : public MfPoBase {
+class MFPO_API MfPoColor : public MfPoBase {
 public:
     MfPoColor(MfColor color);
     virtual ~MfPoColor();
@@ -24,3 +26,5 @@ private:
     static MfScPropTokenTable *pttPropTokens;
     MfColor mColor;                                         // 0x14
 };
+
+#endif

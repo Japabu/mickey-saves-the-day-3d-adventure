@@ -1,10 +1,12 @@
 // MfPoList: the Piccolo object of a list property value ("PropertyList"),
 // iterated with First/Next/... through the list's cursor.
-#pragma once
+#ifndef MFPOLIBRARY_MFPOLIST_H
+#define MFPOLIBRARY_MFPOLIST_H
+#include "MfPoLibrary_api.h"
 #include "MfScObject.h"
 #include "MfListValue.h"
 
-class __declspec(dllexport) MfPoList : public MfScObject {
+class MFPO_API MfPoList : public MfScObject {
 public:
     MfPoList(MfListValue *list);
     virtual ~MfPoList();
@@ -37,3 +39,5 @@ private:
     static MfScPropTokenTable *pttPropTokens;
     MfListValue *mList;                                     // 0x14
 };
+
+#endif

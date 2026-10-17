@@ -1,9 +1,11 @@
 // MfPoFilter: the Piccolo object of a collision filter entry ("Filter").
-#pragma once
+#ifndef MFPOLIBRARY_MFPOFILTER_H
+#define MFPOLIBRARY_MFPOFILTER_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 #include "MfFilterItem.h"
 
-class __declspec(dllexport) MfPoFilter : public MfPoBase {
+class MFPO_API MfPoFilter : public MfPoBase {
 public:
     MfPoFilter(MfFilterItem *item);
     virtual ~MfPoFilter();
@@ -24,3 +26,5 @@ private:
     static MfScPropTokenTable *pttPropTokens;
     MfFilterItem *mFilter;                                  // 0x14
 };
+
+#endif

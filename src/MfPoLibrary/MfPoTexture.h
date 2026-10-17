@@ -1,10 +1,12 @@
 // MfPoTexture: the Piccolo object of a texture reference of a material
 // ("Texture"; properties name, type, flags).
-#pragma once
+#ifndef MFPOLIBRARY_MFPOTEXTURE_H
+#define MFPOLIBRARY_MFPOTEXTURE_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 #include "MfMaterial.h"
 
-class __declspec(dllexport) MfPoTexture : public MfPoBase {
+class MFPO_API MfPoTexture : public MfPoBase {
 public:
     MfPoTexture(MfTexture texture);
     virtual ~MfPoTexture();
@@ -25,3 +27,5 @@ private:
     static MfScPropTokenTable *pttPropTokens;
     MfTexture mTexture;                                     // 0x14
 };
+
+#endif

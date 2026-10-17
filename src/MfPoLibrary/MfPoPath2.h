@@ -1,9 +1,11 @@
 // MfPoPath2: the Piccolo object of a path ("Path2").
-#pragma once
+#ifndef MFPOLIBRARY_MFPOPATH2_H
+#define MFPOLIBRARY_MFPOPATH2_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 class MfAiPath2;
 
-class __declspec(dllexport) MfPoPath2 : public MfPoBase {
+class MFPO_API MfPoPath2 : public MfPoBase {
 public:
     MfPoPath2(MfAiPath2 *path);
     virtual ~MfPoPath2();
@@ -24,3 +26,5 @@ private:
     static MfScPropTokenTable *pttPropTokens;
     MfAiPath2 *mPath;                                  // 0x14
 };
+
+#endif

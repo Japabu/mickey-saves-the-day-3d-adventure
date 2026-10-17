@@ -1,12 +1,14 @@
 // MfPoLibrary: registers MfPoLibrary's script classes with Piccolo and keeps
 // the application interfaces they use.
-#pragma once
+#ifndef MFPOLIBRARY_MFPOLIBRARY_H
+#define MFPOLIBRARY_MFPOLIBRARY_H
+#include "MfPoLibrary_api.h"
 class MfAiAppWorld;
 class MfAiKeyboard;
 class MfAiMouse;
 class MfAiWorld;
 
-class __declspec(dllexport) MfPoLibrary {
+class MFPO_API MfPoLibrary {
 public:
     static void __cdecl Initialize();
     static void __cdecl Shutdown();
@@ -15,7 +17,9 @@ private:
     ~MfPoLibrary();
 };
 
-extern __declspec(dllexport) MfAiMouse *g_paiMouse;
-extern __declspec(dllexport) MfAiWorld *g_paiWorld;
-extern __declspec(dllexport) MfAiAppWorld *g_paiAppWorld;
-extern __declspec(dllexport) MfAiKeyboard *g_paiKeyboard;
+extern MFPO_API MfAiMouse *g_paiMouse;
+extern MFPO_API MfAiWorld *g_paiWorld;
+extern MFPO_API MfAiAppWorld *g_paiAppWorld;
+extern MFPO_API MfAiKeyboard *g_paiKeyboard;
+
+#endif

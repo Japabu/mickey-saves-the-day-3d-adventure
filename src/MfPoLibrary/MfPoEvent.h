@@ -1,12 +1,14 @@
 // MfPoEvent: the Piccolo object of an event ("Event"): a type name and the
 // message handler of the receiver, which can add properties. Declaration
 // from the SteamboatApp PDB.
-#pragma once
+#ifndef MFPOLIBRARY_MFPOEVENT_H
+#define MFPOLIBRARY_MFPOEVENT_H
+#include "MfPoLibrary_api.h"
 #include "MfScObject.h"
 #include "MfPiccoloMessageHandler.h"
 class MfAiActor;
 
-class __declspec(dllexport) MfPoEvent : public MfScObject {
+class MFPO_API MfPoEvent : public MfScObject {
 public:
     virtual ~MfPoEvent();
     MfPoEvent(const MfString &type, MfAiActor *receiver);
@@ -35,3 +37,5 @@ protected:
     MfString fsEventType;                                   // 0x14
     MfPiccoloMessageHandler *pmhHandler;                    // 0x18
 };
+
+#endif

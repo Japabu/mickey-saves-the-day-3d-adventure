@@ -1,9 +1,11 @@
 // MfPoMouse: the Piccolo object of the mouse ("Mouse"): routes mouse events to
 // actors, reports the last picked actor and floor.
-#pragma once
+#ifndef MFPOLIBRARY_MFPOMOUSE_H
+#define MFPOLIBRARY_MFPOMOUSE_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 
-class __declspec(dllexport) MfPoMouse : public MfPoBase {
+class MFPO_API MfPoMouse : public MfPoBase {
 public:
     MfPoMouse();
     virtual ~MfPoMouse();
@@ -25,3 +27,5 @@ private:
     static MfPoMouse *poExemplar;
     static MfScPropTokenTable *pttPropTokens;
 };
+
+#endif

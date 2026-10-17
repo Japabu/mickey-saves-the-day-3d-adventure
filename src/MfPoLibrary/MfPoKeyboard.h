@@ -1,9 +1,11 @@
 // MfPoKeyboard: the Piccolo object of the keyboard ("Keyboard"): routes key events to
 // actors, reports the key state.
-#pragma once
+#ifndef MFPOLIBRARY_MFPOKEYBOARD_H
+#define MFPOLIBRARY_MFPOKEYBOARD_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 
-class __declspec(dllexport) MfPoKeyboard : public MfPoBase {
+class MFPO_API MfPoKeyboard : public MfPoBase {
 public:
     MfPoKeyboard();
     virtual ~MfPoKeyboard();
@@ -26,3 +28,5 @@ private:
     static MfPoKeyboard *poExemplar;
     static MfScPropTokenTable *pttPropTokens;
 };
+
+#endif
