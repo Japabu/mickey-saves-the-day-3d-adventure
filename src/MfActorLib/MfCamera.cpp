@@ -1,6 +1,11 @@
 // MfActorLib.dll 0x10004c90-0x10005140: MfCamera and the compiler-generated
 // members of MfOrientedBox.
-#include "MfCamera_unit.h"
+#include "MfCamera.h"
+#include "MfColModel.h"
+#include "MfStream.h"
+#include "MfStreamObject.h"
+
+extern __declspec(dllimport) MfNullString NULL_STRING;
 
 // 0x10004c90 ??0MfCamera@@QAE@XZ
 MfCamera::MfCamera()
@@ -54,8 +59,8 @@ static MfStreamObject *fn_10004f10()
     return new MfCamera;
 }
 
-// 0x10004f70 _$E2 (jumps to _$E1)
-// 0x10004f80 _$E1 (constructs the stream constructor entry below)
+// 0x10004f70 _$E9 (jumps to _$E8; the shared headers take the lower numbers)
+// 0x10004f80 _$E8 (constructs the stream constructor entry below)
 static MfStreamConstructorEntry s_cameraEntry('Cam2', fn_10004f10);
 
 // 0x10004fa0 ?StreamType@MfCamera@@UBEJXZ

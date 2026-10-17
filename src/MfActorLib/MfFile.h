@@ -3,6 +3,9 @@
 // inline members (MfFile.cpp, 0x10001880-) and the one that defines MfFile
 // (MfFile_2.cpp, 0x10006c70-0x10007c10).
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 
 // <windows.h> comes first: the export is RegisterClassA, renamed by its macro.
 #include <windows.h>
@@ -26,7 +29,7 @@ private:
 class MfFile;
 
 // A four-character code ('    ' when unset).
-class __declspec(dllexport) MfFileType {
+class MFACTOR_API MfFileType {
 public:
     MfFileType(long t) { m_type = t; }
     MfFileType(MfString);
@@ -39,7 +42,7 @@ private:
     long m_type;
 };
 
-class __declspec(dllexport) MfFileObject {
+class MFACTOR_API MfFileObject {
 public:
     MfFileObject() {}
     virtual ~MfFileObject() {}
@@ -67,7 +70,7 @@ enum MfFileError {
 #define MF_FILE_MAGIC 'BFM '
 #define MF_FILE_BUFFER_SIZE 0x800
 
-class __declspec(dllexport) MfFile {
+class MFACTOR_API MfFile {
 public:
     MfFile();
     virtual ~MfFile();
@@ -130,7 +133,7 @@ protected:
     unsigned long m_pos;        // 0x30
 };
 
-class __declspec(dllexport) MfFileProgress {
+class MFACTOR_API MfFileProgress {
 public:
     static void GetProgress(int &, MfString &);
     static void SetProgress(int, MfString);

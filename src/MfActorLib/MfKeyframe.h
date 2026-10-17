@@ -1,10 +1,13 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfKeyframe: a time stamp in an animation track ('Keyf').
 #include "MfStreamObject.h"
 class MfStream;
 
 // size 0xc
-class __declspec(dllexport) MfKeyframe : public MfStreamObject {
+class MFACTOR_API MfKeyframe : public MfStreamObject {
 public:
     MfKeyframe();
     MfKeyframe(const MfKeyframe &);

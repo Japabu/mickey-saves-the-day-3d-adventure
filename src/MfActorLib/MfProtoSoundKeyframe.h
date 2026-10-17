@@ -1,9 +1,12 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoSoundKeyframe: a sound a skill plays at a time ('PrSK').
 #include "MfStreamObject.h"
 #include "MfString.h"
 
-struct __declspec(dllexport) MfProtoSoundKeyframe : public MfStreamObject {
+struct MFACTOR_API MfProtoSoundKeyframe : public MfStreamObject {
     MfProtoSoundKeyframe();
     static const long STREAM_TYPE;
     virtual long StreamType() const;

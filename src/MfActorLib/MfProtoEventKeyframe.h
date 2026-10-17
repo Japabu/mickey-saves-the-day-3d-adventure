@@ -1,9 +1,12 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoEventKeyframe: an event a skill posts at a time ('PrEK').
 #include "MfStreamObject.h"
 #include "MfString.h"
 
-struct __declspec(dllexport) MfProtoEventKeyframe : public MfStreamObject {
+struct MFACTOR_API MfProtoEventKeyframe : public MfStreamObject {
     MfProtoEventKeyframe();
     static const long STREAM_TYPE;
     virtual long StreamType() const;

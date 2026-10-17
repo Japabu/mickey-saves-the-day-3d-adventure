@@ -1,4 +1,7 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfStream: abstract byte stream with typed operators and object records.
 // ReadObject/WriteObject records: -2 = null object; -1, type, size, data for
 // sized objects; otherwise type, data.
@@ -8,7 +11,7 @@ class MfStreamObject;
 class MfStreamSizedObject;
 class MfString;
 
-class __declspec(dllexport) MfStream {
+class MFACTOR_API MfStream {
 public:
     MfStream();
     ~MfStream();

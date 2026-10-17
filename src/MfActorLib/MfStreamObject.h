@@ -1,10 +1,13 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfStreamObject: an object that reads and writes itself through an MfStream.
 // Vtable: StreamType, ReadFromStream, WriteToStream, WriteAsObject.
 #include "enums.h"
 class MfStream;
 
-class __declspec(dllexport) MfStreamObject {
+class MFACTOR_API MfStreamObject {
     friend class MfStream;
 public:
     MfStreamObject() {}
@@ -19,7 +22,7 @@ typedef MfStreamObject *(*MfStreamConstructor)();
 
 // Registers the constructor of a stream object class (static instances register
 // at startup); MfStream::ReadObject looks the constructors up by stream type.
-class __declspec(dllexport) MfStreamConstructorEntry {
+class MFACTOR_API MfStreamConstructorEntry {
 public:
     MfStreamConstructorEntry(long type, MfStreamConstructor create);
     static MfStreamConstructor Find(long type);

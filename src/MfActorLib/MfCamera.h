@@ -1,4 +1,7 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfCamera: a camera's settings ('Camr' value of a camera node). Exported
 // names only; layout as in MfCamera_unit.h (MfCamera.cpp).
 #include "MfTypedValue.h"
@@ -8,7 +11,7 @@
 class MfStream;
 
 // size 0x34
-class __declspec(dllexport) MfCamera : public MfTypedValue {
+class MFACTOR_API MfCamera : public MfTypedValue {
 public:
     MfCamera();
     MfCamera(const MfCamera &);

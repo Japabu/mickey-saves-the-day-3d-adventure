@@ -1,4 +1,7 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfPropertyTable: properties in a dictionary keyed by name ('PTab').
 // Declaration from the SteamboatApp PDB.
 #include "MfPropertySet.h"
@@ -6,7 +9,7 @@
 class MfStream;
 
 // size 0x18
-class __declspec(dllexport) MfPropertyTable : public MfPropertySet {
+class MFACTOR_API MfPropertyTable : public MfPropertySet {
 public:
     static const long STREAM_TYPE;
     virtual long StreamType() const;

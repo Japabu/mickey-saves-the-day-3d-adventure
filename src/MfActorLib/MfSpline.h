@@ -1,4 +1,7 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfSpline: a path of transforms through timed control points ('Spli'),
 // interpolated as a cubic Bezier between neighbouring points; Integrate
 // measures it so it can also be sampled by distance.
@@ -31,7 +34,7 @@ struct MfSplineControlPoint {
 enum { MF_SPLINE_X, MF_SPLINE_NEG_X, MF_SPLINE_Y, MF_SPLINE_NEG_Y, MF_SPLINE_Z,
        MF_SPLINE_NEG_Z, MF_SPLINE_NO_AXIS };
 
-class __declspec(dllexport) MfSpline : public MfStreamObject {
+class MFACTOR_API MfSpline : public MfStreamObject {
 public:
     MfSpline();
     MfSpline(const MfSpline &);

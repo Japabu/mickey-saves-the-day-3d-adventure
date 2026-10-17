@@ -1,5 +1,12 @@
 // MfActorLib.dll 0x10002230-0x100023c0: MfAnimSequence (inline members first)
-#include "MfAnimSequence_unit.h"
+#include "MfString.h"
+#include "MfDblList.h"
+#include "MfStreamObject.h"
+#include "MfStreamSizedObject.h"
+#include "MfActorRecordList.h"
+#include "MfAnimEvent.h"
+#include "MfTypedValue.h"
+#include "MfAnimSequence.h"
 
 // Inline members defined in MfAnimSequence.h, emitted here:
 // 0x10002230 ?GetPath@MfAnimSequence@@QAEABVMfString@@XZ

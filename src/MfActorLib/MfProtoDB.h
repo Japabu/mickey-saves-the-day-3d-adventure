@@ -1,11 +1,14 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoDB: the loaded proto actors, by upper-case name. Exported names only.
 #include "MfString.h"
 #include "MfHashTable.h"
 #include "MfFile.h"
 class MfProtoActor;
 
-class __declspec(dllexport) MfProtoDB {
+class MFACTOR_API MfProtoDB {
 public:
     static MfProtoActor *GetPrototype(MfString fileName, int &bLoaded, int bLoadSkills);
     static int PrototypeExists(MfString name);

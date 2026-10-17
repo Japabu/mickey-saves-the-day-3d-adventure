@@ -1,10 +1,13 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfArrayValue: a property value holding an array of values ('VArr').
 #include "MfTypedValue.h"
 class MfStream;
 
 // size 0x14
-class __declspec(dllexport) MfArrayValue : public MfTypedValue {
+class MFACTOR_API MfArrayValue : public MfTypedValue {
 public:
     static const long STREAM_TYPE;
     virtual long StreamType() const;

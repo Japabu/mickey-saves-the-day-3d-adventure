@@ -1,10 +1,13 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfJointKeyList: the MfJointKeyframes of one joint; inserting a keyframe
 // recomputes the blends of its neighbours, sampling interpolates between them.
 #include "MfKeyList.h"
 class MfJointKeyframe;
 
-class __declspec(dllexport) MfJointKeyList : public MfKeyList {
+class MFACTOR_API MfJointKeyList : public MfKeyList {
 public:
     MfJointKeyList() {}
     MfJointKeyList(const MfJointKeyList &list) : MfKeyList(list) {}

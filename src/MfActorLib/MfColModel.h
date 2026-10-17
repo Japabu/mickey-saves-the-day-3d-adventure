@@ -1,4 +1,7 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // Collision model: a triangle set with a bounding-sphere tree (one leaf per
 // triangle, n - 1 inner spheres) and an oriented bounding box.
 #include "MfStreamObject.h"
@@ -9,7 +12,7 @@ class MfStream;
 class MfTriangleSet;
 
 // size 0x28; the copy members are compiler-generated
-class __declspec(dllexport) MfOrientedBox {
+class MFACTOR_API MfOrientedBox {
 public:
     bool CheckIntersection(MfOrientedBox *, MfTransform3 &, MfTransform3 &);
     bool CheckRayIntersection(MfTransform3 &, MfVector3 &, MfVector3 &, float);
@@ -18,13 +21,13 @@ public:
 };
 
 // size 8
-struct __declspec(dllexport) MfTextureVertex {
+struct MFACTOR_API MfTextureVertex {
     void Set(float u, float v) { m_u = u; m_v = v; }
     float m_u, m_v;
 };
 
 // size 0xc
-struct __declspec(dllexport) MfTriangle {
+struct MFACTOR_API MfTriangle {
     void Set(int a, int b, int c) { m_v[0] = a; m_v[1] = b; m_v[2] = c; }
     int m_v[3];
 };
@@ -32,7 +35,7 @@ struct __declspec(dllexport) MfTriangle {
 enum { MF_LEAF_NODE = 0, MF_SPHERE_NODE = 1 };
 
 // size 0x14; bounding-sphere tree node
-class __declspec(dllexport) MfNode {
+class MFACTOR_API MfNode {
 public:
     MfNode(long type) { m_type = type; m_index = 0; }
     ~MfNode() {}
@@ -42,13 +45,13 @@ public:
     float m_radius;             // 0x10
 };
 
-class __declspec(dllexport) MfLeafNode : public MfNode {
+class MFACTOR_API MfLeafNode : public MfNode {
 public:
     MfLeafNode() : MfNode(MF_LEAF_NODE) {}
 };
 
 // size 0x1c
-class __declspec(dllexport) MfSphereNode : public MfNode {
+class MFACTOR_API MfSphereNode : public MfNode {
 public:
     MfSphereNode() : MfNode(MF_SPHERE_NODE) { m_left = 0; m_right = 0; }
     MfNode *m_left;             // 0x14
@@ -56,7 +59,7 @@ public:
 };
 
 // size 0x5c
-class __declspec(dllexport) MfColModel : public MfStreamObject {
+class MFACTOR_API MfColModel : public MfStreamObject {
 public:
     MfColModel();
     MfColModel(const MfColModel &);

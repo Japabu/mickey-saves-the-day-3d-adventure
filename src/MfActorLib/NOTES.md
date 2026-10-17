@@ -4,6 +4,14 @@ Read this before a new MfActorLib unit. Every item was verified by match.sh in t
 unit named in brackets. Add a line when you find a new pattern; keep it short.
 
 ## Shared headers (use them, do not redeclare the class in a unit header)
+- Every MfActorLib class is declared once, in the header that held it (classes of a
+  family share one: MfColModel.h, MfJLimit.h, MfFile.h, MfAiHook.h, MfTriPrimitives.h,
+  MfActorRecordList.h, MfAnimEvent.h, MfAnimSequence.h, ...). Do not split them: VC5's
+  output (`$E` numbers, register choices) changes with the number of files a source
+  opens, even when the tokens are the same.
+- Exports: `MFACTOR_API`, defined by src/options.txt (`/DMFACTOR_API=__declspec(dllexport)`)
+  while MfActorLib.dll is compiled; each header that uses it defines it as dllimport
+  otherwise (`#ifndef MFACTOR_API` after `#pragma once`), with no extra header file.
 - `MfStreamObject.h` (vtable StreamType, ReadFromStream, WriteToStream, WriteAsObject;
   MfStreamConstructorEntry), `MfStreamSizedObject.h`, `MfStream.h` (m_version at +4 is
   public: the stream objects test it directly) [MfColModel, MfJL*].

@@ -1,4 +1,7 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfKeyList: keyframes ordered by time in a doubly linked list ('KeyL'), with a
 // cursor that the time lookups move. Reconstructed (no PDB): layout from the code,
 // signatures from the export names.
@@ -14,7 +17,7 @@ struct MfKeyListNode {
 };
 
 // size 0x14; vtable: StreamType, ReadFromStream, WriteToStream, WriteAsObject, ~
-class __declspec(dllexport) MfKeyList : public MfStreamObject {
+class MFACTOR_API MfKeyList : public MfStreamObject {
 public:
     MfKeyList();
     MfKeyList(const MfKeyList &list);

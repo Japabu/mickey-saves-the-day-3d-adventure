@@ -1,9 +1,12 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoTextureKeyframe: a skill's material change at a time ('PrTK').
 #include "MfStreamObject.h"
 #include "MfMaterial.h"
 
-struct __declspec(dllexport) MfProtoTextureKeyframe : public MfStreamObject {
+struct MFACTOR_API MfProtoTextureKeyframe : public MfStreamObject {
     MfProtoTextureKeyframe();
     static const long STREAM_TYPE;
     virtual long StreamType() const;

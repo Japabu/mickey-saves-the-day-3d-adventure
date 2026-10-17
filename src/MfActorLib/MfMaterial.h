@@ -1,4 +1,7 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfMaterial: surface colours, shininess, up to four textures ('Mat2').
 #include "MfTypedValue.h"
 #include "MfColor.h"
@@ -7,7 +10,7 @@
 class MfStream;
 
 // size 0xc
-struct __declspec(dllexport) MfTexture {
+struct MFACTOR_API MfTexture {
     MfTexture() : m_type(0), m_flags(0) {}
     MfTexture &operator=(const MfTexture &);
     int m_type;         // +0
@@ -18,7 +21,7 @@ struct __declspec(dllexport) MfTexture {
 #define MF_MAX_TEXTURES 4
 
 // size 0xcc
-class __declspec(dllexport) MfMaterial : public MfTypedValue {
+class MFACTOR_API MfMaterial : public MfTypedValue {
 public:
     MfMaterial();
     MfMaterial(const MfMaterial &);

@@ -1,10 +1,13 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfTypedValue: a value that can be stored in a property (int, float, string,
 // vector, colour, ...). Declaration from the SteamboatApp PDB.
 #include "MfStreamSizedObject.h"
 class MfString;
 
-class __declspec(dllexport) MfTypedValue : public MfStreamSizedObject {
+class MFACTOR_API MfTypedValue : public MfStreamSizedObject {
 public:
     MfTypedValue() { lModCBackId = 0; pModCBack = 0; }
     virtual ~MfTypedValue() {}

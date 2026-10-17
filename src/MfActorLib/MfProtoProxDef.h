@@ -1,4 +1,7 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoProxDef: the proximity region of a proto actor ('PPrD'). Declaration from
 // the SteamboatApp PDB.
 #include "MfStreamObject.h"
@@ -7,7 +10,7 @@ class MfDblList;
 class MfStream;
 
 // size 0x1c
-class __declspec(dllexport) MfProtoProxDef : public MfStreamObject {
+class MFACTOR_API MfProtoProxDef : public MfStreamObject {
 public:
     static const long STREAM_TYPE;
     virtual long StreamType() const;

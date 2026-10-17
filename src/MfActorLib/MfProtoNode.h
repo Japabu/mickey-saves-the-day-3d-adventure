@@ -1,4 +1,7 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProtoNode: a node of a prototype actor's skeleton ('PrtN'): a joint, a
 // geometry, a handle, a floor, a camera, a light or a spline (the style says
 // which info object it carries). Exported names only (the SteamboatApp PDB
@@ -35,7 +38,7 @@ struct MfColSphere {
 };
 
 // size 0x84
-class __declspec(dllexport) MfProtoNode : public MfTreeNode, public MfStreamObject {
+class MFACTOR_API MfProtoNode : public MfTreeNode, public MfStreamObject {
     friend class MfProtoActor;
     friend MfStreamError ReadOldProtoNode(MfStream &, MfProtoNode *);
 public:

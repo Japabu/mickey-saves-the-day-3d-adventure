@@ -1,5 +1,20 @@
 // MfActorLib.dll 0x10003740-0x10004c90: MfAnimSequence (vc5 /O2 /GX)
-#include "MfAnimSequence_2_unit.h"
+// Out-of-line members of MfAnimSequence (the class's inline accessors are
+// emitted in MfAnimSequence.cpp, MfAnimFile in MfFile.cpp).
+#include "MfFile.h"
+#include "MfString.h"
+#include "MfDblList.h"
+#include "MfCopyFolder.h"
+#include "MfStreamObject.h"
+#include "MfStream.h"
+#include "MfFileStream.h"
+#include "MfStreamSizedObject.h"
+#include "MfTypedValue.h"
+#include "MfListValue.h"
+#include "MfProtoActor.h"
+#include "MfActorRecordList.h"
+#include "MfAnimEvent.h"
+#include "MfAnimSequence.h"
 
 // 0x10003740 ??0MfAnimSequence@@QAE@XZ
 MfAnimSequence::MfAnimSequence()
@@ -193,7 +208,7 @@ int MfAnimSequence::_FinishWriteSequence()
 // 0x10004330 ?_WriteActorList@MfAnimSequence@@AAEHXZ
 int MfAnimSequence::_WriteActorList()
 {
-    if (!Write(m_actorList.Count()))
+    if (!Write(m_actorList.GetCount()))
         return 0;
     MfDblListItem *it;
     MfActorRecord *rec;
@@ -210,12 +225,12 @@ int MfAnimSequence::_WriteActorList()
 // 0x100043e0 ?_WriteEvents@MfAnimSequence@@AAEHXZ
 int MfAnimSequence::_WriteEvents()
 {
-    MfFileStream stream(m_handle, kMfFileWrite, false);
+    MfFileStream stream(m_handle, MF_FILE_WRITE, false);
     stream << m_addActorEvents;
     stream << m_removeActorEvents;
     stream << m_soundEvents;
     stream << m_materialEvents;
-    return stream.Status() == kMfStreamOk;
+    return stream.Status() == MF_STREAM_OK;
 }
 
 // 0x100044b0 ?_SaveProtoActors@MfAnimSequence@@AAEHXZ
@@ -326,7 +341,7 @@ MfProtoActor *MfAnimSequence::_LoadProtoActor(const MfString &name)
 }
 
 // 0x10004c80 ??_EMfListValue@@WM@AEPAXI@Z (compiler generated adjustor thunk for
-// MfListValue's MfDblList vtable; MfListValue is declared in the header)
+// MfListValue's MfDblList vtable, emitted here because MfListValue.h is included)
 
 
 // Also matched by this code:

@@ -1,4 +1,7 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfLight: a light source description ('Lit2').
 #include "MfTypedValue.h"
 #include "MfColor.h"
@@ -6,7 +9,7 @@
 class MfStream;
 
 // size 0x8c
-class __declspec(dllexport) MfLight : public MfTypedValue {
+class MFACTOR_API MfLight : public MfTypedValue {
 public:
     MfLight();
     MfLight(const MfLight &);

@@ -1,4 +1,7 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // MfProperty: a named MfTypedValue ('Prop'). Declaration from the SteamboatApp PDB.
 #include "MfStreamObject.h"
 #include "MfString.h"
@@ -6,7 +9,7 @@ class MfStream;
 class MfTypedValue;
 
 // size 0xc
-class __declspec(dllexport) MfProperty : public MfStreamObject {
+class MFACTOR_API MfProperty : public MfStreamObject {
 public:
     static const long STREAM_TYPE;
     virtual long StreamType() const;

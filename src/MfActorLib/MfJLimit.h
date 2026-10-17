@@ -1,4 +1,7 @@
 #pragma once
+#ifndef MFACTOR_API
+#define MFACTOR_API __declspec(dllimport)
+#endif
 // Joint limits: constraints on a skeleton joint's transform. MfJLimit is the
 // unconstrained base; the inline members of all five classes are emitted at
 // the start of the MfJLimit object (MfJLimit_2.cpp, 0x100080c0-).
@@ -16,7 +19,7 @@ enum {
 };
 
 // size 4
-class __declspec(dllexport) MfJLimit : public MfStreamObject {
+class MFACTOR_API MfJLimit : public MfStreamObject {
 public:
     MfJLimit() {}
     MfJLimit(const MfJLimit &) {}
@@ -32,7 +35,7 @@ public:
 };
 
 // Rotation limited to the arc between two orientations. size 0x30
-class __declspec(dllexport) MfJLHinge : public MfJLimit {
+class MFACTOR_API MfJLHinge : public MfJLimit {
 public:
     MfJLHinge();
     MfJLHinge(const MfJLHinge &);
@@ -61,7 +64,7 @@ protected:
 };
 
 // Euler angles limited per axis. size 0x1c
-class __declspec(dllexport) MfJLEuler : public MfJLimit {
+class MFACTOR_API MfJLEuler : public MfJLimit {
 public:
     MfJLEuler();
     MfJLEuler(const MfJLEuler &);
@@ -91,7 +94,7 @@ protected:
 };
 
 // Translation limited to a segment. size 0x2c
-class __declspec(dllexport) MfJLLinear : public MfJLimit {
+class MFACTOR_API MfJLLinear : public MfJLimit {
 public:
     MfJLLinear();
     MfJLLinear(const MfJLLinear &);
@@ -115,7 +118,7 @@ protected:
 };
 
 // Translation limited to a box. size 0x1c
-class __declspec(dllexport) MfJLTranslate : public MfJLimit {
+class MFACTOR_API MfJLTranslate : public MfJLimit {
 public:
     MfJLTranslate();
     MfJLTranslate(const MfJLTranslate &);

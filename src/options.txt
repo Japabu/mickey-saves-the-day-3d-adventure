@@ -14,7 +14,7 @@ MBCom.dll                                     /O2 /MT /DMBCOM_BUILD
 mbruntime.dll                                 /O2 /MT /DMBRUNTIME_BUILD
 zlib.dll                                      /O2 /MT /DZLIB_DLL /DWIN32 /D_WINDOWS /DZLIBDLL_BUILD
 RuntimeLib.dll                                /O2 /GX /MD /GR /DRUNTIME_BUILD
-MfActorLib.dll                                /O2 /GX /MD /GR /DMFACTOR_BUILD
+MfActorLib.dll                                /O2 /GX /MD /GR /DMFACTOR_API=__declspec(dllexport)
 MfPoLibrary.dll                               /O2 /GX /MD /GR /DMFPO_BUILD
 MfImageLib.dll                                /O2 /GX /MD /GR /Gy /DMFIMAGE_BUILD
 MfImageLib.dll               jpeg/            /O2 /Gy /DUSE_WINDOWS_MESSAGEBOX
