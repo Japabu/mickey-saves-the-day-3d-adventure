@@ -5,7 +5,7 @@
 #ifndef MFIMAGE_API
 #define MFIMAGE_API __declspec(dllimport)
 #endif
-#include "MfImageLib_mfutil.h"
+#include "../mfutil/MfString.h"
 
 class MfImage;
 

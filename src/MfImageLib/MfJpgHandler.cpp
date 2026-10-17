@@ -1,5 +1,9 @@
 // MfJpgHandler: JPEG reader/writer (MfImageLib.dll 0x10002ac0-0x10003040).
 #include "MfJpgHandler.h"
+// mfutil.dll (here, not in MfJpgHandler.h: MfLogger.h brings mfutil's MfDblList, and
+// MfImageHandler.cpp, which includes MfJpgHandler.h, has its own copy)
+struct HWND__;  // MfLogger::LoggerWindow (MfImageLib includes windows.h without STRICT)
+#include "../mfutil/MfLogger.h"
 
 #define MF_JPEG_EXCEPTION 0xE0000001
 

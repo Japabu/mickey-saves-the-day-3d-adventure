@@ -5,16 +5,13 @@
 #include "MfJpgHandler.h"
 
 // mfutil.dll
-class MfDblListItem {
-public:
-    void *pData;            // +0
-    MfDblListItem *pliPrev; // +4
-    MfDblListItem *pliNext; // +8
-};
+#include "../mfutil/MfDblListItem.h"
 
-// MfImageLib's view of mfutil's MfDblList: the constructor is inline here
-// (stores the imported vtable), the destructor/Insert/Clear are imported.
-// The inline helpers stand for whatever inline accessors the original header had.
+// own copy: MfImageLib's view of mfutil's MfDblList: the constructor is inline here
+// (stores the imported vtable), the destructor/Insert/Clear are imported. DllMain calls
+// Insert(p, LP_AFTER, pliLast) and walks the list inline: the inline helpers stand for
+// whatever inline accessors the original header had, and mfutil/MfDblList.h has none
+// that reach the protected pliLast.
 class MFUTIL_API MfDblList {
 public:
     enum EnumListPosition { LP_BEFORE = 0, LP_AFTER = 1 };

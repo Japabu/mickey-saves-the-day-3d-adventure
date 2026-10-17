@@ -33,12 +33,20 @@ EDITS['MfImageLib/MfImageHandler.cpp'] = [
 EDITS['MfImageLib/MfJpgHandler.cpp'] = [
     ('// MfJpgHandler: JPEG reader/writer (MfImageLib.dll 0x10002ac0-0x10003040).\n'
      '#include "MfJpgHandler.h"\n'
+     "// mfutil.dll (here, not in MfJpgHandler.h: MfLogger.h brings mfutil's MfDblList, and\n"
+     '// MfImageHandler.cpp, which includes MfJpgHandler.h, has its own copy)\n'
+     'struct HWND__;  // MfLogger::LoggerWindow (MfImageLib includes windows.h without STRICT)\n'
+     '#include "../mfutil/MfLogger.h"\n'
      '\n'
      '#define MF_JPEG_EXCEPTION 0xE0000001\n',
      "// macOS; libjpeg's error exit now unwinds with setjmp/longjmp, the usual libjpeg way.\n"
      '// Also fixed: the write path destroyed m_cinfo instead of its own compress object.\n'
      '// MfJpgHandler: JPEG reader/writer (MfImageLib.dll 0x10002ac0-0x10003040).\n'
      '#include "MfJpgHandler.h"\n'
+     "// mfutil.dll (here, not in MfJpgHandler.h: MfLogger.h brings mfutil's MfDblList, and\n"
+     '// MfImageHandler.cpp, which includes MfJpgHandler.h, has its own copy)\n'
+     'struct HWND__;  // MfLogger::LoggerWindow (MfImageLib includes windows.h without STRICT)\n'
+     '#include "../mfutil/MfLogger.h"\n'
      '#include <setjmp.h>\n'
      '#include <stdlib.h>\n'
      '\n'
@@ -46,7 +54,7 @@ EDITS['MfImageLib/MfJpgHandler.cpp'] = [
      'static __thread jmp_buf *sJpgErrorJump;\n'
      '\n'
      '#define MF_JPEG_EXCEPTION 0xE0000001\n'
-     '#line 5\n', 1),
+     '#line 9\n', 1),
     ('{\n'
      '    if (op == MfImageRead) {\n'
      '        FILE *file = fopen(params.path, "rb");\n'
