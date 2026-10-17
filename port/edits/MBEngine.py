@@ -74,3 +74,92 @@ EDITS = {
     'MBEngine/scriptc.cpp': [('sprintf(name, "%ld\\"\\"\\"!@#$%^&*()", count++);',
                               'sprintf(name, "%ld\\"\\"\\"!@#$^&*()", count++);', 1)],
 }
+
+# MBEngine/MBSoundData.h: drops the PDB layout asserts (sizeof 8, mDataSize at +4), true only for 32-bit pointers
+EDITS['MBEngine/MBSoundData.h'] = [
+    ('#pragma once\n'
+     '#define OFS(t, m) ((unsigned int)&(((t *)0)->m))\n'
+     'struct PDB_Layout;\n'
+     'class MBSoundData;\n',
+     '#pragma once\n'
+     'struct PDB_Layout;\n'
+     'class MBSoundData;\n'
+     '#line 5\n', 1),
+    ('struct MBGUID;\n'
+     'class IMBUnknown;\n'
+     'extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);\n'
+     '#include "../MBEngine/MBComPtr.h"\n'
+     '\n',
+     'struct MBGUID;\n'
+     'class IMBUnknown;\n'
+     'extern "C" int MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);\n'
+     '#include "../MBEngine/MBComPtr.h"\n'
+     '\n', 1),
+    ('public:\n'
+     '    MBSoundData(const MBSoundData &soundData);\n'
+     '    MBSoundData(unsigned char *soundData, unsigned long dataSize);\n'
+     '    ~MBSoundData();\n'
+     '    unsigned char *GetSoundData() const;\n'
+     '    unsigned long GetDataSize() const;\n'
+     'protected:\n'
+     '    unsigned char *mSoundData;                           // +0x0000 size 0x4\n'
+     '    unsigned long mDataSize;                             // +0x0004 size 0x4\n'
+     'public:\n'
+     '    // void *__vecDelDtor(unsigned int);                 // compiler-generated\n'
+     '};\n'
+     '\n'
+     'extern "C" __declspec(dllimport) void *__cdecl MBmalloc_release(unsigned long size);\n'
+     'extern "C" __declspec(dllimport) void __cdecl MBfree_release(void *ptr);\n'
+     'extern "C" __declspec(dllimport) void __cdecl MBmemcpy(void *dest, const void *src, unsigned long cnt);\n'
+     '\n'
+     '// sizes and member offsets recorded in the PDB\n'
+     'struct PDB_Layout {\n'
+     '    typedef char A0[(sizeof(MBSoundData)) == 0x8 ? 1 : -1];\n'
+     '    typedef char A1[(OFS(MBSoundData, mSoundData)) == 0x0 ? 1 : -1];\n'
+     '    typedef char A2[(OFS(MBSoundData, mDataSize)) == 0x4 ? 1 : -1];\n'
+     '};\n'
+     '#undef OFS\n',
+     'public:\n'
+     '    MBSoundData(const MBSoundData &soundData);\n'
+     '    MBSoundData(unsigned char *soundData, unsigned int dataSize);\n'
+     '    ~MBSoundData();\n'
+     '    unsigned char *GetSoundData() const;\n'
+     '    unsigned int GetDataSize() const;\n'
+     'protected:\n'
+     '    unsigned char *mSoundData;                           // +0x0000 size 0x4\n'
+     '    unsigned int mDataSize;                             // +0x0004 size 0x4\n'
+     'public:\n'
+     '    // void *__vecDelDtor(unsigned int);                 // compiler-generated\n'
+     '};\n'
+     '\n'
+     'extern "C" __declspec(dllimport) void *__cdecl MBmalloc_release(unsigned int size);\n'
+     'extern "C" __declspec(dllimport) void __cdecl MBfree_release(void *ptr);\n'
+     'extern "C" __declspec(dllimport) void __cdecl MBmemcpy(void *dest, const void *src, unsigned int cnt);\n'
+     '\n'
+     '#line 75\n', 1),
+]
+
+# MBEngine/MBStl.h: the original configures VC6's <xstddef> try/catch macros (_TRY_BEGIN etc.); libc++ has neither, so there is nothing to configure
+EDITS['MBEngine/MBStl.h'] = [
+    ('// MBStl.h - STL configuration of the muffin code: the library templates are used\n'
+     '// without exceptions, so _TRY_BEGIN/_CATCH compile to plain blocks. Evidence: the\n'
+     '// binaries are built without /GX, yet basic_string::_Copy has no EH frame and is\n'
+     '// inlined into _Grow (VC6 never inlines a function containing try); stock <xstddef>\n'
+     '// gives _Copy an EH frame. Include before any STL header.\n'
+     '#ifndef MBSTL_H\n'
+     '#define MBSTL_H\n'
+     '#include <xstddef>\n'
+     '#undef _TRY_BEGIN\n'
+     '#undef _CATCH\n'
+     '#undef _CATCH_ALL\n'
+     '#undef _CATCH_END\n'
+     '#define _TRY_BEGIN {\n'
+     '#define _CATCH(x) } if (0) {\n'
+     '#define _CATCH_ALL } if (0) {\n'
+     '#define _CATCH_END }\n'
+     '#endif\n',
+     '#ifndef MBSTL_H\n'
+     '#define MBSTL_H\n'
+     '#endif\n'
+     '#line 18\n', 1),
+]

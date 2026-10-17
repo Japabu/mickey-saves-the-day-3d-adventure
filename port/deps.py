@@ -121,6 +121,7 @@ def main():
     stamp = os.path.join(prefix, 'deps.json')
     want = {'target': target, 'sources': {n: SOURCES[n] for n in TARGET_DEPS[target]},
             'ffmpeg': FFMPEG_FEATURES + FFMPEG_TARGET[target]}
+    want = json.loads(json.dumps(want))   # as read back (tuples become lists)
     if os.path.isfile(stamp) and json.load(open(stamp)) == want:
         return
     shutil.rmtree(prefix, ignore_errors=True)

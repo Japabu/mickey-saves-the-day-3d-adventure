@@ -166,7 +166,9 @@ FILE_RULES = {
 # Exact text edits, for changes that are specific to a few lines (each old text must
 # occur exactly `count` times in the file, or the rewrite stops with an error, so a
 # change in src/ cannot silently skip one). Loaded from port/edits/<dir>.py, each of
-# which defines EDITS = {path under src/: [(old, new, count), ...]}.
+# which defines EDITS = {path under src/: [(old, new, count), ...]}. An edit keeps the
+# line count, or its new text ends with a `#line` directive that puts the numbering back
+# to the original's, so diagnostics still point at the lines of src/.
 def load_edits():
     import glob
     import runpy
@@ -317,8 +319,9 @@ def rewrite(text, rel=None):
         if found != count:
             raise SystemExit('port/rewrite.py: %s: %r occurs %d times, the edit expects %d'
                              % (rel, old, found, count))
-        if old.count('\n') != new.count('\n'):
-            raise SystemExit('port/rewrite.py: %s: the edit of %r changes the line count' % (rel, old))
+        if old.count('\n') != new.count('\n') and not re.search(r'(^|\n)#line \d+\n$', new):
+            raise SystemExit('port/rewrite.py: %s: the edit of %r changes the line count without a #line'
+                             % (rel, old))
         out = out.replace(old, new)
     for pat, rep in rules + RULES:
         out = pat.sub(rep, out)
@@ -326,8 +329,40 @@ def rewrite(text, rel=None):
     return out if out != text else None
 
 
+# The overrides (port/override/<path under src/>): whole files the port replaces. Each
+# names the SHA-256 of the src/ file it replaces; when that file changes, the build
+# stops, so the override is looked at again (`python3 port/rewrite.py --bases` prints
+# the current values).
+OVERRIDE_BASES = {
+    'Steamboat/HCWinBlackBox.cpp': '4103e84f28b76957fb12f19a571dc83694ecef91ffebbf7b9e7c4ca5f47b9fd8',
+}
+
+
+def _sha256(path):
+    import hashlib
+    return hashlib.sha256(open(path, 'rb').read()).hexdigest()
+
+
+def check_overrides():
+    top = os.path.join(PORT, 'override')
+    found = set()
+    for base, _, files in os.walk(top):
+        for f in files:
+            if not f.startswith('.'):
+                found.add(os.path.relpath(os.path.join(base, f), top))
+    for rel in sorted(found | set(OVERRIDE_BASES)):
+        if rel not in OVERRIDE_BASES:
+            raise SystemExit('port/rewrite.py: port/override/%s has no entry in OVERRIDE_BASES' % rel)
+        if rel not in found:
+            raise SystemExit('port/rewrite.py: OVERRIDE_BASES names %s, which has no override' % rel)
+        if _sha256(os.path.join(SRC, rel)) != OVERRIDE_BASES[rel]:
+            raise SystemExit('port/rewrite.py: src/%s changed since port/override/%s was made: bring the '
+                             'override up to date, then its OVERRIDE_BASES entry' % (rel, rel))
+
+
 def generated():
     """Write the rewritten copies and return {src path: rewritten path}."""
+    check_overrides()
     # an edit of a file that has an override would be silently ignored (the override
     # replaces the chain): edit the override instead
     for rel in EDITS:
@@ -359,7 +394,13 @@ def generated():
 
 if __name__ == '__main__':
     import sys
-    if sys.argv[1:2] == ['--long']:
+    if sys.argv[1:2] == ['--bases']:
+        top = os.path.join(PORT, 'override')
+        for base, _, files in os.walk(top):
+            for f in sorted(files):
+                rel = os.path.relpath(os.path.join(base, f), top)
+                print("    %r: %r," % (rel, _sha256(os.path.join(SRC, rel))))
+    elif sys.argv[1:2] == ['--long']:
         # convert files (e.g. overrides) to the 32-bit integer model in place
         for f in sys.argv[2:]:
             text = open(f, encoding='latin-1').read()

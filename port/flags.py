@@ -131,10 +131,14 @@ def sources(module):
             if not os.path.basename(p).startswith('zz_') and os.path.relpath(p, SRC) not in NOT_IN_GAME]
 
 
-# Sources of the libraries' own distributions that the game's DLLs never contained:
-# libpng's test program (its main and its use of the iCCP reader the game left out) and
-# zlib's table generator (a main of its own).
-NOT_IN_GAME = {'SteamboatApp/libpng/pngtest.c', 'zlib/maketree.c'}
+# Sources not compiled: those of the libraries' own distributions that the game's DLLs
+# never contained (libpng's test program, with its main and its use of the iCCP reader
+# the game left out; zlib's table generator, a main of its own), and the units whose
+# every function is also in another unit at the same addresses (the linker folded the
+# two copies into one): the port compiles them once, from the other unit.
+NOT_IN_GAME = {'SteamboatApp/libpng/pngtest.c', 'zlib/maketree.c',
+               'MBEngine/CMBAnim_2.cpp',          # CMBAnim.cpp
+               'MBEngine/CMBTextControl_2.cpp'}   # CMBTextControl.cpp
 
 
 _OVERLAY = None

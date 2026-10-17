@@ -24,13 +24,20 @@ Nothing here changes `src/`: the decompilation stays byte-verifiable by
 - **APIs the game called come from `compat/include/`**: the Windows, DirectX, C
   runtime and old iostream headers the source includes, written for the port (no
   Microsoft headers are used). They declare exactly what the game uses.
-- **Implementations come from `platform/`**: Win32 on SDL3 and POSIX, DirectDraw and
-  Direct3D 7 drawing in software, Miles Sound System on SDL audio, Bink and Smacker on
-  FFmpeg.
-- **When a source file cannot be compiled as it is**, a copy goes to
-  `port/override/<same path under src/>` and is compiled instead. The first line of the
-  copy says why. Prefer a compat header or a platform function: an override is a fork
-  of decompiled code and should stay small and rare.
+- **Implementations come from `platform/`**: Win32, DirectDraw and Direct3D 7 drawing
+  in software, the Miles Sound System on the port's own mixer, Bink and Smacker on
+  FFmpeg, all on the host interface (`platform/host/host.h`) that a system implements:
+  the window, input, sound, fonts and crash reports (backends `sdl`, `coretext`,
+  `posix`).
+- **When a source file cannot be compiled as it is**, it is patched, in this order of
+  preference: a compat header or a platform function; a rule of `port/rewrite.py` for
+  a pattern that recurs; an edit in `port/edits/<module>.py` (exact text replaced, which
+  must occur as often as the edit says, so a change in `src/` stops the build instead
+  of skipping it; an edit that changes the line count ends with `#line`, so
+  diagnostics still name the lines of `src/`). Only a file that is replaced as a whole
+  goes to `port/override/<same path under src/>`, with the SHA-256 of the file it
+  replaces in `OVERRIDE_BASES` (`port/rewrite.py`): when `src/` changes, the build stops
+  until the override is looked at again.
 - **Real decompilation bugs found while porting are fixed in `src/`**, and
   `tools/msvc/check.sh` must stay clean for the directory.
 
@@ -66,7 +73,7 @@ macOS runs only 64-bit code; the game was written for 32-bit Windows. The Window
 names (`DWORD`, `LONG`, `UINT`, `HRESULT`, ...) are 32 bits wide in `compat/`, but the C
 `long` of the source is 64 bits here, and pointers no longer fit in 32-bit integers.
 Structures read from files, the script VM's data handles, and pointer/integer casts are
-where this bites; fixes go into overrides with a comment.
+where this bites; fixes go into edits with a comment.
 
 ## Building
 
