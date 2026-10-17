@@ -1,5 +1,5 @@
 // MfTgaHandler: Truevision TGA reader/writer (MfImageLib.dll 0x10002440-0x10002ac0).
-#include "MfTgaHandler.h"
+#include "MfTgaHandler_unit.h"
 
 // 0x10002440 ?GetExtensions@MfTgaHandler@@UAEABVMfString@@XZ (original MfTgaHandler::GetExtensions)
 // 0x10002480 _$E2 (original (atexit) destructor of the local static)

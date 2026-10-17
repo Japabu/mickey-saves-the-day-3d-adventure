@@ -28,18 +28,16 @@ public:
     MfImage();
     MfImage(const MfImage &other);
     ~MfImage();
-    // the handlers' declarations first, in their order (VC5's register allocation in
-    // MfTgaHandler::Write reacts to the declaration order)
+    static int PixelSize(int format);
     void InitPixels(int width, int height, int format, int alignment);
     void InitPalette(int numColors, int format);
     unsigned char *PaletteEntry(int index);
     int RowOffset();
-    static int PixelSize(int format);
-    MfImageError RemovePalette(int format);
-    MfImageError ReorderComponents(int flags);
     void SampleBilinear(float x, float y, unsigned char *out, int count) const;
     void SampleNearest(float x, float y, unsigned char *out, int count) const;
     void Resize(const MfImage &src, int width, int height);
+    MfImageError ReorderComponents(int flags);
+    MfImageError RemovePalette(int format);
     MfImageError ChangePixelFormat(int format);
     MfImageError CopyAlpha(const MfImage &src);
 
