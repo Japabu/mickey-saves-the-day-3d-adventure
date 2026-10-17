@@ -14,11 +14,13 @@ SHA-256 and put them where the tools expect them.
 
 ### To play the macOS port
 
-The port is in progress (see `port/` once it lands); this section lists what it will
-need.
+The port plays the game natively on Apple Silicon Macs, with a few improvements over
+the original (sharper 3D characters, a cursor that shows what a click will do).
+[port/README.md](port/README.md) has the build steps, settings and improvements. It
+needs:
 
 - A Mac with Apple Silicon and macOS, the Xcode command-line tools (`xcode-select
-  --install`) and [Homebrew](https://brew.sh) packages `cmake`, `sdl3` and `ffmpeg`.
+  --install`) and [Homebrew](https://brew.sh) packages `cmake`, `ninja`, `sdl3` and `ffmpeg`.
 - The game CD. The reference copy is the German CD image `Micky_auf_Ganovenjagd.iso`,
   SHA-256 `12d00401229f576b48987ea8b4839a5478bc74b31197258d2d8582fee7c66ae9`. The port
   reads the game data from the CD's `setup/hd/resources` and `setup/cd/resources`
@@ -68,6 +70,7 @@ or `// EQUIV` when they were shown to be the same logic. Statically linked libra
 | `tools/msvc/` | the matching tools (`check.sh`, `match.sh`, `logicdiff.sh`, ...) and, once imported, the compilers |
 | `tools/recomp/` | function boundaries and the byte comparison behind the tools |
 | `tools/re/` | debug symbol (PDB) reader: types, prototypes, locals |
+| `port/` | the macOS port: Win32, DirectX, Miles and Bink on SDL3 and FFmpeg |
 | `orig/binaries/` | your imported game binaries (not committed) |
 | `out/` | everything generated (not committed) |
 
