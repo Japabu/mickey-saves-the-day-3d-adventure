@@ -4,12 +4,11 @@
 #define RUNTIMELIB_MFOVERLAYACTIVITY_H
 #include "MfManagerActivity.h"
 #include "enums.h"
-#include "RuntimeLib_api.h"
 class MfActor;
 class MfStream;
 class MfString;
 
-class RUNTIME_API MfOverlayActivity : public MfManagerActivity {
+class __declspec(dllexport) MfOverlayActivity : public MfManagerActivity {
 public:
     enum { TYPE = 'OvlA' };
     virtual int Type() { return TYPE; }

@@ -130,7 +130,7 @@ EDITS = {
         ('(MfSkeletonNode *)req->mLocoSkill, req->mSkill,', '(MfSkeletonNode *)req->mLocoSkill, (int)req->mSkill,', 2),
     ],
     # the loco plan keeps the planned path, the activity, the floor and the road cells
-    'RuntimeLib/MfLocoPlanCache.h': [
+    'RuntimeLib/MfPlanCache.h': [
         ('    int mBlockedFrom, mBlockedTo;                           // 0x3c an edge of the road map, a\n'
          '    int mBlockedCell;                                       // 0x44 pair of nodes or a cell\n',
          '    intptr_t mBlockedFrom, mBlockedTo;                      // 0x3c an edge of the road map, a\n'

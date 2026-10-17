@@ -5,7 +5,6 @@
 #include "MfActivity.h"
 #include "MfDblList.h"
 #include "enums.h"
-#include "RuntimeLib_api.h"
 class MfActor;
 class MfAiActivity;
 class MfAiActor;
@@ -14,7 +13,7 @@ class MfLiveActor;
 class MfStream;
 class MfString;
 
-class RUNTIME_API MfManagerActivity : public MfActivity {
+class __declspec(dllexport) MfManagerActivity : public MfActivity {
 public:
     enum { TYPE = 'MgrA' };
     virtual int Type() { return TYPE; }

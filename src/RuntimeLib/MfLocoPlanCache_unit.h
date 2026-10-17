@@ -18,7 +18,7 @@
 // expands MfActor::InstanceName and Name inline, as the original header had them;
 // MfActor.h declares them out of line (inline there, every unit that calls them would
 // expand them), and MfActivity.h, MfManagerActivity.h, MfOverlayActivity.h and
-// MfLocoPlanCache.h/MfManipPlanCache.h include MfActor.h or the mfutil headers this
+// MfPlanCache.h include MfActor.h or the mfutil headers this
 // view declares itself, so none of the canonical headers can join it. Only MfMsg
 // comes from its own header.
 #ifndef RUNTIMELIB_MFLOCOPLANCACHE_UNIT_H

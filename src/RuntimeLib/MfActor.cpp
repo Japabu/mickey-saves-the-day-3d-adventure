@@ -18,8 +18,7 @@
 #include "MfActorPath.h"
 #include "MfIntValue.h"
 #include "MfRay.h"
-#include "MfColResultNode.h"
-#include "MfColResultRay.h"
+#include "MfColResults.h"
 #include "MfAiColNode.h"
 
 #include "MfDataPath.h"

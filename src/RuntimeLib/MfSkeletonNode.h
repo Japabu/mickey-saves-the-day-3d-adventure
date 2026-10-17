@@ -13,12 +13,11 @@
 #include "MfString.h"
 #include "MfTransform3.h"
 #include "MfTreeNode.h"
-#include "RuntimeLib_api.h"
 class MfActor;
 class MfRenderNode;
 class MfSpace;
 
-class RUNTIME_API MfSkeletonNode : public MfTreeNode, public MfAiActorNode {
+class __declspec(dllexport) MfSkeletonNode : public MfTreeNode, public MfAiActorNode {
     // MfActor::GotoHomeConfig syncs the nodes of other actors attached here
     friend class MfActor;
 public:

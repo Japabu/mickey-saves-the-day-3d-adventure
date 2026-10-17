@@ -12,7 +12,7 @@ Patterns verified against RuntimeLib.dll (vc5 `/O2 /GX /MD`; files that use
   `MfString.h`, `MfDblList.h`, `MfTreeNode.h`, `MfProtoNode.h`, `MfColModel.h`,
   `MfProperty*.h`, `MfScData.h`, `MfScDataHandle.h`, `MfIndex.h`, `MfLock.h`;
   `MfSpace.h`, `MfWorld.h`, `MfActivity.h`, `MfLightNode.h`, `MfLiveActorList.h`,
-  `MfSpaceList.h`, `MfMsg.h` (message IDs), `MfRenderAxisInfo.h`/`MfRenderGridInfo.h`/`MfRenderFogInfo.h`, `MfRenderScene.h`,
+  `MfSpaceList.h`, `MfMsg.h` (message IDs), `MfRenderInfo.h`, `MfRenderScene.h`,
   `MfDataPath.h`, `MfMsgDispatcher.h`, imports `MfColor.h`, `MfLight.h`,
   `MfMaterial.h`, `MfPoLight.h`, `MfPoActivity.h`.
 - The activity headers derived from MfActivity (MfAtomicActivity.h ...) are
@@ -265,7 +265,7 @@ Patterns verified against RuntimeLib.dll (vc5 `/O2 /GX /MD`; files that use
   n = n->parent()) depth++;` count the nodes up to the hip (Orient, Compliant,
   Hold). The normalize in MfOrientActivity::setup sums `y*y + z*z + x*x`.
 - MfJLHinge (GetValue at slot 0x28) is declared in MfJLimit.h;
-  MfColResultNode (SteamboatApp PDB) in MfColResultNode.h.
+  MfColResultNode (SteamboatApp PDB) in MfColResults.h.
 - MfConfigBuffers was the planner's grasp path: renamed MfGCPath (MfGCPath.h),
   its m14 is the grasp transform MfManipActivity copies. MfMTPath (MfMsgData.h)
   holds two transform arrays.
@@ -448,7 +448,7 @@ Patterns verified against RuntimeLib.dll (vc5 `/O2 /GX /MD`; files that use
   path sampler 10023ae0-1002ec80: only the ctor/dtor so far; the methods
   MfManipActivity calls are declared in MfManipPlanner.h), MfRay.h (MfRay::Cast
   at 100921a0 lives in MfProximityManager.cpp), MfMetaColModel.h (exported,
-  1005d6f0-1005e1f0, written in MfColNode.cpp with MfColReport). MfColResultRay is in MfColResultRay.h.
+  1005d6f0-1005e1f0, written in MfColNode.cpp with MfColReport). MfColResultRay is in MfColResults.h.
 - Hooks registered on a local `MfHookManager hooks;` (the hook lists are
   static) are AddHook calls without a virtual call.
 - A virtual call on a local list (Append through the vtable): call it through
@@ -500,7 +500,7 @@ Patterns verified against RuntimeLib.dll (vc5 `/O2 /GX /MD`; files that use
   destructor: the implicit one leaves the vptr alone, ~MfSpace's fog).
 - Header flips seen this round (all kept out by moving the declarations):
   MfSphereNode in MfNode.h flips MfLocoSkill::CycleLength (now MfSphereNode.h);
-  MfColResultSphere/MfDistResult next to MfColResultNode/MfColResultRay flip MfViewEventHandler::Pick
+  MfColResultSphere/MfDistResult in MfColResults.h flip MfViewEventHandler::Pick
   (now MfColDistResults.h); an inline constructor for MfConfigRecord in
   MfLiveActor.h flips Pick and moving the struct out flips the FSM's 0x1007e790
   (the constructor is MfEmptyConfigRecord, derived, in MfManipPlanner.cpp);
@@ -1005,7 +1005,7 @@ Patterns verified against RuntimeLib.dll (vc5 `/O2 /GX /MD`; files that use
   MfRoadMapBuilder. MfRoadMap.h now declares the builder's real fields (the
   0x58 bytes were an opaque array) and the cell's portal list; MfRoadPortal,
   MfRoadEdge and MfPathPoint are defined privately in MfRoadMap.cpp because
-  MfLiveActor.cpp and MfLocoPlanCache.h carry partial copies (MfPathPoint really is
+  MfLiveActor.cpp and MfPlanCache.h carry partial copies (MfPathPoint really is
   12 bytes: the cost up to the step is at 8). Merging them belongs with those files.
 - MakeCellBox (10060d00) matches: a 12-triangle box MfColNode over the cell.
   FindSegments, Rasterize and RasterizeOther are TODO bodies: FindSegments
@@ -1213,9 +1213,9 @@ Checked largest first, and with `logicdiff.sh` and a string-literal screen (ever
 string the original references must appear in the source; only a float constant came up as a false hit).
 
 - Header placement: MfRoadPortal and MfPathPoint are defined once, in MfRoadMap.h.
-  MfRoadEdge's full definition is in MfLocoPlanCache.h, because a forward declaration there flips
+  MfRoadEdge's full definition is in MfPlanCache.h, because a forward declaration there flips
   MfLocoSkill::CycleLength (imul operand order), and so does including MfRoadMap.h from it.
-  MfRoadMap.h includes MfLocoPlanCache.h.
+  MfRoadMap.h includes MfPlanCache.h.
 - Real differences fixed:
   - MfTransTrigAction::Compile's minimum script length (`>= 3`, was 5).
   - The period at the end of HandleTeleportActorRequest's log message.

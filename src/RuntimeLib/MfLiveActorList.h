@@ -2,10 +2,9 @@
 #ifndef RUNTIMELIB_MFLIVEACTORLIST_H
 #define RUNTIMELIB_MFLIVEACTORLIST_H
 #include "MfDblList.h"
-#include "RuntimeLib_api.h"
 class MfLiveActor;
 
-class RUNTIME_API MfLiveActorList : public MfDblList {
+class __declspec(dllexport) MfLiveActorList : public MfDblList {
 public:
     MfLiveActorList(int owner);
     virtual ~MfLiveActorList();

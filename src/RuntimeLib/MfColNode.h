@@ -7,11 +7,10 @@
 #include "MfLock.h"
 #include "MfNode.h"
 #include "MfTransform3.h"
-#include "RuntimeLib_api.h"
 class MfColModel;
 struct MfSearchData;
 
-class RUNTIME_API MfColNode : public MfNode, public MfAiColNode {
+class __declspec(dllexport) MfColNode : public MfNode, public MfAiColNode {
 public:
     MfColNode(MfColModel *colModel = 0);
     MfColNode(const MfColNode &);

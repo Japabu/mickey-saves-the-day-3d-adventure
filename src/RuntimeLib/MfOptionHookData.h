@@ -3,7 +3,7 @@
 // MfViewEventHandler handles the choice).
 #ifndef RUNTIMELIB_MFOPTIONHOOKDATA_H
 #define RUNTIMELIB_MFOPTIONHOOKDATA_H
-#include "MfHookData.h"
+#include "MfHookManager.h"
 class MfRenderView;
 
 struct MfOptionHookData : public MfHookData {

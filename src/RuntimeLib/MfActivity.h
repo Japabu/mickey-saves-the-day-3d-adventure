@@ -13,7 +13,6 @@
 #include "MfRootObj.h"
 #include "MfString.h"
 #include "enums.h"
-#include "RuntimeLib_api.h"
 class MfLiveActor;
 class MfManagerActivity;
 class MfScDataHandle;
@@ -22,7 +21,7 @@ class MfStream;
 class MfTransform3;
 class MfVector3;
 
-class RUNTIME_API MfActivity : public MfRootObj, public MfAiActivity {
+class __declspec(dllexport) MfActivity : public MfRootObj, public MfAiActivity {
 public:
     typedef void (MfActivity::*MsgHandler)(MfMsg &msg);
     enum { TYPE = 'Acti' };

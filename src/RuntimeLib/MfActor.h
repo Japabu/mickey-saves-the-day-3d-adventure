@@ -12,7 +12,6 @@
 #include "MfRootObj.h"
 #include "MfString.h"
 #include "enums.h"
-#include "RuntimeLib_api.h"
 class MfAiActivity;
 class MfAiActivitySpec;
 class MfAiActorNode;
@@ -45,7 +44,7 @@ class MfTransform3;
 class MfTriangleSet;
 class MfVector3;
 
-class RUNTIME_API MfActor : public MfRootObj, public MfAiActor {
+class __declspec(dllexport) MfActor : public MfRootObj, public MfAiActor {
 public:
     enum { TYPE = 'Acto' };
     virtual ~MfActor();

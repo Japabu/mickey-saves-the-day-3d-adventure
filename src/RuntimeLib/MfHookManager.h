@@ -41,12 +41,37 @@ public:
 // the hook manager (MfRuntime::Initialize)
 extern MfHookManager *gHookManager;
 
-// the data of the hooks: the head and the kinds other modules share have their
-// own headers, included here where they were declared before
-#include "MfHookData.h"
-#include "MfMouseHookData.h"
-#include "MfActorHookData.h"
-#include "MfSpaceHookData.h"
+struct MfHookData {
+    int reserved[4];                                        // 0x00
+};
+
+struct MfMouseHookData : public MfHookData {
+    MfRenderView *eventView;                                // 0x10
+    float x;                                                // 0x14
+    float y;                                                // 0x18
+    unsigned int flags;                                     // 0x1c
+    short wheelDelta;                                       // 0x20
+    MfVector3 pos;                                          // 0x24
+    MfVector3 dir;                                          // 0x30
+    MfAiSpace *pSpace;                                      // 0x3c
+};
+
+struct MfActorHookData : public MfHookData {
+    int rid;                                                // 0x10
+    int hid;                                                // 0x14
+    MfRequestStatus status;                                 // 0x18
+    MfAiActor *pActor;                                      // 0x1c
+    MfAiSpace *pSpace;                                      // 0x20
+    MfString name;                                          // 0x24
+};
+
+struct MfSpaceHookData : public MfHookData {
+    int rid;                                                // 0x10
+    int hid;                                                // 0x14
+    MfRequestStatus status;                                 // 0x18
+    MfAiSpace *pSpace;                                      // 0x1c
+    MfString name;                                          // 0x20
+};
 
 struct MfUserHookData : public MfHookData {
     MfString event;                                         // 0x10
