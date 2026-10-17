@@ -1,11 +1,13 @@
+// MfScDiagnostics: the diagnostic output of the runtime.
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfDblList.h"
 class MfScDiagnosticCallBack;
 class MfString;
 
 // Diagnostic output of the runtime: messages up to the current level go to
 // every registered MfScDiagnosticCallBack; level 5 always gets through.
-class __declspec(dllexport) MfScDiagnostics {
+class PICCOLORT_API MfScDiagnostics {
 public:
     enum { kAlways = 5 };
     static int __cdecl Active(int);

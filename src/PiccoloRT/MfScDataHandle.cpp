@@ -41,4 +41,49 @@
 // 0x10001a60 ?ClearScratchREG3@MfScVmEnv@@QAEXXZ
 // 0x10001a80 ?ClearScratchRegisters@MfScVmEnv@@QAEXXZ
 // 0x10001ae0 ?SetVariableStack@MfScVmEnv@@QAEPAVMfScVariableStack@@PAV2@@Z
-#include "MfScDataHandle_unit.h"
+//
+// The MfScVariableStack pool functions (0x10001900-0x100019ae) are defined here
+// out of line: the original had them inline in the class, emitted by this object;
+// the other objects only call them.
+#include "MfScDataHandle.h"
+#include "MfScVariableStack.h"
+#include "MfScVmFrame.h"
+#include "MfScVmEnv.h"
+
+MfScVariableStack::MfScVariableErrorCode MfScVariableStack::PushVarPool(MfScHandleDict *pool)
+{
+    if (mCount < mSize - 1) {
+        mPools[mCount] = pool;
+        mCount++;
+        return kVarOk;
+    }
+    return kVarOverflow;
+}
+
+MfScVariableStack::MfScVariableErrorCode MfScVariableStack::PopVarPool()
+{
+    if (mCount > 0) {
+        mCount--;
+        return kVarOk;
+    }
+    return kVarUnderflow;
+}
+
+MfScVariableStack::MfScVariableErrorCode MfScVariableStack::SetVarPoolAtIndex(int index, MfScHandleDict *pool)
+{
+    if (index >= 0 && index < mCount) {
+        mPools[index] = pool;
+        return kVarOk;
+    }
+    return kVarBadIndex;
+}
+
+MfScVariableStack::MfScVariableErrorCode MfScVariableStack::GetVarPoolAtIndex(int index, MfScHandleDict **pool)
+{
+    if (index >= 0 && index < mCount) {
+        *pool = mPools[index];
+        return kVarOk;
+    }
+    *pool = 0;
+    return kVarBadIndex;
+}

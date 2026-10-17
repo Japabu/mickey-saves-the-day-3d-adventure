@@ -1,9 +1,11 @@
+// MfScConstUsageInfo: a named constant a routine uses (debug information).
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfString.h"
 #include "MfVariant.h"
 
 // A named constant a routine uses (0x10 bytes).
-class __declspec(dllexport) MfScConstUsageInfo {
+class PICCOLORT_API MfScConstUsageInfo {
 public:
     MfScConstUsageInfo();
     MfScConstUsageInfo(MfString const &name, MfVariant const &value) : mName(name), mValue(value) {}

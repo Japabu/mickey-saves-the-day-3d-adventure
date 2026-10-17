@@ -1,3 +1,4 @@
+// MfScVariableDebugInfo: a local variable of a routine (debug information).
 #pragma once
 #include "MfString.h"
 

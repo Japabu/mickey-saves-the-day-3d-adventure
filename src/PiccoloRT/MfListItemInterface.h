@@ -1,3 +1,4 @@
+// MfListItemInterface: mfutil's list item interface (PiccoloRT's view, until mfutil has its own header).
 #pragma once
 
 // Header-only list interface of mfutil (vtable emitted locally). Slot 2 is
@@ -11,8 +12,4 @@ public:
     virtual int Matches(void *item, void *key) { return 0; }
 };
 
-// Tag type for the constructor that builds a lookup key.
-class LiiExemplar {
-public:
-    ~LiiExemplar() {}
-};
+#include "LiiExemplar.h"

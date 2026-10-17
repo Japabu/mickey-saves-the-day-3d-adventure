@@ -1,3 +1,4 @@
+// MfScHandleEnum: the callback of MfScDataHandle::EnumHandles.
 #pragma once
 class MfScDataHandle;
 

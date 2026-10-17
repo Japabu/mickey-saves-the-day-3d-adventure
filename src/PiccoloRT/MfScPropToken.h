@@ -1,9 +1,11 @@
+// MfScPropToken: a property name and the token a class answers for it.
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfString.h"
 
 // A property name and the token a class answers for it (0x8 bytes).
 // Everything is inline; the out-of-line copies are emitted by MfScPropTokenTable.cpp.
-class __declspec(dllexport) MfScPropToken {
+class PICCOLORT_API MfScPropToken {
 public:
     MfScPropToken(MfString const &property, int token) : m_token(token), m_property(property) {}
     ~MfScPropToken() {}

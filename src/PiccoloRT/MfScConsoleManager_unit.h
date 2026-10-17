@@ -176,16 +176,7 @@ public:
     virtual MfString GetKey() const = 0;
 };
 
-// Console output interface (RuntimeLib); only called through the vtable.
-class MfAiConsoleOutput {
-public:
-    virtual ~MfAiConsoleOutput() {}
-    virtual void AddRef() = 0;
-    virtual void Release() = 0;
-    virtual void Print(const MfString &s) = 0;
-    virtual void PrintNl(const MfString &s) = 0;
-    virtual void Clear() = 0;
-};
+#include "MfAiConsoleOutput.h"
 
 // ---- PiccoloRT -----------------------------------------------------------
 
@@ -271,8 +262,7 @@ protected:
 
 class MfScClassInfoItem;
 
-class LiiExemplar {
-};
+#include "LiiExemplar.h"
 
 class PICAPI MfScClassInfo : public MfSortedListItem, public MfListItemInterface,
                              public MfScClassInfoText {

@@ -1,16 +1,21 @@
+// MfScVariableStack: the variable pools visible to running script code.
 #pragma once
+#include "PiccoloRT_api.h"
 class MfScDataHandle;
 class MfScHandleDict;
 class MfString;
 
 // The variable pools visible to running code, innermost last. The pools are
 // not owned.
-class __declspec(dllexport) MfScVariableStack {
+class PICCOLORT_API MfScVariableStack {
 public:
     enum MfScVariableErrorCode {
         kVarOk = 0,
         kVarNotFound = 1,
-        kVarReadOnly = 2
+        kVarReadOnly = 2,
+        kVarOverflow = 3,       // PushVarPool: no room
+        kVarUnderflow = 4,      // PopVarPool: no pool
+        kVarBadIndex = 5        // Get/SetVarPoolAtIndex
     };
     MfScVariableStack(int size);
     MfScVariableStack(MfScHandleDict *pool, int size);

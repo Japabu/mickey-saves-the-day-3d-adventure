@@ -467,37 +467,6 @@ EDITS['PiccoloRT/MfScDataHandle_2.cpp'] = [
      '                        free = free->m_pointer;\n', 1),
 ]
 
-# PiccoloRT/MfScDataHandle_unit.h: the MfScVmEnv placeholders are pointer-sized like the real members (MfScVmEnv.h), so the inline members use the real offsets on 64-bit.
-EDITS['PiccoloRT/MfScDataHandle_unit.h'] = [
-    ('class __declspec(dllexport) MfScVmFrame {\n'
-     'public:\n'
-     '    long m_data[5]; // 0x14 bytes, layout unknown\n'
-     '};\n'
-     '\n',
-     'class __declspec(dllexport) MfScVmFrame {\n'
-     'public:\n'
-     '    int m_data[5]; // 0x14 bytes, layout unknown\n'
-     '};\n'
-     '\n', 1),
-    ('\n'
-     'private:\n'
-     '    long m_unk0[3];              // +0\n'
-     '    MfScDataHandle **m_stack;    // +c\n'
-     '    long m_unk10[4];             // +10\n'
-     '    MfScDataHandle *m_reg0;      // +20\n'
-     '    MfScDataHandle *m_reg1;      // +24\n',
-     '\n'
-     'private:\n'
-     '    // PORT: pointer-sized placeholders, as the real members (vptr and m_ip; then m_frame,\n'
-     '    // m_constants, m_object, m_function), so m_stack and m_reg0 are at the real offsets\n'
-     '    void *m_unk0[2];             // +0\n'
-     '    MfScDataHandle **m_stack;    // +c\n'
-     '    void *m_unk10[4];            // +10\n'
-     '    MfScDataHandle *m_reg0;      // +20\n'
-     '    MfScDataHandle *m_reg1;      // +24\n'
-     '#line 91\n', 1),
-]
-
 # PiccoloRT/MfScDebugInfo.cpp: stack words are uintptr_t (pointer-sized): the 32-bit source used unsigned long, which was the size of a pointer there.
 EDITS['PiccoloRT/MfScDebugInfo.cpp'] = [
     ('\n'
@@ -515,13 +484,15 @@ EDITS['PiccoloRT/MfScDebugInfo.cpp'] = [
 # PiccoloRT/MfScDebugInfo.h: stack words are uintptr_t (pointer-sized): the 32-bit source used unsigned long, which was the size of a pointer there.
 EDITS['PiccoloRT/MfScDebugInfo.h'] = [
     ('#pragma once\n'
+     '#include "PiccoloRT_api.h"\n'
      'class MfScCodeLevelInfo;\n'
      'class MfScConstUsageInfo;\n',
      '#pragma once\n'
+     '#include "PiccoloRT_api.h"\n'
      '#include <stdint.h> // PORT: uintptr_t\n'
      'class MfScCodeLevelInfo;\n'
      'class MfScConstUsageInfo;\n'
-     '#line 4\n', 1),
+     '#line 6\n', 1),
     ('    MfScVariableDebugInfo const & GetVarDebugInfo(int) const;\n'
      '    void SetVarDebugInfo(MfScVariableDebugInfo const &, int);\n'
      '    int GetVariable(MfString const &, unsigned long *, int, MfScDataHandle * *);\n'
@@ -534,15 +505,13 @@ EDITS['PiccoloRT/MfScDebugInfo.h'] = [
      '    int InitializeCodeLevelInfo(int);\n', 1),
 ]
 
-# PiccoloRT/MfScDebugger.h: stack words are uintptr_t (pointer-sized): the 32-bit source used unsigned long, which was the size of a pointer there.
-EDITS['PiccoloRT/MfScDebugger.h'] = [
+# PiccoloRT/MfPdbStepContext.h: stack words are uintptr_t (pointer-sized): the 32-bit source used unsigned long, which was the size of a pointer there.
+EDITS['PiccoloRT/MfPdbStepContext.h'] = [
     ('#pragma once\n'
-     '#include "MfAiFunctionRegistry.h"\n'
-     'class MfPdbListener;\n',
+     'class MfScBytecodeRoutine;\n',
      '#pragma once\n'
      '#include <stdint.h> // PORT: uintptr_t\n'
-     '#include "MfAiFunctionRegistry.h"\n'
-     'class MfPdbListener;\n'
+     'class MfScBytecodeRoutine;\n'
      '#line 4\n', 1),
     ('struct MfPdbStepContext {\n'
      '    MfScVmEnv *env;\n'
@@ -554,6 +523,10 @@ EDITS['PiccoloRT/MfScDebugger.h'] = [
      '    uintptr_t *stackBase;           // PORT: uintptr_t; the data stack when the VM was entered\n'
      '    MfScBytecodeRoutine *routine;   // the routine that runs, if it is bytecode\n'
      '    MfScVirtualMachine *vm;\n', 1),
+]
+
+# PiccoloRT/MfPdbBreakpointInfo.h: data is 32 bits wide as in the original (unsigned long is 64 bits here).
+EDITS['PiccoloRT/MfPdbBreakpointInfo.h'] = [
     ('// breakpoint.\n'
      'struct MfPdbBreakpointInfo {\n'
      '    unsigned long data;\n'
@@ -564,6 +537,16 @@ EDITS['PiccoloRT/MfScDebugger.h'] = [
      '    unsigned int data;\n'
      '    unsigned char bytecode;         // the bytecode the breakpoint replaced\n'
      '    void *entry;\n', 1),
+]
+
+# PiccoloRT/MfAiPdbBreakpointManager.h: the bytecode address of a breakpoint is uintptr_t (pointer-sized): the 32-bit source used unsigned long, which was the size of a pointer there.
+EDITS['PiccoloRT/MfAiPdbBreakpointManager.h'] = [
+    ('#pragma once\n'
+     '#include "MfAiFunctionRegistry.h"   // MfAi\n',
+     '#pragma once\n'
+     '#include <stdint.h> // PORT: uintptr_t\n'
+     '#include "MfAiFunctionRegistry.h"   // MfAi\n'
+     '#line 4\n', 1),
     ('    virtual int UnplantAll() = 0;\n'
      '    // a breakpoint at address was passed: plants it again\n'
      '    virtual int BreakpointHit(unsigned long address, int, MfScVmEnv *env) = 0;\n'
@@ -577,7 +560,7 @@ EDITS['PiccoloRT/MfScDebugger.h'] = [
      '    virtual int GetBreakpointInfo(uintptr_t address, int, MfPdbBreakpointInfo *info) = 0;\n'
      '    virtual int PlantModule(const MfString &module) = 0;\n'
      '    virtual int Save() = 0;\n'
-     '#line 63\n', 1),
+     '#line 29\n', 1),
 ]
 
 # PiccoloRT/MfScLinkData.cpp: operator new hands out a static buffer big enough for the link data objects (the source returned one pointer-sized global).
@@ -1332,13 +1315,15 @@ EDITS['PiccoloRT/MfScVirtualMachine.cpp'] = [
 # PiccoloRT/MfScVmEnv.h: stack words are uintptr_t (pointer-sized): the 32-bit source used unsigned long, which was the size of a pointer there.
 EDITS['PiccoloRT/MfScVmEnv.h'] = [
     ('#pragma once\n'
+     '#include "PiccoloRT_api.h"\n'
      '#include "MfScVariableStack.h"\n'
      '#include "MfString.h"\n',
      '#pragma once\n'
+     '#include "PiccoloRT_api.h"\n'
      '#include <stdint.h> // PORT: uintptr_t\n'
      '#include "MfScVariableStack.h"\n'
      '#include "MfString.h"\n'
-     '#line 4\n', 1),
+     '#line 6\n', 1),
     ('    int PushFunctionFrame();\n'
      '    void PopFunctionFrame();\n'
      '    void ReleaseStack(unsigned long *to);\n'
@@ -1370,7 +1355,7 @@ EDITS['PiccoloRT/MfScVmEnv.h'] = [
      '    uintptr_t PopWord() { return *(uintptr_t *)++m_sp; }\n'
      '    void PushData(MfScDataHandle *h)\n'
      '    {\n'
-     '#line 104\n', 1),
+     '#line 106\n', 1),
     ('    unsigned char *m_ip;            // +0x08 the next bytecode\n'
      '    MfScDataHandle **m_sp;          // +0x0c the data stack (grows down, points at the free slot)\n'
      '    unsigned long *m_frame;         // +0x10 the current call frame (FP)\n'
@@ -1502,13 +1487,15 @@ EDITS['PiccoloRT/MfScVmEnv_3.cpp'] = [
 # PiccoloRT/MfScVmFrame.h: stack words are uintptr_t (pointer-sized): the 32-bit source used unsigned long, which was the size of a pointer there.
 EDITS['PiccoloRT/MfScVmFrame.h'] = [
     ('#pragma once\n'
+     '#include "PiccoloRT_api.h"\n'
      'class MfScDataHandle;\n'
      '\n',
      '#pragma once\n'
+     '#include "PiccoloRT_api.h"\n'
      '#include <stdint.h> // PORT: uintptr_t\n'
      'class MfScDataHandle;\n'
      '\n'
-     '#line 4\n', 1),
+     '#line 6\n', 1),
     ('    void ReleaseHandles();\n'
      '\n'
      '    unsigned long mIP;          // +0x00 (MfScVmEnv +0x08)\n'

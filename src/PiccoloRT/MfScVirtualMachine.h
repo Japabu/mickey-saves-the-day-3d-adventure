@@ -1,11 +1,13 @@
+// MfScVirtualMachine: executes bytecode functions on the calling thread's MfScVmEnv.
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfCriticalSection.h"
 class MfScDataHandle;
 class MfString;
 class MfStringList;
 
 // Executes bytecode functions on the calling thread's MfScVmEnv.
-class __declspec(dllexport) MfScVirtualMachine {
+class PICCOLORT_API MfScVirtualMachine {
 public:
     // the exceptions ExecuteCode ends with (LastException, ExceptionName)
     enum MfScVmExceptionCode {

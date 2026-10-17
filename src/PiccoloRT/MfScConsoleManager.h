@@ -1,3 +1,4 @@
+// MfScConsoleManager: the script console: prints to the registered console outputs.
 #pragma once
 class MfAiConsoleOutput;
 class MfScDataHandle;

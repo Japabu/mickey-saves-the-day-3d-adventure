@@ -1,18 +1,11 @@
+// MfScDiagnosticCallBack: a receiver of the diagnostic messages.
 #pragma once
+#include "PiccoloRT_api.h"
 #include "MfString.h"
-
-// One diagnostic message and its level.
-class __declspec(dllexport) MfScDiagnosticInfo {
-public:
-    MfScDiagnosticInfo() : mLevel(0) {}
-    MfString const & Message() const;
-    int Level() const;
-    MfString mMessage;  // +0
-    int mLevel;         // +4
-};
+#include "MfScDiagnosticInfo.h"
 
 // Receiver of the diagnostic messages (MfScDiagnostics::AddOutput).
-class __declspec(dllexport) MfScDiagnosticCallBack {
+class PICCOLORT_API MfScDiagnosticCallBack {
 public:
     MfScDiagnosticCallBack();
     MfScDiagnosticCallBack(MfScDiagnosticCallBack const &);
