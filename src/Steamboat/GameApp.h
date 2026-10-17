@@ -75,7 +75,20 @@ static const MBGUID MBIID_IMBFileSpec = {0x897e2150, 0x9ea2, 0x11d3, {0xbe, 0xdb
 static const MBGUID MBIID_IMBFPSMonitor = {0x8f082f50, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 static const MBGUID MBIID_CMBFPSMonitor = {0x8f0e4c10, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 
-#include "../MBEngine/MBPoint.h"
+// own copy: this binary's MBPoint() writes x = y = 0 (y first); MBEngine/MBPoint.h's
+// constructor stores x first, which swaps two stores in ProcessMouseEvent
+#define MBENGINE_MBPOINTSTRUCT_H
+#define MBENGINE_MBPOINT_H
+struct MBPointStruct {
+    long x;
+    long y;
+};
+
+class MBPoint : public MBPointStruct {
+public:
+    MBPoint(void) { x = y = 0; }
+    MBPoint(long ax, long ay) { x = ax; y = ay; }
+};
 
 class MBRect;
 class IMBSurface;
