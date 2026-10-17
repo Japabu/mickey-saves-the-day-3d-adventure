@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -93,45 +94,28 @@ static bool host_for(const char *path, bool write, bool copy, std::string &host)
     return cached_copy(p, host);
 }
 
-// Reading a file inside the ISO through stdio, without a copy: a FILE on the image's
-// byte range.
-struct IsoStream {
-    int fd;
-    uint64_t base, size, pos;
-};
-
-static int iso_read(void *cookie, char *buf, int n)
+// A file inside the ISO through stdio: its bytes in a memory stream (the game reads small
+// text and settings files this way).
+static FILE *iso_stream(const vfs::Reader &r)
 {
-    IsoStream *s = (IsoStream *)cookie;
-    uint64_t left = s->pos < s->size ? s->size - s->pos : 0;
-    size_t want = (uint64_t)n < left ? (size_t)n : (size_t)left;
-    if (!want)
+    // a buffer fmemopen allocates (and frees at fclose); the stream starts empty, so a
+    // file of 0 bytes reads as one
+    FILE *f = fmemopen(0, r.size ? (size_t)r.size : 1, "w+");
+    if (!f)
         return 0;
-    ssize_t got = pread(s->fd, buf, want, (off_t)(s->base + s->pos));
-    if (got > 0)
-        s->pos += (uint64_t)got;
-    return (int)got;
-}
-
-static fpos_t iso_seek(void *cookie, fpos_t off, int whence)
-{
-    IsoStream *s = (IsoStream *)cookie;
-    int64_t from = whence == SEEK_SET ? 0 : whence == SEEK_CUR ? (int64_t)s->pos : (int64_t)s->size;
-    int64_t pos = from + off;
-    if (pos < 0) {
-        errno = EINVAL;
-        return -1;
+    std::vector<char> buf(1 << 16);
+    for (uint64_t pos = 0; pos < r.size;) {
+        size_t want = r.size - pos < buf.size() ? (size_t)(r.size - pos) : buf.size();
+        ssize_t got = pread(r.fd, buf.data(), want, (off_t)(r.base + pos));
+        if (got <= 0 || fwrite(buf.data(), 1, (size_t)got, f) != (size_t)got) {
+            fclose(f);
+            errno = EIO;
+            return 0;
+        }
+        pos += (uint64_t)got;
     }
-    s->pos = (uint64_t)pos;
-    return pos;
-}
-
-static int iso_close(void *cookie)
-{
-    IsoStream *s = (IsoStream *)cookie;
-    ::close(s->fd);
-    delete s;
-    return 0;
+    rewind(f);
+    return f;
 }
 
 }  // namespace win32
@@ -175,10 +159,8 @@ FILE *port_fopen(const char *path, const char *mode)
         vfs::Reader r;
         if (!vfs::open_read(p, r))
             return 0;
-        IsoStream *s = new IsoStream{r.fd, r.base, r.size, 0};
-        FILE *f = funopen(s, iso_read, 0, iso_seek, iso_close);
-        if (!f)
-            iso_close(s);
+        FILE *f = iso_stream(r);
+        ::close(r.fd);
         return f;
     }
     // "r+" and "a" keep the CD's contents: copy them to the overlay first.

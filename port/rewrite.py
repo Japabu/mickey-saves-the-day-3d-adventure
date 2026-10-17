@@ -51,6 +51,10 @@ Rules:
   SteamboatApp's own ios.h and ostream.h (msvcirt's classes) are left alone. The
   same for `class type_info;` (std::type_info, compat/include/typeinfo.h).
 
+- Declarations of MBmemcpy and MBOpenFile returning `void *` or `long` (the
+  definitions return nothing, no caller uses a result) return void: WebAssembly checks
+  a call's type against the function's, and a call through another type traps.
+
 Rules for one file (FILE_RULES), where the source relies on Visual C++ behaviour that
 has no general fix:
 - RuntimeLib/MfRoadMap.cpp: loop variables used after their for loop (Visual C++ 5
@@ -75,6 +79,11 @@ SRC = os.path.join(ROOT, 'src')
 OUT = os.path.join(ROOT, 'out', 'port', 'rewritten')
 
 RULES = [
+    # declarations of MBmemcpy and MBOpenFile with a result their definitions do not
+    # have (no caller uses it): WebAssembly checks a call's type against the function's,
+    # and a mismatched call traps
+    (re.compile(r'\bvoid\s*\*\s*((?:__cdecl\s+)?MBmemcpy\s*\()'), r'void \1'),
+    (re.compile(r'\blong(\s+(?:__cdecl\s+)?MBOpenFile\s*\()'), r'void\1'),
     (re.compile(r'(\boperator\s+new\s*(?:\[\s*\])?\s*\(\s*)unsigned\s+int\b'), r'\1size_t'),
     (re.compile(r'^([ \t]*)typedef\s+unsigned\s+int\s+size_t\s*;', re.M),
      r'\1/* port: size_t comes from the system */'),
@@ -302,7 +311,7 @@ def drop_duplicate_overloads(before, after):
 # files no rule touches
 KEEP = {'SteamboatApp/ios.h', 'SteamboatApp/ostream.h'}
 # a cheap first test before the regular expressions
-NEEDLES = ('operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern', 'MBGUID', 'MBComPtr', '_beginthread', 'undef', 'fopen', 'rename', 'data4', 'L"')
+NEEDLES = ('MBmemcpy', 'MBOpenFile', 'operator', 'size_t', 'MBAllocator', 'std::allocator', 'class ', 'HWND', 'CreateData', 'extern', 'MBGUID', 'MBComPtr', '_beginthread', 'undef', 'fopen', 'rename', 'data4', 'L"')
 
 
 def rewrite(text, rel=None):

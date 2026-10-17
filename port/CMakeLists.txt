@@ -24,6 +24,17 @@ else()
   set(CMAKE_OSX_ARCHITECTURES arm64)
   set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0)
 endif()
+if(PORT_TARGET STREQUAL web)
+  # threads (the game's and the renderer's) and native wasm exceptions everywhere; the
+  # game runs on a worker (PROXY_TO_PTHREAD), where it may block, and starts with
+  # 8 MB of stack as on Windows
+  add_compile_options(-pthread -fwasm-exceptions)
+  add_link_options(-pthread -fwasm-exceptions -sPROXY_TO_PTHREAD -sALLOW_MEMORY_GROWTH
+    -sINITIAL_MEMORY=256MB -sSTACK_SIZE=8MB -sDEFAULT_PTHREAD_STACK_SIZE=2MB -sPTHREAD_POOL_SIZE=8
+    -sEXIT_RUNTIME
+    # a call through a declaration of another type traps in WebAssembly: an error
+    -Wl,--fatal-warnings)
+endif()
 set(PORT_DEPS ${CMAKE_CURRENT_SOURCE_DIR}/../out/deps/${PORT_TARGET})
 execute_process(
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/deps.py ${PORT_TARGET} ${PORT_DEPS}

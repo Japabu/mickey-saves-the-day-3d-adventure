@@ -151,7 +151,7 @@ void WINAPI EnterCriticalSection(LPCRITICAL_SECTION cs)
 {
     pthread_mutex_lock(cs_mutex(cs));
     cs->RecursionCount++;
-    cs->OwningThread = (HANDLE)(uintptr_t)pthread_mach_thread_np(pthread_self());
+    cs->OwningThread = (HANDLE)(uintptr_t)GetCurrentThreadId();
 }
 
 void WINAPI LeaveCriticalSection(LPCRITICAL_SECTION cs)

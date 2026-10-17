@@ -5,11 +5,9 @@
 #include <atomic>
 #include <pthread.h>
 #include <signal.h>
-#include <spawn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/wait.h>
 #include <unistd.h>
 
 extern char **environ;
@@ -166,40 +164,7 @@ BOOL WINAPI GetThreadContext(HANDLE, LPCONTEXT lpContext)
     return FALSE;
 }
 
-// Processes.
-struct ProcessObject : Waitable {
-    ProcessObject() : Waitable(Process) {}
-    bool signalled() override
-    {
-        if (!done) {
-            int status;
-            if (waitpid(pid, &status, WNOHANG) == pid) {
-                done = true;
-                code = WIFEXITED(status) ? (DWORD)WEXITSTATUS(status) : 1;
-            }
-        }
-        return done;
-    }
-    bool wait(DWORD ms) override
-    {
-        // A child's exit is not broadcast: poll.
-        DWORD start = ticks();
-        for (;;) {
-            pthread_mutex_lock(&g_wait_lock);
-            bool s = signalled();
-            pthread_mutex_unlock(&g_wait_lock);
-            if (s)
-                return true;
-            if (ms != INFINITE && ticks() - start >= ms)
-                return false;
-            Sleep(10);
-        }
-    }
-    pid_t pid = 0;
-    bool done = false;
-    DWORD code = STILL_ACTIVE;
-};
-
+// Processes: the game starts none it needs (see CreateProcessA).
 BOOL WINAPI CreateProcessA(LPCSTR lpApplicationName, LPSTR lpCommandLine, LPSECURITY_ATTRIBUTES,
                            LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA,
                            LPPROCESS_INFORMATION lpProcessInformation)
@@ -228,25 +193,16 @@ BOOL WINAPI GetExitCodeProcess(HANDLE hProcess, LPDWORD lpExitCode)
         *lpExitCode = STILL_ACTIVE;
         return TRUE;
     }
-    ProcessObject *p = object_as<ProcessObject>(hProcess, Object::Process);
-    if (!p)
-        return FALSE;
-    pthread_mutex_lock(&g_wait_lock);
-    p->signalled();
-    *lpExitCode = p->code;
-    pthread_mutex_unlock(&g_wait_lock);
-    return TRUE;
+    SetLastError(ERROR_INVALID_HANDLE);
+    return FALSE;
 }
 
 BOOL WINAPI TerminateProcess(HANDLE hProcess, UINT uExitCode)
 {
     if (hProcess == GetCurrentProcess())
         _exit((int)uExitCode);
-    ProcessObject *p = object_as<ProcessObject>(hProcess, Object::Process);
-    if (!p)
-        return FALSE;
-    kill(p->pid, SIGTERM);
-    return TRUE;
+    SetLastError(ERROR_INVALID_HANDLE);
+    return FALSE;
 }
 
 void WINAPI ExitProcess(UINT uExitCode)

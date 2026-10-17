@@ -163,3 +163,8 @@ EDITS['MBEngine/MBStl.h'] = [
      '#endif\n'
      '#line 18\n', 1),
 ]
+
+# stack.h declares MBDebugStr without its `...`: WebAssembly checks a call's type against
+# the function's, and a call through another type traps
+EDITS.setdefault('MBEngine/stack.h', []).append(
+    ('void MBDebugStr(const char *str);', 'void MBDebugStr(const char *str, ...);', 1))
