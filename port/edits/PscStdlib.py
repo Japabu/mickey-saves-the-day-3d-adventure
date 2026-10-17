@@ -1,40 +1,8 @@
 # PscStdlib edits for the port (see port/rewrite.py, EDITS).
 EDITS = {}
 
-# plugins/PscStdlib/PscStdlib.h: MfThread, MfScMethodParameterInfo and MfScCiMethod are declared with the member types of the real classes (pointers and MfStrings where this view had padding or int), so sizes and offsets agree on 64-bit.
+# plugins/PscStdlib/PscStdlib.h: the PiccoloRT classes this header still declares itself (until PiccoloRT's headers can be included next to mfutil's) get what the real classes have: 32-bit types for MfScDataHandle's flags and value, the virtual slots of MfScClassInfoItem and MfScClassInfo, and pointers and MfStrings where MfScMethodParameterInfo and MfScCiMethod had int, so sizes and offsets agree on 64-bit.
 EDITS['plugins/PscStdlib/PscStdlib.h'] = [
-    ('    virtual ~MfStringList() { Clear(); }\n'
-     '    virtual MfString *Add(const MfString &s);                     // +0x70\n'
-     '    virtual void Clear();                                         // +0x54\n'
-     '};\n',
-     '    virtual ~MfStringList() { Clear(); }\n'
-     '    virtual MfString *Add(const MfString &s);                     // +0x70\n'
-     "    virtual void Delete(const MfString &s);                       // PORT: mfutil's slots after Add\n"
-     '    virtual MfDblListItem *Search(const MfString &s) const;\n'
-     '    virtual int CallBack(const MfString &token, MfString &rest);\n'
-     '    virtual void Clear();                                         // +0x54\n'
-     '};\n'
-     '#line 125\n', 1),
-    ('    static MfThread *__cdecl GetThread();\n'
-     'private:\n'
-     '    char m_pad[0x20];\n'
-     '};\n'
-     '\n',
-     '    static MfThread *__cdecl GetThread();\n'
-     'private:\n'
-     '    // PORT: the members of the real class (src/mfutil/MfThread.h) in place of\n'
-     '    // char m_pad[0x20], so MfScThread::mVmEnv is at the real offset (+64 on 64-bit)\n'
-     '    void *m_vtbl;\n'
-     '    unsigned int m_threadId;\n'
-     '    int m_flags;\n'
-     '    MfThread *m_thread;\n'
-     '    void *m_handle;\n'
-     '    unsigned int m_state;\n'
-     '    void *m_workEvent;\n'
-     '    void *m_work;\n'
-     '};\n'
-     '\n'
-     '#line 179\n', 1),
     ('    static MfScDataHandle *__cdecl CreateData(MfScDataObject *);\n'
      '    static MfScDataHandle *__cdecl CreateData(MfScMethod, const MfString &, int);\n'
      '    int IsType(unsigned long type) const { return m_flags & type; }\n'
@@ -55,16 +23,6 @@ EDITS['plugins/PscStdlib/PscStdlib.h'] = [
      '        int m_long;\n'
      '        MfScData *m_data;\n'
      '    };\n', 1),
-    ('    MfScLinkData() : mCount(0) {}\n'
-     '    virtual ~MfScLinkData() {}\n'
-     '    static void *__cdecl operator new(unsigned int);\n'
-     '    static void __cdecl operator delete(void *);\n'
-     '    int mCount;     // +4\n',
-     '    MfScLinkData() : mCount(0) {}\n'
-     '    virtual ~MfScLinkData() {}\n'
-     '    static void *__cdecl operator new(size_t);\n'
-     '    static void __cdecl operator delete(void *);\n'
-     '    int mCount;     // +4\n', 1),
     ('    MfScClassInfoItem(const MfString &key) : m_c(0), m_key(key) {}\n'
      '    virtual MfString GetKey() const;\n'
      'protected:\n'
@@ -75,7 +33,7 @@ EDITS['plugins/PscStdlib/PscStdlib.h'] = [
      '    virtual int GetTreeImage() = 0;\n'
      'protected:\n'
      '    int m_c;            // +0x0c\n'
-     '#line 491\n', 1),
+     '#line 316\n', 1),
     ('    virtual ~MfScMethodParameterInfo();\n'
      'private:\n'
      '    int m_8;\n'
@@ -105,5 +63,5 @@ EDITS['plugins/PscStdlib/PscStdlib.h'] = [
      "    virtual int Matches(void *item, void *key);    // PORT: PiccoloRT's primary-vtable slot (vtablecensus)\n"
      '    MfScClassInfo &operator+(MfScClassInfoItem *);\n'
      'private:\n'
-     '#line 529\n', 1),
+     '#line 354\n', 1),
 ]

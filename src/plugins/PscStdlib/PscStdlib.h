@@ -7,98 +7,17 @@
 #ifndef PSCSTDLIB_H
 #define PSCSTDLIB_H
 
+// ---- mfutil.dll -------------------------------------------------------------
+
+#include "../../mfutil/MfString.h"     // first: it defines STRICT before windows.h
 #include <windows.h>
 #include <time.h>
 
-// ---- mfutil.dll -------------------------------------------------------------
-
-class MfCallBack;
-class MfListItemInterface;
-class MfSystemTime;
-
-class __declspec(dllimport) MfNullString {
-};
-extern __declspec(dllimport) MfNullString NULL_STRING;
-
-class __declspec(dllimport) MfString {
-public:
-    MfString();
-    MfString(const MfString &);
-    MfString(const char *);
-    MfString(int);
-    ~MfString();
-    MfString &operator=(const MfString &);
-    MfString &operator=(const MfNullString &);
-    MfString &operator=(const char *);
-    MfString operator+(const MfString &) const;
-    int operator==(const MfString &) const;
-    int FormatTime(char *const, const MfSystemTime &);
-private:
-    void *pRef;
-};
-
-class MfDblListItem {
-public:
-    void *GetData() const { return pData; }
-    void *pData;
-    MfDblListItem *pliPrev;
-    MfDblListItem *pliNext;
-};
-
-// VC5 lays overloaded virtuals out in reverse order of declaration.
-class __declspec(dllimport) MfDblList {
-public:
-    enum EnumListPosition { LP_BEFORE = 0, LP_AFTER = 1 };
-
-    MfDblList() : pliFirst(0), pliLast(0), nCount(0) {}
-    virtual ~MfDblList();                                                    // +0x00
-    virtual void Prepend(void *const pData);                                 // +0x04
-    virtual void Append(void *const pData);                                  // +0x08
-    virtual void Insert(void *pData, EnumListPosition pos, MfDblListItem *pli); // +0x0c
-    virtual void Merge(MfDblList &list, EnumListPosition pos, MfDblListItem *pli); // +0x10
-    virtual void Add(void *const pData);                                     // +0x14
-    virtual void Copy(const MfDblList &list);                                // +0x20
-    virtual void Copy(const MfDblList &list, MfCallBack &cb);                // +0x1c
-    virtual void Copy(const MfDblList &list, MfListItemInterface &lii);      // +0x18
-    virtual void *GetFirst(MfDblListItem *&pli) const;                       // +0x24
-    virtual void *GetNext(MfDblListItem *&pli) const;                        // +0x28
-    virtual void *GetCurrent(MfDblListItem *&pli) const;                     // +0x2c
-    virtual void *GetPrev(MfDblListItem *&pli) const;                        // +0x30
-    virtual void *GetLast(MfDblListItem *&pli) const;                        // +0x34
-    virtual void Iterate(MfCallBack &cb) const;                              // +0x3c
-    virtual void Iterate(MfListItemInterface &lii) const;                    // +0x38
-    virtual void *DeleteFirst();                                             // +0x40
-    virtual void *DeleteLast();                                              // +0x44
-    virtual void *Delete(MfDblListItem *&pli);                               // +0x48
-    virtual void Clear();                                                    // +0x54
-    virtual void Clear(MfCallBack &cb);                                      // +0x50
-    virtual void Clear(MfListItemInterface &lii);                            // +0x4c
-    virtual MfDblListItem *Find(void *pData) const;                          // +0x6c
-    virtual MfDblListItem *Find(void *pData, MfCallBack &cb) const;          // +0x68
-    virtual MfDblListItem *Find(void *pData, MfListItemInterface &lii) const; // +0x64
-    virtual MfDblListItem *Find(void *pData, MfDblListItem *pli, int n) const; // +0x60
-    virtual MfDblListItem *Find(void *pData, MfDblListItem *pli, int n, MfCallBack &cb) const; // +0x5c
-    virtual MfDblListItem *Find(void *pData, MfDblListItem *pli, int n, MfListItemInterface &lii) const; // +0x58
-    int GetCount() const { return nCount; }
-
-protected:
-    MfDblListItem *pliFirst; // +4
-    MfDblListItem *pliLast;  // +8
-    int nCount;              // +0xc
-};
-
-// The constructor and destructor are inline. VC5 lays overloaded virtuals out
-// in reverse order: the vtable is ??_E, CallBack(3), CallBack(2), CallBack(1).
-class __declspec(dllimport) MfCallBack {
-public:
-    MfCallBack() {}
-    virtual ~MfCallBack() {}
-    virtual int CallBack(void *);
-    virtual int CallBack(void *, void *);
-    virtual int CallBack(void *, void *, void *);
-};
-
-// How MfDblList copies, visits, deletes and compares its items.
+// own copy: the list item interface this plugin compiles has default bodies
+// (Copy, Iterate and Destroy are emitted here, HandleListSearchClass overrides
+// only Matches); mfutil's header declares them pure. Its guard is defined so that
+// MfDblList.h uses this declaration.
+#define MFUTIL_MFLISTITEMINTERFACE_H
 class MfListItemInterface {
 public:
     virtual void *Copy(void *item) { return 0; }
@@ -107,76 +26,20 @@ public:
     virtual int Matches(void *item, void *key) { return 0; }
 };
 
-class __declspec(dllimport) MfStringTokenizerCallBack {
-public:
-    MfStringTokenizerCallBack() {}
-    virtual ~MfStringTokenizerCallBack() {}
-    virtual int CallBack(const MfString &token, MfString &rest);
-};
-
-// List of MfString (0x14 bytes); constructor and destructor are inline.
-class __declspec(dllimport) MfStringList : public MfDblList, public MfStringTokenizerCallBack {
-public:
-    MfStringList() {}
-    virtual ~MfStringList() { Clear(); }
-    virtual MfString *Add(const MfString &s);                     // +0x70
-    virtual void Clear();                                         // +0x54
-};
-
-enum MfHTErrorCode { };
-
-class __declspec(dllimport) MfHashTable {
-public:
-    class MfChainNode;
-    virtual ~MfHashTable();
-protected:
-    virtual MfHTErrorCode Search(void *, void **, int *, int *, MfChainNode **) = 0;
-    virtual void DeleteDataItem(void *, MfCallBack *) = 0;
-    virtual void *GetKey(void *) = 0;
-    virtual void *GetData(void *) = 0;
-private:
-    void **apBuckets;
-    int nNumberOfBuckets;
-    int nBucketSize;
-    MfChainNode **apmfcnChain;
-};
-
-// Hash table keyed by MfString.
-class __declspec(dllimport) MfDictionary : public MfHashTable {
-public:
-    MfDictionary(int nBuckets);
-    virtual ~MfDictionary();
-    void *Add(const MfString &, void *);
-protected:
-    virtual MfHTErrorCode Search(void *, void **, int *, int *, MfHashTable::MfChainNode **);
-    virtual void DeleteDataItem(void *, MfCallBack *);
-    virtual void *GetKey(void *);
-    virtual void *GetData(void *);
-};
-
-// A SYSTEMTIME with conversions.
-class __declspec(dllimport) MfSystemTime {
-public:
-    MfSystemTime(int);
-    void Convert(struct tm *) const;
-    SYSTEMTIME mTime;   // +0x00
-    int mFlags;         // +0x10
-};
-
-class __declspec(dllimport) MfLogger {
-public:
-    static void __cdecl Log(int, const MfString &, const MfString &, const MfStringList &);
-    static void __cdecl EnableWindowOutput(int);
-};
-
-class __declspec(dllimport) MfThread {
-public:
-    static MfThread *__cdecl GetThread();
-private:
-    char m_pad[0x20];
-};
+#include "../../mfutil/MfDblList.h"
+#include "../../mfutil/MfStringList.h"
+#include "../../mfutil/MfDictionary.h"
+#include "../../mfutil/MfSystemTime.h"
+#include "../../mfutil/MfLogger.h"
+#include "../../mfutil/MfThread.h"
 
 // ---- PiccoloRT.dll: the script runtime ---------------------------------------
+//
+// PiccoloRT's headers include PiccoloRT's own copies of the mfutil classes
+// (src/PiccoloRT/MfString.h, MfDblList.h, MfThread.h, ...), which cannot be
+// declared next to mfutil's headers above. Only the PiccoloRT headers that
+// include none of them are used here; the other classes are declared below as
+// this plugin compiles them, until PiccoloRT's headers use mfutil's.
 
 class MfScData;
 class MfScDataHandle;
@@ -232,10 +95,7 @@ private:
     };
 };
 
-class MfScVariableStack {
-public:
-    enum MfScVariableErrorCode { };
-};
+#include "../../PiccoloRT/MfScVariableStack.h"
 
 class __declspec(dllimport) MfScVmEnv {
 public:
@@ -262,46 +122,7 @@ enum {
     kExParameterCount = 18
 };
 
-// Result of counting the circular links of a data object; there is only
-// ever one alive (operator new hands out a static buffer).
-class __declspec(dllimport) MfScLinkData {
-public:
-    MfScLinkData() : mCount(0) {}
-    virtual ~MfScLinkData() {}
-    static void *__cdecl operator new(unsigned int);
-    static void __cdecl operator delete(void *);
-    int mCount;     // +4
-};
-
-template <class T> struct MfScListLinkItem {
-    MfScListLinkItem(T value) : m_value(value) {}
-    ~MfScListLinkItem() {}
-    T m_value;                     // +0
-    MfScListLinkItem<T> *m_next;   // +4
-};
-
-// Link data that also remembers where the links were found.
-template <class T> class MfScListLinkData : public MfScLinkData {
-public:
-    typedef MfScListLinkItem<T> Item;
-    MfScListLinkData() : m_head(0) {}
-    virtual ~MfScListLinkData()
-    {
-        Item *item = m_head;
-        while (item) {
-            Item *next = item->m_next;
-            delete item;
-            item = next;
-        }
-    }
-    void Add(T value)
-    {
-        Item *item = new Item(value);
-        item->m_next = m_head;
-        m_head = item;
-    }
-    Item *m_head; // +8
-};
+#include "../../PiccoloRT/MfScLinkData.h"
 
 class __declspec(dllimport) MfScData {
 public:
@@ -408,6 +229,9 @@ private:
     MfDblListItem *mCurrentPos;     // +0x10
 };
 
+// own copy: the destructor is out of line (this plugin imports
+// ??1MfScHandleDict@@UAE@XZ for its ??_GMfScHandleDict); PiccoloRT's header has
+// it inline.
 // Variable pool: name -> data handle; it holds a reference on each handle.
 class __declspec(dllimport) MfScHandleDict : public MfDictionary {
 public:
@@ -443,13 +267,11 @@ public:
     virtual int CallBack(void *);
 };
 
-// How PiccoloRT makes script lists; the standard library registers its own.
-class __declspec(dllimport) MfScStdLibListInterface {
-public:
-    virtual int CreateList(MfDblList **list, MfScDataHandle **handle);
-    virtual int GetList(MfDblList **list, MfScDataHandle *handle);
-};
+#include "../../PiccoloRT/MfScStdLibListInterface.h"
 
+// own copy: RegisterListInterface is inline (this plugin imports
+// pslliListInterface and slliDefault, not the function); PiccoloRT's header
+// declares it out of line.
 class __declspec(dllimport) MfScStdLib {
 public:
     static void RegisterListInterface(MfScStdLibListInterface *slli)
@@ -468,6 +290,9 @@ private:
 
 struct _TREEITEM;
 
+// own copy: the key slot is GetKey, which MfScClassInfoItem and MfScClassInfo
+// override (PiccoloRT exports ?GetKey@MfScClassInfoItem); mfutil's header names
+// it GetSortKey.
 class MfSortedListItem {
 public:
     virtual ~MfSortedListItem() {}
