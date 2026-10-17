@@ -415,9 +415,10 @@ def improvements(module):
 
 
 def target(module):
-    """A module's CMake target: its name, but Steamboat.exe for the executable's own (the
-    executable is the target Steamboat)."""
-    return dll_name(module) if module == EXE else module
+    """A module's CMake target: its name, but Steamboat_exe for the executable's own (the
+    executable is the target Steamboat; CMake before 4 reads a dependency on
+    "Steamboat.exe" as one on the executable)."""
+    return dll_name(module).replace('.', '_') if module == EXE else module
 
 
 def cmake(path):
