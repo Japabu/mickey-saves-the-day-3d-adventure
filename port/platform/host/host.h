@@ -19,6 +19,12 @@
 
 namespace host {
 
+// ---- Start
+// Called first in main, before the game reads a file or a setting: a host prepares what
+// the platform expects (the web host attaches the browser's storage and names the CD and
+// the data directory in MICKEY_CD and MICKEY_DATA).
+void startup();
+
 // ---- The window
 // The game has one window. Its picture is the game's screen (w x h, 640 x 480), scaled to
 // fit the window or the screen and letterboxed; positions in events and of the cursor

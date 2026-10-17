@@ -10,6 +10,8 @@
 
 namespace host {
 
+void startup() {}
+
 static SDL_Window *s_window;
 static SDL_Renderer *s_renderer;
 static SDL_Texture *s_texture;

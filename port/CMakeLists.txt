@@ -31,7 +31,7 @@ if(PORT_TARGET STREQUAL web)
   add_compile_options(-pthread -fwasm-exceptions)
   add_link_options(-pthread -fwasm-exceptions -sPROXY_TO_PTHREAD -sALLOW_MEMORY_GROWTH
     -sINITIAL_MEMORY=256MB -sSTACK_SIZE=8MB -sDEFAULT_PTHREAD_STACK_SIZE=2MB -sPTHREAD_POOL_SIZE=8
-    -sEXIT_RUNTIME
+    -sEXIT_RUNTIME -sWASMFS
     # a call through a declaration of another type traps in WebAssembly: an error
     -Wl,--fatal-warnings)
 endif()
@@ -98,3 +98,14 @@ set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
   ${CMAKE_CURRENT_SOURCE_DIR}/deps.py ${CMAKE_CURRENT_SOURCE_DIR}/flags.py ${CMAKE_CURRENT_SOURCE_DIR}/rewrite.py
   ${CMAKE_CURRENT_SOURCE_DIR}/../src/options.txt ${PORT_OVERLAY_INPUTS})
 include(${CMAKE_BINARY_DIR}/modules.cmake)
+
+if(PORT_TARGET STREQUAL web)
+  # the game for the page (port/web): createMickey() starts it; the page reads the shared
+  # block (host/web/shared.h) through the heap views
+  target_link_options(Steamboat PRIVATE -sMODULARIZE -sEXPORT_NAME=createMickey -sENVIRONMENT=web,worker
+    -sEXPORTED_RUNTIME_METHODS=wasmMemory -sEXPORTED_FUNCTIONS=_main,_host_web_shared)
+  # the page next to it
+  file(GLOB PORT_WEB_PAGE CONFIGURE_DEPENDS web/*.html web/*.js)
+  add_custom_command(TARGET Steamboat POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PORT_WEB_PAGE} ${CMAKE_BINARY_DIR})
+endif()

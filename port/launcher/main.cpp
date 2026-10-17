@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <string>
 #include "../platform/win32/module_table.h"
+#include "../platform/host/host.h"
 
 extern "C" void port_set_command_line(int argc, char **argv);
 namespace win32 {
@@ -17,6 +18,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 int main(int argc, char **argv)
 {
+    host::startup();
     port_set_command_line(argc, argv);
     win32::vfs::install_defaults();
     port_modules_start();

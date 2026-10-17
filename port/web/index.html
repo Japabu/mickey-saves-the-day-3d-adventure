@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mickey Saves the Day</title>
+<script src="coi-serviceworker.js"></script>
+<style>
+  :root { color-scheme: dark; --bg: #101418; --panel: #1b2229; --text: #e8edf2; --dim: #9aa7b3; --accent: #f2c14e; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+               font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #start { max-width: 34rem; margin: 0 auto; padding: 3rem 1rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 .5rem; }
+  p { color: var(--dim); }
+  .card { background: var(--panel); border-radius: 12px; padding: 1.25rem; margin-top: 1.5rem; }
+  button, label.button { display: inline-block; background: var(--accent); color: #1a1a1a; border: 0; border-radius: 8px;
+                         padding: .6rem 1.1rem; font: inherit; font-weight: 600; cursor: pointer; }
+  button.secondary { background: transparent; color: var(--dim); border: 1px solid #3a4652; font-weight: 400; }
+  input[type=file] { display: none; }
+  progress { width: 100%; height: .6rem; margin-top: 1rem; }
+  #message { min-height: 1.5em; }
+  #game { position: fixed; inset: 0; display: none; background: #000; }
+  #screen { width: 100%; height: 100%; display: block; outline: none; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main id="start">
+  <h1>Mickey Saves the Day</h1>
+  <p>Disney's 3D adventure from 2001, running in your browser. Bring your own copy of the game:
+     the German CD image <code>Micky_auf_Ganovenjagd.iso</code>. It stays on this computer: the page
+     keeps a copy in the browser's storage for this site, and your saved games stay there too.</p>
+  <div class="card">
+    <div id="message"></div>
+    <progress id="progress" max="1" value="0" hidden></progress>
+    <p id="choose-row">
+      <label class="button" for="iso">Choose the game's ISO</label>
+      <input id="iso" type="file" accept=".iso">
+    </p>
+    <p id="play-row" hidden>
+      <button id="play">Play</button>
+      <button id="change" class="secondary">Use another ISO</button>
+    </p>
+  </div>
+  <p>Esc opens the port's options (volumes, sharpness, full screen).
+     <a href="https://github.com/Japabu/mickey-saves-the-day-3d-adventure">Source on GitHub</a>.</p>
+</main>
+<div id="game"><canvas id="screen" tabindex="0"></canvas></div>
+<script src="mickey.js"></script>
+</body>
+</html>
