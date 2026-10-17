@@ -32,7 +32,7 @@
 #include "MfScHandleList.h"
 #include "MfScVirtualMachine.h"
 #include "MfRegularExpression.h"
-#include "UtilityApp.h"
+#include "../mfutil/UtilityApp.h"
 
 extern __declspec(dllimport) MfNullString NULL_STRING;
 

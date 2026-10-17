@@ -14,7 +14,7 @@
 #include "MfScConstUsageInfo.h"
 #include "MfVariant.h"
 #include "MfStringList.h"
-#include "MfTime.h"
+#include "../mfutil/MfTime.h"
 
 extern __declspec(dllimport) MfNullString NULL_STRING;
 #include "MfString.h"

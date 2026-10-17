@@ -12,7 +12,7 @@ public:
     public:
         MfScDataThreadWorker(MfScDataHandle *self, MfScDataHandle *function, MfScDataHandle *args);
         virtual ~MfScDataThreadWorker();
-        virtual void Work();
+        virtual void DoWork();
 
         MfScDataHandle *mSelf;          // +0x04
         MfScDataHandle *mFunction;      // +0x08

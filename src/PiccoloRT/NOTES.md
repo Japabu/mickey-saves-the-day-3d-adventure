@@ -118,7 +118,7 @@ Tool issues (not source problems):
     (MfScGCWork, 0x10006100) only stores the base vptr.
   - `int naps = 60; if (pause) naps = ...;` (not a ?:), and a loop
     `int start = naps; while (naps--) ... (start - naps) * 500` gives the
-    strength-reduced induction variable of MfScGCWork::Work.
+    strength-reduced induction variable of MfScGCWork::DoWork.
   - `int tries = 10; while (tries--) { if (...) break; Sleep(100); }` rotates
     to an initial counter of 9 (Shutdown).
   - A local returned uninitialized on one path stays in its stack slot

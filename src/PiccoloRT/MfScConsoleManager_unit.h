@@ -61,12 +61,7 @@ private:
 class MfCallBack;
 class MfListItemInterface;
 
-class MfDblListItem {
-public:
-    void *m_data;           // +0
-    MfDblListItem *m_prev;  // +4
-    MfDblListItem *m_next;  // +8
-};
+#include "../mfutil/MfDblListItem.h"
 
 // MSVC places overloaded virtuals in reverse declaration order: the
 // overload groups below are declared reversed to give the vtable order.
@@ -136,12 +131,12 @@ public:
     virtual void Clear();
     MfString *First(MfDblListItem *&pos) const {
         pos = m_first;
-        return pos ? (MfString *)pos->m_data : 0;
+        return pos ? (MfString *)pos->pData : 0;
     }
     MfString *Next(MfDblListItem *&pos) const {
         if (pos)
-            pos = pos->m_next;
-        return pos ? (MfString *)pos->m_data : 0;
+            pos = pos->pliNext;
+        return pos ? (MfString *)pos->pData : 0;
     }
 };
 

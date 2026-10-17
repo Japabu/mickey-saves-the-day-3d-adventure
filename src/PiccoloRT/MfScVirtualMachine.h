@@ -3,7 +3,7 @@
 #ifndef PICCOLORT_API
 #define PICCOLORT_API __declspec(dllimport)
 #endif
-#include "MfCriticalSection.h"
+#include "../mfutil/MfCriticalSection.h"
 class MfScDataHandle;
 class MfString;
 class MfStringList;
