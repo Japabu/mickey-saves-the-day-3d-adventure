@@ -11,6 +11,30 @@
 
 extern "C" {
 
+int port_iswctype(wint_t c, unsigned short mask)
+{
+    int r = 0;
+    if ((mask & _UPPER) && iswupper(c))
+        r |= _UPPER;
+    if ((mask & _LOWER) && iswlower(c))
+        r |= _LOWER;
+    if ((mask & _DIGIT) && iswdigit(c))
+        r |= _DIGIT;
+    if ((mask & _SPACE) && iswspace(c))
+        r |= _SPACE;
+    if ((mask & _PUNCT) && iswpunct(c))
+        r |= _PUNCT;
+    if ((mask & _CONTROL) && iswcntrl(c))
+        r |= _CONTROL;
+    if ((mask & _BLANK) && iswblank(c))
+        r |= _BLANK;
+    if ((mask & _HEX) && iswxdigit(c))
+        r |= _HEX;
+    if ((mask & 0x100) && iswalpha(c))
+        r |= 0x100;
+    return r;
+}
+
 char *_strlwr(char *s)
 {
     for (char *p = s; *p; p++)

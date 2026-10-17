@@ -81,17 +81,18 @@ int port_rename(const char *from, const char *to);
 int port_host_path(const char *path, int for_write, char *out, size_t outsize);
 static inline FILE *_fdopen(int fd, const char *mode) { return fdopen(fd, mode); }
 
-// ctype.h: Microsoft's character class masks, for iswctype() (whose masks on macOS are
-// the _CTYPE_ bits)
-#define _UPPER _CTYPE_U
-#define _LOWER _CTYPE_L
-#define _DIGIT _CTYPE_D
-#define _SPACE _CTYPE_S
-#define _PUNCT _CTYPE_P
-#define _CONTROL _CTYPE_C
-#define _BLANK _CTYPE_B
-#define _HEX _CTYPE_X
-#define _ALPHA _CTYPE_A
+// ctype.h: Microsoft's character class masks, and iswctype() taking them (platform/crt.cpp)
+#define _UPPER 0x1
+#define _LOWER 0x2
+#define _DIGIT 0x4
+#define _SPACE 0x8
+#define _PUNCT 0x10
+#define _CONTROL 0x20
+#define _BLANK 0x40
+#define _HEX 0x80
+#define _ALPHA (0x0100 | _UPPER | _LOWER)
+int port_iswctype(wint_t c, unsigned short mask);
+#define iswctype(c, mask) port_iswctype((c), (mask))
 
 // float.h and math.h
 static inline int _isnan(double x) { return isnan(x); }

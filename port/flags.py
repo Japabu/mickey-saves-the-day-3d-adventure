@@ -43,8 +43,17 @@ MODULES = {
 # Not ported: the developers' MFC tools (script console, debugger, class browser).
 # PiccoloConsole, PscDebugger, PscClassInfo
 
+# The targets: their compiler flags (on top of COMMON) and the prefix of C names in
+# their object files. PORT_TARGET (or CMake: Emscripten builds `web`) picks one.
+TARGETS = {
+    'macos': {'flags': ['-target', 'arm64-apple-macos13'], 'prefix': '_'},
+    # WebAssembly through Emscripten: threads (the game's own and the renderer's) and
+    # native wasm exceptions
+    'web': {'flags': ['-pthread', '-fwasm-exceptions'], 'prefix': ''},
+}
+TARGET = os.environ.get('PORT_TARGET', 'macos')
+
 COMMON = [
-    '-target', 'arm64-apple-macos13',
     '-fms-extensions', '-fms-compatibility', '-fdelayed-template-parsing',
     # -fms-compatibility drops __GNUC__, and the macOS SDK then declares va_list in a
     # way that clashes with clang's own
@@ -68,7 +77,7 @@ COMMON = [
     '-Xclang', '-mconstructor-aliases',
     '-include', os.path.join(PORT, 'compat', 'prelude.h'),
     '-isystem', os.path.join(PORT, 'compat', 'include'),
-    '-D_WIN32', '-DWIN32', '-D_X86_', '-D_M_IX86=500', '-D_MSC_VER=1200', '-DPORT_MACOS',
+    '-D_WIN32', '-DWIN32', '-D_X86_', '-D_M_IX86=500', '-D_MSC_VER=1200',
 ]
 # Names that several DLLs each defined for themselves, which one link would merge: in
 # these modules they get the module's name as prefix (`-DName=Module_Name`), so each
@@ -191,7 +200,7 @@ def command(module, path, extra=()):
     inc = ['-ivfsoverlay', overlay(), '-iquote', os.path.dirname(path), '-iquote', d]
     opts = sources_options(path) if path.startswith(SRC + os.sep) else []   # generated files have none
     opts = opts + ['-D%s=%s' % kv for kv in renames(module).items()]
-    return cc + COMMON + inc + opts + list(extra) + [path]
+    return cc + TARGETS[TARGET]['flags'] + COMMON + inc + opts + list(extra) + [path]
 
 
 def sources_options(path):
@@ -241,7 +250,7 @@ def module_table(module, out, nm, objects):
             f = line.split()
             if len(f) == 3 and f[1] == 'T':
                 syms.add(f[2])
-    prefix = '_' if sys.platform == 'darwin' else ''    # Mach-O's C symbol prefix
+    prefix = TARGETS[TARGET]['prefix']
     names = renames(module) if module in MODULES else {}
     undo = {v: k for k, v in names.items()}
     dll_main, exports = None, []
@@ -332,7 +341,7 @@ def cmake(path):
     for m in list(MODULES) + ['platform']:
         tables[m] = '${CMAKE_BINARY_DIR}/tables/%s.cpp' % m
         lines.append(f'add_custom_command(OUTPUT {q(tables[m])} COMMAND ${{Python3_EXECUTABLE}} '
-                     f'{q(os.path.join(PORT, "flags.py"))} table {m} {q(tables[m])} ${{CMAKE_NM}} '
+                     f'{q(os.path.join(PORT, "flags.py"))} --target {TARGET} table {m} {q(tables[m])} ${{CMAKE_NM}} '
                      f'"$<TARGET_OBJECTS:{target(m)}>" DEPENDS {target(m)} "$<TARGET_OBJECTS:{target(m)}>" {q(os.path.join(PORT, "flags.py"))} '
                      f'COMMAND_EXPAND_LISTS VERBATIM)')
     # the modules link in MODULES order, the executable's own last, as the DLLs loaded
@@ -364,6 +373,9 @@ def tests_cmake(q, mods, tables):
              f'COMPILE_OPTIONS "-std=gnu++17")'] + props)
 
 
+if __name__ == '__main__' and len(sys.argv) >= 3 and sys.argv[1] == '--target':
+    TARGET = sys.argv[2]
+    del sys.argv[1:3]
 if __name__ == '__main__' and len(sys.argv) == 3 and sys.argv[1] == 'cmake':
     cmake(sys.argv[2])
 elif __name__ == '__main__' and len(sys.argv) >= 5 and sys.argv[1] == 'table':
