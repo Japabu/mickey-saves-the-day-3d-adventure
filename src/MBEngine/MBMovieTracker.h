@@ -20,13 +20,11 @@ template <class K, class V, class Pr> class MBMap : public std::map<K, V, Pr, MB
 };
 
 // really IMBResource-derived; only the IMBUnknown part is used here
+// own copy: an empty view: this unit declares none of the types the interface names
 class IMBMovie : public IMBUnknown {
 };
 
-struct MBMovieEventStruct {
-    IMBMovie *movie;
-    unsigned long id;
-};
+#include "MBMovieEventStruct.h"
 
 class MBMovieTracker : public IMBEventListener {
 public:

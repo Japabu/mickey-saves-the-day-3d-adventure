@@ -10,14 +10,7 @@ extern "C" __declspec(dllimport) void __cdecl MBfree_release(void *p);
 extern "C" __declspec(dllimport) char *__cdecl MBstrcpy(char *, const char *);
 extern "C" __declspec(dllimport) unsigned int __cdecl MBstrlen(const char *);
 
-struct _RTL_CRITICAL_SECTION {
-    void *DebugInfo;
-    long LockCount;
-    long RecursionCount;
-    void *OwningThread;
-    void *LockSemaphore;
-    unsigned long SpinCount;
-};
+#include "_RTL_CRITICAL_SECTION.h"
 struct _SMALL_RECT {
     short Left;
     short Top;
@@ -81,47 +74,22 @@ public:
 extern "C" IMBUnknown *__cdecl MBComUtilAddSingleton(IMBUnknown *unk);
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 
-class MBRect {
-public:
-    MBRect(void) { left = 0; top = 0; right = 0; bottom = 0; }
-    MBRect(const MBRect &r) { left = r.left; top = r.top; right = r.right; bottom = r.bottom; }
-    long left;
-    long top;
-    long right;
-    long bottom;
-};
+#include "../MBEngine/MBRect.h"
 
-class IMBPeriodical : public IMBUnknown {
-public:
-    virtual void Idle(void) = 0;
-};
+#include "IMBPeriodical.h"
 
-class IMBPeriodicalManager : public IMBUnknown {
-public:
-    virtual void AddPeriodical(IMBPeriodical *) = 0;
-    virtual void RemovePeriodical(IMBPeriodical *) = 0;
-    virtual void DevoteTimeToPeriodicals(void) = 0;
-};
+#include "IMBPeriodicalManager.h"
 
-class IMBEventListener : public IMBUnknown {
-public:
-    virtual void ListenToEvent(long, long, void *) = 0;
-};
+#include "IMBEventListener.h"
 
-class IMBEventManager : public IMBUnknown {
-public:
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual void RemoveListener(long, IMBEventListener *) = 0; // vftable+0x18
-    virtual void RemoveListener(IMBEventListener *) = 0;       // vftable+0x14
-};
+#include "IMBEventManager.h"
 
 class IMBDebugConsole : public IMBUnknown {
 public:
     virtual void PositionWindow(MBRect) = 0;
 };
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T>
 class MBComPtr {
 public:

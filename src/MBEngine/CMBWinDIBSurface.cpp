@@ -8,12 +8,7 @@ static const MBGUID MBIID_IMBWinDIBSurface =
 
 template <class T> inline const T &MBmin(const T &a, const T &b) { return a < b ? a : b; }
 
-class IMBWinDIBSurface : public IMBUnknown {
-public:
-    virtual long CreateEmpty(unsigned long, unsigned long, MBPixelFormat) = 0;
-    virtual HBITMAP GetBitmapHandle(void) = 0;
-    virtual BITMAPINFO *GetBitmapInfo(void) = 0;
-};
+#include "IMBWinDIBSurface.h"
 
 class CMBWinDIBSurface : public IMBSurface, public IMBWinDIBSurface {
 public:

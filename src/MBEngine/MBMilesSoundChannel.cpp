@@ -1,4 +1,4 @@
-#include "MBMilesSoundChannel.h"
+#include "MBMilesSoundChannel_unit.h"
 
 // 0x100434c0 ??0MBMilesSoundChannel@@QAE@J@Z
 MBMilesSoundChannel::MBMilesSoundChannel(long channelID)

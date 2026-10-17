@@ -38,6 +38,7 @@ enum {
     SymtabFunVariable = 3
 };
 
+// own copy: adds the inline String() this unit uses (SymtabStrLiteral is not declared in symtable.h)
 class TSymtabNode {
     TSymtabNode *left;
     TSymtabNode *right;
@@ -72,6 +73,7 @@ public:
     }
 };
 
+// own copy: without symtable.h's $E stand-in static (sUnknownSymtabStatic)
 class TSymtab {
     TSymtabNode *root;
     long nodeCnt;
@@ -88,21 +90,7 @@ union TRuntimeStackItem {
     short index;
 };
 
-class TRuntimeStack {
-    TRuntimeStackItem stack[30];
-    long cursor;
-public:
-    TRuntimeStack(void);
-    ~TRuntimeStack(void);
-    int CheckOverflow(void);
-    int CheckUnderflow(void);
-    void Push(const char *str);
-    void Push(short item);
-    void Push(float item);
-    void Pop(const char **strPtr);
-    void Pop(short *itemPtr);
-    void Pop(float *itemPtr);
-};
+#include "TRuntimeStack.h"
 
 enum {
     vmRegisterCnt = 4
@@ -275,6 +263,7 @@ public:
 };
 
 // colour statics (copied from CMBFPSMonitor.h): $E21..$E68 in this unit
+// own copy: this unit uses the constructors or GetShiftCount, whose inline body here differs from MBColorMask.h (store order / code shape the matches depend on)
 class MBColorMask {
 public:
     MBColorMask(unsigned long r, unsigned long g, unsigned long b, unsigned long a) { Set(r, g, b, a); }
@@ -320,6 +309,7 @@ static MBColorMask kCM_ARGB16(0x7c00, 0x03e0, 0x001f, 0x8000);
 static MBColorMask kCM_RGB16(0xf800, 0x07e0, 0x001f, 0);
 static MBColorMask kCM_BGR16(0x001f, 0x07e0, 0xf800, 0);
 
+// own copy: this unit uses the constructor, Set or Convert, whose inline body here differs from MBColor.h (store order / code shape the matches depend on)
 class MBColor {
 public:
     MBColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) { Set(r, g, b, a); }
@@ -420,6 +410,7 @@ extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBU
 
 // smart pointer (CMBFPSMonitor.h): dtor stores 0 after Release; the cross-interface
 // _QueryInterface(const MBComPtr<U> &) is a member template
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}
@@ -492,148 +483,46 @@ private:
     T *mInterface;
 };
 
-enum IMBStreamSeekValues { kIMBStreamSeekStart = 1, kIMBStreamSeekEnd = 2, kIMBStreamSeekCurrent = 3 };
-enum IMBStreamError { kIMBStreamNoError = 0 };
+#include "IMBStreamSeekValues.h"
+#include "IMBStreamError.h"
 
-class IMBStream : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBStream; }
-    virtual bool Read(void *, unsigned long &) = 0;
-    virtual bool Write(const void *, unsigned long) = 0;
-    virtual bool Seek(long, IMBStreamSeekValues) = 0;
-    virtual unsigned long GetPosition(void) = 0;
-    virtual bool Flush(void) = 0;
-    virtual bool SetLastError(IMBStreamError) = 0;
-    virtual IMBStreamError GetLastError(void) = 0;
-    virtual unsigned long GetStreamSize(void) = 0;
-    virtual void Clone(IMBStream **) = 0;
-};
+#include "IMBStream.h"
 
-class IMBMemoryBlock : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBMemoryBlock; }
-    virtual bool Allocate(unsigned long) = 0;
-    virtual bool Grow(unsigned long) = 0;
-    virtual unsigned char *GetData(void) = 0;
-    virtual unsigned long GetSize(void) = 0;
-};
+#include "IMBMemoryBlock.h"
 
-class IMBMemStream : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBMemStream; }
-    virtual MBComPtr<IMBMemoryBlock> GetMemoryBlock(void) = 0;
-    virtual void SetMemoryBlock(const MBComPtr<IMBMemoryBlock> &) = 0;
-};
+#include "IMBMemStream.h"
 
-class IMBGameClock : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBGameClock; }
-    virtual unsigned long GetRealTime(void) = 0;
-    virtual unsigned long GetGameTime(void) = 0;
-    virtual long Pause(void) = 0;
-    virtual long Unpause(void) = 0;
-    virtual void SetTime(unsigned long) = 0;
-    virtual void AddTime(unsigned long) = 0;
-    virtual void SetMSPerSecond(long) = 0;
-};
+#include "IMBGameClock.h"
 
-class IMBPeriodical : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBPeriodical; }
-    virtual void Idle(void) = 0;
-};
+#include "IMBPeriodical.h"
 
-class IMBPeriodicalManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBPeriodicalManager; }
-    virtual void AddPeriodical(IMBPeriodical *) = 0;
-    virtual void RemovePeriodical(IMBPeriodical *) = 0;
-    virtual void DevoteTimeToPeriodicals(void) = 0;
-};
+#include "IMBPeriodicalManager.h"
 
-class IMBEventListener : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventListener; }
-    virtual void ListenToEvent(long, long, void *) = 0;
-};
+#include "IMBEventListener.h"
 
-class IMBEventManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventManager; }
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual void RemoveListener(long, IMBEventListener *) = 0; // vftable+0x18
-    virtual void RemoveListener(IMBEventListener *) = 0;       // vftable+0x14
-};
+#include "IMBEventManager.h"
 
 class IMBStreamLocator;
 
-class IMBSoundDescription : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBSoundDescription; }
-    virtual void SetStreamLocator(IMBStreamLocator *) = 0;
-    virtual void GetStreamLocator(IMBStreamLocator **) = 0;
-    virtual unsigned long GetSoundID(void) const = 0;
-};
+#include "IMBSoundDescription.h"
 
 // event data of the sound channel (-4)
-struct SoundEndedEvent {
-    IMBSoundDescription *mSoundDescription;
-    bool mCompleted;
-};
+#include "SoundEndedEvent.h"
 
 class MBSoundData;
 
-class IMBSoundManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBSoundManager; }
-    virtual void StartSound(IMBSoundDescription *) = 0;
-    virtual void QueueSound(IMBSoundDescription *) = 0;
-    virtual void StopSound(long) = 0;
-    virtual void StopChannel(long) = 0;
-    virtual void StopAllSound(void) = 0;
-    virtual bool IsPaused(void) = 0;
-    virtual bool IsChannelPaused(long) = 0;
-    virtual bool IsChannelPlaying(long) = 0;
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual bool IsSoundPlaying(long) = 0;       // vftable+0x30
-    virtual bool IsSoundPlaying(long, long) = 0; // vftable+0x2c
-    virtual bool IsSoundPlayingOrQueued(long) = 0;
-    virtual bool IsAnySoundPlaying(void) = 0;
-    virtual void Pause(void) = 0;
-    virtual void PauseChannel(long) = 0;
-    virtual void PauseSound(long) = 0;
-    virtual void Resume(void) = 0;
-    virtual void ResumeChannel(long) = 0;
-    virtual void ResumeSound(long) = 0;
-    virtual short GetMasterVolume(void) = 0;
-    virtual void SetMasterVolume(short) = 0;
-    virtual short GetChannelVolume(long) = 0;
-    virtual void SetChannelVolume(long, short) = 0;
-    virtual float GetChannelRateMultiplier(long) = 0;
-    virtual void SetChannelRateMultiplier(long, float) = 0;
-    virtual MBSoundData *GetLockedSound(long) = 0;
-    virtual void LockSound(long) = 0;
-    virtual void UnlockSound(long) = 0;
-};
+#include "IMBSoundManager.h"
 
 extern "C" {
 void MBPlaySound(const char *soundName, long loopCount);
 void MBForceSound(const char *soundName, long channelID, long loopCount);
 }
 
-struct MBPointStruct {
-    long x;
-    long y;
-};
+#include "MBPointStruct.h"
 
-struct MBPointStruct3 {
-    long x;
-    long y;
-    long z;
-};
+#include "MBPointStruct3.h"
 
+// own copy: this unit uses the default constructor (empty), whose inline body here differs from MBPoint3.h (store order / code shape the matches depend on)
 class MBPoint3 : public MBPointStruct3 {
 public:
     MBPoint3(long ax, long ay, long az) { x = ax; y = ay; z = az; }
@@ -644,24 +533,7 @@ class MBRect;
 class IMBSurface;
 class IMBObjectGroup;
 
-class IMBObject : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBObject; }
-    virtual MBPoint3 GetOffset(void) const = 0;
-    virtual MBPoint3 GetPosition(void) const = 0;
-    virtual void Place(const MBPoint3 &) = 0;
-    virtual void Move(const MBPoint3 &) = 0;
-    virtual MBRect GetBounds(void) const = 0;
-    virtual bool IsVisible(void) const = 0;
-    virtual long Show(void) = 0;
-    virtual long Hide(void) = 0;
-    virtual bool IsDirty(void) const = 0;
-    virtual void SetDirty(void) = 0;
-    virtual void ClearDirty(void) = 0;
-    virtual long Draw(IMBSurface *, MBRect &, MBRect &) const = 0;
-    virtual void GetParent(IMBObjectGroup **) const = 0;
-    virtual IMBObjectGroup *SetParent(IMBObjectGroup *) = 0;
-};
+#include "IMBObject.h"
 
 // No construct/destroy: the original instantiates std::_Construct for the map's pair
 template <class T> class MBAllocator : public std::allocator<T> {
@@ -675,71 +547,20 @@ typedef std::basic_string<char, std::char_traits<char>, MBAllocator<char> > MBSt
 
 // IMBAnim vtable (CMBAnim.h)
 class MBPoint;
-enum MBAnimationProperty { kAnimationDelay = 0 };
-enum MBSequenceProperty { kSequenceComment = 0 };
-enum MBFrameProperty { kFrameNotify = 0 };
+#include "MBAnimationProperty.h"
+#include "MBSequenceProperty.h"
+#include "MBFrameProperty.h"
 
-class IMBAnim : public IMBObject {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBAnim; }
-    virtual long Load(unsigned long, IMBStream *, bool) = 0;
-    virtual long Save(IMBStream *) = 0;
-    virtual void Clone(IMBAnim **) = 0;
-    virtual long SetAnimationProperty(MBAnimationProperty, const MBString &) = 0;
-    virtual long SetAnimationProperty(MBAnimationProperty, unsigned long &) = 0;
-    virtual long SetAnimationProperty(MBAnimationProperty, unsigned short) = 0;
-    virtual long SetAnimationProperty(MBAnimationProperty, bool) = 0;
-    virtual long SetSequenceProperty(long, MBSequenceProperty, unsigned short) = 0;
-    virtual long SetSequenceProperty(long, MBSequenceProperty, bool) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, const MBPoint &) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, const MBString &) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, unsigned long) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, unsigned short) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, bool) = 0;
-    virtual long GetAnimationProperty(MBAnimationProperty, unsigned long &) const = 0;
-    virtual long GetAnimationProperty(MBAnimationProperty, unsigned short &) const = 0;
-    virtual long GetAnimationProperty(MBAnimationProperty, bool &) const = 0;
-    virtual long GetSequenceProperty(long, MBSequenceProperty, unsigned short &) const = 0;
-    virtual long GetSequenceProperty(long, MBSequenceProperty, bool &) const = 0;
-    virtual long GetFrameProperty(long, long, MBFrameProperty, MBPoint &) const = 0;
-    virtual long GetFrameProperty(long, long, MBFrameProperty, unsigned long &) const = 0;
-    virtual long GetFrameProperty(long, long, MBFrameProperty, unsigned short &) const = 0;
-    virtual long GetFrameProperty(long, long, MBFrameProperty, bool &) const = 0;
-    virtual long UseAnimationProperty(MBAnimationProperty, bool) = 0;
-    virtual bool HasAnimationProperty(MBAnimationProperty) const = 0;
-    virtual long UseSequenceProperty(long, MBSequenceProperty, bool) = 0;
-    virtual bool HasSequenceProperty(long, MBSequenceProperty) const = 0;
-    virtual long UseFrameProperty(long, long, MBFrameProperty, bool) = 0;
-    virtual bool HasFrameProperty(long, long, MBFrameProperty) const = 0;
-    virtual void SetCastID(long, long, long) = 0;
-    virtual long GetCastID(long, long) const = 0;
-    virtual void Play(void) = 0;
-    virtual void Stop(void) = 0;
-    virtual long Pause(void) = 0;
-    virtual long Resume(void) = 0;
-    virtual bool IsPaused(void) const = 0;
-    virtual bool IsStalled(void) const = 0;
-    virtual bool IsRendering(void) const = 0;
-    virtual bool IsPlaying(void) const = 0;
-    virtual void Scale(float, float, float) = 0;
-    virtual unsigned long GetNumSequences(void) const = 0;
-    virtual long AddSequence(void) = 0;
-    virtual bool SetCurrentSequence(long) = 0;
-    virtual long GetCurrentSequenceIndex(void) const = 0;
-};
+#include "IMBAnim.h"
 
 // event data of the animation channel (-2)
-struct MBAnimEventStruct {
-    IMBAnim *anim;
-    unsigned long id;
-    long sequence;
-    long frame;
-};
+#include "MBAnimEventStruct.h"
 
 template <class K, class V, class Pr> class MBMap : public std::map<K, V, Pr, MBAllocator<V> > {
 };
 
 // MBAnimTracker.h: the anim tracker the script finds its actors with
+// own copy: AddRef is inline here: CMBScript.cpp calls it on its static tracker
 class MBAnimTracker : public IMBEventListener {
 public:
     MBAnimTracker(void);
@@ -764,43 +585,10 @@ protected:
 int CompileScript(IMBStream *inStream, IMBStream *outStream, unsigned long flags);
 
 // ---- the script object ----
-class IMBScript : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBScript; }
-    virtual bool Load(unsigned long, IMBStream *) = 0;
-    virtual void Start(void) = 0;
-    virtual void Stop(void) = 0;
-    virtual void Pause(void) = 0;
-    virtual void Resume(void) = 0;
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual bool SetScriptVariable(const char *, const char *) = 0; // vftable+0x24
-    virtual bool SetScriptVariable(const char *, double) = 0;       // vftable+0x20
-    virtual bool GetScriptVariable(const char *, const char **) = 0; // vftable+0x2c
-    virtual bool GetScriptVariable(const char *, double *) = 0;      // vftable+0x28
-    virtual bool IsStarted(void) const = 0;
-    virtual bool IsDone(void) const = 0;
-    virtual bool InBackground(void) const = 0;
-    virtual long GetID(void) const = 0;
-};
+#include "IMBScript.h"
 
 // what a script broadcasts on its channel (-6)
-struct MBScriptEvent {
-    IMBScript *script;
-    unsigned long scriptID;
-    union MBScriptEventParam {
-        struct MBScriptEventStartAnim {
-            unsigned long id;
-            unsigned long seq;
-            MBPointStruct loc;
-        } startAnim;
-        struct MBScriptEventNotifyMsg {
-            const char *msg;
-        } notifyMsg;
-        struct MBScriptEventNotifyLine {
-            unsigned long line;
-        } notifyLine;
-    } param;
-};
+#include "MBScriptEvent.h"
 
 // what the script waits for (mWaitChannel says which member is valid)
 union HCScriptWaitInfo {

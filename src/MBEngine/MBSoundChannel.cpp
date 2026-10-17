@@ -1,5 +1,5 @@
 // MBSoundChannel.cpp - MBEngine.dll MBSoundChannel.obj
-#include "MBSoundChannel.h"
+#include "MBSoundChannel_unit.h"
 
 // 0x100471a0 ??0MBSoundChannel@@QAE@J@Z
 MBSoundChannel::MBSoundChannel(long channelID)

@@ -37,47 +37,14 @@ static const MBGUID MBIID_CMBObjectGroup =
 static const MBGUID MBIID_IMBWorld =
     { 0x7978c610, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 
-class MBSize {
-public:
-    MBSize(long x, long y) { cx = x; cy = y; }
-    long cx;
-    long cy;
-};
+#include "MBSize.h"
 
-template <class T> inline const T &MBmax(const T &a, const T &b) { return a < b ? b : a; }
-template <class T> inline const T &MBmin(const T &a, const T &b) { return b < a ? b : a; }
+#include "MBMinMax.h"
 
-class MBRect {
-public:
-    MBRect(void) { left = 0; top = 0; right = 0; bottom = 0; }
-    MBRect(const MBRect &r) { left = r.left; top = r.top; right = r.right; bottom = r.bottom; }
-    MBRect &operator=(const MBRect &r) {
-        if (this != &r) { left = r.left; top = r.top; right = r.right; bottom = r.bottom; }
-        return *this;
-    }
-    long Width(void) const { return right - left; }
-    MBSize GetSize(void) const { return MBSize(Width(), Height()); }
-    void SetSize(const MBSize &s) { right = left + s.cx; bottom = top + s.cy; }
-    long Height(void) const { return bottom - top; }
-    unsigned char Intersect(const MBRect &r, MBRect &out) const {
-        if (right >= r.left && left <= r.right && bottom >= r.top && top <= r.bottom) {
-            out.left = MBmax(left, r.left);
-            out.top = MBmax(top, r.top);
-            out.right = MBmin(right, r.right);
-            out.bottom = MBmin(bottom, r.bottom);
-            return true;
-        }
-        return false;
-    }
-    void Offset(long dx, long dy) { left += dx; top += dy; right += dx; bottom += dy; }
-    long left;
-    long top;
-    long right;
-    long bottom;
-};
+#include "../MBEngine/MBRect.h"
 
-struct MBPointStruct3 { long x; long y; long z; };
-class MBPoint3 : public MBPointStruct3 {};
+#include "MBPointStruct3.h"
+#include "MBPoint3.h"
 
 class IMBSurface;
 class IMBObjectGroup;
@@ -89,41 +56,11 @@ public:
     virtual unsigned long Release(void) = 0;
 };
 
-class IMBObject : public IMBUnknown {
-public:
-    virtual MBPoint3 GetOffset(void) const = 0;
-    virtual MBPoint3 GetPosition(void) const = 0;
-    virtual void Place(const MBPoint3 &) = 0;
-    virtual void Move(const MBPoint3 &) = 0;
-    virtual MBRect GetBounds(void) const = 0;
-    virtual bool IsVisible(void) const = 0;
-    virtual long Show(void) = 0;
-    virtual long Hide(void) = 0;
-    virtual bool IsDirty(void) const = 0;
-    virtual void SetDirty(void) = 0;
-    virtual void ClearDirty(void) = 0;
-    virtual long Draw(IMBSurface *, MBRect &, MBRect &) const = 0;
-    virtual void GetParent(IMBObjectGroup **) const = 0;
-    virtual IMBObjectGroup *SetParent(IMBObjectGroup *) = 0;
-};
+#include "IMBObject.h"
 
-class IMBObjectGroup : public IMBObject {
-public:
-    virtual void GetBackground(IMBObject **) const = 0;
-    virtual void SetBackground(IMBObject *) = 0;
-    virtual void AddObject(IMBObject *) = 0;
-    virtual void RemoveObject(IMBObject *) = 0;
-    virtual void ObjectMoved(IMBObject *) = 0;
-};
+#include "IMBObjectGroup.h"
 
-class IMBWorld : public IMBUnknown {
-public:
-    virtual MBRect GetBounds(void) const = 0;
-    virtual void SetBounds(const MBRect &) = 0;
-    virtual long Draw(IMBSurface *, MBRect &, MBRect &) = 0;
-    virtual IMBObjectGroup &GetRoot(void) = 0;
-    virtual const IMBObjectGroup &GetConstRoot(void) const = 0;
-};
+#include "IMBWorld.h"
 
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 

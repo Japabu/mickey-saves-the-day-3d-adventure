@@ -71,7 +71,7 @@ unsigned long CMBFileStreamLocator::GetID(void)
 {
     unsigned long id = 0;
     if (mFile)
-        id = mFile->GetID();
+        id = mFile->Hash();
     return id;
 }
 

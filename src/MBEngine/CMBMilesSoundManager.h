@@ -64,142 +64,40 @@ public:
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 extern "C" IMBUnknown *MBComUtilAddSingleton(IMBUnknown *unk);
 
-enum IMBStreamSeekValues { kSeekDummy };
-enum IMBStreamError { kStreamErrorDummy };
+#include "IMBStreamSeekValues.h"
+#include "IMBStreamError.h"
 
-class IMBStream : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBStream; }
-    virtual bool Read(void *, unsigned long &) = 0;
-    virtual bool Write(const void *, unsigned long) = 0;
-    virtual bool Seek(long, IMBStreamSeekValues) = 0;
-    virtual unsigned long GetPosition(void) = 0;
-    virtual bool Flush(void) = 0;
-    virtual bool SetLastError(IMBStreamError) = 0;
-    virtual IMBStreamError GetLastError(void) = 0;
-    virtual unsigned long GetStreamSize(void) = 0;
-    virtual void Clone(IMBStream **) = 0;
-};
+#include "IMBStream.h"
 
 class IMBStreamLocator;
 
-class IMBSoundDescription : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBSoundDescription; }
-    virtual void SetStreamLocator(IMBStreamLocator *) = 0;
-    virtual void GetStreamLocator(IMBStreamLocator **) = 0;
-    virtual unsigned long GetSoundID(void) const = 0;
-    virtual void SetChannel(long) = 0;
-    virtual long GetChannel(void) const = 0;
-    virtual void SetLoopCount(long) = 0;
-    virtual long GetLoopCount(void) const = 0;
-    virtual void SetStreaming(bool) = 0;
-    virtual bool IsStreaming(void) const = 0;
-    virtual void SetRateMultiplier(float) = 0;
-    virtual float GetRateMultiplier(void) const = 0;
-};
+#include "IMBSoundDescription.h"
 
-class MBSoundData {
-public:
-    MBSoundData(const MBSoundData &soundData);
-    MBSoundData(unsigned char *soundData, unsigned long dataSize);
-    ~MBSoundData(void);
-    unsigned char *GetSoundData(void) const;
-    unsigned long GetDataSize(void) const;
-protected:
-    unsigned char *mSoundData;
-    unsigned long mDataSize;
-};
+#include "MBSoundData.h"
 
-class IMBSoundManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBSoundManager; }
-    virtual void StartSound(IMBSoundDescription *) = 0;
-    virtual void QueueSound(IMBSoundDescription *) = 0;
-    virtual void StopSound(long) = 0;
-    virtual void StopChannel(long) = 0;
-    virtual void StopAllSound(void) = 0;
-    virtual bool IsPaused(void) = 0;
-    virtual bool IsChannelPaused(long) = 0;
-    virtual bool IsChannelPlaying(long) = 0;
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual bool IsSoundPlaying(long) = 0;       // vftable+0x30
-    virtual bool IsSoundPlaying(long, long) = 0; // vftable+0x2c
-    virtual bool IsSoundPlayingOrQueued(long) = 0;
-    virtual bool IsAnySoundPlaying(void) = 0;
-    virtual void Pause(void) = 0;
-    virtual void PauseChannel(long) = 0;
-    virtual void PauseSound(long) = 0;
-    virtual void Resume(void) = 0;
-    virtual void ResumeChannel(long) = 0;
-    virtual void ResumeSound(long) = 0;
-    virtual short GetMasterVolume(void) = 0;
-    virtual void SetMasterVolume(short) = 0;
-    virtual short GetChannelVolume(long) = 0;
-    virtual void SetChannelVolume(long, short) = 0;
-    virtual float GetChannelRateMultiplier(long) = 0;
-    virtual void SetChannelRateMultiplier(long, float) = 0;
-    virtual MBSoundData *GetLockedSound(long) = 0;
-    virtual void LockSound(long) = 0;
-    virtual void UnlockSound(long) = 0;
-};
+#include "IMBSoundManager.h"
 
-class IMBPeriodical : public IMBUnknown {
-public:
-    virtual void Idle(void) = 0;
-};
+#include "IMBPeriodical.h"
 
-class IMBPeriodicalManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBPeriodicalManager; }
-    virtual void AddPeriodical(IMBPeriodical *) = 0;
-    virtual void RemovePeriodical(IMBPeriodical *) = 0;
-    virtual void DevoteTimeToPeriodicals(void) = 0;
-};
+#include "IMBPeriodicalManager.h"
 
-class IMBEventListener : public IMBUnknown {
-public:
-    virtual void ListenToEvent(long, long, void *) = 0;
-};
+#include "IMBEventListener.h"
 
-class IMBEventManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventManager; }
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual void RemoveListener(long, IMBEventListener *) = 0; // vftable+0x18
-    virtual void RemoveListener(IMBEventListener *) = 0;       // vftable+0x14
-};
+#include "IMBEventManager.h"
 
 class IMBMemoryBlock;
 
-class IMBResourceFile : public IMBUnknown {
-public:
-    virtual void LoadResource(unsigned long, unsigned long, IMBMemoryBlock **) = 0;
-    virtual void GetStream(unsigned long, unsigned long, IMBStream **) = 0;
-};
+#include "IMBResourceFile.h"
 
-enum MBResFileListAddLoc {
-    kResFileListFront = 1,
-    kResFileListRear = 2
-};
+#include "MBResFileListAddLoc.h"
 
-class IMBResourceFileList : public IMBResourceFile {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBResourceFileList; }
-    virtual void AddFile(IMBResourceFile *, MBResFileListAddLoc, unsigned long) = 0;
-    virtual void RemoveFile(IMBResourceFile *) = 0;
-};
+#include "IMBResourceFileList.h"
 
 struct HWND__;
 
-class IMBWinSoundManager : public IMBUnknown {
-public:
-    virtual HWND__ *GetHWND(void) = 0;
-    virtual void SetHWND(HWND__ *) = 0;
-};
+#include "IMBWinSoundManager.h"
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T>
 class MBComPtr {
 public:
@@ -259,84 +157,11 @@ public:
 template <class T> class MBList : public std::list<T, MBAllocator<T> > {
 };
 
-class MBSoundEngine {
-public:
-    MBSoundEngine(void);
-    virtual ~MBSoundEngine(void);
-    virtual bool LoadSound(IMBSoundDescription *) = 0;
-    bool HasSound(void) const;
-    void Idle(void);
-    virtual void Play(void) = 0;
-    virtual void Stop(void) = 0;
-    bool IsPaused(void) const;
-    virtual void Pause(void) = 0;
-    virtual void Resume(void) = 0;
-    short GetVolume(void) const;
-    void SetVolume(short volume);
-    float GetRateMultiplier(void) const;
-    void SetRateMultiplier(float rateMultiplier);
-    bool IsFinished(void) const;
-    long GetSoundID(void) const;
-    virtual bool IsSoundPlaying(long) const = 0;
-protected:
-    virtual bool IsSoundFinished(void) const = 0;
-    virtual void IdleSound(void) = 0;
-    virtual void VolumeChanged(void) = 0;
-    virtual void RateMultiplierChanged(void) = 0;
-    virtual void DisposeSound(void);
-    void SendSoundStartedMessage(bool completed);
-    void SendSoundEndedMessage(bool completed);
-    IMBSoundDescription *mSoundDescription;
-    float mRateMultiplier;
-    short mVolume;
-    bool mIsPaused;
-    bool mIsFinished;
-};
+#include "MBSoundEngine.h"
 
-class MBSoundChannel {
-public:
-    MBSoundChannel(long channelID);
-    virtual ~MBSoundChannel(void);
-    void StopSound(long soundID);
-    void StopSound(void);
-    void ClearQueue(void);
-    void AddSound(IMBSoundDescription *soundDescription);
-    bool IsPaused(void) const;
-    void Pause(void);
-    void Resume(void);
-    void PauseSound(long soundID);
-    void ResumeSound(long soundID);
-    virtual void Idle(void);
-    long GetChannelID(void) const;
-    bool IsFinished(void) const;
-    bool IsSoundPlayingOrQueued(long soundID);
-    bool IsSoundPlaying(long soundID);
-    short GetVolume(void) const;
-    void SetVolume(short volume);
-    void MasterVolumeChanged(short masterVolume);
-    float GetRateMultiplier(void) const;
-    void SetRateMultiplier(float rateMultiplier);
-protected:
-    void VolumeChanged(void);
-    void RateMultiplierChanged(void);
-    short ScaleVolume(short masterVolume) const;
-    virtual MBSoundEngine *CreateSoundEngine(IMBSoundDescription *) const = 0;
-    MBList<IMBSoundDescription *> mSoundQueue;
-    MBSoundEngine *mSoundEngine;
-    long mChannelID;
-    float mRateMultiplier;
-    short mVolume;
-    bool mIsPaused;
-    bool mIsFinished;
-};
+#include "MBSoundChannel.h"
 
-class MBMilesSoundChannel : public MBSoundChannel {
-public:
-    MBMilesSoundChannel(long channelID);
-    virtual ~MBMilesSoundChannel(void);
-protected:
-    virtual MBSoundEngine *CreateSoundEngine(IMBSoundDescription *soundDescription) const;
-};
+#include "MBMilesSoundChannel.h"
 
 template <class K, class V, class Pr> class MBMap : public std::map<K, V, Pr, MBAllocator<V> > {
 };

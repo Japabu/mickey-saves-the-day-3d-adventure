@@ -40,25 +40,15 @@ public:
 class IMBMemoryBlock;
 class IMBStream;
 
-enum MBResFileListAddLoc {
-    kResFileListFront = 1,
-    kResFileListRear = 2
-};
+#include "MBResFileListAddLoc.h"
 
-class IMBResourceFile : public IMBUnknown {
-public:
-    virtual void LoadResource(unsigned long, unsigned long, IMBMemoryBlock **) = 0;
-    virtual void GetStream(unsigned long, unsigned long, IMBStream **) = 0;
-};
+#include "IMBResourceFile.h"
 
-class IMBResourceFileList : public IMBResourceFile {
-public:
-    virtual void AddFile(IMBResourceFile *, MBResFileListAddLoc, unsigned long) = 0;
-    virtual void RemoveFile(IMBResourceFile *) = 0;
-};
+#include "IMBResourceFileList.h"
 
 extern "C" IMBUnknown *__cdecl MBComUtilAddSingleton(IMBUnknown *unk);
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr() : mInterface(0) {}

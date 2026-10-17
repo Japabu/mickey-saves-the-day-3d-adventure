@@ -71,86 +71,18 @@ public:
 
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 
-template <class T> inline const T &MBmax(const T &a, const T &b) { return a < b ? b : a; }
-template <class T> inline const T &MBmin(const T &a, const T &b) { return b < a ? b : a; }
+#include "MBMinMax.h"
 
-struct MBPointStruct3 {
-    long x;
-    long y;
-    long z;
-};
+#include "MBPointStruct3.h"
 
-class MBPoint3 : public MBPointStruct3 {
-public:
-    MBPoint3(long ax, long ay, long az) { x = ax; y = ay; z = az; }
-    MBPoint3(void) {}
-    MBPoint3 operator+(const MBPoint3 &p) const { return MBPoint3(x + p.x, y + p.y, z + p.z); }
-};
+#include "MBPoint3.h"
 
-class MBSize {
-public:
-    MBSize(long x, long y) { cx = x; cy = y; }
-    long cx;
-    long cy;
-};
+#include "MBSize.h"
 
-class MBRect {
-public:
-    MBRect(MBPoint3 p, MBSize s) : left(p.x), top(p.y), right(p.x + s.cx), bottom(p.y + s.cy) {}
-    MBRect(void) { left = 0; top = 0; right = 0; bottom = 0; }
-    MBRect(long l, long t, long r, long b) { left = l; top = t; right = r; bottom = b; }
-    MBRect(const MBRect &r) { left = r.left; top = r.top; right = r.right; bottom = r.bottom; }
-    MBRect &operator=(const MBRect &r) {
-        if (this != &r) { left = r.left; top = r.top; right = r.right; bottom = r.bottom; }
-        return *this;
-    }
-    long left;
-    long top;
-    long right;
-    long bottom;
-};
+#include "../MBEngine/MBRect.h"
 
 // ---- colors (header statics: every including TU has its own $E initializers) ----
-class MBColorMask {
-public:
-    MBColorMask(unsigned long r = 0, unsigned long g = 0, unsigned long b = 0, unsigned long a = 0) { Set(r, g, b, a); }
-    void Set(unsigned long redmask, unsigned long greenmask, unsigned long bluemask, unsigned long alphamask) {
-        mRedMask = redmask;
-        mBlueMask = bluemask;
-        mGreenMask = greenmask;
-        mAlphaMask = alphamask;
-        mRedShift = GetShiftCount(redmask) + GetBitCount(redmask) - 8;
-        mBlueShift = GetShiftCount(bluemask) + GetBitCount(bluemask) - 8;
-        mGreenShift = GetShiftCount(greenmask) + GetBitCount(greenmask) - 8;
-        mAlphaShift = GetShiftCount(alphamask) + GetBitCount(alphamask) - 8;
-    }
-    unsigned long mRedMask;
-    unsigned long mBlueMask;
-    unsigned long mGreenMask;
-    unsigned long mAlphaMask;
-    char mRedShift;
-    char mBlueShift;
-    char mGreenShift;
-    char mAlphaShift;
-    static unsigned char GetShiftCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (!(mask & 1)) {
-            if (count >= 32)
-                break;
-            mask >>= 1;
-            count++;
-        }
-        return count;
-    }
-    static unsigned char GetBitCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (mask) {
-            mask &= mask - 1;
-            count++;
-        }
-        return count;
-    }
-};
+#include "MBColorMask.h"
 
 static const MBColorMask kCM_RGBA32(0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 static const MBColorMask kCM_ARGB32(0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
@@ -158,6 +90,7 @@ static const MBColorMask kCM_ARGB16(0x7c00, 0x03e0, 0x001f, 0x8000);
 static const MBColorMask kCM_RGB16(0xf800, 0x07e0, 0x001f, 0);
 static const MBColorMask kCM_BGR16(0x001f, 0x07e0, 0xf800, 0);
 
+// own copy: this unit uses the constructor, Set or Convert, whose inline body here differs from MBColor.h (store order / code shape the matches depend on)
 class MBColor {
 public:
     MBColor(unsigned char r = 0, unsigned char g = 0, unsigned char b = 0, unsigned char a = 0) { mColor = 0; Set(r, g, b, a); }
@@ -208,66 +141,25 @@ static const MBColor kGrey50(128, 128, 128, 0);
 static const MBColor kGrey75(192, 192, 192, 0);
 
 
-class IMBFileSpec : public IMBUnknown {
-public:
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual void SetPath(const char *path) = 0;                             // vftable+0x10
-    virtual void SetPath(const IMBFileSpec *parent, const char *path) = 0;  // vftable+0x0c
-};
+#include "IMBFileSpec.h"
 
 class MBPoint;
 class IMBSurface;
 struct MBScreenAttributes;
-enum MBScreenState {
-    kScreenStateActive = 0,
-    kScreenStatePaused = 1,
-    kScreenStateInactive = 2
-};
+#include "MBScreenState.h"
 
-class IMBScreen : public IMBUnknown {
-public:
-    virtual void SetScreenState(MBScreenState) = 0;
-    virtual MBScreenState GetScreenState(void) = 0;
-    virtual bool CreateSurface(unsigned short, unsigned short, unsigned long, IMBSurface **) = 0;
-    virtual void GetBackBuffer(IMBSurface **) = 0;
-    virtual void Flip(void) = 0;
-    virtual unsigned short GetWidth(void) = 0;
-    virtual unsigned short GetHeight(void) = 0;
-    virtual MBRect GetGlobalBounds(void) = 0;
-    virtual MBPoint GlobalToScreenPoint(const MBPoint &) = 0;
-};
+#include "IMBScreen.h"
 
-class IMBWinScreen : public IMBScreen {
-public:
-    virtual void SetHWND(HWND) = 0;
-    virtual HWND GetHWND(void) = 0;
-    virtual bool EnterWindowedMode(unsigned short, unsigned short) = 0;
-    virtual bool EnterFullscreenMode(unsigned short, unsigned short, unsigned short) = 0;
-};
+#include "IMBWinScreen.h"
 
-class IMBScreenManager : public IMBUnknown {
-public:
-    virtual bool RequestScreen(long, MBScreenAttributes &) = 0;
-    virtual void Activate(void) = 0;
-    virtual void Deactivate(void) = 0;
-    virtual MBPoint GetGlobalMouseLocation(void) = 0;
-    virtual bool ProcessSystemEvent(void *) = 0;
-    virtual void RemoveScreen(long) = 0;
-    virtual void RemoveAllScreens(void) = 0;
-    virtual unsigned short GetNumScreens(void) = 0;
-    virtual void GetScreenByIndex(unsigned short, IMBScreen **) = 0;
-    virtual void GetScreenByID(long, IMBScreen **) = 0;
-    virtual void FindScreenContainingPoint(const MBPoint &, IMBScreen **) = 0;
-};
+#include "IMBScreenManager.h"
 
 extern "C" void MBGetScreenManager(IMBScreenManager **screenManager);
 extern "C" __declspec(dllimport) unsigned long MBstrlen(const char *string);
 
-class IMBEventManager : public IMBUnknown {
-public:
-    virtual void BroadcastEvent(long channel, long event, void *data) = 0;  // vftable+0x0c
-};
+#include "IMBEventManager.h"
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(const MBGUID &clsid) : mInterface(0) {

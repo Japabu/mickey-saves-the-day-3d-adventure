@@ -60,177 +60,34 @@ static const MBGUID MBIID_CMBStringTable =
 
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 
-template <class T> class MBComPtr {
-public:
-    MBComPtr(void) : mInterface(0) {}
-    MBComPtr(const MBGUID &clsid) : mInterface(0) {
-        IMBUnknown *unk;
-        MBComCreateInstance(0, clsid, &unk);
-        if (unk) {
-            _QueryInterface(unk);
-            unk->Release();
-        }
-    }
-    template <class U> MBComPtr(const MBComPtr<U> &p) : mInterface(0) { _QueryInterface(p); }
-    MBComPtr(const MBComPtr &p) : mInterface(p.mInterface) { if (mInterface) mInterface->AddRef(); }
-    ~MBComPtr(void) { Release(); }
-    operator T *(void) const { return mInterface; }
-    T *operator->(void) const { return mInterface; }
-    operator bool(void) const { return mInterface != 0; }
-    MBComPtr &operator=(T *p) {
-        if (mInterface != p) {
-            T *old = mInterface;
-            mInterface = p;
-            if (p) p->AddRef();
-            if (old) old->Release();
-        }
-        return *this;
-    }
-    void Release(void) {
-        do {
-            if (mInterface != 0)
-                mInterface->Release();
-        } while (0);
-        mInterface = 0;
-    }
-    void Attach(T *p) {
-        Release();
-        mInterface = p;
-    }
-    long CreateObject(const MBGUID &clsid) {
-        IMBUnknown *unk;
-        Release();
-        MBComCreateInstance(0, clsid, &unk);
-        if (unk) {
-            T *pInterface;
-            long hr = unk->QueryInterface(T::GetGUID(), (void **)&pInterface);
-            if (hr)
-                Attach(0);
-            else
-                Attach(pInterface);
-            unk->Release();
-            return hr;
-        }
-        return -2;
-    }
-private:
-    long _QueryInterface(IMBUnknown *const &p); // 0x100039a0 etc., emitted in another object
-    template <class U> long _QueryInterface(const MBComPtr<U> &p) {
-        long hr = -3;
-        if (p) {
-            T *pInterface;
-            hr = p->QueryInterface(T::GetGUID(), (void **)&pInterface);
-            if (hr) {
-                Attach(0);
-                return hr;
-            }
-            Attach(pInterface);
-            return hr;
-        }
-        *this = 0;
-        return hr;
-    }
-    T *mInterface;
-};
+#include "../MBEngine/MBComPtr.h"
 
-class IMBPeriodical : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBPeriodical; }
-    virtual void Idle(void) = 0;
-};
+#include "IMBPeriodical.h"
 
-class IMBPeriodicalManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBPeriodicalManager; }
-    virtual void AddPeriodical(IMBPeriodical *) = 0;
-    virtual void RemovePeriodical(IMBPeriodical *) = 0;
-    virtual void DevoteTimeToPeriodicals(void) = 0;
-};
+#include "IMBPeriodicalManager.h"
 
-class IMBNode : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBNode; }
-    virtual void OnStart(void) = 0;
-    virtual void OnPause(void) = 0;
-    virtual void OnResume(void) = 0;
-    virtual void OnEnd(void) = 0;
-    virtual void OnQuit(void) = 0;
-};
+#include "IMBNode.h"
 
-class IMBNodeManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBNodeManager; }
-    virtual IMBNode *GetActiveNode(void) const = 0;
-    virtual void QueuePush(MBComPtr<IMBNode>) = 0;
-    virtual void QueuePop(void) = 0;
-    virtual void QueueSwap(MBComPtr<IMBNode>) = 0;
-    virtual void QueueClear(void) = 0;
-};
+#include "IMBNodeManager.h"
 
 class IMBEventListener;
 
-class IMBEventManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventManager; }
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    virtual void RemoveListener(long, IMBEventListener *) = 0;
-    virtual void RemoveListener(IMBEventListener *) = 0;
-};
+#include "IMBEventManager.h"
 
-class IMBViewManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBViewManager; }
-    virtual void AddView(IMBView *) = 0;
-    virtual void RemoveView(IMBView *) = 0;
-    virtual void FindViewContaingPoint(IMBScreen *, const MBPoint &, IMBView **) = 0;
-};
+#include "IMBViewManager.h"
 
-struct MBScreenAttributes {
-    unsigned long width;
-    unsigned long height;
-    unsigned long depth;
-};
+#include "MBScreenAttributes.h"
 
-class IMBScreenManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBScreenManager; }
-    virtual bool RequestScreen(long, MBScreenAttributes &) = 0;
-    virtual void Activate(void) = 0;
-    virtual void Deactivate(void) = 0;
-    virtual MBPoint GetGlobalMouseLocation(void) = 0;
-    virtual bool ProcessSystemEvent(void *) = 0;
-    virtual void RemoveScreen(long) = 0;
-    virtual void RemoveAllScreens(void) = 0;
-    virtual unsigned short GetNumScreens(void) = 0;
-    virtual void GetScreenByIndex(unsigned short, IMBScreen **) = 0;
-    virtual void GetScreenByID(long, IMBScreen **) = 0;
-    virtual void FindScreenContainingPoint(const MBPoint &, IMBScreen **) = 0;
-};
+#include "IMBScreenManager.h"
 
+// own copy: a GetGUID-only view: this unit declares no MBString, MBString16 or MBLocale
 class IMBStringTable : public IMBUnknown {
 public:
     static const MBGUID &GetGUID(void) { return MBIID_IMBStringTable; }
     // Load/SetLocale/GetString/GetNamedString: not called here
 };
 
-class IMBGameEngine : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBGameEngine; }
-    virtual void Init(void) = 0;
-    virtual void ShutDown(void) = 0;
-    virtual MBComPtr<IMBNodeManager> GetNodeMgr(void) const = 0;
-    virtual long CreateScreen(IMBScreenManager *) = 0;
-    virtual void Start(void) = 0;
-    virtual void Idle(void) = 0;
-    virtual void UpdateScreen(const MBRect &) = 0;
-    virtual bool IsQuitting(void) const = 0;
-    virtual void Quit(void) = 0;
-    virtual void SetOnEngineStartupFunction(void (*)(IMBGameEngine *)) = 0;
-    virtual void SetOnEngineShutdownFunction(void (*)(IMBGameEngine *)) = 0;
-    virtual void SetOnEngineCreateScreenFunction(long (*)(IMBGameEngine *, IMBScreenManager *)) = 0;
-    virtual void GetStringTable(IMBStringTable **) = 0;
-};
+#include "IMBGameEngine.h"
 
 class CMBGameEngine : public IMBGameEngine {
 public:

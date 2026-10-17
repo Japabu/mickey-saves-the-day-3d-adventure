@@ -39,13 +39,7 @@ public:
     virtual unsigned long Release(void) = 0;
 };
 
-class IMBMemoryBlock : public IMBUnknown {
-public:
-    virtual bool Allocate(unsigned long) = 0;
-    virtual bool Grow(unsigned long) = 0;
-    virtual unsigned char *GetData(void) = 0;
-    virtual unsigned long GetSize(void) = 0;
-};
+#include "IMBMemoryBlock.h"
 
 class CMBMemoryBlock : public IMBMemoryBlock {
 public:

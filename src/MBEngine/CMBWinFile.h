@@ -56,77 +56,23 @@ public:
 
 typedef std::basic_string<char, std::char_traits<char>, MBAllocator<char> > MBString;
 
-enum IMBStreamSeekValues {
-    kIMBStreamSeekStart = 1,
-    kIMBStreamSeekEnd = 2,
-    kIMBStreamSeekCurrent = 3
-};
+#include "IMBStreamSeekValues.h"
 
-enum IMBStreamError {
-    kIMBStreamNoError = 0,
-    kIMBStreamReadError = 1,
-    kIMBStreamWriteError = 2,
-    kIMBStreamOpenError = 3,
-    kIMBStreamCloseError = 4,
-    kIMBStreamSeekError = 5,
-    kIMBStreamEOF = 6
-};
+#include "IMBStreamError.h"
 
-class IMBStream : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBStream; }
-    virtual bool Read(void *, unsigned long &) = 0;
-    virtual bool Write(const void *, unsigned long) = 0;
-    virtual bool Seek(long, IMBStreamSeekValues) = 0;
-    virtual unsigned long GetPosition(void) = 0;
-    virtual bool Flush(void) = 0;
-    virtual bool SetLastError(IMBStreamError) = 0;
-    virtual IMBStreamError GetLastError(void) = 0;
-    virtual unsigned long GetStreamSize(void) = 0;
-    virtual void Clone(IMBStream **) = 0;
-};
+#include "IMBStream.h"
 
-class IMBFileSpec : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBFileSpec; }
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual void SetPath(const char *) = 0;                       // vftable+0x10
-    virtual void SetPath(const IMBFileSpec *, const char *) = 0;  // vftable+0x0c
-    virtual MBString GetName(void) const = 0;
-    virtual MBString GetExtension(void) const = 0;
-    virtual MBString GetPath(void) const = 0;
-    virtual MBString GetTitle(void) const = 0;
-    virtual unsigned long GetType(void) const = 0;
-    virtual void GetParent(IMBFileSpec **) const = 0;
-    virtual unsigned long Hash(void) const = 0;
-};
+#include "IMBFileSpec.h"
 
-class IMBFile : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBFile; }
-    virtual bool Open(const IMBFileSpec *, unsigned long) = 0;
-    virtual void GetFileSpec(IMBFileSpec **) = 0;
-    virtual bool Close(void) = 0;
-    virtual bool SetSize(unsigned long) = 0;
-};
+#include "IMBFile.h"
 
-class IMBWinFile : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBWinFile; }
-    virtual void *GetFileHandle(void) = 0;
-};
+#include "IMBWinFile.h"
 
-class IMBMemoryBlock : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBMemoryBlock; }
-    virtual bool Allocate(unsigned long) = 0;
-    virtual bool Grow(unsigned long) = 0;
-    virtual unsigned char *GetData(void) = 0;
-    virtual unsigned long GetSize(void) = 0;
-};
+#include "IMBMemoryBlock.h"
 
 // smart pointer (as in MBSoundEngine.h: Release inline, but the inline budget
 // runs out inside an inlined CreateObject, giving out-of-line Release calls)
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T>
 class MBComPtr {
 public:

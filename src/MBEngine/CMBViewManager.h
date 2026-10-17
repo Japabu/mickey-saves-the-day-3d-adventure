@@ -22,6 +22,7 @@ template <class T> class MBVector : public std::vector<T, MBAllocator<T> > {
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 extern "C" IMBUnknown *MBComUtilAddSingleton(IMBUnknown *unk);
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}
@@ -56,11 +57,13 @@ private:
     T *mInterface;
 };
 
+// own copy: this unit defines the interface IDs in CMBViewManager.cpp, after its declarations (PDB ldata order), so the interface is declared here without GetGUID
 class IMBPeriodical : public IMBUnknown {
 public:
     virtual void Idle(void) = 0;
 };
 
+// own copy: this unit defines the interface IDs in CMBViewManager.cpp, after its declarations (PDB ldata order), so the interface is declared here without GetGUID
 class IMBPeriodicalManager : public IMBUnknown {
 public:
     virtual void AddPeriodical(IMBPeriodical *) = 0;
@@ -70,6 +73,7 @@ public:
 
 class IMBEventListener;
 
+// own copy: this unit defines the interface IDs in CMBViewManager.cpp, after its declarations (PDB ldata order), so the interface is declared here without GetGUID
 class IMBEventManager : public IMBUnknown {
 public:
     virtual void BroadcastEvent(long, long, void *) = 0;
@@ -80,6 +84,7 @@ public:
 
 struct MBScreenAttributes;
 
+// own copy: this unit defines the interface IDs in CMBViewManager.cpp, after its declarations (PDB ldata order), so the interface is declared here without GetGUID
 class IMBScreenManager : public IMBUnknown {
 public:
     virtual bool RequestScreen(long, MBScreenAttributes &) = 0;
@@ -97,6 +102,7 @@ public:
 
 extern "C" void MBGetScreenManager(IMBScreenManager **screenManager);
 
+// own copy: this unit defines the interface IDs in CMBViewManager.cpp, after its declarations (PDB ldata order), so the interface is declared here without GetGUID
 class IMBViewManager : public IMBUnknown {
 public:
     virtual void AddView(IMBView *) = 0;

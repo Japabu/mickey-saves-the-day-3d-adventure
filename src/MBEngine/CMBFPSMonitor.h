@@ -4,6 +4,7 @@
 
 // colour statics come first: their $E1..$E47 precede every other number in the TU
 // (MBColorMask/MBColor/k* copied from MBScreenUtils.h)
+// own copy: this unit uses the constructors or GetShiftCount, whose inline body here differs from MBColorMask.h (store order / code shape the matches depend on)
 class MBColorMask {
 public:
     MBColorMask(unsigned long r, unsigned long g, unsigned long b, unsigned long a) { Set(r, g, b, a); }
@@ -49,6 +50,7 @@ static MBColorMask kCM_ARGB16(0x7c00, 0x03e0, 0x001f, 0x8000);
 static MBColorMask kCM_RGB16(0xf800, 0x07e0, 0x001f, 0);
 static MBColorMask kCM_BGR16(0x001f, 0x07e0, 0xf800, 0);
 
+// own copy: this unit uses the constructor, Set or Convert, whose inline body here differs from MBColor.h (store order / code shape the matches depend on)
 class MBColor {
 public:
     MBColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) { Set(r, g, b, a); }
@@ -147,12 +149,13 @@ public:
 extern "C" IMBUnknown *MBComUtilAddSingleton(IMBUnknown *unk);
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 
-class IMBStream : public IMBUnknown {
-};
+static const MBGUID MBIID_IMBStream = { 0x8971e7d0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
+#include "IMBStream.h"
 class IMBMemoryBlock;
 struct MBRect;
 struct MBSize;
 
+// own copy: carries the sUnknownHeaderStatic $E stand-in (see NOTES.md)
 class IMBSurface : public IMBUnknown {
 public:
     // placeholder: PDB has the Make guard at $S63, one number past colours (48) + <string>
@@ -161,36 +164,21 @@ public:
     static const unsigned long sUnknownHeaderStatic;
 };
 
-class IMBScreen : public IMBUnknown {
-public:
-    virtual void SetScreenState(long) = 0;
-    virtual long GetScreenState(void) = 0;
-    virtual unsigned char CreateSurface(unsigned short, unsigned short, unsigned long, IMBSurface **) = 0;
-    virtual void GetBackBuffer(IMBSurface **) = 0;
-};
+static const MBGUID MBIID_IMBScreen = { 0x79d783b0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
+#include "IMBScreen.h"
 
-class IMBEventListener : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventListener; }
-    virtual void ListenToEvent(long, long, void *) = 0;
-};
+#include "IMBEventListener.h"
 
-class IMBEventManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventManager; }
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual void RemoveListener(long, IMBEventListener *) = 0; // vftable+0x18
-    virtual void RemoveListener(IMBEventListener *) = 0;       // vftable+0x14
-};
+#include "IMBEventManager.h"
 
+// own copy: without GetGUID: this unit's MBComPtr<IMBResourceFileList> queries with the inherited IMBUnknown::GetGUID (MBIID_IMBUnknown), as the original does
 class IMBResourceFileList : public IMBUnknown {
 public:
     virtual void LoadResource(unsigned long, unsigned long, IMBMemoryBlock **) = 0;
     virtual void GetStream(unsigned long, unsigned long, IMBStream **) = 0;
 };
 
+// own copy: without GetGUID: this unit's MBComPtr<IMBFont> queries with the inherited IMBUnknown::GetGUID (MBIID_IMBUnknown), as the original does
 class IMBFont : public IMBUnknown {
 public:
     // VC6 lays out overloaded virtuals in reverse declaration order
@@ -202,6 +190,7 @@ public:
     virtual long GetTextSize(IMBSurface *, const char *, unsigned long, MBSize &) = 0;
 };
 
+// own copy: derives from this unit's own IMBFont
 class IMBBitmapFont : public IMBFont {
 public:
     static const MBGUID &GetGUID(void) { return MBIID_IMBBitmapFont; }
@@ -209,16 +198,9 @@ public:
     virtual long LoadCharacterMap(unsigned long, IMBStream *) = 0;
 };
 
-class IMBFPSMonitor : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBFPSMonitor; }
-    virtual void SetEventLoopTime(unsigned long) = 0;
-    virtual void SetDrawLoopTime(unsigned long) = 0;
-    virtual unsigned long GetEventLoopFPS(void) const = 0;
-    virtual unsigned long GetDrawLoopFPS(void) const = 0;
-    virtual void Enable(bool) = 0;
-};
+#include "IMBFPSMonitor.h"
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T>
 class MBComPtr {
 public:

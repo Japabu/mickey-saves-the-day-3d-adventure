@@ -36,17 +36,9 @@ public:
     virtual unsigned long Release(void) = 0;
 };
 
-class IMBPeriodical : public IMBUnknown {
-public:
-    virtual void Idle(void) = 0;
-};
+#include "IMBPeriodical.h"
 
-class IMBPeriodicalManager : public IMBUnknown {
-public:
-    virtual void AddPeriodical(IMBPeriodical *) = 0;
-    virtual void RemovePeriodical(IMBPeriodical *) = 0;
-    virtual void DevoteTimeToPeriodicals(void) = 0;
-};
+#include "IMBPeriodicalManager.h"
 
 extern "C" IMBUnknown *__cdecl MBComUtilAddSingleton(IMBUnknown *unk);
 

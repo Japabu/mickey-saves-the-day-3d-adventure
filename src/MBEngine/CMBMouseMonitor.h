@@ -24,46 +24,7 @@ struct MBGUID {
 
 // Color constants: internal-linkage objects defined in the colour header; each
 // TU that includes it gets 16 dynamic initializers ($E1..$E47, PDB ldata).
-class MBColorMask {
-public:
-    MBColorMask(unsigned long r, unsigned long g, unsigned long b, unsigned long a) { Set(r, g, b, a); }
-    void Set(unsigned long redmask, unsigned long greenmask, unsigned long bluemask, unsigned long alphamask) {
-        mRedMask = redmask;
-        mBlueMask = bluemask;
-        mGreenMask = greenmask;
-        mAlphaMask = alphamask;
-        mRedShift = GetShiftCount(redmask) + GetBitCount(redmask) - 8;
-        mBlueShift = GetShiftCount(bluemask) + GetBitCount(bluemask) - 8;
-        mGreenShift = GetShiftCount(greenmask) + GetBitCount(greenmask) - 8;
-        mAlphaShift = GetShiftCount(alphamask) + GetBitCount(alphamask) - 8;
-    }
-    unsigned long mRedMask;
-    unsigned long mBlueMask;
-    unsigned long mGreenMask;
-    unsigned long mAlphaMask;
-    char mRedShift;
-    char mBlueShift;
-    char mGreenShift;
-    char mAlphaShift;
-    static unsigned char GetShiftCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (!(mask & 1)) {
-            if (count >= 32)
-                break;
-            mask >>= 1;
-            count++;
-        }
-        return count;
-    }
-    static unsigned char GetBitCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (mask) {
-            mask &= mask - 1;
-            count++;
-        }
-        return count;
-    }
-};
+#include "MBColorMask.h"
 
 const MBColorMask kCM_RGBA32(0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 const MBColorMask kCM_ARGB32(0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
@@ -71,42 +32,7 @@ const MBColorMask kCM_ARGB16(0x7c00, 0x03e0, 0x001f, 0x8000);
 const MBColorMask kCM_RGB16(0xf800, 0x07e0, 0x001f, 0);
 const MBColorMask kCM_BGR16(0x001f, 0x07e0, 0xf800, 0);
 
-class MBColor {
-public:
-    MBColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) { Set(r, g, b, a); }
-    void Set(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-        mRed = r;
-        mBlue = b;
-        mGreen = g;
-        mAlpha = a;
-        mColor = Convert(kCM_ARGB32);
-    }
-    unsigned long Convert(MBColorMask mask) {
-        mColor = 0;
-        if (mask.mRedShift > 0)
-            mColor |= (mRed << mask.mRedShift) & mask.mRedMask;
-        else
-            mColor |= (mRed >> (char)-mask.mRedShift) & mask.mRedMask;
-        if (mask.mGreenShift > 0)
-            mColor |= (mGreen << mask.mGreenShift) & mask.mGreenMask;
-        else
-            mColor |= (mGreen >> (char)-mask.mGreenShift) & mask.mGreenMask;
-        if (mask.mBlueShift > 0)
-            mColor |= (mBlue << mask.mBlueShift) & mask.mBlueMask;
-        else
-            mColor |= (mBlue >> (char)-mask.mBlueShift) & mask.mBlueMask;
-        if (mask.mAlphaShift > 0)
-            mColor |= (mAlpha << mask.mAlphaShift) & mask.mAlphaMask;
-        else
-            mColor |= (mAlpha >> (char)-mask.mAlphaShift) & mask.mAlphaMask;
-        return mColor;
-    }
-    unsigned char mRed;
-    unsigned char mGreen;
-    unsigned char mBlue;
-    unsigned char mAlpha;
-    unsigned long mColor;
-};
+#include "../MBEngine/MBColor.h"
 
 const MBColor kWhite(255, 255, 255, 0);
 const MBColor kBlack(0, 0, 0, 0);
@@ -126,29 +52,20 @@ const MBColor kGrey75(192, 192, 192, 0);
 #include <algorithm>
 #include <functional>
 
-struct MBPointStruct {
-    long x;
-    long y;
-};
+#include "MBPointStruct.h"
 
+// own copy: this unit uses the default constructor (x = y = 0), whose inline body here differs from MBPoint.h (store order / code shape the matches depend on)
 class MBPoint : public MBPointStruct {
 public:
     MBPoint(void) { x = y = 0; }
     MBPoint(long ax, long ay) { x = ax; y = ay; }
 };
 
-struct MBPointStruct3 {
-    long x;
-    long y;
-    long z;
-};
+#include "MBPointStruct3.h"
 
-class MBPoint3 : public MBPointStruct3 {
-public:
-    MBPoint3(long ax, long ay, long az) { x = ax; y = ay; z = az; }
-    MBPoint3(void) { x = y = z = 0; }
-};
+#include "MBPoint3.h"
 
+// own copy: built on this unit's own MBPoint
 class MBRect {
 public:
     MBRect(void) { left = 0; top = 0; right = 0; bottom = 0; }
@@ -213,6 +130,7 @@ template <class T> class MBVector : public std::vector<T, MBAllocator<T> > {
 
 class IMBMouseable;
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}
@@ -297,76 +215,20 @@ private:
 class IMBSurface;
 class IMBObjectGroup;
 
-class IMBObject : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBObject; }
-    virtual MBPoint3 GetOffset(void) const = 0;
-    virtual MBPoint3 GetPosition(void) const = 0;
-    virtual void Place(const MBPoint3 &) = 0;
-    virtual void Move(const MBPoint3 &) = 0;
-    virtual MBRect GetBounds(void) const = 0;
-    virtual bool IsVisible(void) const = 0;
-    virtual long Show(void) = 0;
-    virtual long Hide(void) = 0;
-    virtual bool IsDirty(void) const = 0;
-    virtual void SetDirty(void) = 0;
-    virtual void ClearDirty(void) = 0;
-    virtual long Draw(IMBSurface *, MBRect &, MBRect &) const = 0;
-    virtual void GetParent(IMBObjectGroup **) const = 0;
-    virtual IMBObjectGroup *SetParent(IMBObjectGroup *) = 0;
-};
+#include "IMBObject.h"
 
 class IMBScreen;
-class IMBWorld : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBWorld; }
-};
+#include "IMBWorld.h"
 
-class IMBEventListener : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventListener; }
-    virtual void ListenToEvent(long, long, void *) = 0;
-};
+#include "IMBEventListener.h"
 
-class IMBEventManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventManager; }
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual void RemoveListener(long, IMBEventListener *) = 0; // vftable+0x18
-    virtual void RemoveListener(IMBEventListener *) = 0;       // vftable+0x14
-};
+#include "IMBEventManager.h"
 
-class IMBMouseable : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBMouseable; }
-    virtual bool IsRolledOver(const MBPoint &) const = 0;
-    virtual void EnterRollover(const MBPoint &) = 0;
-    virtual void WithinRollover(const MBPoint &) = 0;
-    virtual void LeaveRollover(void) = 0;
-    virtual bool IsClicked(const MBPoint &, short) const = 0;
-    virtual bool IsTrackingClick(void) const = 0;
-    virtual void StartTrackingClick(const MBPoint &, short) = 0;
-    virtual void TrackClick(const MBPoint &) = 0;
-    virtual void StopTrackingClick(const MBPoint &, short) = 0;
-    virtual bool IsActive(void) const = 0;
-    virtual void Activate(void) = 0;
-    virtual void Deactivate(void) = 0;
-    virtual void SetPixelTest(bool) = 0;
-    virtual bool GetPixelTest(void) = 0;
-};
+#include "IMBMouseable.h"
 
-class IMBMouseMonitor : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBMouseMonitor; }
-    virtual void AddMouseable(IMBMouseable *) = 0;
-    virtual void RemoveMouseable(IMBMouseable *) = 0;
-    virtual void Activate(void) = 0;
-    virtual void Deactivate(void) = 0;
-    virtual bool IsActive(void) = 0;
-};
+#include "IMBMouseMonitor.h"
 
+// own copy: built on this unit's own MBPoint
 struct MBMouseEvent {
     MBPoint mMousePos;
     IMBScreen *mScreen;

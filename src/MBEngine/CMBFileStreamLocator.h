@@ -36,6 +36,7 @@ public:
 class IMBStream;
 
 // only the slot used here is named (vtable +0x2c)
+// own copy: this unit has no MBString for the slots +0x0c..+0x28, which it does not call
 class IMBFileSpec : public IMBUnknown {
 public:
     virtual void v0c(void) = 0;
@@ -46,12 +47,13 @@ public:
     virtual void v20(void) = 0;
     virtual void v24(void) = 0;
     virtual void v28(void) = 0;
-    virtual unsigned long GetID(void) = 0;
+    virtual unsigned long Hash(void) const = 0;
 };
 
 extern "C" long __cdecl MBOpenFile(IMBFileSpec *spec, unsigned long mode, IMBStream **stream);
 
 // smart pointer (subset of the one in CMBResourceStreamLocator.h)
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T>
 class MBComPtr {
 public:
@@ -70,6 +72,7 @@ private:
     T *mInterface;
 };
 
+// own copy: carries the sUnknownStreamLocatorStatic $E stand-in (see NOTES.md)
 class IMBStreamLocator : public IMBUnknown {
 public:
     virtual long GetStream(IMBStream **stream) = 0;
@@ -81,6 +84,7 @@ public:
     static const unsigned long sUnknownStreamLocatorStatic;
 };
 
+// own copy: derives from this unit's own IMBStreamLocator
 class IMBFileStreamLocator : public IMBStreamLocator {
 public:
     virtual long SetFile(IMBFileSpec *file) = 0;

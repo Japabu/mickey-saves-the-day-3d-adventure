@@ -25,46 +25,7 @@ struct MBGUID {
 
 // Color constants: internal-linkage objects defined in the colour header; each
 // TU that includes it gets 16 dynamic initializers ($E1..$E47, PDB ldata).
-class MBColorMask {
-public:
-    MBColorMask(unsigned long r, unsigned long g, unsigned long b, unsigned long a) { Set(r, g, b, a); }
-    void Set(unsigned long redmask, unsigned long greenmask, unsigned long bluemask, unsigned long alphamask) {
-        mRedMask = redmask;
-        mBlueMask = bluemask;
-        mGreenMask = greenmask;
-        mAlphaMask = alphamask;
-        mRedShift = GetShiftCount(redmask) + GetBitCount(redmask) - 8;
-        mBlueShift = GetShiftCount(bluemask) + GetBitCount(bluemask) - 8;
-        mGreenShift = GetShiftCount(greenmask) + GetBitCount(greenmask) - 8;
-        mAlphaShift = GetShiftCount(alphamask) + GetBitCount(alphamask) - 8;
-    }
-    unsigned long mRedMask;
-    unsigned long mBlueMask;
-    unsigned long mGreenMask;
-    unsigned long mAlphaMask;
-    char mRedShift;
-    char mBlueShift;
-    char mGreenShift;
-    char mAlphaShift;
-    static unsigned char GetShiftCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (!(mask & 1)) {
-            if (count >= 32)
-                break;
-            mask >>= 1;
-            count++;
-        }
-        return count;
-    }
-    static unsigned char GetBitCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (mask) {
-            mask &= mask - 1;
-            count++;
-        }
-        return count;
-    }
-};
+#include "MBColorMask.h"
 
 const MBColorMask kCM_RGBA32(0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 const MBColorMask kCM_ARGB32(0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
@@ -72,42 +33,7 @@ const MBColorMask kCM_ARGB16(0x7c00, 0x03e0, 0x001f, 0x8000);
 const MBColorMask kCM_RGB16(0xf800, 0x07e0, 0x001f, 0);
 const MBColorMask kCM_BGR16(0x001f, 0x07e0, 0xf800, 0);
 
-class MBColor {
-public:
-    MBColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) { Set(r, g, b, a); }
-    void Set(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-        mRed = r;
-        mBlue = b;
-        mGreen = g;
-        mAlpha = a;
-        mColor = Convert(kCM_ARGB32);
-    }
-    unsigned long Convert(MBColorMask mask) {
-        mColor = 0;
-        if (mask.mRedShift > 0)
-            mColor |= (mRed << mask.mRedShift) & mask.mRedMask;
-        else
-            mColor |= (mRed >> (char)-mask.mRedShift) & mask.mRedMask;
-        if (mask.mGreenShift > 0)
-            mColor |= (mGreen << mask.mGreenShift) & mask.mGreenMask;
-        else
-            mColor |= (mGreen >> (char)-mask.mGreenShift) & mask.mGreenMask;
-        if (mask.mBlueShift > 0)
-            mColor |= (mBlue << mask.mBlueShift) & mask.mBlueMask;
-        else
-            mColor |= (mBlue >> (char)-mask.mBlueShift) & mask.mBlueMask;
-        if (mask.mAlphaShift > 0)
-            mColor |= (mAlpha << mask.mAlphaShift) & mask.mAlphaMask;
-        else
-            mColor |= (mAlpha >> (char)-mask.mAlphaShift) & mask.mAlphaMask;
-        return mColor;
-    }
-    unsigned char mRed;
-    unsigned char mGreen;
-    unsigned char mBlue;
-    unsigned char mAlpha;
-    unsigned long mColor;
-};
+#include "../MBEngine/MBColor.h"
 
 const MBColor kWhite(255, 255, 255, 0);
 const MBColor kBlack(0, 0, 0, 0);
@@ -121,44 +47,13 @@ const MBColor kGrey25(64, 64, 64, 0);
 const MBColor kGrey50(128, 128, 128, 0);
 const MBColor kGrey75(192, 192, 192, 0);
 
-struct MBPointStruct {
-    long x;
-    long y;
-};
+#include "MBPointStruct.h"
 
-class MBPoint : public MBPointStruct {
-public:
-    MBPoint(void) { x = 0; y = 0; }
-    MBPoint(long ax, long ay) { x = ax; y = ay; }
-    MBPoint operator+(const MBPoint &p) const { return MBPoint(x + p.x, y + p.y); }
-    MBPoint operator-(const MBPoint &p) const { return MBPoint(x - p.x, y - p.y); }
-};
+#include "../MBEngine/MBPoint.h"
 
-class MBSize {
-public:
-    MBSize(long x, long y) { cx = x; cy = y; }
-    long cx;
-    long cy;
-};
+#include "MBSize.h"
 
-class MBRect {
-public:
-    MBRect(void) { left = 0; top = 0; right = 0; bottom = 0; }
-    MBRect(long l, long t, long r, long b) { left = l; top = t; right = r; bottom = b; }
-    MBRect(const MBPoint &p, const MBSize &s) { left = p.x; top = p.y; right = p.x + s.cx; bottom = p.y + s.cy; }
-    MBRect(const MBRect &r) { left = r.left; top = r.top; right = r.right; bottom = r.bottom; }
-    MBRect &operator=(const MBRect &r) {
-        if (this != &r) { left = r.left; top = r.top; right = r.right; bottom = r.bottom; }
-        return *this;
-    }
-    bool Contains(const MBPoint &p) const {
-        return left <= p.x && top <= p.y && right >= p.x && bottom >= p.y;
-    }
-    long left;
-    long top;
-    long right;
-    long bottom;
-};
+#include "../MBEngine/MBRect.h"
 
 
 class IMBUnknown {
@@ -225,6 +120,7 @@ template <class T> class MBList : public std::list<T, MBAllocator<T> > {
 template <class T> class MBQueue : public std::queue<T, std::deque<T, MBAllocator<T> > > {
 };
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}
@@ -271,48 +167,17 @@ private:
     T *mInterface;
 };
 
-class IMBPeriodical : public IMBUnknown {
-public:
-    virtual void Idle(void) = 0;
-};
+#include "IMBPeriodical.h"
 
-class IMBPeriodicalManager : public IMBUnknown {
-public:
-    virtual void AddPeriodical(IMBPeriodical *) = 0;
-    virtual void RemovePeriodical(IMBPeriodical *) = 0;
-    virtual void DevoteTimeToPeriodicals(void) = 0;
-};
+#include "IMBPeriodicalManager.h"
 
-class IMBEventListener : public IMBUnknown {
-public:
-    virtual void ListenToEvent(long, long, void *) = 0;
-};
+#include "IMBEventListener.h"
 
-class IMBEventManager : public IMBUnknown {
-public:
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    virtual void RemoveListener(long, IMBEventListener *) = 0;
-    virtual void RemoveListener(IMBEventListener *) = 0;
-};
+#include "IMBEventManager.h"
 
-class IMBNode : public IMBUnknown {
-public:
-    virtual void OnStart(void) = 0;
-    virtual void OnPause(void) = 0;
-    virtual void OnResume(void) = 0;
-    virtual void OnEnd(void) = 0;
-    virtual void OnQuit(void) = 0;
-};
+#include "IMBNode.h"
 
-class IMBNodeManager : public IMBUnknown {
-public:
-    virtual IMBNode *GetActiveNode(void) const = 0;
-    virtual void QueuePush(MBComPtr<IMBNode>) = 0;
-    virtual void QueuePop(void) = 0;
-    virtual void QueueSwap(MBComPtr<IMBNode>) = 0;
-    virtual void QueueClear(void) = 0;
-};
+#include "IMBNodeManager.h"
 
 enum NodeActionType {
     kNodeActionNone = 0,

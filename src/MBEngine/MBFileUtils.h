@@ -51,21 +51,9 @@ typedef std::basic_string<char, std::char_traits<char>, MBAllocator<char> > MBSt
 template <class T> class MBVector : public std::vector<T, MBAllocator<T> > {
 };
 
-class IMBFileSpec : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBFileSpec; }
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual void SetPath(const char *) = 0;                       // vftable+0x10
-    virtual void SetPath(const IMBFileSpec *, const char *) = 0;  // vftable+0x0c
-    virtual MBString GetName(void) const = 0;
-    virtual MBString GetExtension(void) const = 0;
-    virtual MBString GetPath(void) const = 0;
-    virtual MBString GetTitle(void) const = 0;
-    virtual unsigned long GetType(void) const = 0;
-    virtual void GetParent(IMBFileSpec **) const = 0;
-    virtual unsigned long Hash(void) const = 0;
-};
+#include "IMBFileSpec.h"
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}

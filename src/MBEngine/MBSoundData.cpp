@@ -1,4 +1,4 @@
-#include "MBSoundData.h"
+#include "MBSoundData_unit.h"
 
 // 0x10047790 ??0MBSoundData@@QAE@PAEK@Z
 MBSoundData::MBSoundData(unsigned char *soundData, unsigned long dataSize) : mSoundData(soundData), mDataSize(dataSize)

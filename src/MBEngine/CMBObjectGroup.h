@@ -48,30 +48,16 @@ public:
 template <class K, class V, class Pr> class MBMultimap : public std::multimap<K, V, Pr, MBAllocator<V> > {
 };
 
-template <class T> inline const T &MBmax(const T &a, const T &b) { return a < b ? b : a; }
-template <class T> inline const T &MBmin(const T &a, const T &b) { return b < a ? b : a; }
+#include "MBMinMax.h"
 
-class MBSize {
-public:
-    MBSize(long x, long y) { cx = x; cy = y; }
-    long cx;
-    long cy;
-};
+#include "MBSize.h"
 
-struct MBPointStruct3 {
-    long x;
-    long y;
-    long z;
-};
+#include "MBPointStruct3.h"
 
-class MBPoint3 : public MBPointStruct3 {
-public:
-    MBPoint3(long ax, long ay, long az) { x = ax; y = ay; z = az; }
-    MBPoint3(void) { x = y = z = 0; }
-    MBPoint3 &operator+=(const MBPoint3 &p) { x += p.x; y += p.y; z += p.z; return *this; }
-};
+#include "MBPoint3.h"
 
 // No user operator=: Draw and ClipRectsToObject copy rects without a self check.
+// own copy: no user operator=: this unit's assignments copy memberwise
 class MBRect {
 public:
     MBRect(void) { left = 0; top = 0; right = 0; bottom = 0; }
@@ -114,32 +100,9 @@ public:
     virtual unsigned long Release(void) = 0;
 };
 
-class IMBObject : public IMBUnknown {
-public:
-    virtual MBPoint3 GetOffset(void) const = 0;
-    virtual MBPoint3 GetPosition(void) const = 0;
-    virtual void Place(const MBPoint3 &) = 0;
-    virtual void Move(const MBPoint3 &) = 0;
-    virtual MBRect GetBounds(void) const = 0;
-    virtual bool IsVisible(void) const = 0;
-    virtual long Show(void) = 0;
-    virtual long Hide(void) = 0;
-    virtual bool IsDirty(void) const = 0;
-    virtual void SetDirty(void) = 0;
-    virtual void ClearDirty(void) = 0;
-    virtual long Draw(IMBSurface *, MBRect &, MBRect &) const = 0;
-    virtual void GetParent(IMBObjectGroup **) const = 0;
-    virtual IMBObjectGroup *SetParent(IMBObjectGroup *) = 0;
-};
+#include "IMBObject.h"
 
-class IMBObjectGroup : public IMBObject {
-public:
-    virtual void GetBackground(IMBObject **) const = 0;
-    virtual void SetBackground(IMBObject *) = 0;
-    virtual void AddObject(IMBObject *) = 0;
-    virtual void RemoveObject(IMBObject *) = 0;
-    virtual void ObjectMoved(IMBObject *) = 0;
-};
+#include "IMBObjectGroup.h"
 
 typedef MBMultimap<long, IMBObject *, std::less<long> > MBObjectMap;
 

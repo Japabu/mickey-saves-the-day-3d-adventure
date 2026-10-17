@@ -31,6 +31,7 @@ extern "C" MBMsgBoxButtonID MBMsgBox(const MBString16 &text, unsigned long flags
 
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T>
 class MBComPtr {
 public:
@@ -82,21 +83,11 @@ private:
 
 class IMBEventListener;
 
-class IMBEventManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventManager; }
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    virtual void RemoveListener(long, IMBEventListener *) = 0;
-    virtual void RemoveListener(IMBEventListener *) = 0;
-};
+#include "IMBEventManager.h"
 
-class IMBWinScreen : public IMBScreen {
-public:
-    virtual void SetHWND(HWND) = 0;
-    virtual HWND GetHWND(void) = 0;
-};
+#include "IMBWinScreen.h"
 
+// own copy: a GetGUID-only view: this unit declares no MBDDEnumCallback or DirectDraw types
 class IMBDirectXScreen : public IMBWinScreen {
 public:
     static const MBGUID &GetGUID(void) { return MBIID_IMBDirectXScreen; }

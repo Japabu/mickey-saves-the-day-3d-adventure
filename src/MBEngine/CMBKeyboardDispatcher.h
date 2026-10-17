@@ -46,19 +46,9 @@ public:
 extern "C" IMBUnknown *MBComUtilAddSingleton(IMBUnknown *unk);
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 
-class IMBEventListener : public IMBUnknown {
-public:
-    virtual void ListenToEvent(long, long, void *) = 0;
-};
+#include "IMBEventListener.h"
 
-class IMBEventManager : public IMBUnknown {
-public:
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual void RemoveListener(long, IMBEventListener *) = 0; // vftable+0x18
-    virtual void RemoveListener(IMBEventListener *) = 0;       // vftable+0x14
-};
+#include "IMBEventManager.h"
 
 class IMBKeyboardTarget : public IMBUnknown {
 public:
@@ -72,6 +62,7 @@ public:
     virtual bool SwitchToTarget(IMBKeyboardTarget *) = 0;
 };
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T>
 class MBComPtr {
 public:

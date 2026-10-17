@@ -4,34 +4,7 @@ IMBStringTable *SimpleNode::sStringTable = 0;
 MBLocale SimpleNode::sLocale;
 
 // The engine's resource databases: one Database per zip or directory, keyed by name hash.
-class DatabaseMgr {
-    class Database {
-    public:
-        Database(IMBResourceFile *resFile);
-        unsigned long AddDBRef(void);
-        unsigned long ReleaseDBRef(void);
-    protected:
-        MBComPtr<IMBResourceFile> mResFile;
-        unsigned long mCount;
-    };
-    typedef MBMultimap<unsigned long, Database *, std::less<unsigned long> > DatabaseMap;
-public:
-    bool Initialize(const MBString &cdPath, const MBString &hdPath);
-    bool AddDatabase(const char *name);
-    bool RemoveDatabase(const char *name);
-    ~DatabaseMgr(void)
-    {
-        for (DatabaseMap::iterator it = theMap.begin(); it != theMap.end(); it++)
-            delete (*it).second;
-        theMap.erase(theMap.begin(), theMap.end());
-    }
-    DatabaseMap theMap;
-    MBComPtr<IMBFileSpec> mCDPath;
-    MBComPtr<IMBFileSpec> mHDPath;
-protected:
-    bool AddZipDatabase(IMBFileSpec *parentPath, const char *name);
-    bool AddDirDatabase(IMBFileSpec *parentPath, const char *name);
-};
+#include "../MBEngine/DatabaseMgr.h"
 
 // EQUIV 0x10003be0 ??0SimpleNode@@QAE@PAVIMBGameEngine@@_N@Z: reviewed: inline choice of the same helper: the original calls MBComPtr::Release out of line inside mView.CreateObject and in the world pointer assignment, VC6 inlines them and places the blocks differently; the aligned call sequences agree. Was: inline budget: the original calls MBComPtr<IMBView>::Release out of line inside mView.CreateObject (ours inlines it); rest of the body matches
 SimpleNode::SimpleNode(IMBGameEngine *engine, bool enableMessageRouting)
@@ -581,7 +554,7 @@ DatabaseMgr::Database::Database(IMBResourceFile *resFile) : mResFile(resFile)
     mCount = 0;
     MBComPtr<IMBResourceFileList> mgr;
     mgr.CreateObject(MBIID_CMBResourceMgr);
-    mgr->AddFile(resFile, kMBResFileListAddLast, 0);
+    mgr->AddFile(resFile, kResFileListFront, 0);
 }
 
 // 0x100059a0 ?AddDBRef@Database@DatabaseMgr@@QAEKXZ

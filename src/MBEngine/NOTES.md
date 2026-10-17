@@ -14,7 +14,11 @@ unit named in brackets. Add a line when you find a new pattern; keep it short.
   the 16 bytes from the DLL (`match.Image(...).u32(va)`, addresses from
   `pdbtypes.py data`). Known: CMBKeyboardDispatcher.h (event manager/listener,
   keyboard), CMBMemoryBlock.h, CMBResourceStreamLocator.cpp (`MBIID_CMBResourceMgr`).
-- `MBPoint3`, `IMBObject`, `IMBObjectGroup` (vtable order), `CMBObject` layout: CMBObject.h.
+- Classes declared in more than one unit have one header each, `<Class>.h` (interfaces, MBPoint/MBRect/
+  MBColor..., the owned classes; `<X>_unit.h` holds the rest of a unit header whose name is a class's).
+  Include it where the declaration goes; it needs MBGUID, IMBUnknown and the `MBIID_*` its GetGUID returns
+  declared first (still per unit, in the unit's .rdata order), as its first comment lists. A copy marked
+  `// own copy:` is a second version this unit's matches depend on; keep it.
 
 ## Code shapes
 - `Make<C>` (not a singleton): `IMBUnknown *p = new C; if (p) p->AddRef(); return p;`
@@ -66,7 +70,7 @@ unit named in brackets. Add a line when you find a new pattern; keep it short.
 - Scalar deleting dtor with `test esi, esi` before `MBfree_release`: the unit's inline
   `operator delete` has `if (p)` [MBMilesStreamingSoundEngine].
 - Miles (mss32) calls: `extern "C" __declspec(dllimport) ... __stdcall AIL_*`, `HSTREAM` =
-  `_STREAM *`; declarations in MBMilesStreamingSoundEngine.h [MBMilesStreamingSoundEngine].
+  `_STREAM *`; declarations in MBMilesStreamingSoundEngine_unit.h [MBMilesStreamingSoundEngine].
 - `bool r = false; if (a == b) r = true; return r;` gives the `xor bl,bl; mov al,1; je`
   shape [MBMilesStreamingSoundEngine].
 - `??_G` with `test esi,esi` before `MBfree_release`: `operator delete(void *p) { if (p) MBfree_release(p); }` [MBSoundEngine].
@@ -133,7 +137,7 @@ unit named in brackets. Add a line when you find a new pattern; keep it short.
 - Inline helper failure tails: `if (!mData) { create } else if (mData->Grow()) {...; return true;} SetLastError; return false;`
   keeps the create-path dtor before SetLastError and the original block order [CMBMemFile].
 - The original `MBAllocator` has no `construct`/`destroy` (PDB lists none): units whose containers emit
-  `std::_Construct` out of line need an allocator without them (MBAnimSequence.h, MBAnimTracker.h) [MBAnimSequence].
+  `std::_Construct` out of line need an allocator without them (MBAnimSequence_unit.h, MBAnimTracker_unit.h) [MBAnimSequence].
 - `std::map` code with `_Lockit` in `_Inc`/`_Dec`/`_Lbound` needs `/MT` (`_MT` enables the locks) [MBAnimTracker].
 - Out-of-line range `_Tree::erase` from a dtor: `if (m.size() > 0) m.clear();` (direct `erase(begin(), end())`
   inlines it) [MBAnimTracker].

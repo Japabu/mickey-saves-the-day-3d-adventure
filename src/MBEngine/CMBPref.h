@@ -65,41 +65,17 @@ public:
     virtual unsigned long Release(void) = 0;
 };
 
-enum IMBStreamSeekValues {
-    kIMBStreamSeekStart = 1,
-    kIMBStreamSeekEnd = 2,
-    kIMBStreamSeekCurrent = 3
-};
+#include "IMBStreamSeekValues.h"
 
-enum IMBStreamError {
-    kIMBStreamErrorNone
-};
+#include "IMBStreamError.h"
 
-class IMBStream : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBStream; }
-    virtual bool Read(void *, unsigned long &) = 0;
-    virtual bool Write(const void *, unsigned long) = 0;
-    virtual bool Seek(long, IMBStreamSeekValues) = 0;
-    virtual unsigned long GetPosition(void) = 0;
-    virtual bool Flush(void) = 0;
-    virtual bool SetLastError(IMBStreamError) = 0;
-    virtual IMBStreamError GetLastError(void) = 0;
-    virtual unsigned long GetStreamSize(void) = 0;
-    virtual void Clone(IMBStream **) = 0;
-};
+#include "IMBStream.h"
 
 class IMBFileSpec;
 
-class IMBFile : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBFile; }
-    virtual bool Open(const IMBFileSpec *, unsigned long) = 0;
-    virtual void GetFileSpec(IMBFileSpec **) = 0;
-    virtual bool Close(void) = 0;
-    virtual bool SetSize(unsigned long) = 0;
-};
+#include "IMBFile.h"
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}
@@ -153,24 +129,7 @@ private:
     T *mInterface;
 };
 
-class IMBPref : public IMBUnknown {
-public:
-    enum IMBPrefHints {
-        kCacheAll = 1,
-        kCacheSection = 2,
-        kCacheNothing = 4,
-        kSaveOneSet = 8,
-        kSaveOnExit = 10
-    };
-    static const MBGUID &GetGUID(void) { return MBIID_IMBPref; }
-    // VC6 lays overloaded virtuals out in reverse declaration order
-    virtual long GetString(IMBStream *, const MBString &, const MBString &, MBString16 &, const MBString16 &) = 0;
-    virtual long GetString(IMBStream *, const MBString &, const MBString &, MBString &, const MBString &) = 0;
-    virtual long GetLong(IMBStream *, const MBString &, const MBString &, long) = 0;
-    virtual long SetString(IMBStream *, const MBString &, const MBString &, MBString16 &) = 0;
-    virtual long SetString(IMBStream *, const MBString &, const MBString &, MBString &) = 0;
-    virtual long SetLong(IMBStream *, const MBString &, const MBString &, long) = 0;
-};
+#include "IMBPref.h"
 
 class CMBPref : public IMBPref {
 public:

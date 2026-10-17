@@ -39,16 +39,7 @@ public:
 
 extern "C" IMBUnknown *MBComUtilAddSingleton(IMBUnknown *unk);
 
-class IMBGameClock : public IMBUnknown {
-public:
-    virtual unsigned long GetRealTime(void) = 0;
-    virtual unsigned long GetGameTime(void) = 0;
-    virtual long Pause(void) = 0;
-    virtual long Unpause(void) = 0;
-    virtual void SetTime(unsigned long) = 0;
-    virtual void AddTime(unsigned long) = 0;
-    virtual void SetMSPerSecond(long) = 0;
-};
+#include "IMBGameClock.h"
 
 class CMBWinClock : public IMBGameClock {
 public:
