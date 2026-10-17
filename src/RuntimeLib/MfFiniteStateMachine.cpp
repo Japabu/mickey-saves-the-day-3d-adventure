@@ -1,6 +1,8 @@
 // MfFiniteStateMachine, MfFSMCameraSettings, MfFSMList
 // (RuntimeLib.dll 1007dda0-1007fdd0).
 #include <iostream.h>
+// first: MfPoBase.h declares the script class members only before MfScData.h
+#include "MfPoHFSM.h"
 #include "MfFiniteStateMachine.h"
 #include "MfFSMList.h"
 #include "MfFSMManager.h"
@@ -30,14 +32,6 @@ struct MfBehaviorStartHookData : public MfHookData {
     MfString behavior;                                      // 0x10
     int run;                                                // 0x14
     void *userData;                                         // 0x18
-};
-
-// the script object of a machine ("hfsm"; RuntimeLib 1006c2f0)
-class MfPoHFSM : public MfScDataObject {
-public:
-    MfPoHFSM(MfFiniteStateMachine *machine);
-
-    MfFiniteStateMachine *mMachine;                                             // 0x14
 };
 
 // 0x1007dda0 ??0MfFiniteStateMachine@@QAE@ABVMfString@@PAVMfStatePropertyList@@PAVMfState@@@Z

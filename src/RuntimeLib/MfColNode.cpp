@@ -6,7 +6,8 @@
 #include "MfColModel.h"
 #include <string.h>
 #include "MfColReport.h"
-#include "MfColResults.h"
+#include "MfColResultNode.h"
+#include "MfColResultRay.h"
 #include "MfColDistResults.h"
 #include "MfMetaColModel.h"
 #include "MfSphereNode.h"

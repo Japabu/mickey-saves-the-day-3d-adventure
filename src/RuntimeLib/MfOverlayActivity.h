@@ -1,11 +1,15 @@
-#pragma once
+// MfOverlayActivity: a manager activity that runs its subactivities side by
+// side; exported.
+#ifndef RUNTIMELIB_MFOVERLAYACTIVITY_H
+#define RUNTIMELIB_MFOVERLAYACTIVITY_H
 #include "MfManagerActivity.h"
 #include "enums.h"
+#include "RuntimeLib_api.h"
 class MfActor;
 class MfStream;
 class MfString;
 
-class __declspec(dllexport) MfOverlayActivity : public MfManagerActivity {
+class RUNTIME_API MfOverlayActivity : public MfManagerActivity {
 public:
     enum { TYPE = 'OvlA' };
     virtual int Type() { return TYPE; }
@@ -27,3 +31,5 @@ public:
     static long const STREAM_TYPE;
     int mKeepRunning;                                       // 0x70 never finishes by itself
 };
+
+#endif

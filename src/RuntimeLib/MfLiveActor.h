@@ -11,12 +11,14 @@
 #include "MfIndex.h"
 #include "MfManagerActivity.h"
 #include "MfMsg.h"
-#include "MfPlanCache.h"
+#include "MfManipPlanCache.h"
+#include "MfLocoPlanCache.h"
 #include "MfSkeletonNode.h"
 #include "MfString.h"
 #include "MfVector3.h"
 #include "enums.h"
 #include "MfGCPath.h"
+#include "RuntimeLib_api.h"
 class MfActivity;
 class MfAiRenderView;
 class MfFSMManager;
@@ -53,7 +55,7 @@ struct MfChildEntry {
     MfTransform3 mOffset;                                   // 0x14 relative to mNode
 };
 
-class __declspec(dllexport) MfLiveActor : public MfActor {
+class RUNTIME_API MfLiveActor : public MfActor {
 public:
     typedef void (MfLiveActor::*MsgHandler)(MfMsg &msg);
     enum { TYPE = 'LAct' };  // 0x4c416374

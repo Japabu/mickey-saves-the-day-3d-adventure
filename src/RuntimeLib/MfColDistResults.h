@@ -1,5 +1,5 @@
 // The sphere and distance results of MfAiColNode's queries. Declarations from
-// the SteamboatApp PDB. Kept out of MfColResults.h: declaring them there flips
+// the SteamboatApp PDB. Kept out of MfColResultNode.h/MfColResultRay.h: declaring them there flips
 // the operand order of one fimul in MfViewEventHandler::Pick.
 #ifndef RUNTIMELIB_MFCOLDISTRESULTS_H
 #define RUNTIMELIB_MFCOLDISTRESULTS_H

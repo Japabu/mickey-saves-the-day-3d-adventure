@@ -5,7 +5,8 @@
 #ifndef RUNTIMELIB_MFROADMAP_H
 #define RUNTIMELIB_MFROADMAP_H
 #include "MfDblList.h"
-#include "MfPlanCache.h"
+#include "MfManipPlanCache.h"
+#include "MfLocoPlanCache.h"
 #include "MfTransform3.h"
 
 class MfIndex;

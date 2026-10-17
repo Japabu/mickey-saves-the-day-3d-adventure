@@ -4,7 +4,8 @@
 #include "MfActorPath.h"
 #include "MfAiActorNode.h"
 #include "MfColNode.h"
-#include "MfColResults.h"
+#include "MfColResultNode.h"
+#include "MfColResultRay.h"
 #include "MfHandle.h"
 #include "MfLiveActor.h"
 #include "MfGCPath.h"
@@ -12,6 +13,8 @@
 #include "MfKChain.h"
 #include "MfManipSkill.h"
 #include "MfMsgData.h"
+#include "MfNewGCPath.h"
+#include "MfNewMTPath.h"
 #include "MfProtoActor.h"
 #include "MfSkeletonTraversal.h"
 #include "MfSpace.h"
@@ -1371,20 +1374,6 @@ int MfManipPlanner::CheckFree(MfActor *actor, MfColNode *other, MfString &name1,
     return free;
 }
 
-// a new grasp path: no configurations yet
-struct MfNewGCPath : public MfGCPath {
-    MfNewGCPath()
-    {
-        m00 = 0;
-        m04 = 0;
-        m08 = 0;
-        m0c = 0;
-        m10 = 0;
-        m38 = 0;
-        m3c = 0;
-    }
-};
-
 // EQUIV 0x10025d10 ?PlanGrasp@MfManipPlanner@@QAEPAUMfGCPath@@PAVMfLiveActor@@PAVMfManipSkill@@0HPAVMfTransform3@@ABV5@PAVMfHandle@@H3@Z: reviewed: the original inlines MfRotation3() (mflinalg 0x10001990 stores 1,0,0,0, as here by the imported call), keeps 0 in ebx/ebp instead of immediates and the skill on the stack instead of ebp; calls, arguments and flow the same
 MfGCPath *MfManipPlanner::PlanGrasp(MfLiveActor *actor, MfManipSkill *skill, MfLiveActor *target, int flags,
                                     MfTransform3 *config, const MfTransform3 &base, MfHandle *handle,
@@ -1629,22 +1618,6 @@ void MfManipPlanner::SetMidConfig(MfActor *actor, MfActor *target, MfManipSkill 
         mRecord->mBuffers.m10 = actor->skeletonTraversal()->CopyTransforms();
     }
 }
-
-// a new move path: empty, and its configurations are freed with it
-struct MfNewMTPath : public MfMTPath {
-    MfNewMTPath()
-    {
-        mFrom = 0;
-        mTo = 0;
-    }
-    ~MfNewMTPath()
-    {
-        if (mFrom)
-            delete[] mFrom;
-        if (mTo)
-            delete[] mTo;
-    }
-};
 
 // EQUIV 0x10026730 ?PlanMove@MfManipPlanner@@QAEPAUMfMTPath@@PAVMfLiveActor@@PAVMfManipSkill@@0H@Z: reviewed: only the frame: one slot more in the original and the hip/first transforms swapped; same calls, arguments and stores
 MfMTPath *MfManipPlanner::PlanMove(MfLiveActor *actor, MfManipSkill *skill, MfLiveActor *target, int release)

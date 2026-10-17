@@ -4,6 +4,12 @@
 // accessors use and from the vtables (??_7MfActor@@6BMfRootObj@@@ at
 // 100b1fec, ??_7MfActor@@6BMfAiActor@@@ at 100b1dcc, MfActivity at 100b2324
 // and 100b2264). Padding names and unknown slots are placeholders.
+// own copy: this unit keeps its view of MfActor, MfActivity, MfRootObj and MfSkill.
+// It defines MfActor's Name, InstanceName, GetClassName, GetSkill, the stub request
+// virtuals ... inline, as the original header did; MfActor.h declares them out of
+// line (MfActor.cpp defines them) because inline there every unit that calls them
+// would expand them. The canonical MfActivity.h and MfSkill.h include MfActor.h or
+// the mfutil headers this view declares itself, so they cannot join it either.
 #ifndef RUNTIMELIB_MFACTOR_1_H
 #define RUNTIMELIB_MFACTOR_1_H
 

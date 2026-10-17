@@ -9,6 +9,7 @@
 #include "MfKeyList.h"
 #include "MfProtoSkill.h"
 #include "enums.h"
+#include "RuntimeLib_api.h"
 class MfActor;
 class MfActorPath;
 class MfSkeletonNode;
@@ -16,7 +17,7 @@ class MfSkeletonTraversal;
 class MfSoundKeyframe;
 class MfTextureKeyList;
 
-class __declspec(dllexport) MfSkill : public MfProtoSkill {
+class RUNTIME_API MfSkill : public MfProtoSkill {
 public:
     enum { TYPE = 'Skil' };
 

@@ -1,8 +1,17 @@
 // RuntimeLib.dll 10001000-10001aa0 (first object file of the DLL).
 // Besides the directory scan below, this range holds the COMDAT copies of
-// inline members of the exported classes declared in MfSkeletonNode.h.
+// inline members of the exported classes whose headers it includes.
 #include <windows.h>
-#include "MfSkeletonNode_unit.h"
+#include "MfColNode.h"
+#include "MfLiveActorList.h"
+#include "MfRenderAxisInfo.h"
+#include "MfRenderFogInfo.h"
+#include "MfRenderGridInfo.h"
+#include "MfRuntime.h"
+#include "MfSkeletonNode.h"
+#include "MfSpaceList.h"
+#include "MfString.h"
+#include "MfStringList.h"
 
 // 0x10001000 ?FindFilesWithExtension@@YAHPAVMfStringList@@ABVMfString@@1@Z (original (unnamed;) called from MfLiveActor::LoadBehaviors)
 // Adds to 'list' every file of 'dir' whose name ends in / contains 'ext'
@@ -31,7 +40,7 @@ int FindFilesWithExtension(MfStringList *list, const MfString &dir, const MfStri
     return 0;
 }
 
-// Inline members emitted here (defined in MfSkeletonNode.h), in address order:
+// Inline members emitted here (defined in the headers above), in address order:
 // 0x10001310 ??_GMfStringRef@@UAEPAXI@Z (local vtable copy of a dllimport class)
 // 0x10001340 ??0MfRuntime@@QAE@ABV0@@Z
 // 0x10001370 ??4MfRuntime@@QAEAAV0@ABV0@@Z

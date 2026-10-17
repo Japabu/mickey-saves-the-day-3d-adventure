@@ -1,7 +1,7 @@
 // RuntimeLib.dll 10002890-100034b0: inline members of the exported classes
 // MfActivity, MfManagerActivity, MfOverlayActivity, MfManipPlanCache,
 // MfLocoPlanCache and MfLiveActor (emitted because the classes are
-// __declspec(dllexport)); see MfLocoPlanCache.h.
+// __declspec(dllexport)); see MfLocoPlanCache_unit.h.
 //
 // 0x10002890 ?SetCompound@MfActivity@@QAEXXZ
 // 0x100028a0 ?IsCompound@MfActivity@@QAEHXZ

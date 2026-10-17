@@ -31,12 +31,6 @@ EDITS = {
          '    virtual MfStreamError WriteToStream(MfStream &) const;\n'
          '    virtual long StreamType() const;\n', 1),
     ],
-    # MfSkeletonNode_unit.h's view of MfStringList counts MSVC's slots: slot 0 (v00) is
-    # the destructor, which takes two slots in the port's vtables
-    'RuntimeLib/MfSkeletonNode_unit.h': [
-        ('    virtual void v00(); virtual void v04(); virtual void v08(); virtual void v0c();\n',
-         '    virtual ~MfStringList(); virtual void v04(); virtual void v08(); virtual void v0c();\n', 1),
-    ],
     # mfutil's MfHashTable: +0x0c and +0x10 are the bucket and chain arrays (pointers);
     # with ints MfScPropTokenTable's MfCallBack base came out 8 bytes early and the
     # dictionaries RuntimeLib allocates were too small

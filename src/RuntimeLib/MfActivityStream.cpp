@@ -4,6 +4,8 @@
 #include "MfActor.h"
 #include "MfGCPath.h"
 #include "MfMsgData.h"
+#include "MfNewGCPath.h"
+#include "MfNewMTPath.h"
 #include "MfPath2.h"
 #include "MfPath3.h"
 #include "MfSkeletonNode.h"
@@ -17,29 +19,6 @@ MfStreamError WriteConfig(MfStream &stream, MfActor *actor, MfTransform3 *config
 MfStreamError ReadConfig(MfStream &stream, MfActor *actor, MfTransform3 *&config);
 MfStreamError WriteNodeReference(MfStream &stream, MfSkeletonNode *node);
 MfStreamError ReadNodeReference(MfStream &stream, MfActor *actor, MfSkeletonNode *&node);
-
-// a new grasp path: empty
-struct MfNewGCPath : public MfGCPath {
-    MfNewGCPath()
-    {
-        m00 = 0;
-        m04 = 0;
-        m08 = 0;
-        m0c = 0;
-        m10 = 0;
-        m38 = 0;
-        m3c = 0;
-    }
-};
-
-// a new move path: empty
-struct MfNewMTPath : public MfMTPath {
-    MfNewMTPath()
-    {
-        mFrom = 0;
-        mTo = 0;
-    }
-};
 
 // 0x10009050 ?WriteGCPath@@YA?AW4MfStreamError@@AAVMfStream@@PAVMfActor@@PAUMfGCPath@@@Z
 MfStreamError WriteGCPath(MfStream &stream, MfActor *actor, MfGCPath *path)

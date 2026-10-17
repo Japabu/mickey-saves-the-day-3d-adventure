@@ -1,7 +1,11 @@
-#pragma once
+// MfManagerActivity: an activity that runs subactivities (the base of the
+// overlay, sequential and random activities); exported.
+#ifndef RUNTIMELIB_MFMANAGERACTIVITY_H
+#define RUNTIMELIB_MFMANAGERACTIVITY_H
 #include "MfActivity.h"
 #include "MfDblList.h"
 #include "enums.h"
+#include "RuntimeLib_api.h"
 class MfActor;
 class MfAiActivity;
 class MfAiActor;
@@ -10,7 +14,7 @@ class MfLiveActor;
 class MfStream;
 class MfString;
 
-class __declspec(dllexport) MfManagerActivity : public MfActivity {
+class RUNTIME_API MfManagerActivity : public MfActivity {
 public:
     enum { TYPE = 'MgrA' };
     virtual int Type() { return TYPE; }
@@ -52,3 +56,5 @@ public:
 
     MfDblList mSubactivities;                               // 0x60
 };
+
+#endif

@@ -8,8 +8,11 @@
 #include "MfCameraNode.h"
 #include "MfHookManager.h"
 #include "MfMaterial.h"
+#include "MfOptionHookData.h"
 #include "MfPoView.h"
-#include "MfRenderInfo.h"
+#include "MfRenderAxisInfo.h"
+#include "MfRenderFogInfo.h"
+#include "MfRenderGridInfo.h"
 #include "MfRenderNode.h"
 #include "MfRenderScene.h"
 #include "MfRenderView.h"
@@ -639,12 +642,6 @@ void MfRenderScene::SetupFog(MfRenderFogInfo &fog)
 // 0x1008dd30 _$E57
 // 0x1008dd40 _$E56
 static MfHookManager viewHooks;
-
-// 'VOpt': an option of the view's popup menu was chosen
-struct MfOptionHookData : public MfHookData {
-    MfRenderView *view;                                     // 0x10
-    int option;                                             // 0x14
-};
 
 // the options menu being built: the item count of each submenu level, whether
 // the first item is still to come and the rect of the first item

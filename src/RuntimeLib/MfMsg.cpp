@@ -5,6 +5,7 @@
 #include "MfMsg.h"
 #include "MfMsgData.h"
 #include "MfLiveActor.h"
+#include "MfPath2.h"
 #include "MfScDataHandle.h"
 #include "MfSkeletonTraversal.h"
 #include "MfGCPath.h"
@@ -227,12 +228,6 @@ MfLocoPlanResultData::MfLocoPlanResultData(int requestID, int status, int a3, in
 MfLocoPlanResultData::~MfLocoPlanResultData()
 {
 }
-
-// a path the planner made (only its destructor is needed here)
-class MfPath2 {
-public:
-    ~MfPath2();
-};
 
 // 0x100641c0 ?FreeContents@MfLocoPlanResultData@@UAEXXZ
 void MfLocoPlanResultData::FreeContents()

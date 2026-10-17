@@ -2,10 +2,11 @@
 #ifndef RUNTIMELIB_MFSPACELIST_H
 #define RUNTIMELIB_MFSPACELIST_H
 #include "MfDblList.h"
+#include "RuntimeLib_api.h"
 class MfSpace;
 class MfString;
 
-class __declspec(dllexport) MfSpaceList : public MfDblList {
+class RUNTIME_API MfSpaceList : public MfDblList {
 public:
     MfSpaceList();
     virtual ~MfSpaceList() {}
