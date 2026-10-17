@@ -28,17 +28,11 @@ page and pick your ISO. It stays in your browser; nothing is uploaded.
 
 Settings, improvements and troubleshooting: [port/README.md](port/README.md).
 
-## Work on the decompilation
+## How it is made
 
-You need Wine, the original compilers (Visual C++ 5.0 and 6.0) and the game's binaries
-from the CD. [HACKING.md](HACKING.md) lists exactly what, and covers setup and workflow.
-In short:
-
-```
-python3 tools/import.py all <mounted CD> <VC5 directory> <VC6 directory>
-tools/setup.sh
-tools/msvc/check.sh          # checks every claimed function
-```
+The decompilation and the port are written by Claude (Anthropic's model). Every function
+is compiled with the original compiler (Visual C++ 5.0 or 6.0) and accepted only if its
+bytes are identical to the original's.
 
 ## Progress
 

@@ -32,7 +32,7 @@ for set in game vc5 vc6; do
   done < "$ROOT/tools/manifest/$set.sha256"
   if [ "$missing" -ne 0 ]; then
     echo "$missing files of '$set' are missing. Import your own copies first:" >&2
-    echo "  python3 tools/import.py $set <directory> ...   (see README.md, Requirements)" >&2
+    echo "  python3 tools/import.py $set <directory> ...   (the manifests in tools/manifest/ list the files)" >&2
     exit 1
   fi
 done
@@ -67,4 +67,4 @@ echo "== PDB types -> out/types"
 echo "== smoke test"
 tools/msvc/check.sh MBEngine/CMBWinFileSpec.cpp >/dev/null && echo "OK: MBEngine/CMBWinFileSpec.cpp" \
   || { echo "smoke test failed: tools/msvc/check.sh MBEngine/CMBWinFileSpec.cpp"; exit 1; }
-echo "ready. Read HACKING.md"
+echo "ready."

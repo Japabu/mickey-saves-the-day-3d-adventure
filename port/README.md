@@ -1,46 +1,7 @@
-# macOS port
+# Port
 
-A native macOS (Apple Silicon) build of the game from the decompiled source in `src/`.
-Nothing here changes `src/`: the decompilation stays byte-verifiable by
-`tools/msvc/check.sh`, and the port adapts it from outside.
-
-## How the port relates to `src/`
-
-- **One executable, no DLLs.** Every original binary is a module (an object library),
-  and all of them link into the one executable `Steamboat`. Each module has a generated
-  table of what Windows knew of its DLL (name, DllMain, the DLLs it imports from, the
-  functions `GetProcAddress` finds), so `LoadLibrary` and `GetProcAddress` work as
-  before, and DllMains run when Windows ran them: at start for the DLLs the executable
-  imports from, at `LoadLibrary` for the plugins (`platform/win32/module.cpp`). Names
-  that several DLLs each defined for themselves (DllMain, the plugin entry points, the
-  parsers' `yy` names, SteamboatApp's copies of MBEngine classes) get the module's name
-  as prefix in that module (`RENAMES`). Module table and flags: `port/flags.py`.
-- **Code every DLL had its own copy of** (inline functions, templates, vtables) is
-  linked once. `python3 port/tools/consistency.py` checks, for macOS and the web, that
-  every declaration of a class agrees on its data layout and vtable, and that the
-  modules' copies of the merged code agree (see below).
-- **Microsoft C++ is compiled by clang** in Microsoft-compatibility mode
-  (`-fms-extensions -fms-compatibility -fdelayed-template-parsing`);
-  `compat/prelude.h` (force-included) maps the remaining language extensions.
-- **APIs the game called come from `compat/include/`**: the Windows, DirectX, C
-  runtime and old iostream headers the source includes, written for the port (no
-  Microsoft headers are used). They declare exactly what the game uses.
-- **Implementations come from `platform/`**: Win32, DirectDraw and Direct3D 7 drawing
-  in software, the Miles Sound System on the port's own mixer, Bink and Smacker on
-  FFmpeg, all on the host interface (`platform/host/host.h`) that a system implements:
-  the window, input, sound, fonts and crash reports (backends `sdl`, `coretext`,
-  `posix`).
-- **When a source file cannot be compiled as it is**, it is patched, in this order of
-  preference: a compat header or a platform function; a rule of `port/rewrite.py` for
-  a pattern that recurs; an edit in `port/edits/<module>.py` (exact text replaced, which
-  must occur as often as the edit says, so a change in `src/` stops the build instead
-  of skipping it; an edit that changes the line count ends with `#line`, so
-  diagnostics still name the lines of `src/`). Only a file that is replaced as a whole
-  goes to `port/override/<same path under src/>`, with the SHA-256 of the file it
-  replaces in `OVERRIDE_BASES` (`port/rewrite.py`): when `src/` changes, the build stops
-  until the override is looked at again.
-- **Real decompilation bugs found while porting are fixed in `src/`**, and
-  `tools/msvc/check.sh` must stay clean for the directory.
+The game built from the decompiled source in `src/`, natively for macOS (Apple Silicon)
+and as WebAssembly for the browser. How it works: [NOTES.md](NOTES.md).
 
 ## Improvements
 
@@ -67,23 +28,6 @@ decompiled code in `src/` stays as the original was; each improvement is new cod
   always works (Mickey's question is stopped so his goodbye can play; the original
   waited for ever when Yes came while he still asked), and a click, Space, Enter or
   Escape skips the credits.
-
-## 64-bit
-
-macOS runs only 64-bit code; the game was written for 32-bit Windows. The Windows type
-names (`DWORD`, `LONG`, `UINT`, `HRESULT`, ...) are 32 bits wide in `compat/`, but the C
-`long` of the source is 64 bits here, and pointers no longer fit in 32-bit integers.
-Structures read from files, the script VM's data handles, and pointer/integer casts are
-where this bites; fixes go into edits with a comment.
-
-Many classes are declared more than once (unit views, copies kept for byte matching;
-see `// own copy:` in `src/`). A copy with an `int` where the real class has a pointer
-lays the object out differently here. `python3 port/tools/consistency.py` (about two
-minutes, after a macOS build) compares every declaration of every class for both
-targets and fails on a difference that is not in the `REVIEWED` table of
-`port/tools/layoutcensus.py`, `vtablecensus.py` or `mergecheck.py`. A new one is either
-a bug (usually fixed by an edit giving the view the real member types) or, once
-understood, an entry in that table saying why it is harmless.
 
 ## Building
 
