@@ -1,5 +1,5 @@
 #pragma once
-#include "MfCriticalSection.h"
+#include "../mfutil/MfCriticalSection.h"
 class MfScDataHandle;
 class MfScVmStack;
 

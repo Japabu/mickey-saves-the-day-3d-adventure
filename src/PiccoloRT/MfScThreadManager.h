@@ -1,6 +1,6 @@
 #pragma once
 #include "MfDblList.h"
-#include "MfCriticalSection.h"
+#include "../mfutil/MfCriticalSection.h"
 class MfThread;
 
 // The script threads that run: they add themselves when they start and

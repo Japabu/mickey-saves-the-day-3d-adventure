@@ -4,7 +4,7 @@
 #define PICCOLORT_API __declspec(dllimport)
 #endif
 #include "MfAiFunctionRegistry.h"
-#include "MfCriticalSection.h"
+#include "../mfutil/MfCriticalSection.h"
 class MfDblList;
 class MfDblListItem;
 class MfScFunctionRegistryEntry;

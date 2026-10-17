@@ -1,11 +1,7 @@
 #pragma once
 
 // A unit of work a MfThread runs (header only: PiccoloRT emits its vtable).
-class MfThreadWork {
-public:
-    virtual ~MfThreadWork() {}
-    virtual void Work() = 0;
-};
+#include "../mfutil/MfThreadWork.h"
 
 class __declspec(dllimport) MfThread {
 public:

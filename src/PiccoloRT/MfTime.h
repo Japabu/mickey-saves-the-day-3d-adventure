@@ -1,3 +1,5 @@
+// own copy: MfTime as PiccoloRT was compiled against it, without mfutil's inline copy
+// constructor and operator= (with them, MfScPiccoloObjectFile::GetDebugInfo compiles differently)
 #pragma once
 #include <sys/timeb.h>
 

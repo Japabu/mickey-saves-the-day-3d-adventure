@@ -50,8 +50,8 @@ MfScDataThread::MfScDataThreadWorker::~MfScDataThreadWorker()
     delete mVM;
 }
 
-// 0x10008920 ?Work@MfScDataThreadWorker@MfScDataThread@@UAEXXZ
-void MfScDataThread::MfScDataThreadWorker::Work()
+// 0x10008920 ?DoWork@MfScDataThreadWorker@MfScDataThread@@UAEXXZ
+void MfScDataThread::MfScDataThreadWorker::DoWork()
 {
     mRunning = 1;
     if (mArgs)

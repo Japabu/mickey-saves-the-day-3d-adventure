@@ -1,5 +1,4 @@
-// MfAiFunctionRegistry: the "FunctionRegistry" interface (with the MfAi base the
-// runtime's interfaces share, until mfutil has its own header).
+// MfAiFunctionRegistry: the "FunctionRegistry" interface.
 #pragma once
 class MfScDataHandle;
 class MfScHandleList;
@@ -9,13 +8,8 @@ class MfString;
 
 // Interface base: name and reference counting. The registry's export takes the
 // version numbers by reference, the class-info plugin's by pointer
-// (MfAiClassInfo.h): the two headers cannot be included together.
-class MfAi {
-public:
-    virtual void GetInterfaceName(char *name, int size, int &major, int &minor) = 0;
-    virtual int AddRef() = 0;
-    virtual int Release() = 0;
-};
+// (MfAiClassTree.h): the two headers cannot be included together.
+#include "../mfutil/MfAi.h"
 
 // "FunctionRegistry": the script functions loaded, grouped by module. VC5 lays
 // overloaded virtuals out in reverse order of declaration.

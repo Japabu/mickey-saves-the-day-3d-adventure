@@ -801,8 +801,8 @@ MfString __cdecl MfScDataHandle::HeapTypeName(int heapIndex)
     return MfString("HHI_UNKNOWN");
 }
 
-// 0x10007210 ?Work@MfScGCWork@@UAEXXZ
-void MfScGCWork::Work()
+// 0x10007210 ?DoWork@MfScGCWork@@UAEXXZ
+void MfScGCWork::DoWork()
 {
     int pause = 0;
     for (;;) {
@@ -834,8 +834,8 @@ void MfScGCWork::Quit()
     InterlockedIncrement(&mQuit);
 }
 
-// 0x10007310 ?Work@MfScGCTimerWork@@UAEXXZ
-void MfScGCTimerWork::Work()
+// 0x10007310 ?DoWork@MfScGCTimerWork@@UAEXXZ
+void MfScGCTimerWork::DoWork()
 {
     mWakeUp.Wait(150);
     InterlockedIncrement(&MfScDataHandle::lGCTimeOut);

@@ -1,6 +1,6 @@
 #pragma once
 #include "MfThread.h"
-#include "MfEvent.h"
+#include "../mfutil/MfEvent.h"
 
 // The garbage collector thread's work: collects every few seconds until
 // told to quit.
@@ -8,7 +8,7 @@ class MfScGCWork : public MfThreadWork {
 public:
     MfScGCWork() : mQuit(0) {}
     virtual ~MfScGCWork();
-    virtual void Work();
+    virtual void DoWork();
     void Quit();
 private:
     long mQuit;         // +4
@@ -17,7 +17,7 @@ private:
 // Waits a little and counts a GC timeout.
 class MfScGCTimerWork : public MfThreadWork {
 public:
-    virtual void Work();
+    virtual void DoWork();
     void WakeUp() { mWakeUp.Signal(); }
 private:
     MfEvent mWakeUp;    // +4

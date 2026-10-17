@@ -3,7 +3,7 @@
 #ifndef PICCOLORT_API
 #define PICCOLORT_API __declspec(dllimport)
 #endif
-#include "MfLock.h"
+#include "../mfutil/MfLock.h"
 class MfScDataHandle;
 class MfScLinkData;
 class MfString;
@@ -19,7 +19,7 @@ public:
     virtual void AddRef();
     virtual void Release();
     MfString & Name() { return *m_name; }
-    void Lock() { m_lock.Lock(); }
+    void Lock() { m_lock.Lock(-1); }
     void Unlock() { m_lock.Unlock(); }
 protected:
     MfLock m_lock;      // +4
