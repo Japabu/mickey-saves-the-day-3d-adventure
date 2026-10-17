@@ -4,15 +4,10 @@
 
 #include <string> // instantiates std::ctype<unsigned short>::id ($E19/$E20)
 
-struct MBGUID {
-    unsigned long data1;
-    unsigned short data2;
-    unsigned short data3;
-    unsigned char data4[8];
-};
+#include "../MBCom/MBGUID.h"
 
 // header-defined interface IDs (local data of every object that includes them)
-static const MBGUID MBIID_IMBUnknown = { 0x59d231f0, 0x9c6c, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
+#include "../MBCom/IMBUnknown.h"
 static const MBGUID MBIID_IMBClassFactory = { 0x396c7e0b, 0x172d, 0x4182, { 0xa9, 0x09, 0x48, 0xb5, 0x02, 0x3c, 0x7d, 0xea } };
 static const MBGUID MBIID_IMBStream = { 0x8971e7d0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 static const MBGUID MBIID_IMBFileSpec = { 0x897e2150, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
@@ -26,13 +21,6 @@ static const MBGUID MBIID_IMBSoundDescription = { 0x84481ea0, 0x9ea2, 0x11d3, { 
 static const MBGUID MBIID_CMBSoundDescription = { 0x844fc290, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 static const MBGUID MBIID_IMBSoundManager = { 0x79ee6f80, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 
-class IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBUnknown; }
-    virtual long QueryInterface(const MBGUID &, void **) = 0;
-    virtual unsigned long AddRef(void) = 0;
-    virtual unsigned long Release(void) = 0;
-};
 
 class IMBStream;
 class IMBFileSpec;

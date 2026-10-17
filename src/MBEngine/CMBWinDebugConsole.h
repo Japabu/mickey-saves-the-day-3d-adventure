@@ -32,6 +32,7 @@ extern "C" unsigned long __cdecl _beginthread(void(__cdecl *)(void *), unsigned 
 inline void *__cdecl operator new(unsigned int size) { return MBmalloc_release(size); }
 inline void __cdecl operator delete(void *p) { MBfree_release(p); }
 
+// own copy: this unit declares its kernel32 imports itself and does not open <windows.h>, which ../mbruntime/CMBCriticalSection.h includes
 class CMBCriticalSection {
 public:
     CMBCriticalSection(void) { InitializeCriticalSection(&mSection); }
@@ -42,21 +43,10 @@ private:
     _RTL_CRITICAL_SECTION mSection;
 };
 
-struct MBGUID {
-    unsigned long data1;
-    unsigned short data2;
-    unsigned short data3;
-    unsigned char data4[8];
-    bool operator==(const MBGUID &g) const {
-        return data1 == g.data1 && data2 == g.data2 && data3 == g.data3 &&
-               ((const unsigned long *)data4)[0] == ((const unsigned long *)g.data4)[0] &&
-               ((const unsigned long *)data4)[1] == ((const unsigned long *)g.data4)[1];
-    }
-    bool operator!=(const MBGUID &g) const { return !(*this == g); }
-};
+#include "../MBCom/MBGUID.h"
 
 // .rdata 0x1008f328..0x1008f388
-static const MBGUID MBIID_IMBUnknown = {0x59d231f0, 0x9c6c, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
+#include "../MBCom/IMBUnknown.h"
 static const MBGUID MBIID_IMBClassFactory = {0x396c7e0b, 0x172d, 0x4182, {0xa9, 0x09, 0x48, 0xb5, 0x02, 0x3c, 0x7d, 0xea}};
 static const MBGUID MBIID_IMBPeriodical = {0x79529260, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 static const MBGUID MBIID_IMBPeriodicalManager = {0x7958af20, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
@@ -64,12 +54,6 @@ static const MBGUID MBIID_IMBEventManager = {0x79913910, 0x9ea2, 0x11d3, {0xbe, 
 static const MBGUID MBIID_IMBEventListener = {0x799755d0, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 static const MBGUID MBIID_IMBDebugConsole = {0x7a100da0, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 
-class IMBUnknown {
-public:
-    virtual long QueryInterface(const MBGUID &, void **) = 0;
-    virtual unsigned long AddRef(void) = 0;
-    virtual unsigned long Release(void) = 0;
-};
 
 extern "C" IMBUnknown *__cdecl MBComUtilAddSingleton(IMBUnknown *unk);
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);

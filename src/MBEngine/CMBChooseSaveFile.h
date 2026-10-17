@@ -37,21 +37,11 @@ inline MBString16 MB_utf8_to_ucs2(const MBString &utf8string)
     return unicode;
 }
 
-struct MBGUID {
-    unsigned long data1;
-    unsigned short data2;
-    unsigned short data3;
-    unsigned char data4[8];
-    bool operator==(const MBGUID &g) const {
-        return data1 == g.data1 && data2 == g.data2 && data3 == g.data3 &&
-               ((const unsigned long *)data4)[0] == ((const unsigned long *)g.data4)[0] &&
-               ((const unsigned long *)data4)[1] == ((const unsigned long *)g.data4)[1];
-    }
-};
+#include "../MBCom/MBGUID.h"
 
 
 // PDB ldata order 0x1008e880..0x1008e910
-static const MBGUID MBIID_IMBUnknown = { 0x59d231f0, 0x9c6c, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
+#include "../MBCom/IMBUnknown.h"
 static const MBGUID MBIID_IMBClassFactory = { 0x396c7e0b, 0x172d, 0x4182, { 0xa9, 0x09, 0x48, 0xb5, 0x02, 0x3c, 0x7d, 0xea } };
 static const MBGUID MBIID_IMBFileSpec = { 0x897e2150, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 static const MBGUID MBIID_CMBWinFileSpec = { 0x89843e10, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
@@ -62,12 +52,6 @@ static const MBGUID MBIID_IMBScreen = { 0x79d783b0, 0x9ea2, 0x11d3, { 0xbe, 0xdb
 static const MBGUID MBIID_IMBSurface = { 0x7ee752b0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 static const MBGUID MBIID_IMBWinScreen = { 0x7f9eb130, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 
-class IMBUnknown {
-public:
-    virtual long QueryInterface(const MBGUID &, void **) = 0;
-    virtual unsigned long AddRef(void) = 0;
-    virtual unsigned long Release(void) = 0;
-};
 
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 

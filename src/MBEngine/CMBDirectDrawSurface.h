@@ -45,20 +45,10 @@ typedef struct _DDSURFACEDESC2 {
 #include "IDirectDrawSurface7.h"
 
 // ---- MB core ----
-struct MBGUID {
-    unsigned long data1;
-    unsigned short data2;
-    unsigned short data3;
-    unsigned char data4[8];
-    bool operator==(const MBGUID &g) const {
-        return data1 == g.data1 && data2 == g.data2 && data3 == g.data3 &&
-               ((const unsigned long *)data4)[0] == ((const unsigned long *)g.data4)[0] &&
-               ((const unsigned long *)data4)[1] == ((const unsigned long *)g.data4)[1];
-    }
-};
+#include "../MBCom/MBGUID.h"
 
 // PDB ldata order 0x1008f9e8..0x1008fa68
-static const MBGUID MBIID_IMBUnknown = {0x59d231f0, 0x9c6c, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
+#include "../MBCom/IMBUnknown.h"
 static const MBGUID MBIID_IMBClassFactory = {0x396c7e0b, 0x172d, 0x4182, {0xa9, 0x09, 0x48, 0xb5, 0x02, 0x3c, 0x7d, 0xea}};
 static const MBGUID MBIID_IMBSurface = {0x7ee752b0, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 static const MBGUID MBIID_IMBDirectDrawSurface = {0x7f05e270, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
@@ -68,12 +58,6 @@ static const MBGUID MBIID_IMBWinDC = {0x7fb72430, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0
 static const MBGUID MBIID_IMBEventManager = {0x79913910, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 static const MBGUID MBIID_IMBEventListener = {0x799755d0, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 
-class IMBUnknown {
-public:
-    virtual long QueryInterface(const MBGUID &, void **) = 0;
-    virtual unsigned long AddRef(void) = 0;
-    virtual unsigned long Release(void) = 0;
-};
 
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 

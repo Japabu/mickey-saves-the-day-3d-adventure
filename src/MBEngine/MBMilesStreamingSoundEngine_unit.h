@@ -10,19 +10,9 @@ extern "C" __declspec(dllimport) void MBfree_release(void *p);
 inline void *operator new(size_t size) { return MBmalloc_release(size); }
 inline void operator delete(void *p) { if (p) MBfree_release(p); }
 
-struct MBGUID {
-    unsigned long data1;
-    unsigned short data2;
-    unsigned short data3;
-    unsigned char data4[8];
-};
+#include "../MBCom/MBGUID.h"
 
-class IMBUnknown {
-public:
-    virtual long QueryInterface(const MBGUID &, void **) = 0;
-    virtual unsigned long AddRef(void) = 0;
-    virtual unsigned long Release(void) = 0;
-};
+#include "../MBCom/IMBUnknown.h"
 
 class IMBStreamLocator;
 

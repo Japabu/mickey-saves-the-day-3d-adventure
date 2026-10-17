@@ -3,12 +3,7 @@
 #include <windows.h>
 #include <string> // evidence: ctype $E21/$E20 = <windows.h> + <string> baseline
 
-struct MBGUID {
-    unsigned long data1;
-    unsigned short data2;
-    unsigned short data3;
-    unsigned char data4[8];
-};
+#include "../MBCom/MBGUID.h"
 
 // Stand-ins (see NOTES): the PDB numbering (ctype $E21/$E20, guard $S22) proves two
 // more numbered items than this source has (likely the string instantiations of the
@@ -26,8 +21,7 @@ extern "C" long __cdecl MBComRegisterClassObject(const MBGUID &guid, MBClassFact
 extern "C" long __cdecl MBComUnregisterClassObject(const MBGUID &guid, MBClassFactoryFunc func);
 
 // interface and class IDs, in the order of the original headers (PDB ldata 0x10090180..)
-static const MBGUID MBIID_IMBUnknown =
-    { 0x59d231f0, 0x9c6c, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
+#include "../MBCom/IMBUnknown.h"
 static const MBGUID MBIID_IMBClassFactory =
     { 0x396c7e0b, 0x172d, 0x4182, { 0xa9, 0x09, 0x48, 0xb5, 0x02, 0x3c, 0x7d, 0xea } };
 static const MBGUID MBIID_IMBGameClock =

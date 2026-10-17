@@ -8,31 +8,14 @@ extern "C" __declspec(dllimport) void __cdecl MBfree_release(void *p);
 inline void *__cdecl operator new(unsigned int size) { return MBmalloc_release(size); }
 inline void __cdecl operator delete(void *p) { MBfree_release(p); }
 
-struct MBGUID {
-    unsigned long data1;
-    unsigned short data2;
-    unsigned short data3;
-    unsigned char data4[8];
-    bool operator==(const MBGUID &g) const {
-        return data1 == g.data1 && data2 == g.data2 && data3 == g.data3 &&
-               ((const unsigned long *)data4)[0] == ((const unsigned long *)g.data4)[0] &&
-               ((const unsigned long *)data4)[1] == ((const unsigned long *)g.data4)[1];
-    }
-};
+#include "../MBCom/MBGUID.h"
 
-static const MBGUID MBIID_IMBUnknown = { 0x59d231f0, 0x9c6c, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
+#include "../MBCom/IMBUnknown.h"
 static const MBGUID MBIID_IMBResourceFileList = { 0x898a5ad0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 static const MBGUID MBIID_CMBResourceMgr = { 0x8991fec0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 static const MBGUID MBIID_IMBStreamLocator = { 0x89cc0fe0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 static const MBGUID MBIID_IMBResourceStreamLocator = { 0x89d22ca0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 
-class IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBUnknown; }
-    virtual long QueryInterface(const MBGUID &, void **) = 0;
-    virtual unsigned long AddRef(void) = 0;
-    virtual unsigned long Release(void) = 0;
-};
 
 class IMBMemoryBlock;
 class IMBStream;

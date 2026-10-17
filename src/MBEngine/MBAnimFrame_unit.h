@@ -11,19 +11,9 @@ extern "C" __declspec(dllimport) unsigned long __cdecl MBHashString(const char *
 inline void *__cdecl operator new(unsigned int size) { return MBmalloc_release(size); }
 inline void __cdecl operator delete(void *p) { MBfree_release(p); }
 
-struct MBGUID {
-    unsigned long data1;
-    unsigned short data2;
-    unsigned short data3;
-    unsigned char data4[8];
-};
+#include "../MBCom/MBGUID.h"
 
-class IMBUnknown {
-public:
-    virtual long QueryInterface(const MBGUID &, void **) = 0;
-    virtual unsigned long AddRef(void) = 0;
-    virtual unsigned long Release(void) = 0;
-};
+#include "../MBCom/IMBUnknown.h"
 
 template <class T> class MBAllocator : public std::allocator<T> {
 public:
