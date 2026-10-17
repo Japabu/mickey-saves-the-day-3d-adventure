@@ -5,8 +5,9 @@
 #include "MfColor.h"
 #include "MfPropertyList.h"
 #include "MfString.h"
-#include "MfTexture.h"
 class MfStream;
+
+#include "MfTexture.h"
 
 #define MF_MAX_TEXTURES 4
 

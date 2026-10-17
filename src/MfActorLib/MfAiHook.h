@@ -62,3 +62,9 @@ enum {
     MF_HOOK_OVERRIDE_DELETE_SPHERE_TREE = 37,
     MF_NUM_FAST_HOOKS = 38
 };
+
+// The hook data and the hook manager
+#include "MfHookData.h"
+#include "MfFileHookData.h"
+#include "MfActorRWHookData.h"
+#include "MfAiHookManager.h"

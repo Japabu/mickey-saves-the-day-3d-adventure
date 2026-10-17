@@ -5,8 +5,13 @@ unit named in brackets. Add a line when you find a new pattern; keep it short.
 
 ## Shared headers (use them, do not redeclare the class in a unit header)
 - One header per MfActorLib class, `<Class>.h`, declared as the owner's code sees it.
-- `MfStreamObject.h` (vtable StreamType, ReadFromStream, WriteToStream, WriteAsObject),
-  `MfStreamConstructorEntry.h`, `MfStreamSizedObject.h`, `MfStream.h` (m_version at
+  A header that used to declare several classes includes the split-off headers at
+  the classes' old positions: VC5's output (`$E` numbers, even code) changes with what
+  a file sees and in which order, so every file keeps seeing the same declarations.
+  MfCamera.cpp keeps its own copy (MfCamera_unit.h): its `$E` functions differ with
+  the shared headers.
+- `MfStreamObject.h` (vtable StreamType, ReadFromStream, WriteToStream, WriteAsObject;
+  MfStreamConstructorEntry.h), `MfStreamSizedObject.h`, `MfStream.h` (m_version at
   +4 is public: the stream objects test it directly) [MfColModel, MfJL*].
 - mfutil imports: `MfString.h` (inline Length() through MfStringRef), `MfDblList.h`
   (inline ctor, GetFirst/GetNext, Prepend/Add), `MfStringList.h` (inline dtor
@@ -14,11 +19,10 @@ unit named in brackets. Add a line when you find a new pattern; keep it short.
 - mflinalg imports: `MfVector3.h`, `MfRotation3.h`, `MfTransform3.h`, declared from the
   SteamboatApp PDB (`_x`, accessors `x()`) with the members mflinalg's first object
   emits made inline. MfTransform3::operator= assigns the rotation first [MfColModel].
-- `MfAiHook.h`: MfAi, MfInterfaceRegistry and the MF_HOOK_* ids (PDB);
-  `MfAiHookManager.h`, `MfHookData.h`, `MfFileHookData.h`, `MfActorRWHookData.h`.
-- `MfFile.h` (`MfFileType.h`, `MfFileProgress.h`), `MfColModel.h`, `MfJLimit.h` (the
-  base; `MfJLHinge.h`, `MfJLEuler.h`, `MfJLLinear.h`, `MfJLTranslate.h`),
-  `MfFSMSpaceToBhvr.h`.
+- `MfAiHook.h`: MfAi, MfInterfaceRegistry and the MF_HOOK_* ids (PDB), then
+  `MfHookData.h`, `MfFileHookData.h`, `MfActorRWHookData.h`, `MfAiHookManager.h`.
+- `MfFile.h` (with `MfFileType.h`, `MfFileProgress.h`), `MfColModel.h`, `MfJLimit.h`
+  (with all five joint limits), `MfFSMSpaceToBhvr.h`.
 
 ## Vtables
 - Overloaded virtuals: VC5 lays an overload group out in reverse declaration order.
@@ -149,8 +153,9 @@ unit named in brackets. Add a line when you find a new pattern; keep it short.
   the style. DeleteInfo is a switch with `mInfo = 0;` after it (VC5 copies it
   into every case); the case order is the source order of the original.
 - The MfTri* primitives' compiler-generated copy constructors, destructor and
-  operator= come at the start of the MfProtoNode_2 object (MfTriSquare.h ...
-  MfTriRing.h, MfTriangleSet without a declared operator=).
+  operator= come at the start of the MfProtoNode_2 object (MfTriPrimitives.h,
+  MfTriangleSet without a declared operator=).
+- MfCamera.h now has MfCamera_unit.h's layout (size 0x34).
 
 ## Wave 7
 - MfRotation3.h includes <math.h> and has mflinalg's inline normalize()

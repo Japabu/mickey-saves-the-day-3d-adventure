@@ -32,3 +32,9 @@ public:
     virtual void PivotLimit(MfRotation3 &) {}
     static const long STREAM_TYPE;
 };
+
+// The other joint limits
+#include "MfJLHinge.h"
+#include "MfJLEuler.h"
+#include "MfJLLinear.h"
+#include "MfJLTranslate.h"

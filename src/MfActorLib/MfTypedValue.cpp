@@ -11,12 +11,10 @@
 #include "MfTransform2Value.h"
 #include "MfTransform3Value.h"
 #include "MfListValue.h"
-#include "MfListValueSearchItr.h"
 #include "MfArrayValue.h"
 #include "MfOpaqueValue.h"
 #include "MfProperty.h"
 #include "MfStream.h"
-#include "MfStreamConstructorEntry.h"
 
 // The conversions ask the value for a copy of the wanted type and destroy it.
 

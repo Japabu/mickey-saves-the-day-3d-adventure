@@ -2,8 +2,6 @@
 // MfTriBezier: a triangle set of a Bezier curve. Exported names only.
 #include "MfActorLib_api.h"
 #include "MfTriangleSet.h"
-class MfMaterial;
-class MfVector3;
 
 class MFACTOR_API MfTriBezier : public MfTriangleSet {
 public:

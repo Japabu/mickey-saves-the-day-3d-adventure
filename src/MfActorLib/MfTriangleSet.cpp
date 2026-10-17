@@ -4,7 +4,6 @@
 #include <float.h>
 #include "MfTriangleSet.h"
 #include "MfVector3.h"
-#include "MfStreamConstructorEntry.h"
 
 long const MfTriangleSet::STREAM_TYPE = 'TrS2';
 
@@ -28,23 +27,13 @@ static MfVector3 sZAxis(0.0f, 0.0f, 1.0f);
 // (included after the statics: their $E numbers say only the two headers above
 // came before them)
 #include "MfColModel.h"
-#include "MfTextureVertex.h"
-#include "MfTriangle.h"
 #include "MfColor.h"
 #include "MfMaterial.h"
 #include "MfStream.h"
 #include "MfMath.h"
 #include "MfMatrix3.h"
 #include "MfXformMatrix3.h"
-#include "MfTriSquare.h"
-#include "MfTriCube.h"
-#include "MfTriSphere.h"
-#include "MfTriCone.h"
-#include "MfTriCylinder.h"
-#include "MfTriLine.h"
-#include "MfTriBezier.h"
-#include "MfTriCircle.h"
-#include "MfTriRing.h"
+#include "MfTriPrimitives.h"
 
 #define EPSILON 1e-5f
 

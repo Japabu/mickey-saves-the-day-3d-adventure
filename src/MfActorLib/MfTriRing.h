@@ -2,7 +2,6 @@
 // MfTriRing: a triangle set of a ring. Exported names only.
 #include "MfActorLib_api.h"
 #include "MfTriangleSet.h"
-class MfMaterial;
 
 class MFACTOR_API MfTriRing : public MfTriangleSet {
 public:

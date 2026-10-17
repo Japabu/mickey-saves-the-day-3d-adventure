@@ -1,12 +1,6 @@
 // MfActorLib.dll 0x10004c90-0x10005140: MfCamera and the compiler-generated
 // members of MfOrientedBox.
-#include "MfCamera.h"
-#include "MfOrientedBox.h"
-#include "MfStream.h"
-#include "MfStreamObject.h"
-#include "MfStreamConstructorEntry.h"
-
-extern __declspec(dllimport) MfNullString NULL_STRING;
+#include "MfCamera_unit.h"
 
 // 0x10004c90 ??0MfCamera@@QAE@XZ
 MfCamera::MfCamera()

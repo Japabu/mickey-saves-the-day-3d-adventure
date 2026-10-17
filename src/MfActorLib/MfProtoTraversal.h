@@ -21,3 +21,5 @@ public:
     int mNumNodes;
     MfProtoNode **mNodes;
 };
+
+#include "MfPermutation.h"

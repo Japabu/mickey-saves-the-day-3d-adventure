@@ -10,11 +10,14 @@
 #include "MfString.h"
 #include "MfDblList.h"
 #include "enums.h"
-#include "MfFileType.h"
 
 extern __declspec(dllimport) MfNullString NULL_STRING;
 
+#include "MfCriticalSection.h"
+
 class MfFile;
+
+#include "MfFileType.h"
 
 class MFACTOR_API MfFileObject {
 public:
@@ -106,3 +109,5 @@ protected:
     unsigned long m_bufferSize; // 0x2c
     unsigned long m_pos;        // 0x30
 };
+
+#include "MfFileProgress.h"

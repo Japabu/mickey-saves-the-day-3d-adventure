@@ -4,14 +4,17 @@
 #include "MfActorLib_api.h"
 #include "MfStreamObject.h"
 #include "MfTransform3.h"
-#include "MfOrientedBox.h"
-#include "MfNode.h"
-#include "MfLeafNode.h"
-#include "MfSphereNode.h"
 
 class MfAi;
 class MfStream;
 class MfTriangleSet;
+
+#include "MfOrientedBox.h"
+#include "MfTextureVertex.h"
+#include "MfTriangle.h"
+#include "MfNode.h"
+#include "MfLeafNode.h"
+#include "MfSphereNode.h"
 
 // size 0x5c
 class MFACTOR_API MfColModel : public MfStreamObject {

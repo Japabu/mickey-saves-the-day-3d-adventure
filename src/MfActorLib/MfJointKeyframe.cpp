@@ -2,7 +2,6 @@
 #include "MfJointKeyframe.h"
 #include "MfRotation3.h"
 #include "MfStream.h"
-#include "MfStreamConstructorEntry.h"
 
 // 0x10009dd0 ?CreateCopy@MfJointKeyframe@@UAEPAVMfKeyframe@@XZ
 MfKeyframe *MfJointKeyframe::CreateCopy()

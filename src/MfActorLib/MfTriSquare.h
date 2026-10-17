@@ -3,7 +3,6 @@
 // MfProtoNode::CreateColModel). Exported names only.
 #include "MfActorLib_api.h"
 #include "MfTriangleSet.h"
-class MfMaterial;
 
 class MFACTOR_API MfTriSquare : public MfTriangleSet {
 public:

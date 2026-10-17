@@ -2,7 +2,6 @@
 // MfTriCylinder: a triangle set of a cylinder. Exported names only.
 #include "MfActorLib_api.h"
 #include "MfTriangleSet.h"
-class MfMaterial;
 
 class MFACTOR_API MfTriCylinder : public MfTriangleSet {
 public:

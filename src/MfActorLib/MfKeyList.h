@@ -4,10 +4,11 @@
 // signatures from the export names.
 #include "MfActorLib_api.h"
 #include "MfStreamObject.h"
-#include "MfKeyListNode.h"
 class MfDblList;
 class MfKeyframe;
 class MfStream;
+
+#include "MfKeyListNode.h"
 
 // size 0x14; vtable: StreamType, ReadFromStream, WriteToStream, WriteAsObject, ~
 class MFACTOR_API MfKeyList : public MfStreamObject {

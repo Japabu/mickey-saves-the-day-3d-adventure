@@ -1,7 +1,6 @@
 // MfActorLib.dll 0x100099a0-0x10009d50: MfJLTranslate.
-#include "MfJLTranslate.h"
+#include "MfJLimit.h"
 #include "MfStream.h"
-#include "MfStreamConstructorEntry.h"
 
 // 0x100099a0 _$E12 (calls $E9 and $E11)
 // 0x100099b0 _$E9 (original _$E9:) constructs s_defaultExtent

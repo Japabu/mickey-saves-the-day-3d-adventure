@@ -6,10 +6,8 @@
 #include "MfVector3Value.h"
 #include "MfProtoNode.h"
 #include "MfProtoTraversal.h"
-#include "MfPermutation.h"
 #include "MfProtoSkill.h"
 #include "MfProtoDB.h"
-#include "MfFileProgress.h"
 #include "MfFSMSpaceToBhvr.h"
 #include "MfTriangleSet.h"
 #include "MfColModel.h"
@@ -17,8 +15,6 @@
 #include "MfStream.h"
 #include "MfFileStream.h"
 #include "MfAiHook.h"
-#include "MfActorRWHookData.h"
-#include "MfAiHookManager.h"
 #include "MfLogger.h"
 #include "MfCopyFolder.h"
 #include "MfCallBack.h"
@@ -26,7 +22,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <float.h>
-#include "MfStreamConstructorEntry.h"
 
 // The reader of the old actor file format (user format below 100).
 bool IsOldProtoNodeFormat(MfStream &s);

@@ -2,7 +2,6 @@
 #include "MfProtoSkill.h"
 #include "MfProtoActor.h"
 #include "MfProtoTraversal.h"
-#include "MfPermutation.h"
 #include "MfProtoNode.h"
 #include "MfJointKeyList.h"
 #include "MfJointKeyframe.h"
@@ -14,7 +13,6 @@
 #include "MfProtoHandData.h"
 #include "MfProtoAnchorData.h"
 #include "MfProtoManipData.h"
-#include "MfStreamConstructorEntry.h"
 
 const int MfProtoSkill::fileVersion = 106;
 const int MfProtoSkill::fileType = 'MFSk';

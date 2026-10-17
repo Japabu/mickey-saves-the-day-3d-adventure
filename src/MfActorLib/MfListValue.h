@@ -27,3 +27,5 @@ public:
 protected:
     int flags;  // +0x1c (cleared by the constructors, otherwise unused)
 };
+
+#include "MfListValueSearchItr.h"

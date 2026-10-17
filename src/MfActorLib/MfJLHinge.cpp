@@ -1,7 +1,6 @@
 // MfActorLib.dll 0x100085f0-0x10008c20: MfJLHinge.
-#include "MfJLHinge.h"
+#include "MfJLimit.h"
 #include "MfStream.h"
-#include "MfStreamConstructorEntry.h"
 
 // 0x100085f0 ?fn_100085f0@@YAPAVMfStreamObject@@XZ (original fn_100085f0:) stream constructor for 'nHLJ'
 static MfStreamObject *fn_100085f0()

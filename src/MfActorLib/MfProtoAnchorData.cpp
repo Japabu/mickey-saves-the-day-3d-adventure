@@ -1,7 +1,6 @@
 // MfActorLib.dll 0x10018770: MfProtoAnchorData.
 #include "MfProtoAnchorData.h"
 #include "MfStream.h"
-#include "MfStreamConstructorEntry.h"
 
 // 0x10018770 ??0MfProtoAnchorData@@QAE@XZ
 MfProtoAnchorData::MfProtoAnchorData()

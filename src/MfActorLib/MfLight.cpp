@@ -1,7 +1,6 @@
 // MfActorLib.dll 0x1000b8a0-0x1000bd40: MfLight.
 #include "MfLight.h"
 #include "MfStream.h"
-#include "MfStreamConstructorEntry.h"
 
 #define MF_PI 3.14159265f
 

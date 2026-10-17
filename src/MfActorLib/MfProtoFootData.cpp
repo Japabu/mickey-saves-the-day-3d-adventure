@@ -1,7 +1,6 @@
 // MfActorLib.dll 0x10018580: MfProtoFootData.
 #include "MfProtoFootData.h"
 #include "MfStream.h"
-#include "MfStreamConstructorEntry.h"
 
 // 0x10018580 ??0MfProtoFootData@@QAE@XZ
 MfProtoFootData::MfProtoFootData()

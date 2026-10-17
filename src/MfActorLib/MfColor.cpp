@@ -1,7 +1,6 @@
 // MfActorLib.dll 0x1000bd40-0x1000c050: MfColor.
 #include "MfColor.h"
 #include "MfStream.h"
-#include "MfStreamConstructorEntry.h"
 
 // 0x1000bd40 ??0MfColor@@QAE@XZ
 MfColor::MfColor() : m_r(0), m_g(0), m_b(0), m_a(1.0f)

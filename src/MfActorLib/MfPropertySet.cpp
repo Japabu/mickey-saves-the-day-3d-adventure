@@ -7,7 +7,6 @@
 #include "MfCallBack.h"
 #include "MfStringList.h"
 #include "MfStream.h"
-#include "MfStreamConstructorEntry.h"
 
 // Adds a copy of every property it is called with to a set.
 class CopyCallBack : public MfCallBack {

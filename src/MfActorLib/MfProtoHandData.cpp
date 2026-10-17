@@ -1,7 +1,6 @@
 // MfActorLib.dll 0x100186c0: MfProtoHandData.
 #include "MfProtoHandData.h"
 #include "MfStream.h"
-#include "MfStreamConstructorEntry.h"
 
 // 0x100186c0 ??0MfProtoHandData@@QAE@XZ
 MfProtoHandData::MfProtoHandData()

@@ -4,7 +4,6 @@
 #include "MfString.h"
 #include "MfHashTable.h"
 #include "MfFile.h"
-#include "MfCriticalSection.h"
 class MfProtoActor;
 
 class MFACTOR_API MfProtoDB {

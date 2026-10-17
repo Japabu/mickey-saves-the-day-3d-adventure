@@ -1,6 +1,16 @@
 # MfActorLib edits for the 64-bit port (see port/rewrite.py, EDITS). `long` is 32 bits
 # (rewrite.windows_long).
 
+# MfCamera_unit.h (MfCamera.cpp's own copy of its classes) has int filler where the
+# real classes (MfStream.h, MfTypedValue.h, MfPropertyList.h) have pointer members: here
+# the fillers get the real member types so the copy has the real 64-bit layout.
+# MfStream: int userFormat, long objectType, int objectSize, void *userData
+STREAM_VIEW = ('    int m_10;\n    MfStreamError m_status;',
+               '    void *m_10;     // PORT: MfStream::userData is a pointer\n    MfStreamError m_status;', 1)
+# MfTypedValue: long lModCBackId, void (*pModCBack)(...)
+TYPEDVALUE_VIEW = ('protected:\n    int m_04;\n    int m_08;\n};',
+                   'protected:\n    int m_04;\n    void *m_08;     // PORT: MfTypedValue::pModCBack is a pointer\n};', 1)
+
 # with long rewritten to int, MfStream's long overloads repeat the int ones
 LONG_TWIN = '#if 0 /* PORT: the int overload serves (long is int) */\n{\n'
 
@@ -45,6 +55,12 @@ EDITS = {
          '}\n'
          'MfStreamError MfStream::Status() { return status; }    // PORT: the one definition\n'
          '// 0x10019b60 ??1MfStream@@QAE@XZ\n', 1),
+    ],
+    'MfActorLib/MfCamera_unit.h': [
+        STREAM_VIEW, TYPEDVALUE_VIEW,
+        # the real MfPropertyList holds an MfDblList (vptr, first, last, count)
+        ('    int m_04, m_08, m_0c, m_10;\n',
+         '    void *m_04, *m_08, *m_0c; int m_10;    // PORT: an MfDblList (vptr, first, last, count)\n', 1),
     ],
     # mfutil's MfCopyFolder as MfActorLib sees it: char[] filler where the real class
     # has three MfStrings (pointers)

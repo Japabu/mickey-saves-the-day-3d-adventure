@@ -15,3 +15,6 @@ public:
 protected:
     virtual MfStreamError WriteAsObject(MfStream &) const;
 };
+
+// MfStreamObject.h also declares the registry of the stream object constructors.
+#include "MfStreamConstructorEntry.h"

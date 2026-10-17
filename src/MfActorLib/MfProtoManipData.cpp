@@ -1,7 +1,6 @@
 // MfActorLib.dll 0x10018860: MfProtoManipData.
 #include "MfProtoManipData.h"
 #include "MfStream.h"
-#include "MfStreamConstructorEntry.h"
 
 // 0x10018860 ??0MfProtoManipData@@QAE@XZ
 MfProtoManipData::MfProtoManipData()

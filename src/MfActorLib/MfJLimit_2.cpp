@@ -24,12 +24,7 @@
 // 0x10008510 ?Duplicate@MfJLTranslate@@UAEPAVMfJLimit@@XZ
 // 0x10008570 ?GetType@MfJLTranslate@@UAEHXZ
 #include "MfJLimit.h"
-#include "MfJLHinge.h"
-#include "MfJLEuler.h"
-#include "MfJLLinear.h"
-#include "MfJLTranslate.h"
 #include "MfStream.h"
-#include "MfStreamConstructorEntry.h"
 
 // 0x10008580 ?fn_10008580@@YAPAVMfStreamObject@@XZ (original fn_10008580:) stream constructor for 'miLJ'
 static MfStreamObject *fn_10008580()

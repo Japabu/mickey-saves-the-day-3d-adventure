@@ -27,6 +27,8 @@ class MfStream;
 class MfTriangleSet;
 class MfVector3;
 
+#include "MfColSphere.h"
+
 // size 0x84
 class MFACTOR_API MfProtoNode : public MfTreeNode, public MfStreamObject {
     friend class MfProtoActor;

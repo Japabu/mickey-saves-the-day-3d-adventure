@@ -1,7 +1,6 @@
 // MfActorLib.dll 0x100095a0-0x100099a0: MfJLLinear.
-#include "MfJLLinear.h"
+#include "MfJLimit.h"
 #include "MfStream.h"
-#include "MfStreamConstructorEntry.h"
 
 // 0x100095a0 ?fn_100095a0@@YAPAVMfStreamObject@@XZ (original fn_100095a0:) stream constructor for 'JLXl'
 static MfStreamObject *fn_100095a0()

@@ -2,7 +2,7 @@
 // MfPermutation: how the nodes of one skeleton map onto the nodes of another
 // (-1 where a node has no counterpart).
 #include "MfActorLib_api.h"
-class MfProtoTraversal;
+#include "MfProtoTraversal.h"
 
 class MFACTOR_API MfPermutation {
 public:
