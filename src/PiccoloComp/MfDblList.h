@@ -2,16 +2,7 @@
 class MfCallBack;
 class MfListItemInterface;
 
-// mfutil.dll list node: data, previous, next.
-class MfDblListItem {
-public:
-    void *GetData() const { return pData; }
-    MfDblListItem *GetPrev() const { return pliPrev; }
-    MfDblListItem *GetNext() const { return pliNext; }
-    void *pData;            // +0
-    MfDblListItem *pliPrev; // +4
-    MfDblListItem *pliNext; // +8
-};
+#include "../mfutil/MfDblListItem.h"
 
 // mfutil.dll: doubly linked list of void *. The constructor is inline here.
 // VC5 lays overloaded virtuals out in reverse order of declaration.

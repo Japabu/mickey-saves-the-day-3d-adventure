@@ -1,35 +1,8 @@
 #pragma once
 #include <stdlib.h>
 
-// mfutil.dll: the initial capacity of an MfString.
-class __declspec(dllimport) MfStringSize {
-public:
-    MfStringSize(int n) : nSize(n) {}
-    int nSize;
-};
-
-// mfutil.dll: the reference-counted body of an MfString.
-class __declspec(dllimport) MfStringRef {
-public:
-    MfStringRef(int size) : m_count(0)
-    {
-        m_maxLength = size + nNumPadChars;
-        m_str = new char[m_maxLength + 1];
-        m_str[0] = 0;
-        m_length = 0;
-    }
-    MfStringRef(MfStringRef const &ref) : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(ref); }
-    virtual ~MfStringRef() { delete m_str; }
-    MfStringRef *CopyOnWrite() { return new MfStringRef(*this); }
-    void MakeCopy(MfStringRef const &ref);
-    void StripWhiteSpace();
-    char *m_str;        // +4
-    int m_length;       // +8
-    int m_maxLength;    // +0xc
-    int m_count;        // +0x10
-protected:
-    static int nNumPadChars;
-};
+#include "../mfutil/MfStringSize.h"
+#include "../mfutil/MfStringRef.h"
 class MfNullString;
 class MfPointerStorageString;
 class MfStringCursor;
@@ -192,9 +165,4 @@ private:
     MfStringRef *mfsr;  // +0
 };
 
-// mfutil.dll: the empty string constant.
-class __declspec(dllimport) MfNullString {
-public:
-    int iDummy;
-};
-extern __declspec(dllimport) MfNullString NULL_STRING;
+#include "../mfutil/MfNullString.h"
