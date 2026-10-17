@@ -25,9 +25,11 @@
 //   volume is the device gain, so it applies to the movies' sound too, as in the original
 //   where Bink and Smacker played through Miles.
 #include "media.h"
+#include "../port.h"
 
 #include <chrono>
 #include <condition_variable>
+#include <atomic>
 #include <mutex>
 #include <string.h>
 #include <thread>
@@ -49,6 +51,18 @@ void set_error(const std::string &e)
 
 struct Voice {
     enum State { Idle, Playing, Paused, Done };
+    std::atomic<bool> music{false};  // the background music (port_music_stream): the music slider applies
+    float stream_volume = 1;         // a file stream's own volume (AIL_set_stream_volume), 0..1
+    float stream_gain = -1;          // what the SDL stream has: stream_volume times the music slider
+
+    void apply_stream_gain()
+    {
+        float g = stream_volume * (music ? port_music_gain() / 100.0f : 1.0f);
+        if (g != stream_gain) {
+            stream_gain = g;
+            SDL_SetAudioStreamGain(stream, g);
+        }
+    }
 
     ~Voice()
     {
@@ -89,6 +103,7 @@ struct Voice {
     {
         std::unique_lock<std::mutex> l(mu);
         while (!quit) {
+            apply_stream_gain();  // follows the music slider while it moves
             if (rewind_pending) {
                 rewind_pending = false;
                 media->rewind();
@@ -179,7 +194,8 @@ struct Voice {
         float v = (volume < 0 ? 0 : volume > 127 ? 127 : volume) / 127.0f;
         if (media) {
             // a stream is always centred; the gain applies to what is queued too
-            SDL_SetAudioStreamGain(stream, v);
+            stream_volume = v;
+            apply_stream_gain();
             return;
         }
         if (pan < 0)
@@ -284,9 +300,10 @@ struct Voice {
         int frames = additional / (int)(sizeof(float) * media::CHANNELS) + 1;
         v->scratch.resize((size_t)frames * media::CHANNELS);
         int got = v->produce(v->scratch.data(), frames);
+        float music = v->music ? port_music_gain() / 100.0f : 1.0f;
         for (int i = 0; i < got; i++) {
-            v->scratch[(size_t)i * 2] *= v->gain_l;
-            v->scratch[(size_t)i * 2 + 1] *= v->gain_r;
+            v->scratch[(size_t)i * 2] *= v->gain_l * music;
+            v->scratch[(size_t)i * 2 + 1] *= v->gain_r * music;
         }
         if (got > 0)
             SDL_PutAudioStreamData(s, v->scratch.data(), (int)(got * (int)sizeof(float) * media::CHANNELS));
@@ -559,6 +576,12 @@ HSTREAM __stdcall AIL_open_stream(_DIG_DRIVER *dig, const char *filename, int st
 }
 
 void __stdcall AIL_close_stream(HSTREAM stream) { delete stream_voice(stream); }
+
+void port_music_stream(void *stream)
+{
+    if (stream)
+        stream_voice((HSTREAM)stream)->music = true;
+}
 
 void __stdcall AIL_start_stream(HSTREAM stream)
 {

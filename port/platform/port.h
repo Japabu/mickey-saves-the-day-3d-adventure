@@ -10,11 +10,25 @@
 extern "C" {
 #endif
 
-// Display (Win32 layer). The DirectDraw layer hands over each finished frame of the
-// primary surface as 32-bit ARGB (0xAARRGGBB in memory order of a uint32 per pixel);
-// the Win32 layer uploads it to the game window, scaled to fit (letterboxed). A frame
-// of the sharp copies (dx.h) is scale times the size of the game's screen.
-void port_present(const void *argb8888, int w, int h, int pitch, int scale);
+// Display. The DirectDraw layer says when the primary surface changed (any thread, any
+// number of times a frame: cheap); the Win32 layer, when it shows a frame (at most once
+// per display refresh, on the main thread), asks for its pixels: 32-bit ARGB
+// (0xAARRGGBB per uint32), w x h, valid until the next call, scale times the game's
+// screen for the sharp copies (dx.h). 0 when there is nothing to show.
+void port_frame_changed(void);
+int port_frame_pixels(const uint32_t **argb, int *w, int *h, int *scale);
+// The options panel (win32/options.cpp): the volume in percent of a channel of the
+// game's sound manager and of its background music, a counter that changes with them,
+// and the other port.ini settings (fallback when unset). port_scale: how many times
+// the game's screen the 3D is drawn at (MICKEY_SCALE, else port.ini's scale, else 3).
+int port_sound_gain(int channel);
+int port_music_gain(void);
+unsigned port_sound_gain_version(void);
+int port_setting(const char *key, int fallback);
+int port_scale(void);
+void port_set_scale(int scale);  // takes effect at once (the sharp copies are made again)
+// Marks a Miles stream as the background music (its volume follows the music slider).
+void port_music_stream(void *stream);
 // Blocks until the next display refresh (IDirectDraw::WaitForVerticalBlank).
 void port_wait_vblank(void);
 // The game's choice of full screen (DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE) or a window

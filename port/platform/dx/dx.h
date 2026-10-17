@@ -4,8 +4,8 @@
 //
 // The interfaces are the game's own declarations (SteamboatApp/d3d7.h; MBEngine's
 // CMBDirect3DScreen.h and CMBDirectDrawSurface.h declare prefixes of the same vtables).
-// Every surface lives in ordinary memory; the primary surface is handed to the window
-// layer (port_present) when it changes. Methods the game never calls return
+// Every surface lives in ordinary memory; the window layer is told when the primary
+// surface changes and takes its pixels when it shows a frame (port_frame_pixels). Methods the game never calls return
 // DDERR_UNSUPPORTED and log once on the "dx" channel (PORT_LOG=dx).
 #ifndef PORT_DX_H
 #define PORT_DX_H
@@ -129,7 +129,7 @@ struct Surface : Object<IDirectDrawSurface7> {
     unsigned version = 0;      // bumped on every change of the pixels (texture caches)
     TexCache *texCache = 0;    // the converted copy for sampling (render.h)
 
-    // The sharp copy (MICKEY_SCALE, default 3): the same pixels at scale() times the
+    // The sharp copy (MICKEY_SCALE, else the options' 3D sharpness, else 3): the same pixels at scale() times the
     // size, for the surfaces the 3D renders into and every surface they are copied to.
     // Direct3D draws into it at that resolution; everything else that changes the
     // surface (blits, fills, the game's own writes through Lock and GetDC) changes it

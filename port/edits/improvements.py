@@ -9,12 +9,81 @@ EDITS = {
     # - over the open inventory bar it shows the highlight only on what reacts to a click:
     #   the three buttons and the items that can be used in this scene (the original
     #   highlighted the whole bar, empty slots and unusable items included).
+    # Smooth movement at any frame rate: the skills (animations) are sampled between their
+    # keyframes too. The game's data switches that off, so the characters' poses and their
+    # walk along a path advanced in 30 Hz steps; at the frame rates of 2001 each frame
+    # crossed a step and that looked even, at today's they come as visible jerks (most
+    # frames move by nothing, then one by a whole keyframe).
+    # A walking character's height follows the floor smoothly (port/improve/RuntimeLib/
+    # walk.cpp) instead of jumping by up to a quarter of a leg when a walk starts.
+    'RuntimeLib/MfLocoActivity.cpp': [
+        ('    mLastSampleTime = sample;\n    mPathPos = pos;\n',
+         '    mLastSampleTime = sample; { void PortEaseWalkHeight(MfSkeletonNode *, const MfTransform3 &, unsigned long); '
+         'PortEaseWalkHeight(mActor->skeleton(), mLastTransform, elapsed); }\n    mPathPos = pos;\n', 1),
+    ],
+    # Leaving the game: Mickey's goodbye ends the main menu (the credits follow when it is
+    # over), but an actor does not start a line while his last one plays, so a Yes clicked
+    # while Mickey still asked "really?" dropped the goodbye and the menu waited for ever.
+    # His question stops first.
+    'SteamboatApp/SBMainMenuNode.cpp': [
+        ('                StartDialogue("ui03xmc0110", true);\n',
+         '                { MBComPtr<IMBSoundManager> sounds(MBIID_IMBSoundManager); if (sounds) sounds->StopChannel(20); } '
+         'StartDialogue("ui03xmc0110", true);\n', 1),
+    ],
+    # The credits can be skipped: a click, Space, Enter or Escape ends them
+    # (port/improve/SteamboatApp/credits.cpp).
+    'SteamboatApp/SBCreditsNode.h': [
+        ('    virtual void OnKeyDown(MBKeyboardEvent &key);',
+         '    virtual void OnKeyDown(MBKeyboardEvent &key); virtual void OnLMouseUp(MBMouseEvent &evt); bool mPortDone;', 1),
+    ],
+    'SteamboatApp/SBCreditsNode.cpp': [
+        ('    SetBackgroundMusicState(true);\n}\n', '    SetBackgroundMusicState(true); mPortDone = false;\n}\n', 1),
+        ('void SBCreditsNode::OnKeyDown(MBKeyboardEvent &key)\n{\n    SteamboatNode::OnKeyDown(key);\n',
+         'void SBCreditsNode::OnKeyDown(MBKeyboardEvent &key)\n{\n    SteamboatNode::OnKeyDown(key); '
+         'if (key.mCharCode == 27 || key.mCharCode == \' \' || key.mCharCode == 13) Done();\n', 1),
+        ('    MBComPtr<ISBNodeManager> mgr(MBIID_ISBNodeManager);\n    mgr->AddNode("MV");\n',
+         '    if (mPortDone) return; mPortDone = true; MBComPtr<ISBNodeManager> mgr(MBIID_ISBNodeManager);\n    mgr->AddNode("MV");\n', 1),
+    ],
+    # Two walking characters do not stop for each other. The engine cancels a walk when
+    # another character's path comes near (MfProximityManager), puts the walker into
+    # its idle pose and plans again once the way is clear, and between equals the one
+    # that waits is the one lower in memory: in the main menu Mickey stopped at random
+    # while Minnie crossed, then walked on from there (or turned and slid to his spot
+    # when the idle pose's end reached his behaviour as the walk's). A character
+    # standing in the way still makes a walker plan around it.
+    'RuntimeLib/MfLiveActor.cpp': [
+        ('    if (priority < 0)\n        return;\n    if (!moving && !mBlockList.GetCount())\n',
+         '    if (priority < 0 || (walking && other->IsCurrentActivity(MfLocoActivity::TYPE)))\n        return;\n'
+         '    if (!moving && !mBlockList.GetCount())\n', 1),
+    ],
+    # The options panel's volumes (platform/win32/options.cpp; Escape opens it): every
+    # channel's volume is scaled by its slider (20 voices, 10 music, the rest sound
+    # effects) and applied again when a slider moves; the background music stream follows
+    # the music slider (port/improve/MBEngine/sound.cpp, SteamboatApp/sound.cpp).
+    'MBEngine/MBSoundChannel.h': [
+        ('    long mChannelID;\n    float mRateMultiplier;\n    short mVolume;',
+         '    long mChannelID;\n    float mRateMultiplier;\n    short mVolume; unsigned mPortGainVersion;', 1),
+    ],
+    'MBEngine/MBSoundChannel.cpp': [
+        ('void MBSoundChannel::Idle(void)\n{\n',
+         'void MBSoundChannel::Idle(void)\n{ { unsigned PortSoundGainVersion(); unsigned v = PortSoundGainVersion(); '
+         'if (v != mPortGainVersion) { mPortGainVersion = v; VolumeChanged(); } }\n', 1),
+        ('    return (short)(mVolume * masterVolume / 127);\n',
+         '    int PortSoundGain(int); return (short)(mVolume * masterVolume / 127 * PortSoundGain(mChannelID) / 100);\n', 1),
+    ],
+    'MfActorLib/MfProtoSkill.cpp': [
+        ('        s >> iSampleRate >> bInterpolate;\n',
+         '        s >> iSampleRate >> bInterpolate; bInterpolate = 1;\n', 1),
+    ],
     'SteamboatApp/SteamboatNode.h': [
         ('    virtual void OnMouseMove(MBMouseEvent &evt);        // vftable+0x5c',
          '    virtual void OnMouseMove(MBMouseEvent &evt); void PortHover3D(); static bool PortHoldsItem(); // vftable+0x5c; '
          'PortHover3D: port/improve/SteamboatApp/cursor.cpp', 1),
     ],
     'SteamboatApp/SteamboatNode.cpp': [
+        # the background music follows the options panel's music volume (see MBSoundChannel below)
+        ('                sBackgroundMusic = AIL_open_stream(dig, path, 0);\n',
+         '                sBackgroundMusic = AIL_open_stream(dig, path, 0); { void PortMusicStream(void *); PortMusicStream(sBackgroundMusic); }\n', 2),
         # Painted hotspots a click explains (dialog) show a cursor of their own, the talk
         # cursor (a speech bubble, port/improve/SteamboatApp/cursor.cpp); those that play a
         # sound show the highlight. The original's scene files gave most of them the

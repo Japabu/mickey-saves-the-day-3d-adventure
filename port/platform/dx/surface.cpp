@@ -13,6 +13,9 @@ std::recursive_mutex &layer_lock()
     return *m;
 }
 
+// every surface, for port_set_scale (under the layer lock)
+static std::vector<Surface *> s_surfaces;
+
 // ---- pixel formats
 
 void PixFmt::set(const DDPIXELFORMAT &pf)
@@ -169,8 +172,21 @@ static void row_to_argb(const PixFmt &f, const uint8_t *src, uint32_t *dst, int 
     }
 }
 
+// The primary surface the window shows (its pixels are converted when shown).
+static Surface *s_shown;
+
 void present(Surface *s)
 {
+    s_shown = s;
+    port_frame_changed();
+}
+
+extern "C" int port_frame_pixels(const uint32_t **argb, int *fw, int *fh, int *scale)
+{
+    DX_GUARD;
+    Surface *s = s_shown;
+    if (!s)
+        return 0;
     RECT r = {0, 0, s->width(), s->height()};
     if (s->clipper && s->clipper->hwnd && !s->dd->fullscreen()) {
         // A windowed primary is the whole desktop: show the window's client area.
@@ -186,8 +202,8 @@ void present(Surface *s)
     }
     int w = r.right - r.left, h = r.bottom - r.top;
     if (w <= 0 || h <= 0)
-        return;
-    static std::vector<uint32_t> frame; // under the layer lock
+        return 0;
+    static std::vector<uint32_t> frame; // only the main thread asks
     int k = s->hi ? Surface::scale() : 1;
     frame.resize((size_t)w * h * k * k);
     for (int y = 0; y < h * k; y++) {
@@ -195,7 +211,11 @@ void present(Surface *s)
                                    : s->row(r.top + y) + r.left * s->fmt.bytes;
         row_to_argb(s->fmt, src, &frame[(size_t)y * w * k], w * k, s->pal());
     }
-    port_present(frame.data(), w * k, h * k, w * k * 4, k);
+    *argb = frame.data();
+    *fw = w * k;
+    *fh = h * k;
+    *scale = k;
+    return 1;
 }
 
 // ---- palettes and clippers
@@ -273,16 +293,44 @@ Surface::Surface(DirectDraw *dd, const DDSURFACEDESC2 &d) : dd(dd), desc(d)
     desc.lPitch = pitch;
     desc.dwFlags |= DDSD_PITCH;
     bits = (uint8_t *)calloc((size_t)pitch * (height() ? height() : 1), 1);
+    DX_GUARD;
+    s_surfaces.push_back(this);
 }
+
+// The size of the sharp copies: MICKEY_SCALE, else port.ini's scale (the options
+// panel), else 3. The panel changes it while the game runs (port_set_scale).
+static std::atomic<int> s_scale{0};
 
 int Surface::scale()
 {
-    static const int s = [] {
+    int k = s_scale;
+    if (!k) {
         const char *e = getenv("MICKEY_SCALE");
-        int v = e && *e ? atoi(e) : 3;
-        return v < 1 ? 1 : v > 8 ? 8 : v;
-    }();
-    return s;
+        k = e && *e ? atoi(e) : port_setting("scale", 3);
+        k = k < 1 ? 1 : k > 8 ? 8 : k;
+        s_scale = k;
+    }
+    return k;
+}
+
+extern "C" int port_scale(void) { return Surface::scale(); }
+
+// A new size for the sharp copies: they are dropped, and made again at the new size
+// when the 3D next draws (make_hi starts them from the game's own pixels).
+extern "C" void port_set_scale(int k)
+{
+    DX_GUARD;
+    k = k < 1 ? 1 : k > 8 ? 8 : k;
+    if (k == Surface::scale())
+        return;
+    for (Surface *s : s_surfaces) {
+        free(s->hi);
+        s->hi = 0;
+        s->hiPitch = 0;
+        s->before.clear();
+    }
+    s_scale = k;
+    port_frame_changed();
 }
 
 // Copies the pixels of src (the rectangle sr, stretched to d, colour keyed and converted)
@@ -415,6 +463,17 @@ Surface::~Surface()
         clipper->Release();
     if (dd->primary == this)
         dd->primary = 0;
+    {
+        DX_GUARD; // the window may be converting it
+        if (s_shown == this)
+            s_shown = 0;
+        for (size_t i = 0; i < s_surfaces.size(); i++)
+            if (s_surfaces[i] == this) {
+                s_surfaces[i] = s_surfaces.back();
+                s_surfaces.pop_back();
+                break;
+            }
+    }
     free(bits);
     dd->Release();
 }

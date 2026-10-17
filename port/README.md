@@ -49,6 +49,16 @@ decompiled code in `src/` stays as the original was; each improvement is new cod
   painted spot, talks to a character). The original never looked at the 3D scene
   before a click and gave several explain spots the plain glove; on the inventory bar
   the pointing hand now shows only over the buttons and the items usable in the scene.
+- **Smooth movement** (`port/edits/improvements.py`, `port/improve/RuntimeLib/walk.cpp`):
+  animations are sampled between their keyframes (the original stepped at 30 Hz, which
+  showed as jerks at today's frame rates); a walking character's height follows the
+  floor over a few frames instead of jumping when a walk starts; two walking characters
+  do not stop for each other (the original cancelled one walk at random, which made
+  Mickey pause, snap round and slide in the main menu).
+- **Leaving the game** (`port/improve/SteamboatApp/credits.cpp`): Yes on the exit board
+  always works (Mickey's question is stopped so his goodbye can play; the original
+  waited for ever when Yes came while he still asked), and a click, Space, Enter or
+  Escape skips the credits.
 
 ## 64-bit
 

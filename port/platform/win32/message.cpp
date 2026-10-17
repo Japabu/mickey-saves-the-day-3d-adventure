@@ -328,6 +328,8 @@ void pump_events()
             SDL_StartTextInput(w->sdl);
             s_text_input_started = true;
         }
+        if (options_event(w, e))
+            continue;
         switch (e.type) {
         case SDL_EVENT_QUIT:
         case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
@@ -335,6 +337,8 @@ void pump_events()
             post((HWND)w, WM_CLOSE, 0, 0);
             break;
         case SDL_EVENT_WINDOW_FOCUS_GAINED:
+            if (options_open())
+                break;  // the game stays paused under the options panel
             post((HWND)w, WM_ACTIVATEAPP, TRUE, 0);
             post((HWND)w, WM_ACTIVATE, WA_ACTIVE, 0);
             post((HWND)w, WM_SETFOCUS, 0, 0);

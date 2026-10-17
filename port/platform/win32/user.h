@@ -1,7 +1,7 @@
 // user.h - windows of the user32 layer (window.cpp, message.cpp, display.cpp).
 //
-// A top-level window of the game is one SDL window showing the frames DirectDraw hands
-// over (port_present), scaled to fit. The game's coordinates stay those of its 640x480
+// A top-level window of the game is one SDL window showing the frames of DirectDraw's
+// primary surface (port_frame_pixels), scaled to fit. The game's coordinates stay those of its 640x480
 // client area; screen coordinates equal client coordinates of the main window (its
 // client origin is the screen origin, as in the game's full-screen mode).
 #ifndef PORT_WIN32_USER_H
@@ -12,6 +12,7 @@
 #include <string>
 
 struct SDL_Window;
+union SDL_Event;
 
 namespace win32 {
 
@@ -49,6 +50,11 @@ void display_destroy(Window *w);
 void display_title(Window *w);
 // SDL window coordinates to the game's client coordinates.
 void display_to_client(Window *w, float x, float y, int *cx, int *cy);
+// options.cpp: the options panel (Escape): takes the input while it is open, and is
+// drawn over the frames the window shows (k times the game's 640x480).
+bool options_event(Window *w, const SDL_Event &e);
+bool options_open();
+void options_draw(uint32_t *px, int w, int h, int k);
 void display_from_client(Window *w, int cx, int cy, float *x, float *y);
 void display_pump();  // shows a frame presented since the last pump
 int display_width();   // the "screen": the game's display mode, else the desktop

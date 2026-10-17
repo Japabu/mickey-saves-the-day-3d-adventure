@@ -1,11 +1,12 @@
-// display.cpp - the game window on screen: one SDL window and renderer, the frames the
-// DirectDraw layer presents (port_present), scaled to fit with letterboxing, vsync, and
-// the "screen" size the game sees.
+// display.cpp - the game window on screen: one SDL window and renderer, the frames of
+// the DirectDraw layer (port_frame_changed, port_frame_pixels), scaled to fit with
+// letterboxing, vsync, and the "screen" size the game sees.
 #include <SDL3/SDL.h>
 
 #include "user.h"
 #include "../port.h"
 
+#include <atomic>
 #include <mutex>
 #include <pthread.h>
 #include <stdlib.h>
@@ -19,13 +20,9 @@ static SDL_Texture *s_texture;
 static int s_tex_w, s_tex_h, s_tex_scale;
 static Window *s_window;
 
-// The latest frame (copied by port_present, shown when the game's thread next pumps or
-// waits for the vertical blank).
-static std::mutex s_frame_mu;
-static std::vector<uint32_t> s_frame;
-static int s_frame_w, s_frame_h, s_frame_scale = 1;
-static bool s_frame_new;
-static DWORD s_last_present;
+// The primary surface changed since the window last showed it (port_frame_changed);
+// shown when the game's thread next pumps messages or waits for the vertical blank.
+static std::atomic<bool> s_frame_new;
 
 static void init_video()
 {
@@ -57,6 +54,9 @@ static bool fullscreen_wanted()
     const char *e = getenv("MICKEY_WINDOWED");
     if (e && *e && *e != '0')
         return false;
+    int chosen = port_setting("fullscreen", -1);  // the options panel's choice
+    if (chosen >= 0)
+        return chosen != 0;
     return s_fullscreen_request != 0;
 }
 
@@ -81,6 +81,10 @@ void display_show(Window *w)
             fprintf(stderr, "SDL_CreateWindow: %s\n", SDL_GetError());
             return;
         }
+        // resizing keeps the game's shape, so the picture fills the window while it is
+        // dragged and after (no stretching, no bars)
+        if (ch > 0)
+            SDL_SetWindowAspectRatio(w->sdl, (float)cw / ch, (float)cw / ch);
         if (!s_renderer) {
             s_renderer = SDL_CreateRenderer(w->sdl, 0);
             if (!s_renderer)
@@ -161,6 +165,40 @@ void display_from_client(Window *w, int cx, int cy, float *x, float *y)
         SDL_RenderCoordinatesToWindow(s_renderer, (float)cx, (float)cy, x, y);
 }
 
+// PORT_SHOTS="<dir>:<ms>": every <ms> milliseconds the shown frame is saved as
+// <dir>/shot_<ms since start>.bmp, for tests that look at the picture.
+static const char *s_shots = getenv("PORT_SHOTS");
+static std::string s_shot_dir;
+static DWORD s_shot_every, s_shot_start, s_shot_next;
+
+static bool shots_due()
+{
+    if (!s_shots || !*s_shots)
+        return false;
+    if (s_shot_dir.empty()) {
+        const char *colon = strrchr(s_shots, ':');
+        s_shot_dir = colon ? std::string(s_shots, colon - s_shots) : std::string(s_shots);
+        s_shot_every = colon ? (DWORD)atoi(colon + 1) : 1000;
+        s_shot_start = s_shot_next = ticks();
+    }
+    return (int)(ticks() - s_shot_next) >= 0;
+}
+
+static void save_shot(const uint32_t *frame, int w, int h)
+{
+    if (!shots_due())
+        return;
+    DWORD now = ticks();
+    s_shot_next = now + s_shot_every;
+    SDL_Surface *surface = SDL_CreateSurfaceFrom(w, h, SDL_PIXELFORMAT_XRGB8888, (void *)frame, w * 4);
+    if (!surface)
+        return;
+    char path[1024];
+    snprintf(path, sizeof(path), "%s/shot_%06u.bmp", s_shot_dir.c_str(), (unsigned)(now - s_shot_start));
+    SDL_SaveBMP(surface, path);
+    SDL_DestroySurface(surface);
+}
+
 // Shows the latest frame, if there is a new one. Only the main thread draws (SDL's
 // renderer belongs to it); frames presented by other threads (the game's cursor thread)
 // are shown by the main thread's next message pump.
@@ -168,20 +206,30 @@ static void show_frame()
 {
     if (!s_renderer || !pthread_main_np())
         return;
-    std::lock_guard<std::mutex> lock(s_frame_mu);
     if (!s_frame_new)
         return;
-    // nothing to show while the window can't be seen: keep the frame for later
-    if (s_window && s_window->sdl &&
-        (SDL_GetWindowFlags(s_window->sdl) & (SDL_WINDOW_OCCLUDED | SDL_WINDOW_MINIMIZED | SDL_WINDOW_HIDDEN)))
-        return;
-    // at most one present per 60 Hz refresh; a newer frame waits for the next pump
+    // at most one frame per 60 Hz refresh; a newer one waits for the next pump
     static Uint64 s_last;
     Uint64 now = SDL_GetTicksNS();
     if (now - s_last < 16000000)
         return;
+    // nothing to show while the window can't be seen: the frame stays new for later
+    // (PORT_SHOTS still saves it)
+    bool unseen = s_window && s_window->sdl &&
+        (SDL_GetWindowFlags(s_window->sdl) & (SDL_WINDOW_OCCLUDED | SDL_WINDOW_MINIMIZED | SDL_WINDOW_HIDDEN));
+    if (unseen && !shots_due())
+        return;
     s_last = now;
-    s_frame_new = false;
+    if (!unseen)
+        s_frame_new = false; // a change while the pixels are taken shows next time
+    const uint32_t *pixels;
+    int s_frame_w, s_frame_h, s_frame_scale;
+    if (!port_frame_pixels(&pixels, &s_frame_w, &s_frame_h, &s_frame_scale))
+        return;
+    options_draw((uint32_t *)pixels, s_frame_w, s_frame_h, s_frame_scale);  // a copy made for this frame
+    save_shot(pixels, s_frame_w, s_frame_h);
+    if (unseen)
+        return;
     if (!s_texture || s_tex_w != s_frame_w || s_tex_h != s_frame_h || s_tex_scale != s_frame_scale) {
         if (s_texture)
             SDL_DestroyTexture(s_texture);
@@ -194,7 +242,7 @@ static void show_frame()
         SDL_SetRenderLogicalPresentation(s_renderer, s_frame_w / s_frame_scale, s_frame_h / s_frame_scale,
                                          SDL_LOGICAL_PRESENTATION_LETTERBOX);
     }
-    SDL_UpdateTexture(s_texture, 0, s_frame.data(), s_frame_w * 4);
+    SDL_UpdateTexture(s_texture, 0, pixels, s_frame_w * 4);
     SDL_SetRenderDrawColor(s_renderer, 0, 0, 0, 255);
     SDL_RenderClear(s_renderer);
     SDL_RenderTexture(s_renderer, s_texture, 0, 0);
@@ -209,54 +257,12 @@ using namespace win32;
 
 extern "C" {
 
-// PORT_SHOTS="<dir>:<ms>": every <ms> milliseconds the presented frame is saved as
-// <dir>/shot_<ms since start>.bmp, for tests that look at the picture.
-static void save_shot(const std::vector<uint32_t> &frame, int w, int h)
+void port_frame_changed(void)
 {
-    static const char *spec = getenv("PORT_SHOTS");
-    if (!spec || !*spec)
-        return;
-    static std::string dir;
-    static DWORD every, start = ticks(), next;
-    if (dir.empty()) {
-        const char *colon = strrchr(spec, ':');
-        dir = colon ? std::string(spec, colon - spec) : std::string(spec);
-        every = colon ? (DWORD)atoi(colon + 1) : 1000;
-        next = start;
-    }
-    DWORD now = ticks();
-    if ((int)(now - next) < 0)
-        return;
-    next = now + every;
-    SDL_Surface *surface = SDL_CreateSurfaceFrom(w, h, SDL_PIXELFORMAT_XRGB8888, (void *)frame.data(), w * 4);
-    if (!surface)
-        return;
-    char path[1024];
-    snprintf(path, sizeof(path), "%s/shot_%06u.bmp", dir.c_str(), (unsigned)(now - start));
-    SDL_SaveBMP(surface, path);
-    SDL_DestroySurface(surface);
-}
-
-void port_present(const void *argb8888, int w, int h, int pitch, int scale)
-{
-    {
-        std::lock_guard<std::mutex> lock(s_frame_mu);
-        s_frame.resize((size_t)w * (size_t)h);
-        for (int y = 0; y < h; y++)
-            memcpy(&s_frame[(size_t)y * (size_t)w], (const char *)argb8888 + (size_t)y * (size_t)pitch, (size_t)w * 4);
-        s_frame_w = w;
-        s_frame_h = h;
-        s_frame_scale = scale < 1 ? 1 : scale;
-        s_frame_new = true;
-        save_shot(s_frame, w, h);
-    }
-    // Several presents can come per frame (dirty rectangles): show at most one per
-    // display refresh here; the rest is shown by the next pump.
-    DWORD now = ticks();
-    if (now - s_last_present >= 15) {
-        s_last_present = now;
-        show_frame();
-    }
+    // Shown by the next pump, between two frames of the game: it copies a frame to the
+    // screen in pieces (the dirty rectangles: background back where a character was, the
+    // character where it is now), and showing one in between makes the characters jump.
+    s_frame_new = true;
 }
 
 void port_set_fullscreen(int fullscreen)
@@ -269,7 +275,6 @@ void port_set_fullscreen(int fullscreen)
 void port_wait_vblank(void)
 {
     if (s_frame_new && pthread_main_np()) {
-        s_last_present = ticks();
         show_frame();  // presents with vsync
         return;
     }
