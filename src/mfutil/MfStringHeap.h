@@ -6,7 +6,7 @@
 
 #include "MfStringList.h"
 
-class MFAPI MfStringHeap : public MfStringList {
+class MFUTIL_API MfStringHeap : public MfStringList {
 public:
     MfStringHeap();
     virtual ~MfStringHeap();

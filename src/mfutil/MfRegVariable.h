@@ -9,7 +9,7 @@
 #include "MfEnvVariable.h"
 
 // size 0x14, vtable 0x10017694
-class MFAPI MfRegVariable : public MfEnvVariable {
+class MFUTIL_API MfRegVariable : public MfEnvVariable {
 public:
     MfRegVariable(void *hkey, const MfString &subkey, const MfString &name);
     virtual ~MfRegVariable();

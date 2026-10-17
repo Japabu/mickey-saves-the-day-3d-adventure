@@ -5,35 +5,14 @@
 #define MFUTIL_MFDIRECTORY_H
 
 #include <windows.h>
+#include "mfutil_api.h"
 #include "MfString.h"
 #include "MfDblList.h"
 #include "MfFileTime.h"
-
-class MfDirectory;
-
-// size 0x144: the WIN32_FIND_DATA filled by FindFirstFile/FindNextFile and the
-// directory it belongs to.
-class MFAPI MfDirectoryFileInfo {
-    friend class MfDirectory;
-public:
-    unsigned long QueryAttributes() const { return m_fd.dwFileAttributes; }
-    unsigned long Size() const { return m_fd.nFileSizeLow; }
-    MfString GetFileName() const { return MfString(m_fd.cFileName); }
-    MfString GetFilePath() const;
-    void QueryModTime(MfFileTime *p) const;
-    void QueryCreateTime(MfFileTime *p) const;
-    void QueryModTimeAsSystemTime(MfSystemTime *p) const;
-    void QueryCreateTimeAsSystemTime(MfSystemTime *p) const;
-
-private:
-    MfDirectoryFileInfo(MfDirectory *dir) { m_dir = dir; }
-
-    WIN32_FIND_DATAA m_fd; // +0
-    MfDirectory *m_dir;    // +0x140
-};
+#include "MfDirectoryFileInfo.h"
 
 // size 0x1c: a list of MfDirectoryFileInfo*
-class MFAPI MfDirectory : public MfDblList {
+class MFUTIL_API MfDirectory : public MfDblList {
 public:
     MfDirectory();
     virtual ~MfDirectory();

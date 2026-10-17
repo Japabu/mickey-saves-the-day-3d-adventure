@@ -3,14 +3,21 @@
 Every item was verified by match.sh in the unit named in brackets.
 
 ## Shared headers
-- `MfString.h` is the full MfString/MfStringRef declaration (it includes windows.h
-  with STRICT, MfVariant.h, MfTime.h, MfSystemTime.h). `MfStringList.h`,
-  `MfDblList.h` (MfCallBack inline, GetFirst/GetNext/GetCurrent inline),
-  `MfDirectory.h`, `MfFileTime.h`, `MfRegVariable.h`, `MfKeyDialog.h`,
-  `UtilityApp.h` (ctor/dtor/LibInstance/AppName inline, friends MfKeyDialog,
-  MfNameDialog and DllMain).
-- Some old units still carry private `*_unit.h` copies (MfEnvVariable, MfHashTable,
-  ...); move them to the shared headers when touching them.
+- One declaration per class: `<Class>.h` (MfString.h, MfStringRef.h, MfDblList.h,
+  MfCallBack.h, MfHashTable.h, ...), each self-contained, exports through
+  `MFUTIL_API` (mfutil_api.h). `MfString.h` defines STRICT before windows.h, includes
+  the small string classes (MfNullString, MfStringSize, MfStringCursor,
+  MfStringScanner, MfStringRef, MfStringTokenizerCallBack) and, after MfString,
+  MfVariant.h, MfTime.h and MfSystemTime.h.
+- Inline bodies are the ones the original objects emitted (MfCopyFolder.cpp keeps
+  the copies of the string classes' inline members, MfStringRef.cpp those of
+  MfVariantData/MfVariant, MfDirectory.cpp those of MfTime/MfSystemTime/MfFileTime).
+- Own copies: VC5 compiles some functions differently once a file sees the shared
+  headers, even where the text is the same. MfCopyFolder.cpp, MfHashTable.cpp,
+  MfStringRef.cpp (with MfVariant_unit.h) and MfTime.cpp therefore keep the
+  declarations they were matched with (`*_unit.h`, each marked `// own copy`).
+- `MfString::LoadString` takes `void *`: MfStringRef.cpp was compiled without STRICT
+  (`?LoadStringA@MfString@@QAEHPAXI@Z`).
 
 ## Code shapes
 - Local char arrays get stack slots by size: the smaller array sits lower

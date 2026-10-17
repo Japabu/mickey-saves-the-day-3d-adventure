@@ -9,7 +9,7 @@
 
 // size 0x14, no vtable. The copy constructor, operator= and destructor are the
 // compiler-generated ones (exported).
-class MFAPI MfNameDialog {
+class MFUTIL_API MfNameDialog {
 public:
     MfNameDialog(MfString title, MfString prompt, MfString name, HWND parent);
     int DoModal();

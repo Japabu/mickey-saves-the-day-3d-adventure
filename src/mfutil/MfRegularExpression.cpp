@@ -1,7 +1,7 @@
 // MfRegularExpression (mfutil.dll 0x1000b100-0x1000b6b0)
 // The first functions are inline/implicit members of the exported class that this
 // object emitted (no source of their own here; they come from MfRegularExpression.h):
-#include "MfRegularExpression_unit.h"
+#include "MfRegularExpression.h"
 
 // 0x1000b100 ?GetState@MfThread@@QBEIXZ             (inline)
 // 0x1000b110 ?CompileErrorString@MfRegularExpression@@QBEABVMfString@@XZ (inline)

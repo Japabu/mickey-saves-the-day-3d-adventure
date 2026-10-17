@@ -1,8 +1,12 @@
-#pragma once
 // MfSleeper: sleeps that can be stopped by a stopwatch. Exported names only.
+#ifndef MFUTIL_MFSLEEPER_H
+#define MFUTIL_MFSLEEPER_H
+
+#include "mfutil_api.h"
+
 class MfTime;
 
-class __declspec(dllexport) MfSleeper {
+class MFUTIL_API MfSleeper {
 public:
     MfSleeper() {}
     static void Snooze(const MfTime &t);
@@ -10,3 +14,5 @@ public:
 private:
     static void SystemSleep(long ms);
 };
+
+#endif

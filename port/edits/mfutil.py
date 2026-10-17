@@ -298,47 +298,8 @@ EDITS['mfutil/MfString.cpp'] = [
 ]
 
 # mfutil/MfString.h: the wide-string interface is 16-bit (unsigned short, as the PBG/PAG exports and every consumer), not the 4-byte wchar_t.
+# (MfStringRef.h already spells it unsigned short.)
 EDITS['mfutil/MfString.h'] = [
-    ('    MfStringRef() : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(""); }\n'
-     '    MfStringRef(const char *s) : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(s); }\n'
-     '    MfStringRef(const wchar_t *s) : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(s); }\n'
-     '    MfStringRef(const MfStringRef &r) : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(r); }\n'
-     '    MfStringRef(int n) : m_count(0)\n',
-     '    MfStringRef() : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(""); }\n'
-     '    MfStringRef(const char *s) : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(s); }\n'
-     '    MfStringRef(const unsigned short *s) : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(s); }   // PORT: 16-bit wide characters (wchar_t is 4 bytes here)\n'
-     '    MfStringRef(const MfStringRef &r) : m_str(0), m_length(0), m_maxLength(0), m_count(0) { MakeCopy(r); }\n'
-     '    MfStringRef(int n) : m_count(0)\n', 1),
-    ('    void MakeCopy(const MfStringRef &r);\n'
-     '    void MakeCopy(const char *s);\n'
-     '    void MakeCopy(const wchar_t *s);\n'
-     '    void Append(const MfStringRef &r);\n'
-     '    void Append(const char *s);\n'
-     '    void Append(const wchar_t *s);\n'
-     '    void Append(char c);\n'
-     '    int CompareToInternal(const wchar_t *s) const;\n'
-     '    int CompareToInternal(const char *s) const;\n'
-     '    void SetMaxLength(int n);\n',
-     '    void MakeCopy(const MfStringRef &r);\n'
-     '    void MakeCopy(const char *s);\n'
-     '    void MakeCopy(const unsigned short *s);   // PORT: 16-bit wide characters (wchar_t is 4 bytes here)\n'
-     '    void Append(const MfStringRef &r);\n'
-     '    void Append(const char *s);\n'
-     '    void Append(const unsigned short *s);   // PORT: 16-bit wide characters (wchar_t is 4 bytes here)\n'
-     '    void Append(char c);\n'
-     '    int CompareToInternal(const unsigned short *s) const;   // PORT: 16-bit wide characters (wchar_t is 4 bytes here)\n'
-     '    int CompareToInternal(const char *s) const;\n'
-     '    void SetMaxLength(int n);\n', 1),
-    ('    void NoLeadingWhiteSpace();\n'
-     '    void NoTrailingWhiteSpace();\n'
-     '    wchar_t *DuplicateUnicode() const;\n'
-     '    char *DuplicateAscii() const;\n'
-     '    int ReadFromFile(const MfString &name);\n',
-     '    void NoLeadingWhiteSpace();\n'
-     '    void NoTrailingWhiteSpace();\n'
-     '    unsigned short *DuplicateUnicode() const;   // PORT: 16-bit wide characters (wchar_t is 4 bytes here)\n'
-     '    char *DuplicateAscii() const;\n'
-     '    int ReadFromFile(const MfString &name);\n', 1),
     ('    MfPointerStorageString(const MfStringRef &r);\n'
      '    virtual ~MfPointerStorageString();\n'
      '    wchar_t *GetUnicode();\n'
@@ -395,6 +356,8 @@ EDITS['mfutil/MfString.h'] = [
      '    // port: the same as the int declaration above\n'
      '    operator float() const;\n'
      '    operator double() const;\n', 1),
+    ('    MfString &operator+=(const wchar_t *s) { return *this << s; }\n',
+     '    MfString &operator+=(const unsigned short *s) { return *this << s; }   // PORT: 16-bit wide characters (wchar_t is 4 bytes here)\n', 1),
     ('    MfString &operator<<(const MfString &s);\n'
      '    MfString &operator<<(const char *s);\n'
      '    MfString &operator<<(const wchar_t *s);\n'

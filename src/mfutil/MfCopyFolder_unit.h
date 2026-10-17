@@ -205,3 +205,7 @@ public:
 };
 
 #endif
+
+// own copy: VC5 compiles the MfCallBack and MfStringCursor members differently with the
+// shared headers (MfCallBack.h, MfStringCursor.h, MfString.h); MfCopyFolder.cpp keeps the
+// declarations it was matched with.

@@ -69,3 +69,6 @@ private:
 };
 
 #endif
+
+// own copy: VC5 compiles MfHashTable::Clear(int) differently with the shared headers
+// (MfCallBack.h, MfHashTable.h); MfHashTable.cpp keeps the declarations it was matched with.

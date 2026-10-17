@@ -1,5 +1,5 @@
 // MfStack (mfutil.dll, 0x1000bde0-0x1000bee0)
-#include "MfStack_unit.h"
+#include "MfStack.h"
 
 // 0x1000bde0 ??0MfStack@@QAE@H@Z
 MfStack::MfStack(int nMax) : nMax(nMax)

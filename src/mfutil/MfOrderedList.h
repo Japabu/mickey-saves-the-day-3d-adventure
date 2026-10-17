@@ -1,12 +1,16 @@
-#pragma once
 // MfOrderedList: sorted collection of void* on a 2-3 tree. Exported names
 // only; members named from their use.
+#ifndef MFUTIL_MFORDEREDLIST_H
+#define MFUTIL_MFORDEREDLIST_H
+
+#include "mfutil_api.h"
+
 class Mf23TreeBase;
 class Mf23TreeLeaf;
 class Mf23TreeNode;
 class MfDblList;
 
-class __declspec(dllexport) MfOrderedList {
+class MFUTIL_API MfOrderedList {
 public:
     typedef int (*CompareFn)(void *, void *);
     typedef void (*DataFn)(void *);
@@ -55,3 +59,5 @@ private:
     int m_count;
     int m_newMax;       // set when an insert passed the largest key of a node
 };
+
+#endif

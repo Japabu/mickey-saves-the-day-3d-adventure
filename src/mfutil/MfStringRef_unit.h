@@ -70,6 +70,10 @@ private:
 
 extern MFAPI MfNullString NULL_STRING;
 
-#include "MfVariant.h"
+#include "MfVariant_unit.h"
 
 #endif
+
+// own copy: VC5 compiles the static initializers of MfStringRef.cpp differently with the
+// shared headers (MfString.h, MfStringRef.h, MfNullString.h); MfStringRef.cpp keeps the
+// declarations it was matched with (and MfVariant_unit.h).

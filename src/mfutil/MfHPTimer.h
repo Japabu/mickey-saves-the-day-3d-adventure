@@ -1,23 +1,12 @@
 // MfHPTimer: high-resolution timer on QueryPerformanceCounter (mfutil.dll).
 // Reconstructed declarations (no PDB): layouts from the code, signatures from the
-// export names. MfTime is duplicated (only what this unit needs).
+// export names.
 #ifndef MFUTIL_MFHPTIMER_H
 #define MFUTIL_MFHPTIMER_H
 
 #include <windows.h>
-
-#define MFUTIL_API __declspec(dllexport)
-
-// size 8
-class MFUTIL_API MfTime {
-public:
-    // inlined into MfHPTimer::GetElapsedTimeAsMfTime (out-of-line copy at 0x10002ff0)
-    MfTime(long seconds, long milli) { m_seconds = seconds; m_milli = milli % 1000; }
-    MfTime(const MfTime &t) { m_seconds = t.m_seconds; m_milli = t.m_milli; }
-    ~MfTime() {}
-    long m_seconds; // +0
-    long m_milli;   // +4
-};
+#include "mfutil_api.h"
+#include "MfTime.h"
 
 // size 0x10
 class MFUTIL_API MfHPTimer {

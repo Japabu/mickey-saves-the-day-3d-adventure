@@ -1,5 +1,5 @@
 // MfHPTimer (mfutil.dll 0x10004240-0x10004410)
-#include "MfHPTimer_unit.h"
+#include "MfHPTimer.h"
 
 LARGE_INTEGER MfHPTimer::liFrequency;
 int MfHPTimer::bInitialized;

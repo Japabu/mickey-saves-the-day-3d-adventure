@@ -2,6 +2,7 @@
 // MfLogger: process-wide log with a window and a log file, run by a logger
 // thread. Exported names only; the static members are named in the exports,
 // MfLogMessage, MfLoggerFrame and MfLogMessageDialog too.
+#include "mfutil_api.h"
 #include "MfString.h"     // first: it defines STRICT before windows.h
 #include "MfStringList.h"
 #include "MfSystemTime.h"
@@ -25,7 +26,7 @@ enum {
     MF_LOG_POPUP = 0x20000          // opens the window
 };
 
-class __declspec(dllexport) MfLogger {
+class MFUTIL_API MfLogger {
     friend class MfLoggerFrame;
     friend class MfLoggerWindow;
     friend class MfLogMessageDialog;
@@ -45,7 +46,7 @@ public:
     static int GetFlags() { return iLoggerFlags; }
     // Filters 0-2 hide one message type (iLevel 0), 3-5 show only the
     // messages whose source, message or extra lines contain fsName.
-    struct __declspec(dllexport) LoggerFilter {
+    struct MFUTIL_API LoggerFilter {
         LoggerFilter(int type, int level, const MfString &name)
             : iType(type), iLevel(level), fsName(name) {}
         int iType;

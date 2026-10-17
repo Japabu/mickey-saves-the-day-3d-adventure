@@ -1,6 +1,7 @@
 #pragma once
 // MfList: doubly linked list of MfListItem pointers, with forward and
 // backward iterators. Exported names only; members named from their use.
+#include "mfutil_api.h"
 class MfListItem;
 
 struct MfListNode {
@@ -9,7 +10,7 @@ struct MfListNode {
     MfListNode *next;
 };
 
-class __declspec(dllexport) MfList {
+class MFUTIL_API MfList {
     friend class MfListIter;
     friend class MfListIterBwd;
 public:
@@ -34,7 +35,7 @@ private:
     MfListNode *m_tail;
 };
 
-class __declspec(dllexport) MfListIter {
+class MFUTIL_API MfListIter {
 public:
     MfListIter();
     void start(const MfList &);
@@ -50,7 +51,7 @@ protected:
     MfListNode *m_next;
 };
 
-class __declspec(dllexport) MfListIterBwd : public MfListIter {
+class MFUTIL_API MfListIterBwd : public MfListIter {
 public:
     MfListIterBwd() {}
     void start(const MfList &);

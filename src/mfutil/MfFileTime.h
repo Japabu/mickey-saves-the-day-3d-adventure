@@ -1,13 +1,16 @@
-#pragma once
 // MfFileTime: a Win32 FILETIME with conversions and comparisons. Reconstructed
 // (no PDB): like MfSystemTime it derives from the Win32 structure. The implicit
 // copy constructor and copy assignment are exported too; the linker folded them
 // with the FILETIME ones (identical code).
+#ifndef MFUTIL_MFFILETIME_H
+#define MFUTIL_MFFILETIME_H
+
+#include "mfutil_api.h"
 #include <windows.h>
 
 class MfString;
 
-class __declspec(dllexport) MfFileTime : public FILETIME {
+class MFUTIL_API MfFileTime : public FILETIME {
 public:
     MfFileTime();
     MfFileTime(const FILETIME &ft);
@@ -23,3 +26,5 @@ public:
     void Convert(SYSTEMTIME *st) const;
     BOOL SetFromFile(const MfString &path);
 };
+
+#endif

@@ -14,7 +14,7 @@
 
 // size 0x14, no vtable. Copy ctor / operator= / dtor are the compiler-generated
 // ones (exported; their copies live elsewhere).
-class MFAPI MfKeyDialog {
+class MFUTIL_API MfKeyDialog {
 public:
     MfKeyDialog(MfString title, MfString serial, MfString key, HWND parent);
     int DoModal();

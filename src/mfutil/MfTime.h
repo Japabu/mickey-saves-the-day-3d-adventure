@@ -1,11 +1,14 @@
-#pragma once
 // MfTime: seconds since 1970 and milliseconds. Declaration from the SteamboatApp
 // PDB; mfutil defines everything but the arithmetic inline.
+#ifndef MFUTIL_MFTIME_H
+#define MFUTIL_MFTIME_H
+
+#include "mfutil_api.h"
 #include <time.h>
 #include <sys/timeb.h>
 class ostream;
 
-class __declspec(dllexport) MfTime {
+class MFUTIL_API MfTime {
 public:
     MfTime() { Update(); }
     MfTime(long s, long ms) { ttSec = s; ttMilli = ms % 1000; }
@@ -59,4 +62,6 @@ private:
     long ttMilli;
 };
 
-__declspec(dllexport) ostream &operator<<(ostream &os, const MfTime &t);
+MFUTIL_API ostream &operator<<(ostream &os, const MfTime &t);
+
+#endif

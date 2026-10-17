@@ -5,20 +5,14 @@
 #ifndef MFUTIL_MFSTRINGLIST_H
 #define MFUTIL_MFSTRINGLIST_H
 
+#include "mfutil_api.h"
 #include "MfString.h"
 #include "MfDblList.h"
-
-// vtable 0x100172f4: ??_E, CallBack
-class MFAPI MfStringTokenizerCallBack {
-public:
-    MfStringTokenizerCallBack() {}
-    virtual ~MfStringTokenizerCallBack() {}
-    virtual int CallBack(const MfString &token, MfString &rest) { return 1; }
-};
+#include "MfStringTokenizerCallBack.h"
 
 // Size 0x14: MfDblList at +0, MfStringTokenizerCallBack at +0x10.
 // vtable 0x100177f4 (secondary 0x100177e0).
-class MFAPI MfStringList : public MfDblList, public MfStringTokenizerCallBack {
+class MFUTIL_API MfStringList : public MfDblList, public MfStringTokenizerCallBack {
 public:
     // Defined in MfStringList.cpp (not exported).
     class MfStringListSearchCB;  // Search: CallBack(a, b) compares (vtable 0x10017874)
@@ -30,6 +24,9 @@ public:
     MfString *First(MfDblListItem *&pli) const { return (MfString *)MfDblList::GetFirst(pli); }
     MfString *Next(MfDblListItem *&pli) const { return (MfString *)MfDblList::GetNext(pli); }
     MfString *Current(MfDblListItem *&pli) const { return (MfString *)MfDblList::GetCurrent(pli); }
+    // exported; the linker folded their bodies with MfDblList::GetPrev/GetLast
+    MfString *Prev(MfDblListItem *&pli) const;
+    MfString *Last(MfDblListItem *&pli) const;
     virtual MfString *Add(const MfString &s);                     // +0x70
     virtual void Delete(const MfString &s);                       // +0x74
     virtual void *DeleteFirst();                                  // +0x40

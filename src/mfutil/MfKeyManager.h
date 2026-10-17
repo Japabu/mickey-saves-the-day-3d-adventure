@@ -8,7 +8,7 @@
 
 #include "MfString.h"
 
-class MFAPI MfKeyManager {
+class MFUTIL_API MfKeyManager {
 public:
     int CheckKey();
     int CheckRuntimeKey(const char *key, int *info);

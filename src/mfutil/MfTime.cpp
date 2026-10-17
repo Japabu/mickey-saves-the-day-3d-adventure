@@ -1,6 +1,6 @@
 // MfTime (mfutil.dll 0x100104b0-0x10010610)
 #include <iostream.h>
-#include "MfTime.h"
+#include "MfTime_unit.h"
 
 // 0x100104b0 ??HMfTime@@QBE?AV0@ABV0@@Z
 MfTime MfTime::operator+(const MfTime &t) const

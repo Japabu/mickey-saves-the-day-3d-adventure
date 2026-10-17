@@ -1,5 +1,5 @@
 // MfInterfaceRegistry (mfutil.dll 0x10004760-0x100049a0)
-#include "MfInterfaceRegistry_unit.h"
+#include "MfInterfaceRegistry.h"
 
 MfDictionary *MfInterfaceRegistry::pdictRegistry;
 static char szInterfaceName[256];   // 0x10024e38
@@ -15,7 +15,7 @@ int MfInterfaceRegistry::AddInterface(MfAi *pai)
 {
     Initialize();
     int n;
-    pai->GetName(szInterfaceName, 0xff, &n, &n);
+    pai->GetInterfaceName(szInterfaceName, 0xff, n, n);
     MfString name(szInterfaceName);
     if (pdictRegistry->Add(name, pai))
         return 0;
