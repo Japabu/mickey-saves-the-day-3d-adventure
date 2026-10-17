@@ -1,12 +1,14 @@
 // MfPoRotation3: the Piccolo object of a rotation ("Rotation3"; properties
 // axis, angle). It owns the rotation unless it wraps one given by pointer.
-#pragma once
+#ifndef MFPOLIBRARY_MFPOROTATION3_H
+#define MFPOLIBRARY_MFPOROTATION3_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 #include "MfRotation3.h"
 #include "MfVector3.h"
 class MfPoVector3;
 
-class __declspec(dllexport) MfPoRotation3 : public MfPoBase {
+class MFPO_API MfPoRotation3 : public MfPoBase {
 public:
     MfPoRotation3();
     MfPoRotation3(const MfRotation3 &);
@@ -36,3 +38,5 @@ private:
     MfRotation3 *_r3;                                       // 0x14
     int bOwner;                                             // 0x18
 };
+
+#endif

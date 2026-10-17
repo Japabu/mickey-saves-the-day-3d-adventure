@@ -1,11 +1,14 @@
 // MfPmhUser: the message handler of a user event (an event a script sends);
 // it adds the sender and the properties the script gave the event.
-#pragma once
+#ifndef MFPOLIBRARY_MFPMHUSER_H
+#define MFPOLIBRARY_MFPMHUSER_H
+#include "MfPoLibrary_api.h"
 #include "MfPiccoloMessageHandler.h"
 
 class MfScHandleDict;
+class MfScPropTokenTable;
 
-class __declspec(dllexport) MfPmhUser : public MfPiccoloMessageHandler {
+class MFPO_API MfPmhUser : public MfPiccoloMessageHandler {
 public:
     MfPmhUser(MfAiActor *receiver);
     virtual ~MfPmhUser();
@@ -22,3 +25,5 @@ private:
     MfScHandleDict *pdictProperties;                        // 0x08
     MfAiActor *paiSender;                                   // 0x0c
 };
+
+#endif

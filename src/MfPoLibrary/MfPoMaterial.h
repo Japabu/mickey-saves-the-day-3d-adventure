@@ -1,10 +1,12 @@
 // MfPoMaterial: the Piccolo object of a material ("Material"). It deletes
 // the material when it owns it.
-#pragma once
+#ifndef MFPOLIBRARY_MFPOMATERIAL_H
+#define MFPOLIBRARY_MFPOMATERIAL_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 class MfMaterial;
 
-class __declspec(dllexport) MfPoMaterial : public MfPoBase {
+class MFPO_API MfPoMaterial : public MfPoBase {
 public:
     MfPoMaterial(MfMaterial *material, int owner);
     virtual ~MfPoMaterial();
@@ -35,3 +37,5 @@ private:
     MfMaterial *mMaterial;                                  // 0x14
     int bOwner;                                             // 0x18
 };
+
+#endif

@@ -1,15 +1,17 @@
 // MfPoActorNode: the Piccolo object of a node of an actor ("ActorNode"),
 // the base of the camera and light objects.
-#pragma once
+#ifndef MFPOLIBRARY_MFPOACTORNODE_H
+#define MFPOLIBRARY_MFPOACTORNODE_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 class MfAiActorNode;
 
 // the tag of the constructor a derived class's exemplar uses for its base
 class ExemplarChild {
 };
-extern __declspec(dllexport) ExemplarChild EXEMPLAR_CHILD_INSTANCE;
+extern MFPO_API ExemplarChild EXEMPLAR_CHILD_INSTANCE;
 
-class __declspec(dllexport) MfPoActorNode : public MfPoBase {
+class MFPO_API MfPoActorNode : public MfPoBase {
 public:
     MfPoActorNode(MfAiActorNode *node);
     virtual ~MfPoActorNode();
@@ -39,3 +41,5 @@ protected:
     static MfScPropertyExtList *pelPropExtensions;
     MfAiActorNode *mActorNode;                              // 0x14
 };
+
+#endif

@@ -1,9 +1,11 @@
 // MfPoCamera: the Piccolo object of a camera node ("CameraNode").
-#pragma once
+#ifndef MFPOLIBRARY_MFPOCAMERA_H
+#define MFPOLIBRARY_MFPOCAMERA_H
+#include "MfPoLibrary_api.h"
 #include "MfPoActorNode.h"
 class MfCamera;
 
-class __declspec(dllexport) MfPoCamera : public MfPoActorNode {
+class MFPO_API MfPoCamera : public MfPoActorNode {
 public:
     MfPoCamera(MfAiActorNode *node, MfCamera *camera);
     virtual ~MfPoCamera();
@@ -24,3 +26,5 @@ private:
     MfCamera *mCamera;                                        // 0x18
     MfAiActorNode *mNode;                                   // 0x1c
 };
+
+#endif

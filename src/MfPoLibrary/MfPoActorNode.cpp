@@ -12,7 +12,7 @@
 #include "MfProperty.h"
 #include "MfInterfaceRegistry.h"
 #include "MfAiHookManager.h"
-#include "MfHookData.h"
+#include "MfMiscHookData.h"
 #include "MfAiActor.h"
 #include "MfTriangleSet.h"
 #include "MfAiColNode.h"

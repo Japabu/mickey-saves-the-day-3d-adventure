@@ -1,7 +1,8 @@
 // MfAiMouse: the mouse as the application sees it (RuntimeLib implements it;
 // MfRuntime::GetMouse). The SteamboatApp PDB does not describe it: the names
 // are descriptive, the slots are those MfPoMouse calls.
-#pragma once
+#ifndef MFPOLIBRARY_MFAIMOUSE_H
+#define MFPOLIBRARY_MFAIMOUSE_H
 #include "MfAi.h"
 class MfAiActor;
 class MfAiActorNode;
@@ -13,3 +14,5 @@ public:
     virtual MfAiActor *GetLastPickedActor() = 0;                          // 0x14
     virtual MfAiActorNode *GetLastPickedFloor() = 0;                      // 0x18
 };
+
+#endif

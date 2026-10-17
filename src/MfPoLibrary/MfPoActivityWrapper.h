@@ -1,13 +1,15 @@
 // MfPoActivityWrapper: the script class "ActivityWrapper": it takes over the
 // actors' SetActivity/AddActivity to run activity specifications written in
 // Piccolo.
-#pragma once
+#ifndef MFPOLIBRARY_MFPOACTIVITYWRAPPER_H
+#define MFPOLIBRARY_MFPOACTIVITYWRAPPER_H
+#include "MfPoLibrary_api.h"
 #include "MfScObject.h"
 #include "MfScDataHandle.h"
 #include "MfPoActorNode.h"
 class MfAiActivitySpec;
 
-class __declspec(dllexport) MfPoActivityWrapper : public MfScObject {
+class MFPO_API MfPoActivityWrapper : public MfScObject {
 public:
     MfPoActivityWrapper();
     MfPoActivityWrapper(MfScData::Exemplar);
@@ -35,3 +37,5 @@ private:
     MfScMethod pmSetActivity;                           // 0x24 Actor.SetActivity before the wrapper
     MfScMethod pmAddActivity;                           // 0x28 Actor.AddActivity before the wrapper
 };
+
+#endif

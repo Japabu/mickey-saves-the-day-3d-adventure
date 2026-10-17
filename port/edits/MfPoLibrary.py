@@ -15,12 +15,12 @@ EDITS['MfPoLibrary/MfPoBase.h'] = [
      'class MfTypedValue;\n'
      'class type_info;\n'
      '\n'
-     'class __declspec(dllexport) MfPoBase : public MfScObject {\n',
+     'class MFPO_API MfPoBase : public MfScObject {\n',
      'class MfProperty;\n'
      'class MfTypedValue;\n'
      '#include <typeinfo.h> // port: was a declaration of class type_info\n'
      '\n'
-     'class __declspec(dllexport) MfPoBase : public MfScObject {\n', 1),
+     'class MFPO_API MfPoBase : public MfScObject {\n', 1),
     ('    const type_info &getType(MfScDataHandle *, const type_info *);\n'
      '    void __cdecl InvalidType(MfString, MfString, int, int, MfScDataHandle **, ...);\n'
      '    void __cdecl WrongNumber(MfString, MfString, int, int, ...);\n'
@@ -41,7 +41,7 @@ EDITS['MfPoLibrary/MfPoBase.h'] = [
      '    template <class T> static T *PortVarargPointer(T *p) { return p; }\n'
      '    void __cdecl WrongNumber(MfString, MfString, int, int, ...);\n'
      '    static MfScDataHandle *__cdecl PropertyToPiccolo(MfProperty *);\n'
-     '#line 23\n', 1),
+     '#line 25\n', 1),
 ]
 
 # MfPoLibrary/MfThread.h: the members have the types of the real class in mfutil (pointers where this view had int), so the inline MfScThread::GetVmEnv() reads mVmEnv at the real offset on 64-bit.

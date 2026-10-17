@@ -1,9 +1,11 @@
 // MfPoLight: the Piccolo object of a light node ("LightNode").
-#pragma once
+#ifndef MFPOLIBRARY_MFPOLIGHT_H
+#define MFPOLIBRARY_MFPOLIGHT_H
+#include "MfPoLibrary_api.h"
 #include "MfPoActorNode.h"
 class MfLight;
 
-class __declspec(dllexport) MfPoLight : public MfPoActorNode {
+class MFPO_API MfPoLight : public MfPoActorNode {
 public:
     MfPoLight(MfAiActorNode *node, MfLight *light);
     virtual ~MfPoLight();
@@ -24,3 +26,5 @@ private:
     MfLight *mLight;                                        // 0x18
     MfAiActorNode *mNode;                                   // 0x1c
 };
+
+#endif

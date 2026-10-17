@@ -1,9 +1,11 @@
 // MfPoKChain: the Piccolo object of a kinematic chain ("KChain").
-#pragma once
+#ifndef MFPOLIBRARY_MFPOKCHAIN_H
+#define MFPOLIBRARY_MFPOKCHAIN_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 class MfAiKChain;
 
-class __declspec(dllexport) MfPoKChain : public MfPoBase {
+class MFPO_API MfPoKChain : public MfPoBase {
 public:
     MfPoKChain(MfAiKChain *chain);
     virtual ~MfPoKChain();
@@ -25,3 +27,5 @@ private:
     static MfScPropTokenTable *pttPropTokens;
     MfAiKChain *mChain;                                  // 0x14
 };
+
+#endif

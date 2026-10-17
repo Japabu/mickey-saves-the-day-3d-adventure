@@ -1,9 +1,11 @@
 // MfPoSkill: the Piccolo object of a skill ("Skill").
-#pragma once
+#ifndef MFPOLIBRARY_MFPOSKILL_H
+#define MFPOLIBRARY_MFPOSKILL_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 class MfAiSkill;
 
-class __declspec(dllexport) MfPoSkill : public MfPoBase {
+class MFPO_API MfPoSkill : public MfPoBase {
 public:
     MfPoSkill(MfAiSkill *skill);
     virtual ~MfPoSkill();
@@ -25,3 +27,5 @@ private:
     static MfScPropTokenTable *pttPropTokens;
     MfAiSkill *mSkill;                                  // 0x14
 };
+
+#endif

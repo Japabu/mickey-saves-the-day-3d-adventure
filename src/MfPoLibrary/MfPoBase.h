@@ -2,13 +2,15 @@
 // wrappers of engine objects), with the helpers that report script errors and
 // convert between Piccolo values and property values. Declaration from the
 // SteamboatApp PDB; constructor, copy, assignment and destructor are inline.
-#pragma once
+#ifndef MFPOLIBRARY_MFPOBASE_H
+#define MFPOLIBRARY_MFPOBASE_H
+#include "MfPoLibrary_api.h"
 #include "MfScObject.h"
 class MfProperty;
 class MfTypedValue;
 class type_info;
 
-class __declspec(dllexport) MfPoBase : public MfScObject {
+class MFPO_API MfPoBase : public MfScObject {
 public:
     MfPoBase(unsigned int flags = 0) : MfScObject(flags) {}
     int CheckNull(MfString, int, MfScDataHandle **, int *);
@@ -24,3 +26,5 @@ public:
     static MfProperty *__cdecl PiccoloToProperty(const MfString &, MfScDataHandle *);
     static MfTypedValue *__cdecl PiccoloToPropertyValue(MfScDataHandle *, int);
 };
+
+#endif

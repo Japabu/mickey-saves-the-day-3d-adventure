@@ -1,10 +1,12 @@
 // MfPoVector3: the Piccolo object of a vector ("Vector3"). Declaration from
 // the SteamboatApp PDB.
-#pragma once
+#ifndef MFPOLIBRARY_MFPOVECTOR3_H
+#define MFPOLIBRARY_MFPOVECTOR3_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 #include "MfVector3.h"
 
-class __declspec(dllexport) MfPoVector3 : public MfPoBase {
+class MFPO_API MfPoVector3 : public MfPoBase {
 public:
     MfPoVector3(MfScData::Exemplar);
     MfPoVector3(MfVector3 *);
@@ -35,3 +37,5 @@ private:
     MfScDataHandle *PMMultiply(MfScDataHandle *, int, MfScDataHandle **);
     static MfScPropTokenTable *pttPropTokens;
 };
+
+#endif

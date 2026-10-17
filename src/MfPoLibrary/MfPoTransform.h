@@ -1,13 +1,15 @@
 // MfPoTransform: the Piccolo object of a transform ("Transform"; properties
 // rotation, translation). It owns the transform unless it wraps one given by
 // pointer.
-#pragma once
+#ifndef MFPOLIBRARY_MFPOTRANSFORM_H
+#define MFPOLIBRARY_MFPOTRANSFORM_H
+#include "MfPoLibrary_api.h"
 #include "MfPoBase.h"
 #include "MfTransform3.h"
 class MfPoRotation3;
 class MfPoVector3;
 
-class __declspec(dllexport) MfPoTransform : public MfPoBase {
+class MFPO_API MfPoTransform : public MfPoBase {
 public:
     MfPoTransform();
     MfPoTransform(const MfTransform3 &);
@@ -35,3 +37,5 @@ private:
     MfTransform3 *_t3;                                       // 0x14
     int bOwner;                                             // 0x18
 };
+
+#endif
