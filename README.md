@@ -20,7 +20,9 @@ the original (sharper 3D characters, a cursor that shows what a click will do).
 needs:
 
 - A Mac with Apple Silicon and macOS, the Xcode command-line tools (`xcode-select
-  --install`) and [Homebrew](https://brew.sh) packages `cmake`, `ninja`, `sdl3` and `ffmpeg`.
+  --install`), `cmake` and `ninja` (for example from [Homebrew](https://brew.sh)). The
+  first configure downloads and builds SDL3 and FFmpeg (pinned releases, checked by
+  hash); the game is one statically linked program.
 - The game CD. The reference copy is the German CD image `Micky_auf_Ganovenjagd.iso`,
   SHA-256 `12d00401229f576b48987ea8b4839a5478bc74b31197258d2d8582fee7c66ae9`. The port
   reads the game data from the CD's `setup/hd/resources` and `setup/cd/resources`

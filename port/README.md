@@ -70,7 +70,11 @@ where this bites; fixes go into overrides with a comment.
 
 ## Building
 
-Requirements: Xcode command-line tools, Homebrew `cmake`, `ninja`, `sdl3`, `ffmpeg`.
+Requirements: Xcode command-line tools, `cmake`, `ninja`. The first configure runs
+`port/deps.py`, which downloads SDL3 and FFmpeg (pinned releases, checked by SHA-256)
+and builds them as static libraries into `out/deps/<target>/` (FFmpeg with only the
+decoders the game needs); the executable links everything statically but the system's
+own libraries.
 
 ```
 python3 port/tools/census.py                        # how many source files compile, per module
@@ -90,7 +94,7 @@ You need the game's CD (the German release, "Micky auf Ganovenjagd") as an `.iso
 or as a mounted directory.
 
 1. Install the tools once:
-   `xcode-select --install`, then `brew install cmake ninja sdl3 ffmpeg`.
+   `xcode-select --install`, then `brew install cmake ninja`.
 2. Build from the repository root:
    ```
    cmake -S port -B out/port/build -G Ninja
