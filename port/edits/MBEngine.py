@@ -37,12 +37,11 @@ EDITS = {
     'MBEngine/CMBWinFileSpec.h': [_SEPARATOR, _EXTENSION],
     'MBEngine/CMBAnim.h': [_QI_DECL,],
     'MBEngine/CMBFPSMonitor.h': [_QI_DECL,],
-    'MBEngine/MBMilesSoundChannel.h': [_QI_DECL,],
-    'MBEngine/MBMilesSoundEngine.h': [_QI_DECL, ('void Release(void);', RELEASE, 1),],
+    'MBEngine/MBMilesSoundChannel_unit.h': [_QI_DECL,],
+    'MBEngine/MBMilesSoundEngine_unit.h': [_QI_DECL, ('void Release(void);', RELEASE, 1),],
     'MBEngine/CMBScript.h': [_QI_DECL,],
     'MBEngine/scriptc.h': [_QI_DECL,],
-    'MBEngine/MBSoundChannel.h': [_QI_DECL,],
-    'MBEngine/CMBGameEngine.h': [_QI_DECL,],
+    'MBEngine/MBSoundChannel_unit.h': [_QI_DECL,],
     'MBEngine/CMBMilesSoundManager.h': [_QI_DECL,],
     'MBEngine/CMBDragObject.h': [_QI_DECL,],
     'MBEngine/MBComPtr.h': [_QI_DECL,],
@@ -75,8 +74,8 @@ EDITS = {
                               'sprintf(name, "%ld\\"\\"\\"!@#$^&*()", count++);', 1)],
 }
 
-# MBEngine/MBSoundData.h: drops the PDB layout asserts (sizeof 8, mDataSize at +4), true only for 32-bit pointers
-EDITS['MBEngine/MBSoundData.h'] = [
+# MBEngine/MBSoundData_unit.h: drops the PDB layout asserts (sizeof 8, mDataSize at +4), true only for 32-bit pointers
+EDITS['MBEngine/MBSoundData_unit.h'] = [
     ('#pragma once\n'
      '#define OFS(t, m) ((unsigned int)&(((t *)0)->m))\n'
      'struct PDB_Layout;\n'
@@ -95,48 +94,23 @@ EDITS['MBEngine/MBSoundData.h'] = [
      'extern "C" int MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);\n'
      '#include "../MBEngine/MBComPtr.h"\n'
      '\n', 1),
-    ('public:\n'
-     '    MBSoundData(const MBSoundData &soundData);\n'
-     '    MBSoundData(unsigned char *soundData, unsigned long dataSize);\n'
-     '    ~MBSoundData();\n'
-     '    unsigned char *GetSoundData() const;\n'
-     '    unsigned long GetDataSize() const;\n'
-     'protected:\n'
-     '    unsigned char *mSoundData;                           // +0x0000 size 0x4\n'
-     '    unsigned long mDataSize;                             // +0x0004 size 0x4\n'
-     'public:\n'
-     '    // void *__vecDelDtor(unsigned int);                 // compiler-generated\n'
-     '};\n'
-     '\n'
-     'extern "C" __declspec(dllimport) void *__cdecl MBmalloc_release(unsigned long size);\n'
+    ('extern "C" __declspec(dllimport) void *__cdecl MBmalloc_release(unsigned long size);\n'
      'extern "C" __declspec(dllimport) void __cdecl MBfree_release(void *ptr);\n'
      'extern "C" __declspec(dllimport) void __cdecl MBmemcpy(void *dest, const void *src, unsigned long cnt);\n'
      '\n'
      '// sizes and member offsets recorded in the PDB\n'
+     '// own copy: this unit\'s own layout asserts, not a class of the game\n'
      'struct PDB_Layout {\n'
      '    typedef char A0[(sizeof(MBSoundData)) == 0x8 ? 1 : -1];\n'
      '    typedef char A1[(OFS(MBSoundData, mSoundData)) == 0x0 ? 1 : -1];\n'
      '    typedef char A2[(OFS(MBSoundData, mDataSize)) == 0x4 ? 1 : -1];\n'
      '};\n'
      '#undef OFS\n',
-     'public:\n'
-     '    MBSoundData(const MBSoundData &soundData);\n'
-     '    MBSoundData(unsigned char *soundData, unsigned int dataSize);\n'
-     '    ~MBSoundData();\n'
-     '    unsigned char *GetSoundData() const;\n'
-     '    unsigned int GetDataSize() const;\n'
-     'protected:\n'
-     '    unsigned char *mSoundData;                           // +0x0000 size 0x4\n'
-     '    unsigned int mDataSize;                             // +0x0004 size 0x4\n'
-     'public:\n'
-     '    // void *__vecDelDtor(unsigned int);                 // compiler-generated\n'
-     '};\n'
-     '\n'
      'extern "C" __declspec(dllimport) void *__cdecl MBmalloc_release(unsigned int size);\n'
      'extern "C" __declspec(dllimport) void __cdecl MBfree_release(void *ptr);\n'
      'extern "C" __declspec(dllimport) void __cdecl MBmemcpy(void *dest, const void *src, unsigned int cnt);\n'
      '\n'
-     '#line 75\n', 1),
+     '#line 62\n', 1),
 ]
 
 # MBEngine/MBStl.h: the original configures VC6's <xstddef> try/catch macros (_TRY_BEGIN etc.); libc++ has neither, so there is nothing to configure

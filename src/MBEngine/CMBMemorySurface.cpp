@@ -4,10 +4,7 @@
 static const MBGUID MBIID_IMBMemorySurface =
     { 0x7f30abb0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 
-class IMBMemorySurface : public IMBSurface {
-public:
-    virtual long CreateEmpty(unsigned long, unsigned long, MBPixelFormat) = 0;
-};
+#include "IMBMemorySurface.h"
 
 class CMBMemorySurface : public IMBMemorySurface {
 public:

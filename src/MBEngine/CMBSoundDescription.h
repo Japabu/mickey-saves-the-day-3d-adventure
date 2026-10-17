@@ -38,26 +38,10 @@ public:
 
 class IMBStream;
 
-class IMBStreamLocator : public IMBUnknown {
-public:
-    virtual long GetStream(IMBStream **) = 0;
-    virtual unsigned long GetID(void) const = 0;
-};
+static const MBGUID MBIID_IMBStreamLocator = { 0x89cc0fe0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
+#include "IMBStreamLocator.h"
 
-class IMBSoundDescription : public IMBUnknown {
-public:
-    virtual void SetStreamLocator(IMBStreamLocator *) = 0;
-    virtual void GetStreamLocator(IMBStreamLocator **) = 0;
-    virtual unsigned long GetSoundID(void) const = 0;
-    virtual void SetChannel(long) = 0;
-    virtual long GetChannel(void) const = 0;
-    virtual void SetLoopCount(long) = 0;
-    virtual long GetLoopCount(void) const = 0;
-    virtual void SetStreaming(bool) = 0;
-    virtual bool IsStreaming(void) const = 0;
-    virtual void SetRateMultiplier(float) = 0;
-    virtual float GetRateMultiplier(void) const = 0;
-};
+#include "IMBSoundDescription.h"
 
 class CMBSoundDescription : public IMBSoundDescription {
 public:

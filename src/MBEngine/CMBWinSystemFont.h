@@ -3,6 +3,7 @@
 #define CMBWINSYSTEMFONT_H
 
 // ---- MBColor header (copied from CMBSurfaceObject.h): $E1..$E47 come first ----
+// own copy: this unit uses the constructors or GetShiftCount, whose inline body here differs from MBColorMask.h (store order / code shape the matches depend on)
 class MBColorMask {
 public:
     MBColorMask(unsigned long redmask, unsigned long greenmask, unsigned long bluemask,
@@ -50,6 +51,7 @@ static const MBColorMask kCM_ARGB16(0x7c00, 0x03e0, 0x001f, 0x8000);
 static const MBColorMask kCM_RGB16(0xf800, 0x07e0, 0x001f, 0);
 static const MBColorMask kCM_BGR16(0x001f, 0x07e0, 0xf800, 0);
 
+// own copy: this unit uses the constructor, Set or Convert, whose inline body here differs from MBColor.h (store order / code shape the matches depend on)
 class MBColor {
 public:
     MBColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
@@ -152,13 +154,9 @@ static const MBGUID MBIID_IMBResource =
 static const MBGUID MBIID_IMBScreenManager =
     { 0x79df27a0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 
-class MBSize {
-public:
-    MBSize(long x, long y) { cx = x; cy = y; }
-    long cx;
-    long cy;
-};
+#include "MBSize.h"
 
+// own copy: a plain struct without constructors
 class MBRect {
 public:
     long left;
@@ -174,32 +172,15 @@ public:
     virtual unsigned long Release(void) = 0;
 };
 
-class IMBSurface : public IMBUnknown {
-};
+#include "IMBSurface.h"
 
-class IMBWinDC : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBWinDC; }
-    virtual long GetDC(HDC__ **, unsigned long) = 0;
-    virtual long ReleaseDC(HDC__ *) = 0;
-};
+#include "IMBWinDC.h"
 
-class IMBFont : public IMBUnknown {
-public:
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual long DrawText(IMBSurface *, long, long, const unsigned short *const, unsigned long) = 0; // +0x18
-    virtual long DrawText(IMBSurface *, MBRect &, const unsigned short *const, unsigned long) = 0;    // +0x14
-    virtual long DrawText(IMBSurface *, long, long, const char *const, unsigned long) = 0;           // +0x10
-    virtual long DrawText(IMBSurface *, MBRect &, const char *const, unsigned long) = 0;              // +0x0c
-    virtual long GetTextSize(IMBSurface *, const unsigned short *, unsigned long, MBSize &) = 0;
-    virtual long GetTextSize(IMBSurface *, const char *, unsigned long, MBSize &) = 0;
-};
+#include "IMBFont.h"
 
-class IMBSystemFont : public IMBFont {
-public:
-    virtual long LoadFont(IMBSurface *, const char *, short, const MBColor &, unsigned long) = 0;
-};
+#include "IMBSystemFont.h"
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T>
 class MBComPtr {
 public:

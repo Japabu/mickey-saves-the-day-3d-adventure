@@ -22,6 +22,7 @@ static const MBGUID MBIID_IMBScreen = { 0x79d783b0, 0x9ea2, 0x11d3, { 0xbe, 0xdb
 static const MBGUID MBIID_IMBSurface = { 0x7ee752b0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 static const MBGUID MBIID_IMBDirectXScreen = { 0x7fe4fbd0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 
+// own copy: this unit uses the constructors or GetShiftCount, whose inline body here differs from MBColorMask.h (store order / code shape the matches depend on)
 class MBColorMask {
 public:
     MBColorMask(unsigned long r, unsigned long g, unsigned long b, unsigned long a) { Set(r, g, b, a); }
@@ -67,6 +68,7 @@ static MBColorMask kCM_ARGB16(0x7c00, 0x03e0, 0x001f, 0x8000);
 static MBColorMask kCM_RGB16(0xf800, 0x07e0, 0x001f, 0);
 static MBColorMask kCM_BGR16(0x001f, 0x07e0, 0xf800, 0);
 
+// own copy: this unit uses the constructor, Set or Convert, whose inline body here differs from MBColor.h (store order / code shape the matches depend on)
 class MBColor {
 public:
     MBColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) { Set(r, g, b, a); }
@@ -124,55 +126,28 @@ public:
     virtual unsigned long Release(void) = 0;
 };
 
-struct MBPointStruct {
-    long x;
-    long y;
-};
+#include "MBPointStruct.h"
 
+// own copy: this unit uses the default constructor (x = y = 0), whose inline body here differs from MBPoint.h (store order / code shape the matches depend on)
 class MBPoint : public MBPointStruct {
 public:
     MBPoint(void) { x = y = 0; }
     MBPoint(long ax, long ay) { x = ax; y = ay; }
 };
 
+// own copy: a plain struct without constructors
 struct MBRect {
     long left, top, right, bottom;
 };
 
 struct MBScreenAttributes;
-enum MBScreenState { kMBScreenStateDummy };
+#include "MBScreenState.h"
 class IMBSurface;
 class IMBWorld;
 
-class IMBScreen : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBScreen; }
-    virtual void SetScreenState(MBScreenState) = 0;
-    virtual MBScreenState GetScreenState(void) = 0;
-    virtual unsigned char CreateSurface(unsigned short, unsigned short, unsigned long, IMBSurface **) = 0;
-    virtual void GetBackBuffer(IMBSurface **) = 0;
-    virtual void Flip(void) = 0;
-    virtual unsigned short GetWidth(void) = 0;
-    virtual unsigned short GetHeight(void) = 0;
-    virtual MBRect GetGlobalBounds(void) = 0;
-    virtual MBPoint GlobalToScreenPoint(const MBPoint &) = 0;
-};
+#include "IMBScreen.h"
 
-class IMBScreenManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBScreenManager; }
-    virtual unsigned char RequestScreen(long, MBScreenAttributes &) = 0;
-    virtual void Activate(void) = 0;
-    virtual void Deactivate(void) = 0;
-    virtual MBPoint GetGlobalMouseLocation(void) = 0;
-    virtual unsigned char ProcessSystemEvent(void *) = 0;
-    virtual void RemoveScreen(long) = 0;
-    virtual void RemoveAllScreens(void) = 0;
-    virtual unsigned short GetNumScreens(void) = 0;
-    virtual void GetScreenByIndex(unsigned short, IMBScreen **) = 0;
-    virtual void GetScreenByID(long, IMBScreen **) = 0;
-    virtual void FindScreenContainingPoint(const MBPoint &, IMBScreen **) = 0;
-};
+#include "IMBScreenManager.h"
 
 extern "C" {
 void MBRegisterScreenManager(IMBScreenManager *screenManager);

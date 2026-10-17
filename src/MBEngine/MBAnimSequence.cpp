@@ -1,5 +1,5 @@
 // MBEngine.dll unit MBAnimSequence (.\MBEngineRelease\MBAnimSequence.obj)
-#include "MBAnimSequence.h"
+#include "MBAnimSequence_unit.h"
 
 // PDB names these without C++ decoration: C linkage, file scope
 extern "C" {

@@ -65,6 +65,7 @@ public:
 
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}
@@ -111,21 +112,13 @@ public:
     T *mInterface;
 };
 
-class IMBStream : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBStream; }
-};
+#include "IMBStream.h"
 
-class IMBFileSpec : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBFileSpec; }
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual void SetPath(const char *) = 0;                       // vftable+0x10
-    virtual void SetPath(const IMBFileSpec *, const char *) = 0;  // vftable+0x0c
-};
+#include "IMBFileSpec.h"
 
 extern "C" void MBOpenFile(const IMBFileSpec *fileSpec, unsigned long openFlags, IMBStream **stream);
 
+// own copy: default arguments for the last parameter of GetString, which this unit's calls leave out; in IMBPref.h they would instantiate MBString16 in every unit (NOTES.md)
 class IMBPref : public IMBUnknown {
 public:
     static const MBGUID &GetGUID(void) { return MBIID_IMBPref; }
@@ -140,26 +133,9 @@ public:
     virtual long SetLong(IMBStream *, const MBString &, const MBString &, long) = 0;
 };
 
-class MBLocale {
-    friend class CMBStringTable;
-public:
-    MBLocale(const MBString &lcv) : mLCV(lcv) {}
-    void GetLCV(MBString &lcv) { lcv = mLCV; }
-protected:
-    MBString mLCV;
-    MBString16 mDisplayName;
-};
+#include "../MBEngine/MBLocale.h"
 
-class IMBStringTable : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBStringTable; }
-    // overloads in reverse declaration order (see IMBFileSpec)
-    virtual bool Load(const char *) = 0;                 // vftable+0x10
-    virtual bool Load(unsigned long, IMBStream *) = 0;   // vftable+0x0c
-    virtual bool SetLocale(const MBLocale &) = 0;
-    virtual bool GetString(unsigned long, MBString16 &) = 0;
-    virtual bool GetNamedString(const MBString &, MBString16 &) = 0;
-};
+#include "IMBStringTable.h"
 
 class CMBStringTable : public IMBStringTable {
 public:

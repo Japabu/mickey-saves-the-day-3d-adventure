@@ -37,6 +37,7 @@ public:
 class IMBStream;
 class IMBFileSpec;
 
+// own copy: carries the sUnknownStreamLocatorStatic $E stand-in (see NOTES.md)
 class IMBStreamLocator : public IMBUnknown {
 public:
     static const MBGUID &GetGUID(void) { return MBIID_IMBStreamLocator; }
@@ -49,40 +50,28 @@ public:
     static const unsigned long sUnknownStreamLocatorStatic;
 };
 
+// own copy: derives from this unit's own IMBStreamLocator
 class IMBResourceStreamLocator : public IMBStreamLocator {
 public:
     static const MBGUID &GetGUID(void) { return MBIID_IMBResourceStreamLocator; }
     virtual long SetResource(unsigned long, unsigned long) = 0;
 };
 
+// own copy: derives from this unit's own IMBStreamLocator
 class IMBFileStreamLocator : public IMBStreamLocator {
 public:
     static const MBGUID &GetGUID(void) { return MBIID_IMBFileStreamLocator; }
     virtual long SetFile(IMBFileSpec *) = 0;
 };
 
-class IMBSoundDescription : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBSoundDescription; }
-    virtual void SetStreamLocator(IMBStreamLocator *) = 0;
-    virtual void GetStreamLocator(IMBStreamLocator **) = 0;
-    virtual unsigned long GetSoundID(void) const = 0;
-    virtual void SetChannel(long) = 0;
-    virtual long GetChannel(void) const = 0;
-    virtual void SetLoopCount(long) = 0;
-    virtual long GetLoopCount(void) const = 0;
-};
+#include "IMBSoundDescription.h"
 
-class IMBSoundManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBSoundManager; }
-    virtual void StartSound(IMBSoundDescription *) = 0;
-    virtual void QueueSound(IMBSoundDescription *) = 0;
-};
+#include "IMBSoundManager.h"
 
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 extern "C" __declspec(dllimport) unsigned long MBHashString(const char *);
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T>
 class MBComPtr {
 public:

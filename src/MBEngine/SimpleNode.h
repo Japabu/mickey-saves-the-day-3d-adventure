@@ -27,46 +27,7 @@ struct MBGUID {
 };
 
 // ---- colours (header statics: every including unit has its own $E1..$E47) ----
-class MBColorMask {
-public:
-    MBColorMask(unsigned long r, unsigned long g, unsigned long b, unsigned long a) { Set(r, g, b, a); }
-    void Set(unsigned long redmask, unsigned long greenmask, unsigned long bluemask, unsigned long alphamask) {
-        mRedMask = redmask;
-        mBlueMask = bluemask;
-        mGreenMask = greenmask;
-        mAlphaMask = alphamask;
-        mRedShift = GetShiftCount(redmask) + GetBitCount(redmask) - 8;
-        mBlueShift = GetShiftCount(bluemask) + GetBitCount(bluemask) - 8;
-        mGreenShift = GetShiftCount(greenmask) + GetBitCount(greenmask) - 8;
-        mAlphaShift = GetShiftCount(alphamask) + GetBitCount(alphamask) - 8;
-    }
-    unsigned long mRedMask;
-    unsigned long mBlueMask;
-    unsigned long mGreenMask;
-    unsigned long mAlphaMask;
-    char mRedShift;
-    char mBlueShift;
-    char mGreenShift;
-    char mAlphaShift;
-    static unsigned char GetShiftCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (!(mask & 1)) {
-            if (count >= 32)
-                break;
-            mask >>= 1;
-            count++;
-        }
-        return count;
-    }
-    static unsigned char GetBitCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (mask) {
-            mask &= mask - 1;
-            count++;
-        }
-        return count;
-    }
-};
+#include "MBColorMask.h"
 
 const MBColorMask kCM_RGBA32(0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 const MBColorMask kCM_ARGB32(0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
@@ -74,42 +35,7 @@ const MBColorMask kCM_ARGB16(0x7c00, 0x03e0, 0x001f, 0x8000);
 const MBColorMask kCM_RGB16(0xf800, 0x07e0, 0x001f, 0);
 const MBColorMask kCM_BGR16(0x001f, 0x07e0, 0xf800, 0);
 
-class MBColor {
-public:
-    MBColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) { Set(r, g, b, a); }
-    void Set(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-        mRed = r;
-        mBlue = b;
-        mGreen = g;
-        mAlpha = a;
-        mColor = Convert(kCM_ARGB32);
-    }
-    unsigned long Convert(MBColorMask mask) {
-        mColor = 0;
-        if (mask.mRedShift > 0)
-            mColor |= (mRed << mask.mRedShift) & mask.mRedMask;
-        else
-            mColor |= (mRed >> (char)-mask.mRedShift) & mask.mRedMask;
-        if (mask.mGreenShift > 0)
-            mColor |= (mGreen << mask.mGreenShift) & mask.mGreenMask;
-        else
-            mColor |= (mGreen >> (char)-mask.mGreenShift) & mask.mGreenMask;
-        if (mask.mBlueShift > 0)
-            mColor |= (mBlue << mask.mBlueShift) & mask.mBlueMask;
-        else
-            mColor |= (mBlue >> (char)-mask.mBlueShift) & mask.mBlueMask;
-        if (mask.mAlphaShift > 0)
-            mColor |= (mAlpha << mask.mAlphaShift) & mask.mAlphaMask;
-        else
-            mColor |= (mAlpha >> (char)-mask.mAlphaShift) & mask.mAlphaMask;
-        return mColor;
-    }
-    unsigned char mRed;
-    unsigned char mGreen;
-    unsigned char mBlue;
-    unsigned char mAlpha;
-    unsigned long mColor;
-};
+#include "../MBEngine/MBColor.h"
 
 const MBColor kWhite(255, 255, 255, 0);
 const MBColor kBlack(0, 0, 0, 0);
@@ -195,6 +121,7 @@ public:
 
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}
@@ -284,29 +211,20 @@ private:
 };
 
 // ---- geometry ----
-struct MBPointStruct {
-    long x;
-    long y;
-};
+#include "MBPointStruct.h"
 
+// own copy: this unit uses the default constructor (x = y = 0), whose inline body here differs from MBPoint.h (store order / code shape the matches depend on)
 class MBPoint : public MBPointStruct {
 public:
     MBPoint(void) { x = y = 0; }
     MBPoint(long ax, long ay) { x = ax; y = ay; }
 };
 
-struct MBPointStruct3 {
-    long x;
-    long y;
-    long z;
-};
+#include "MBPointStruct3.h"
 
-class MBPoint3 : public MBPointStruct3 {
-public:
-    MBPoint3(void) { x = y = z = 0; }
-    MBPoint3(long ax, long ay, long az) { x = ax; y = ay; z = az; }
-};
+#include "MBPoint3.h"
 
+// own copy: members w/h, a default constructor that leaves them unset, SetSize
 class MBSize {
 public:
     MBSize(long width, long height) { w = width; h = height; }
@@ -316,6 +234,7 @@ public:
     long h;
 };
 
+// own copy: takes MBPoint and MBSize by value and uses its own MBSize
 class MBRect {
 public:
     MBRect(void) { left = 0; top = 0; right = 0; bottom = 0; }
@@ -333,13 +252,11 @@ public:
 };
 
 // ---- events ----
-struct MBKeyboardEvent {
-    unsigned short mCharCode;
-    unsigned short mSpecialCode;
-};
+#include "MBKeyboardEvent.h"
 
 class IMBScreen;
 
+// own copy: built on this unit's own MBPoint
 struct MBMouseEvent {
     MBPoint mMousePos;
     IMBScreen *mScreen;
@@ -348,19 +265,11 @@ struct MBMouseEvent {
 
 class IMBAnim;
 
-struct MBAnimEventStruct {
-    IMBAnim *anim;
-    unsigned long id;
-    long sequence;
-    long frame;
-};
+#include "MBAnimEventStruct.h"
 
 class IMBSoundDescription;
 
-struct SoundEndedEvent {
-    IMBSoundDescription *mSoundDescription;
-    bool mCompleted;
-};
+#include "SoundEndedEvent.h"
 
 // ---- interfaces ----
 class IMBSurface;
@@ -372,371 +281,70 @@ class IMBMouseable;
 class IMBNodeManager;
 struct MBScreenAttributes;
 
-class IMBSurface : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBSurface; }
-    // (only Release is called here; the surface methods are in CMBSurfaceObject.h)
-};
+#include "IMBSurface.h"
 
-class IMBObject : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBObject; }
-    virtual MBPoint3 GetOffset(void) const = 0;
-    virtual MBPoint3 GetPosition(void) const = 0;
-    virtual void Place(const MBPoint3 &) = 0;
-    virtual void Move(const MBPoint3 &) = 0;
-    virtual MBRect GetBounds(void) const = 0;
-    virtual bool IsVisible(void) const = 0;
-    virtual long Show(void) = 0;
-    virtual long Hide(void) = 0;
-    virtual bool IsDirty(void) const = 0;
-    virtual void SetDirty(void) = 0;
-    virtual void ClearDirty(void) = 0;
-    virtual long Draw(IMBSurface *, MBRect &, MBRect &) const = 0;
-    virtual void GetParent(IMBObjectGroup **) const = 0;
-    virtual IMBObjectGroup *SetParent(IMBObjectGroup *) = 0;
-};
+#include "IMBObject.h"
 
-class IMBObjectGroup : public IMBObject {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBObjectGroup; }
-    virtual void GetBackground(IMBObject **) const = 0;
-    virtual void SetBackground(IMBObject *) = 0;
-    virtual void AddObject(IMBObject *) = 0;
-    virtual void RemoveObject(IMBObject *) = 0;
-    virtual void ObjectMoved(IMBObject *) = 0;
-};
+#include "IMBObjectGroup.h"
 
-enum MBAnimationProperty { kAnimationDelay, kAnimationZPlane, kAnimationQuietBackground, kAnimationAutoUnload,
-                           kAnimationDontAdjustZPlane, kAnimationExternalCanvas, kAnimationExternalSequence };
-enum MBSequenceProperty { kSequenceComment, kSequenceZPlane, kSequenceDelay, kSequenceInSync, kSequenceEndAction,
-                          kSequenceJumpSequence, kSequenceJumpRandomSequenceMin, kSequenceJumpRandomSequenceMax,
-                          kSequenceTileWidth, kSequenceTileHeight };
-enum MBFrameProperty { kFrameNotify, kFrameDelay, kFrameStartSound, kFrameStartAnim, kFrameStartAnimName,
-                       kFrameStartAnimSequence, kFrameStopAnim, kFrameStartScript, kFrameStopScript,
-                       kFrameCastMemberOffset };
+#include "MBAnimationProperty.h"
+#include "MBSequenceProperty.h"
+#include "MBFrameProperty.h"
 
-class IMBAnim : public IMBObject {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBAnim; }
-    virtual long Load(unsigned long, IMBStream *, bool) = 0;              // +0x44
-    virtual long Save(IMBStream *) = 0;
-    virtual void Clone(IMBAnim **) = 0;                                   // +0x4c
-    virtual long SetAnimationProperty(MBAnimationProperty, const MBString &) = 0;         // +0x50..+0x5c
-    virtual long SetAnimationProperty(MBAnimationProperty, unsigned long &) = 0;
-    virtual long SetAnimationProperty(MBAnimationProperty, unsigned short) = 0;
-    virtual long SetAnimationProperty(MBAnimationProperty, unsigned char) = 0;
-    virtual long SetSequenceProperty(long, MBSequenceProperty, unsigned short) = 0;      // +0x60..+0x64
-    virtual long SetSequenceProperty(long, MBSequenceProperty, unsigned char) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, const MBPoint &) = 0;  // +0x68..+0x78
-    virtual long SetFrameProperty(long, long, MBFrameProperty, const MBString &) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, unsigned long) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, unsigned short) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, unsigned char) = 0;
-    virtual long GetAnimationProperty(MBAnimationProperty, unsigned long &) const = 0;    // +0x7c..+0x84
-    virtual long GetAnimationProperty(MBAnimationProperty, unsigned short &) const = 0;
-    virtual long GetAnimationProperty(MBAnimationProperty, unsigned char &) const = 0;
-    virtual long GetSequenceProperty(long, MBSequenceProperty, unsigned short &) const = 0; // +0x88..+0x8c
-    virtual long GetSequenceProperty(long, MBSequenceProperty, unsigned char &) const = 0;
-    virtual long GetFrameProperty(long, long, MBFrameProperty, MBPoint &) const = 0;  // +0x90..+0x9c
-    virtual long GetFrameProperty(long, long, MBFrameProperty, unsigned long &) const = 0;
-    virtual long GetFrameProperty(long, long, MBFrameProperty, unsigned short &) const = 0;
-    virtual long GetFrameProperty(long, long, MBFrameProperty, unsigned char &) const = 0;
-    virtual long UseAnimationProperty(MBAnimationProperty, bool) = 0;                     // +0xa0
-    virtual bool HasAnimationProperty(MBAnimationProperty) const = 0;
-    virtual long UseSequenceProperty(long, MBSequenceProperty, bool) = 0;
-    virtual bool HasSequenceProperty(long, MBSequenceProperty) const = 0;
-    virtual long UseFrameProperty(long, long, MBFrameProperty, bool) = 0;
-    virtual bool HasFrameProperty(long, long, MBFrameProperty) const = 0;
-    virtual void SetCastID(long, long, long) = 0;                         // +0xb8
-    virtual long GetCastID(long, long) const = 0;
-    virtual void Play(void) = 0;                                          // +0xc0
-    virtual void Stop(void) = 0;
-    virtual long Pause(void) = 0;
-    virtual long Resume(void) = 0;
-    virtual bool IsPaused(void) const = 0;
-    virtual bool IsStalled(void) const = 0;
-    virtual bool IsRendering(void) const = 0;
-    virtual bool IsPlaying(void) const = 0;
-    virtual void Scale(float, float, float) = 0;                          // +0xe0
-    virtual unsigned long GetNumSequences(void) const = 0;
-    virtual long AddSequence(void) = 0;
-    virtual bool SetCurrentSequence(long) = 0;                            // +0xec
-    virtual long GetCurrentSequenceIndex(void) const = 0;
-    virtual unsigned long GetNumFrames(long) const = 0;
-    virtual long AddFrame(long) = 0;
-    virtual bool SetCurrentFrame(long) = 0;
-    virtual long GetCurrentFrameIndex(void) const = 0;                    // +0x100
-    virtual unsigned long GetNumCasts(void) const = 0;                    // +0x104
-    virtual long AddCastMember(IMBSurface *, const MBPoint &) = 0;
-    virtual void GetCastMemberSurface(long, IMBSurface **) = 0;
-    virtual void SetCastMemberSurface(long, IMBSurface *) = 0;
-    virtual MBPoint GetCastMemberRegistrationPoint(long) const = 0;
-    virtual void SetCastMemberRegistrationPoint(long, const MBPoint &) = 0; // +0x118
-    virtual MBPoint GetCastMemberAttachmentPoint(long) const = 0;
-    virtual void SetCastMemberAttachmentPoint(long, const MBPoint &) = 0;
-};
+#include "IMBAnim.h"
 
-class IMBFont : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBFont; }
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual long DrawText(IMBSurface *, long, long, const unsigned short *const, unsigned long) = 0; // +0x18
-    virtual long DrawText(IMBSurface *, MBRect &, const unsigned short *const, unsigned long) = 0;    // +0x14
-    virtual long DrawText(IMBSurface *, long, long, const char *const, unsigned long) = 0;           // +0x10
-    virtual long DrawText(IMBSurface *, MBRect &, const char *const, unsigned long) = 0;              // +0x0c
-    virtual long GetTextSize(IMBSurface *, const unsigned short *, unsigned long, MBSize &) = 0;
-    virtual long GetTextSize(IMBSurface *, const char *, unsigned long, MBSize &) = 0;
-};
+#include "IMBFont.h"
 
-class IMBBitmapFont : public IMBFont {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBBitmapFont; }
-    virtual long LoadFont(unsigned long, IMBStream *) = 0;          // +0x24
-    virtual long LoadCharacterMap(unsigned long, IMBStream *) = 0;  // +0x28
-};
+#include "IMBBitmapFont.h"
 
-class IMBSystemFont : public IMBFont {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBSystemFont; }
-    virtual long LoadFont(IMBSurface *, const char *, short, const MBColor &, unsigned long) = 0; // +0x24
-};
+#include "IMBSystemFont.h"
 
-enum IMBStreamSeekValues { kMBStreamSeekDummy };
-enum IMBStreamError { kMBStreamErrorDummy };
+#include "IMBStreamSeekValues.h"
+#include "IMBStreamError.h"
 
-class IMBStream : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBStream; }
-    virtual bool Read(void *, unsigned long &) = 0;
-    virtual bool Write(const void *, unsigned long) = 0;
-    virtual bool Seek(long, IMBStreamSeekValues) = 0;
-    virtual unsigned long GetPosition(void) = 0;
-    virtual bool Flush(void) = 0;
-    virtual bool SetLastError(IMBStreamError) = 0;
-    virtual IMBStreamError GetLastError(void) = 0;
-    virtual unsigned long GetStreamSize(void) = 0;
-    virtual void Clone(IMBStream **) = 0;
-};
+#include "IMBStream.h"
 
-class IMBFileSpec : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBFileSpec; }
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual void SetPath(const char *) = 0;                       // vftable+0x10
-    virtual void SetPath(const IMBFileSpec *, const char *) = 0;  // vftable+0x0c
-    virtual MBString GetName(void) const = 0;
-    virtual MBString GetExtension(void) const = 0;
-    virtual MBString GetPath(void) const = 0;                     // vftable+0x1c
-    virtual MBString GetTitle(void) const = 0;
-    virtual unsigned long GetType(void) const = 0;
-    virtual void GetParent(IMBFileSpec **) const = 0;
-    virtual unsigned long Hash(void) const = 0;
-};
+#include "IMBFileSpec.h"
 
-class IMBFile : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBFile; }
-    virtual bool Open(const IMBFileSpec *, unsigned long) = 0;    // vftable+0x0c
-    virtual void GetFileSpec(IMBFileSpec **) = 0;
-    virtual bool Close(void) = 0;
-    virtual bool SetSize(unsigned long) = 0;
-};
+#include "IMBFile.h"
 
-class IMBResourceFile : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBResourceFile; }
-    virtual void LoadResource(unsigned long, unsigned long, IMBMemoryBlock **) = 0;
-    virtual void GetStream(unsigned long, unsigned long, IMBStream **) = 0;
-};
+#include "IMBResourceFile.h"
 
-enum MBResFileListAddLoc { kMBResFileListAddFirst, kMBResFileListAddLast };
+#include "MBResFileListAddLoc.h"
 
-class IMBResourceFileList : public IMBResourceFile {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBResourceFileList; }
-    virtual void AddFile(IMBResourceFile *, MBResFileListAddLoc, unsigned long) = 0;
-    virtual void RemoveFile(IMBResourceFile *) = 0;
-};
+#include "IMBResourceFileList.h"
 
-enum MBScreenState { kScreenStateActive, kScreenStatePaused, kScreenStateInactive };
+#include "MBScreenState.h"
 
-class IMBScreen : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBScreen; }
-    virtual void SetScreenState(MBScreenState) = 0;
-    virtual MBScreenState GetScreenState(void) = 0;
-    virtual bool CreateSurface(unsigned short, unsigned short, unsigned long, IMBSurface **) = 0;
-    virtual void GetBackBuffer(IMBSurface **) = 0;
-    virtual void Flip(void) = 0;
-    virtual unsigned short GetWidth(void) = 0;
-    virtual unsigned short GetHeight(void) = 0;
-    virtual MBRect GetGlobalBounds(void) = 0;
-    virtual MBPoint GlobalToScreenPoint(const MBPoint &) = 0;
-};
+#include "IMBScreen.h"
 
-class IMBScreenManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBScreenManager; }
-    virtual bool RequestScreen(long, MBScreenAttributes &) = 0;
-    virtual void Activate(void) = 0;
-    virtual void Deactivate(void) = 0;
-    virtual MBPoint GetGlobalMouseLocation(void) = 0;
-    virtual bool ProcessSystemEvent(void *) = 0;
-    virtual void RemoveScreen(long) = 0;
-    virtual void RemoveAllScreens(void) = 0;
-    virtual unsigned short GetNumScreens(void) = 0;
-    virtual void GetScreenByIndex(unsigned short, IMBScreen **) = 0;
-    virtual void GetScreenByID(long, IMBScreen **) = 0;
-    virtual void FindScreenContainingPoint(const MBPoint &, IMBScreen **) = 0;
-};
+#include "IMBScreenManager.h"
 
-class IMBWorld : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBWorld; }
-    virtual MBRect GetBounds(void) const = 0;
-    virtual void SetBounds(const MBRect &) = 0;
-    virtual long Draw(IMBSurface *, MBRect &, MBRect &) = 0;
-    virtual IMBObjectGroup &GetRoot(void) = 0;
-    virtual const IMBObjectGroup &GetConstRoot(void) const = 0;
-    void AddObject(IMBObject *object) { GetRoot().AddObject(object); }
-    void RemoveObject(IMBObject *object) { GetRoot().RemoveObject(object); }
-    void GetBackground(IMBObject **background) const { GetConstRoot().GetBackground(background); }
-    void SetBackground(IMBObject *background) { GetRoot().SetBackground(background); }
-};
+#include "IMBWorld.h"
 
-class IMBView : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBView; }
-    virtual bool IsDirty(void) = 0;
-    virtual void Draw(IMBSurface *) = 0;
-    virtual void SetWorldPosition(MBPoint) = 0;
-    virtual MBPoint GetWorldPosition(void) = 0;
-    virtual MBRect GetWorldBounds(void) = 0;
-    virtual void SetScreenPosition(MBPoint) = 0;
-    virtual MBPoint GetScreenPosition(void) = 0;
-    virtual MBRect GetScreenBounds(void) = 0;
-    virtual void SetSize(unsigned short, unsigned short) = 0;
-    virtual unsigned short GetWidth(void) = 0;
-    virtual unsigned short GetHeight(void) = 0;
-    virtual void AttachToWorld(IMBWorld *) = 0;
-    virtual void AttachToScreen(IMBScreen *) = 0;
-    virtual bool IsAttachedToScreen(IMBScreen *) = 0;
-    virtual void GetWorld(IMBWorld **) = 0;
-    virtual MBPoint ScreenToWorldPoint(const MBPoint &) = 0;
-};
+#include "IMBView.h"
 
-class IMBViewManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBViewManager; }
-    virtual void AddView(IMBView *) = 0;
-    virtual void RemoveView(IMBView *) = 0;
-    virtual void FindViewContaingPoint(IMBScreen *, const MBPoint &, IMBView **) = 0;
-};
+#include "IMBViewManager.h"
 
-class IMBMouseMonitor : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBMouseMonitor; }
-    virtual void AddMouseable(IMBMouseable *) = 0;
-    virtual void RemoveMouseable(IMBMouseable *) = 0;
-    virtual void Activate(void) = 0;
-    virtual void Deactivate(void) = 0;
-    virtual bool IsActive(void) = 0;
-};
+#include "IMBMouseMonitor.h"
 
-class IMBPeriodical : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBPeriodical; }
-    virtual void Idle(void) = 0;
-};
+#include "IMBPeriodical.h"
 
-class IMBPeriodicalManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBPeriodicalManager; }
-    virtual void AddPeriodical(IMBPeriodical *) = 0;
-    virtual void RemovePeriodical(IMBPeriodical *) = 0;
-    virtual void DevoteTimeToPeriodicals(void) = 0;
-};
+#include "IMBPeriodicalManager.h"
 
-class IMBEventListener : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventListener; }
-    virtual void ListenToEvent(long channel, long event, void *data) = 0;
-};
+#include "IMBEventListener.h"
 
-class IMBEventManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventManager; }
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual void RemoveListener(long, IMBEventListener *) = 0; // vftable+0x18
-    virtual void RemoveListener(IMBEventListener *) = 0;       // vftable+0x14
-};
+#include "IMBEventManager.h"
 
-class IMBSoundDescription : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBSoundDescription; }
-    virtual void SetStreamLocator(IMBStreamLocator *) = 0;
-    virtual void GetStreamLocator(IMBStreamLocator **) = 0;
-    virtual unsigned long GetSoundID(void) const = 0;
-    virtual void SetChannel(long) = 0;
-    virtual long GetChannel(void) const = 0;
-    virtual void SetLoopCount(long) = 0;
-    virtual long GetLoopCount(void) const = 0;
-    virtual void SetStreaming(bool) = 0;
-    virtual bool IsStreaming(void) const = 0;
-    virtual void SetRateMultiplier(float) = 0;
-    virtual float GetRateMultiplier(void) const = 0;
-};
+#include "IMBSoundDescription.h"
 
-class MBLocale {
-public:
-    MBLocale(void) {}
-    MBLocale(const MBString &lcv) : mLCV(lcv) {}
-protected:
-    MBString mLCV;
-    MBString16 mDisplayName;
-};
+#include "../MBEngine/MBLocale.h"
 
-class IMBStringTable : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBStringTable; }
-    // overloads in reverse declaration order
-    virtual bool Load(const char *) = 0;                 // vftable+0x10
-    virtual bool Load(unsigned long, IMBStream *) = 0;   // vftable+0x0c
-    virtual bool SetLocale(const MBLocale &) = 0;
-    virtual bool GetString(unsigned long, MBString16 &) = 0;
-    virtual bool GetNamedString(const MBString &, MBString16 &) = 0;
-};
+#include "IMBStringTable.h"
 
-class IMBNode : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBNode; }
-    virtual void OnStart(void) = 0;
-    virtual void OnPause(void) = 0;
-    virtual void OnResume(void) = 0;
-    virtual void OnEnd(void) = 0;
-    virtual void OnQuit(void) = 0;
-};
+#include "IMBNode.h"
 
-class IMBGameEngine : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBGameEngine; }
-    virtual void Init(void) = 0;
-    virtual void ShutDown(void) = 0;
-    virtual MBComPtr<IMBNodeManager> GetNodeMgr(void) const = 0;
-    virtual long CreateScreen(IMBScreenManager *) = 0;
-    virtual void Start(void) = 0;
-    virtual void Idle(void) = 0;
-    virtual void UpdateScreen(const MBRect &) = 0;
-    virtual bool IsQuitting(void) const = 0;
-    virtual void Quit(void) = 0;
-    virtual void SetOnEngineStartupFunction(void (__cdecl *)(IMBGameEngine *)) = 0;
-    virtual void SetOnEngineShutdownFunction(void (__cdecl *)(IMBGameEngine *)) = 0;
-    virtual void SetOnEngineCreateScreenFunction(long (__cdecl *)(IMBGameEngine *, IMBScreenManager *)) = 0;
-    virtual void GetStringTable(IMBStringTable **) = 0;
-};
+#include "IMBGameEngine.h"
 
 // engine entry points (direct calls into other units of this DLL)
 extern "C" {

@@ -12,16 +12,9 @@ extern "C" HRESULT __stdcall DirectDrawEnumerateExA(MBDDEnumCallback, void *, DW
 
 extern "C" unsigned char MBShowSystemCursor(unsigned char show);
 
-class IMBEventManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventManager; }
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual void RemoveListener(long, IMBEventListener *) = 0; // vftable+0x18
-    virtual void RemoveListener(IMBEventListener *) = 0;       // vftable+0x14
-};
+#include "IMBEventManager.h"
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}

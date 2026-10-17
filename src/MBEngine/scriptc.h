@@ -55,6 +55,7 @@ public:
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 
 // smart pointer (CMBGameEngine.h)
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}
@@ -98,34 +99,12 @@ private:
     T *mInterface;
 };
 
-enum IMBStreamSeekValues { kIMBStreamSeekStart = 1, kIMBStreamSeekEnd = 2, kIMBStreamSeekCurrent = 3 };
-enum IMBStreamError { kIMBStreamNoError = 0 };
+#include "IMBStreamSeekValues.h"
+#include "IMBStreamError.h"
 
-class IMBStream : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBStream; }
-    virtual bool Read(void *, unsigned long &) = 0;
-    virtual bool Write(const void *, unsigned long) = 0;
-    virtual bool Seek(long, IMBStreamSeekValues) = 0;
-    virtual unsigned long GetPosition(void) = 0;
-    virtual bool Flush(void) = 0;
-    virtual bool SetLastError(IMBStreamError) = 0;
-    virtual IMBStreamError GetLastError(void) = 0;
-    virtual unsigned long GetStreamSize(void) = 0;
-    virtual void Clone(IMBStream **) = 0;
-};
+#include "IMBStream.h"
 
-class IMBGameClock : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBGameClock; }
-    virtual unsigned long GetRealTime(void) = 0;
-    virtual unsigned long GetGameTime(void) = 0;
-    virtual long Pause(void) = 0;
-    virtual long Unpause(void) = 0;
-    virtual void SetTime(unsigned long) = 0;
-    virtual void AddTime(unsigned long) = 0;
-    virtual void SetMSPerSecond(long) = 0;
-};
+#include "IMBGameClock.h"
 
 // the containers of the muffin code; no construct/destroy (std::_Construct is instantiated)
 template <class T> class MBAllocator : public std::allocator<T> {
@@ -162,31 +141,9 @@ enum {
     SymtabFunVariable = 3
 };
 
-class TSymtabNode {
-    TSymtabNode *left;
-    TSymtabNode *right;
-    unsigned long nodeIndex;
-    char name[32];
-public:
-    union {
-        float num;
-        char str[32];
-    } value;
-    unsigned long type;
-    void *param;
+#include "TSymtabNode.h"
 
-    TSymtabNode(void);
-    TSymtabNode(const char *theName, long index);
-    ~TSymtabNode(void);
-    const char *Name(void) { return name; }
-    void SetValue(float num);
-    void SetValue(long num);
-    void SetValue(const char *str);
-    unsigned long Index(void) const { return nodeIndex; }
-    void Print(void) const;
-    unsigned long StreamOut(IMBStream *outFile);
-};
-
+// own copy: without symtable.h's $E stand-in static (sUnknownSymtabStatic)
 class TSymtab {
     TSymtabNode *root;
     long nodeCnt;
@@ -404,17 +361,6 @@ int yylex(void);
 int yyerror(char *s);
 
 // ---- flex buffer ----
-struct yy_buffer_state {
-    FILE *yy_input_file;
-    char *yy_ch_buf;
-    char *yy_buf_pos;
-    unsigned int yy_buf_size;
-    int yy_n_chars;
-    int yy_is_our_buffer;
-    int yy_is_interactive;
-    int yy_at_bol;
-    int yy_fill_buffer;
-    int yy_buffer_status;
-};
+#include "yy_buffer_state.h"
 
 #endif

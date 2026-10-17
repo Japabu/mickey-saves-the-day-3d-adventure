@@ -34,6 +34,7 @@ static const MBGUID MBIID_IMBSurface =
     { 0x7ee752b0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 
 // ---- MBColor header: masks and colour constants (internal linkage, one $E each) ----
+// own copy: this unit uses the constructors or GetShiftCount, whose inline body here differs from MBColorMask.h (store order / code shape the matches depend on)
 class MBColorMask {
 public:
     MBColorMask(unsigned long redmask = 0, unsigned long greenmask = 0, unsigned long bluemask = 0,
@@ -81,6 +82,7 @@ static const MBColorMask kCM_ARGB16(0x7c00, 0x03e0, 0x001f, 0x8000);
 static const MBColorMask kCM_RGB16(0xf800, 0x07e0, 0x001f, 0);
 static const MBColorMask kCM_BGR16(0x001f, 0x07e0, 0xf800, 0);
 
+// own copy: this unit uses the constructor, Set or Convert, whose inline body here differs from MBColor.h (store order / code shape the matches depend on)
 class MBColor {
 public:
     MBColor(unsigned char r = 0, unsigned char g = 0, unsigned char b = 0, unsigned char a = 0)
@@ -143,6 +145,7 @@ static const MBColor kGrey50(128, 128, 128, 0);
 static const MBColor kGrey75(192, 192, 192, 0);
 
 // ---- geometry ----
+// own copy: CMBWinDIBSurface.cpp, which includes this header, defines its own MBmin (a < b ? a : b), which MBRect.h's MBMinMax.h would collide with
 class MBRect {
 public:
     MBRect(void) { left = 0; top = 0; right = 0; bottom = 0; }
@@ -166,6 +169,7 @@ public:
 
 class IMBStream;
 
+// own copy: built on this unit's own MBColorMask
 struct MBPixelFormat {
     short mBitsPerPixel;
     MBColorMask mColorMask;
@@ -173,24 +177,7 @@ struct MBPixelFormat {
 class MBPalette {
 };
 
-class IMBSurface : public IMBUnknown {
-public:
-    virtual unsigned long GetWidth(void) = 0;
-    virtual unsigned long GetHeight(void) = 0;
-    virtual unsigned long GetPitch(void) = 0;
-    virtual unsigned long GetSize(void) = 0;
-    virtual unsigned long GetDepth(void) = 0;
-    virtual MBPixelFormat GetFormat(void) = 0;
-    virtual long Lock(void **, unsigned long) = 0;
-    virtual long Unlock(void **) = 0;
-    virtual MBColor GetPixelColor(unsigned long, unsigned long) = 0;
-    virtual long SetTransparentColor(MBColor) = 0;
-    virtual MBColor GetTransparentColor(void) = 0;
-    virtual long SetPalette(MBPalette *) = 0;
-    virtual MBPalette *GetPalette(void) = 0;
-    virtual long ColorFill(MBColor, MBRect *) = 0;
-    virtual long Blit(IMBSurface *, MBRect *, MBRect *, unsigned long) = 0;
-};
+#include "IMBSurface.h"
 
 // MBMemoryBlit.obj
 bool MBBlit(void *source, MBRect *source_rect, unsigned long source_pitch, void *dest,

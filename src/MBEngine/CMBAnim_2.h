@@ -69,6 +69,7 @@ struct O_MBVector_MBAnimSequence_4b6b5653 { int _raw[4]; };
 
 
 // sizes and member offsets recorded in the PDB
+// own copy: this unit's own layout asserts, not a class of the game
 struct PDB_Layout {
 };
 #undef OFS

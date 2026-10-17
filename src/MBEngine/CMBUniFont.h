@@ -75,6 +75,7 @@ public:
 
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}
@@ -126,19 +127,16 @@ public:
 template <class T> inline const T &MBmax(const T &a, const T &b) { return a < b ? b : a; }
 template <class T> inline const T &MBmin(const T &a, const T &b) { return b < a ? b : a; }
 
-class MBSize {
-public:
-    MBSize(long x, long y) { cx = x; cy = y; }
-    long cx;
-    long cy;
-};
+#include "MBSize.h"
 
+// own copy: a struct without the MBPointStruct base and without a default constructor
 struct MBPoint {
     MBPoint(long ax, long ay) { x = ax; y = ay; }
     long x;
     long y;
 };
 
+// own copy: built on this unit's own MBPoint
 class MBRect {
 public:
     MBRect(void) { left = 0; top = 0; right = 0; bottom = 0; }
@@ -166,46 +164,7 @@ public:
 };
 
 // ---- colors (header statics: every including TU has its own $E initializers) ----
-class MBColorMask {
-public:
-    MBColorMask(unsigned long r = 0, unsigned long g = 0, unsigned long b = 0, unsigned long a = 0) { Set(r, g, b, a); }
-    void Set(unsigned long redmask, unsigned long greenmask, unsigned long bluemask, unsigned long alphamask) {
-        mRedMask = redmask;
-        mBlueMask = bluemask;
-        mGreenMask = greenmask;
-        mAlphaMask = alphamask;
-        mRedShift = GetShiftCount(redmask) + GetBitCount(redmask) - 8;
-        mBlueShift = GetShiftCount(bluemask) + GetBitCount(bluemask) - 8;
-        mGreenShift = GetShiftCount(greenmask) + GetBitCount(greenmask) - 8;
-        mAlphaShift = GetShiftCount(alphamask) + GetBitCount(alphamask) - 8;
-    }
-    unsigned long mRedMask;
-    unsigned long mBlueMask;
-    unsigned long mGreenMask;
-    unsigned long mAlphaMask;
-    char mRedShift;
-    char mBlueShift;
-    char mGreenShift;
-    char mAlphaShift;
-    static unsigned char GetShiftCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (!(mask & 1)) {
-            if (count >= 32)
-                break;
-            mask >>= 1;
-            count++;
-        }
-        return count;
-    }
-    static unsigned char GetBitCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (mask) {
-            mask &= mask - 1;
-            count++;
-        }
-        return count;
-    }
-};
+#include "MBColorMask.h"
 
 static const MBColorMask kCM_RGBA32(0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 static const MBColorMask kCM_ARGB32(0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
@@ -213,6 +172,7 @@ static const MBColorMask kCM_ARGB16(0x7c00, 0x03e0, 0x001f, 0x8000);
 static const MBColorMask kCM_RGB16(0xf800, 0x07e0, 0x001f, 0);
 static const MBColorMask kCM_BGR16(0x001f, 0x07e0, 0xf800, 0);
 
+// own copy: this unit uses the constructor, Set or Convert, whose inline body here differs from MBColor.h (store order / code shape the matches depend on)
 class MBColor {
 public:
     MBColor(unsigned char r = 0, unsigned char g = 0, unsigned char b = 0, unsigned char a = 0) { mColor = 0; Set(r, g, b, a); }
@@ -262,94 +222,31 @@ static const MBColor kGrey25(64, 64, 64, 0);
 static const MBColor kGrey50(128, 128, 128, 0);
 static const MBColor kGrey75(192, 192, 192, 0);
 
-struct MBPixelFormat {
-    short mBitsPerPixel;
-    MBColorMask mColorMask;
-};
+#include "MBPixelFormat.h"
 
-enum IMBStreamSeekValues { kIMBStreamSeekDummy };
-enum IMBStreamError { kIMBStreamErrorDummy };
+#include "IMBStreamSeekValues.h"
+#include "IMBStreamError.h"
 
-class IMBStream : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBStream; }
-    virtual unsigned char Read(void *, unsigned long &) = 0;
-    virtual unsigned char Write(const void *, unsigned long) = 0;
-    virtual unsigned char Seek(long, IMBStreamSeekValues) = 0;
-    virtual unsigned long GetPosition(void) = 0;
-    virtual unsigned char Flush(void) = 0;
-    virtual unsigned char SetLastError(IMBStreamError) = 0;
-    virtual IMBStreamError GetLastError(void) = 0;
-    virtual unsigned long GetStreamSize(void) = 0;
-    virtual void Clone(IMBStream **) = 0;
-};
+#include "IMBStream.h"
 
 class MBPalette;
 
-class IMBSurface : public IMBUnknown {
-public:
-    virtual unsigned long GetWidth(void) = 0;
-    virtual unsigned long GetHeight(void) = 0;
-    virtual unsigned long GetPitch(void) = 0;
-    virtual unsigned long GetSize(void) = 0;
-    virtual unsigned long GetDepth(void) = 0;
-    virtual MBPixelFormat GetFormat(void) = 0;
-    virtual long Lock(void **, unsigned long) = 0;
-    virtual long Unlock(void **) = 0;
-    virtual MBColor GetPixelColor(unsigned long, unsigned long) = 0;
-    virtual long SetTransparentColor(MBColor) = 0;
-    virtual MBColor GetTransparentColor(void) = 0;
-    virtual long SetPalette(MBPalette *) = 0;
-    virtual MBPalette *GetPalette(void) = 0;
-    virtual long ColorFill(MBColor, MBRect *) = 0;
-    virtual long Blit(IMBSurface *, MBRect *, MBRect *, unsigned long) = 0;
-};
+#include "IMBSurface.h"
 
-enum MBScreenState { kMBScreenStateDummy };
+#include "MBScreenState.h"
 struct MBScreenAttributes;
 
-class IMBScreen : public IMBUnknown {
-public:
-    virtual void SetScreenState(MBScreenState) = 0;
-    virtual MBScreenState GetScreenState(void) = 0;
-    virtual unsigned char CreateSurface(unsigned short, unsigned short, unsigned long, IMBSurface **) = 0;
-    virtual void GetBackBuffer(IMBSurface **) = 0;
-};
+#include "IMBScreen.h"
 
-class IMBScreenManager : public IMBUnknown {
-public:
-    virtual bool RequestScreen(long, MBScreenAttributes &) = 0;
-    virtual void Activate(void) = 0;
-    virtual void Deactivate(void) = 0;
-    virtual MBPoint GetGlobalMouseLocation(void) = 0;
-    virtual bool ProcessSystemEvent(void *) = 0;
-    virtual void RemoveScreen(long) = 0;
-    virtual void RemoveAllScreens(void) = 0;
-    virtual unsigned short GetNumScreens(void) = 0;
-    virtual void GetScreenByIndex(unsigned short, IMBScreen **) = 0;
-    virtual void GetScreenByID(long, IMBScreen **) = 0;
-    virtual void FindScreenContainingPoint(const MBPoint &, IMBScreen **) = 0;
-};
+#include "IMBScreenManager.h"
 
 extern "C" void MBGetScreenManager(IMBScreenManager **screenManager);
 
-class IMBFont : public IMBUnknown {
-public:
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual long DrawText(IMBSurface *, long, long, const unsigned short *const, unsigned long) = 0; // +0x18
-    virtual long DrawText(IMBSurface *, MBRect &, const unsigned short *const, unsigned long) = 0;    // +0x14
-    virtual long DrawText(IMBSurface *, long, long, const char *const, unsigned long) = 0;           // +0x10
-    virtual long DrawText(IMBSurface *, MBRect &, const char *const, unsigned long) = 0;              // +0x0c
-    virtual long GetTextSize(IMBSurface *, const unsigned short *, unsigned long, MBSize &) = 0;     // +0x20
-    virtual long GetTextSize(IMBSurface *, const char *, unsigned long, MBSize &) = 0;               // +0x1c
-};
+#include "IMBFont.h"
 
-class IMBBitmapFont : public IMBFont {
-public:
-    virtual long LoadFont(unsigned long, IMBStream *) = 0;
-    virtual long LoadCharacterMap(unsigned long, IMBStream *) = 0;
-};
+#include "IMBBitmapFont.h"
 
+// own copy: a default argument for the MBString16 GetString only (NOTES.md: the MBString one shifts a $E here)
 class IMBPref : public IMBUnknown {
 public:
     static const MBGUID &GetGUID(void) { return MBIID_IMBPref; }
@@ -366,29 +263,12 @@ public:
 };
 
 // ---- stream helpers ----
-class CMBStreamSwapLSB {
-public:
-    CMBStreamSwapLSB(IMBStream *s) : mStream(s) {}
-    IMBStream *operator->(void) { return mStream; }
-    void Read(unsigned short &v) {
-        unsigned long size = 2;
-        mStream->Read(&v, size);
-    }
-    IMBStream *mStream;
-};
+#include "CMBStreamSwapLSB.h"
 
 // ---- Squish (subset of Squish.h; SquishFile/SquishStream inline here) ----
-enum SquishFileOpenFlags {
-    kSquishFileOpenReadBit = 1,
-    kSquishFileOpenWriteBit = 2,
-    kSquishFileOpenMustExist = 4
-};
+#include "SquishFileOpenFlags.h"
 
-enum SquishFileSeekValues {
-    kSquishFileSeekStart = 1,
-    kSquishFileSeekEnd = 2,
-    kSquishFileSeekCurrent = 3
-};
+#include "SquishFileSeekValues.h"
 
 enum {
     kSquishPixFmtARGB1555 = 4,
@@ -403,6 +283,7 @@ enum {
     kSquishFlagPalette = 0x2000
 };
 
+// own copy: constructor and destructor (MBAnimCast: also the virtuals) are inline in this view; Squish.h has them out of line
 class SquishFile {
 public:
     SquishFile(void) {}
@@ -414,6 +295,7 @@ public:
     virtual bool Seek(long, SquishFileSeekValues);
 };
 
+// own copy: derives from this unit's own SquishFile
 class SquishStream : public SquishFile {
 public:
     SquishStream(const CMBStreamSwapLSB &stream) : mStream(stream) {} // by value in the PDB; by value is not inlined
@@ -430,22 +312,11 @@ public:
     unsigned int mSize;
 };
 
-struct SquishPixel {
-    union SquishPixelUnion {
-        unsigned char pixel[4];
-        unsigned long bgra32;
-    };
-    SquishPixelUnion Pixel;
-    SquishPixel(void) { Pixel.bgra32 = 0xffffffff; }
-    SquishPixel(unsigned long p) { Pixel.bgra32 = p; }
-    unsigned char Red(void) { return Pixel.pixel[2]; }
-    unsigned char Green(void) { return Pixel.pixel[1]; }
-    unsigned char Blue(void) { return Pixel.pixel[0]; }
-    unsigned char Alpha(void) { return Pixel.pixel[3]; }
-};
+#include "SquishPixel.h"
 
 class SquishPalette;
 
+// own copy: GetTransColor returns transColor as is and no copy constructor or assignment is declared
 class SquishImageDescriptor {
 public:
     unsigned short width;
@@ -471,6 +342,7 @@ public:
     }
 };
 
+// own copy: a data-only view over this unit's own SquishImageDescriptor
 class SquishImageBlock {
 public:
     short xOffset;
@@ -479,6 +351,7 @@ public:
     unsigned char *mData;
 };
 
+// own copy: a view with placeholder storage for the MBVector of blocks
 class SquishImageFrame {
 public:
     unsigned long GetWidth(void) const { return mWidth; }
@@ -491,6 +364,7 @@ public:
     unsigned short mDepth;
 };
 
+// own copy: a view with placeholder storage for the MBVector of frames
 class SquishMovie {
 public:
     SquishMovie(void);

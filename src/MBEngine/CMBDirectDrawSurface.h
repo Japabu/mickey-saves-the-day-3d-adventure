@@ -42,38 +42,7 @@ typedef struct _DDSURFACEDESC2 {
     DWORD dwTextureStage;
 } DDSURFACEDESC2;
 
-struct IDirectDrawSurface7 : public IUnknown {
-    virtual HRESULT __stdcall AddAttachedSurface(IDirectDrawSurface7 *) = 0;
-    virtual HRESULT __stdcall AddOverlayDirtyRect(LPRECT) = 0;
-    virtual HRESULT __stdcall Blt(LPRECT, IDirectDrawSurface7 *, LPRECT, DWORD, LPDDBLTFX) = 0;
-    virtual HRESULT __stdcall BltBatch(LPDDBLTBATCH, DWORD, DWORD) = 0;
-    virtual HRESULT __stdcall BltFast(DWORD, DWORD, IDirectDrawSurface7 *, LPRECT, DWORD) = 0;
-    virtual HRESULT __stdcall DeleteAttachedSurface(DWORD, IDirectDrawSurface7 *) = 0;
-    virtual HRESULT __stdcall EnumAttachedSurfaces(LPVOID, LPVOID) = 0;
-    virtual HRESULT __stdcall EnumOverlayZOrders(DWORD, LPVOID, LPVOID) = 0;
-    virtual HRESULT __stdcall Flip(IDirectDrawSurface7 *, DWORD) = 0;
-    virtual HRESULT __stdcall GetAttachedSurface(DDSCAPS2 *, IDirectDrawSurface7 **) = 0;
-    virtual HRESULT __stdcall GetBltStatus(DWORD) = 0;
-    virtual HRESULT __stdcall GetCaps(DDSCAPS2 *) = 0;
-    virtual HRESULT __stdcall GetClipper(IDirectDrawClipper **) = 0;
-    virtual HRESULT __stdcall GetColorKey(DWORD, LPDDCOLORKEY) = 0;
-    virtual HRESULT __stdcall GetDC(HDC *) = 0;
-    virtual HRESULT __stdcall GetFlipStatus(DWORD) = 0;
-    virtual HRESULT __stdcall GetOverlayPosition(LPLONG, LPLONG) = 0;
-    virtual HRESULT __stdcall GetPalette(IDirectDrawPalette **) = 0;
-    virtual HRESULT __stdcall GetPixelFormat(LPDDPIXELFORMAT) = 0;
-    virtual HRESULT __stdcall GetSurfaceDesc(DDSURFACEDESC2 *) = 0;
-    virtual HRESULT __stdcall Initialize(IDirectDraw *, DDSURFACEDESC2 *) = 0;
-    virtual HRESULT __stdcall IsLost(void) = 0;
-    virtual HRESULT __stdcall Lock(LPRECT, DDSURFACEDESC2 *, DWORD, HANDLE) = 0;
-    virtual HRESULT __stdcall ReleaseDC(HDC) = 0;
-    virtual HRESULT __stdcall Restore(void) = 0;
-    virtual HRESULT __stdcall SetClipper(IDirectDrawClipper *) = 0;
-    virtual HRESULT __stdcall SetColorKey(DWORD, LPDDCOLORKEY) = 0;
-    virtual HRESULT __stdcall SetOverlayPosition(LONG, LONG) = 0;
-    virtual HRESULT __stdcall SetPalette(IDirectDrawPalette *) = 0;
-    virtual HRESULT __stdcall Unlock(LPRECT) = 0;
-};
+#include "IDirectDrawSurface7.h"
 
 // ---- MB core ----
 struct MBGUID {
@@ -108,57 +77,10 @@ public:
 
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 
-class MBRect {
-public:
-    MBRect(void) { left = 0; top = 0; right = 0; bottom = 0; }
-    MBRect(const MBRect &r) { left = r.left; top = r.top; right = r.right; bottom = r.bottom; }
-    long left;
-    long top;
-    long right;
-    long bottom;
-};
+#include "../MBEngine/MBRect.h"
 
 // ---- colors (header statics: every including TU has its own $E initializers) ----
-class MBColorMask {
-public:
-    MBColorMask(unsigned long r = 0, unsigned long g = 0, unsigned long b = 0, unsigned long a = 0) { Set(r, g, b, a); }
-    void Set(unsigned long redmask, unsigned long greenmask, unsigned long bluemask, unsigned long alphamask) {
-        mRedMask = redmask;
-        mBlueMask = bluemask;
-        mGreenMask = greenmask;
-        mAlphaMask = alphamask;
-        mRedShift = GetShiftCount(redmask) + GetBitCount(redmask) - 8;
-        mBlueShift = GetShiftCount(bluemask) + GetBitCount(bluemask) - 8;
-        mGreenShift = GetShiftCount(greenmask) + GetBitCount(greenmask) - 8;
-        mAlphaShift = GetShiftCount(alphamask) + GetBitCount(alphamask) - 8;
-    }
-    unsigned long mRedMask;
-    unsigned long mBlueMask;
-    unsigned long mGreenMask;
-    unsigned long mAlphaMask;
-    char mRedShift;
-    char mBlueShift;
-    char mGreenShift;
-    char mAlphaShift;
-    static unsigned char GetShiftCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (!(mask & 1)) {
-            if (count >= 32)
-                break;
-            mask >>= 1;
-            count++;
-        }
-        return count;
-    }
-    static unsigned char GetBitCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (mask) {
-            mask &= mask - 1;
-            count++;
-        }
-        return count;
-    }
-};
+#include "MBColorMask.h"
 
 const MBColorMask kCM_RGBA32(0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 const MBColorMask kCM_ARGB32(0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
@@ -166,6 +88,7 @@ const MBColorMask kCM_ARGB16(0x7c00, 0x03e0, 0x001f, 0x8000);
 const MBColorMask kCM_RGB16(0xf800, 0x07e0, 0x001f, 0);
 const MBColorMask kCM_BGR16(0x001f, 0x07e0, 0xf800, 0);
 
+// own copy: this unit uses the constructor, Set or Convert, whose inline body here differs from MBColor.h (store order / code shape the matches depend on)
 class MBColor {
 public:
     MBColor(unsigned char r = 0, unsigned char g = 0, unsigned char b = 0, unsigned char a = 0) { mColor = 0; Set(r, g, b, a); }
@@ -215,74 +138,26 @@ const MBColor kGrey25(64, 64, 64, 0);
 const MBColor kGrey50(128, 128, 128, 0);
 const MBColor kGrey75(192, 192, 192, 0);
 
-struct MBPixelFormat {
-    short mBitsPerPixel;
-    MBColorMask mColorMask;
-};
+#include "MBPixelFormat.h"
 
 class MBPalette;
 
 // ---- interfaces ----
-class IMBSurface : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBSurface; }
-    virtual unsigned long GetWidth(void) = 0;
-    virtual unsigned long GetHeight(void) = 0;
-    virtual unsigned long GetPitch(void) = 0;
-    virtual unsigned long GetSize(void) = 0;
-    virtual unsigned long GetDepth(void) = 0;
-    virtual MBPixelFormat GetFormat(void) = 0;
-    virtual long Lock(void **, unsigned long) = 0;
-    virtual long Unlock(void **) = 0;
-    virtual MBColor GetPixelColor(unsigned long, unsigned long) = 0;
-    virtual long SetTransparentColor(MBColor) = 0;
-    virtual MBColor GetTransparentColor(void) = 0;
-    virtual long SetPalette(MBPalette *) = 0;
-    virtual MBPalette *GetPalette(void) = 0;
-    virtual long ColorFill(MBColor, MBRect *) = 0;
-    virtual long Blit(IMBSurface *, MBRect *, MBRect *, unsigned long) = 0;
-};
+#include "IMBSurface.h"
 
-class IMBDirectDrawSurface : public IMBSurface {
-public:
-    virtual void SetSurface(IDirectDrawSurface7 *) = 0;
-    virtual void GetSurface(IDirectDrawSurface7 **) = 0;
-    virtual void SetSurfaceCopy(IDirectDrawSurface7 *) = 0;
-    virtual void GetSurfaceCopy(IDirectDrawSurface7 **) = 0;
-    virtual void QuerySurfaceInfo(void) = 0;
-};
+#include "IMBDirectDrawSurface.h"
 
-class IMBMemorySurface : public IMBSurface {
-};
+#include "IMBMemorySurface.h"
 
-class IMBWinDIBSurface : public IMBUnknown {
-public:
-    virtual long CreateEmpty(unsigned long, unsigned long, MBPixelFormat) = 0;
-    virtual HBITMAP__ *GetBitmapHandle(void) = 0;
-    virtual tagBITMAPINFO *GetBitmapInfo(void) = 0;
-};
+#include "IMBWinDIBSurface.h"
 
-class IMBWinDC : public IMBUnknown {
-public:
-    virtual long GetDC(HDC__ **, unsigned long) = 0;
-    virtual long ReleaseDC(HDC__ *) = 0;
-};
+#include "IMBWinDC.h"
 
-class IMBEventListener : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventListener; }
-    virtual void ListenToEvent(long, long, void *) = 0;
-};
+#include "IMBEventListener.h"
 
-class IMBEventManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventManager; }
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    virtual void RemoveListener(long, IMBEventListener *) = 0;
-    virtual void RemoveListener(IMBEventListener *) = 0;
-};
+#include "IMBEventManager.h"
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T>
 class MBComPtr {
 public:

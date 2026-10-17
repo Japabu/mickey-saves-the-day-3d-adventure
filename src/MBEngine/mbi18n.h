@@ -25,11 +25,7 @@ typedef std::basic_string<unsigned short, std::char_traits<unsigned short>, MBAl
 
 static const MBGUID MBIID_IMBWinScreen = { 0x7f9eb130, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
 
-class IMBWinScreen : public IMBScreen {
-public:
-    virtual void SetHWND(HWND) = 0;
-    virtual HWND GetHWND(void) = 0;
-};
+#include "IMBWinScreen.h"
 
 // CVTUTF.OBJ (Unicode, Inc. ConvertUTF)
 extern "C" {

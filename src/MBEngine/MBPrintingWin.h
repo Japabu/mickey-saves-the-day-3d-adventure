@@ -11,54 +11,23 @@ static const MBGUID MBIID_IMBDirectXScreen = {0x7fe4fbd0, 0x9ea2, 0x11d3, {0xbe,
 
 class MBPoint;
 
-enum MBScreenState {
-    kScreenStateActive = 0,
-    kScreenStatePaused = 1,
-    kScreenStateInactive = 2
-};
+#include "MBScreenState.h"
 
-struct MBScreenAttributes {
-    unsigned long width;
-    unsigned long height;
-    unsigned long depth;
-};
+#include "MBScreenAttributes.h"
 
-class IMBScreen : public IMBUnknown {
-public:
-    virtual void SetScreenState(MBScreenState) = 0;
-    virtual MBScreenState GetScreenState(void) = 0;
-    virtual bool CreateSurface(unsigned short, unsigned short, unsigned long, IMBSurface **) = 0;
-    virtual void GetBackBuffer(IMBSurface **) = 0;
-    virtual void Flip(void) = 0;
-    virtual unsigned short GetWidth(void) = 0;
-    virtual unsigned short GetHeight(void) = 0;
-    virtual MBRect GetGlobalBounds(void) = 0;
-    virtual MBPoint GlobalToScreenPoint(const MBPoint &) = 0;
-};
+static const MBGUID MBIID_IMBScreen = { 0x79d783b0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
+#include "IMBScreen.h"
 
-class IMBWinScreen : public IMBScreen {
-public:
-    virtual void SetHWND(HWND__ *) = 0;
-    virtual HWND__ *GetHWND(void) = 0;
-};
+#include "IMBWinScreen.h"
 
+// own copy: a GetGUID-only view: this unit declares no MBDDEnumCallback or DirectDraw types
 class IMBDirectXScreen : public IMBWinScreen {
 public:
     static const MBGUID &GetGUID(void) { return MBIID_IMBDirectXScreen; }
 };
 
-class IMBScreenManager : public IMBUnknown {
-public:
-    virtual bool RequestScreen(long, MBScreenAttributes &) = 0;
-    virtual void Activate(void) = 0;
-    virtual void Deactivate(void) = 0;
-    virtual MBPoint GetGlobalMouseLocation(void) = 0;
-    virtual bool ProcessSystemEvent(void *) = 0;
-    virtual void RemoveScreen(long) = 0;
-    virtual void RemoveAllScreens(void) = 0;
-    virtual unsigned short GetNumScreens(void) = 0;
-    virtual void GetScreenByIndex(unsigned short, IMBScreen **) = 0;
-};
+static const MBGUID MBIID_IMBScreenManager = { 0x79df27a0, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
+#include "IMBScreenManager.h"
 
 extern "C" void MBGetScreenManager(IMBScreenManager **screenManager);
 extern "C" __declspec(dllimport) void __cdecl MBmemclr(void *p, unsigned long size);

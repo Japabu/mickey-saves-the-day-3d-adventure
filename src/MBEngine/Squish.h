@@ -25,17 +25,9 @@ public:
 template <class T> class MBVector : public std::vector<T, MBAllocator<T> > {
 };
 
-enum SquishFileOpenFlags {
-    kSquishFileOpenReadBit = 1,
-    kSquishFileOpenWriteBit = 2,
-    kSquishFileOpenMustExist = 4
-};
+#include "SquishFileOpenFlags.h"
 
-enum SquishFileSeekValues {
-    kSquishFileSeekStart = 1,
-    kSquishFileSeekEnd = 2,
-    kSquishFileSeekCurrent = 3
-};
+#include "SquishFileSeekValues.h"
 
 // pixel formats (SquishPixel::GetPixel/SetPixel switch values)
 enum {
@@ -56,38 +48,9 @@ enum {
     kSquishFlagPalette = 0x2000
 };
 
-class SquishFile {
-public:
-    SquishFile(void);
-    virtual ~SquishFile(void);
-    virtual bool Open(const char *, SquishFileOpenFlags);
-    virtual bool Close(void);
-    virtual bool WriteBytes(const void *, unsigned long) = 0;
-    virtual bool ReadBytes(void *, unsigned long) = 0;
-    virtual bool Seek(long, SquishFileSeekValues);
-};
+#include "SquishFile.h"
 
-struct SquishPixel {
-    union SquishPixelUnion {
-        unsigned char pixel[4];
-        unsigned long bgra32;
-    };
-    SquishPixelUnion Pixel;
-    SquishPixel(void) { Pixel.bgra32 = 0xffffffff; }
-    SquishPixel(unsigned long p) { Pixel.bgra32 = p; }
-    SquishPixel(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-        Pixel.pixel[0] = b;
-        Pixel.pixel[1] = g;
-        Pixel.pixel[2] = r;
-        Pixel.pixel[3] = a;
-    }
-    unsigned long GetPixel(unsigned long format) const;
-    unsigned char Red(void) { return Pixel.pixel[2]; }
-    unsigned char Green(void) { return Pixel.pixel[1]; }
-    unsigned char Blue(void) { return Pixel.pixel[0]; }
-    unsigned char Alpha(void) { return Pixel.pixel[3]; }
-    void SetPixel(unsigned long pixel, unsigned long format);
-};
+#include "SquishPixel.h"
 
 class SquishPalette {
 public:
@@ -121,43 +84,7 @@ protected:
     SquishPixel *mEntries;
 };
 
-class SquishImageDescriptor {
-public:
-    unsigned short width;
-    unsigned short height;
-    unsigned short depth;
-    unsigned short rowbytes;
-    unsigned long datasize;
-    unsigned long flags;
-protected:
-    SquishPixel transColor;
-    unsigned long nativeTransColor;
-    SquishPalette *palette;
-public:
-    SquishImageDescriptor(const SquishImageDescriptor &rhs);
-    SquishImageDescriptor(void);
-    ~SquishImageDescriptor(void);
-    SquishImageDescriptor &operator=(const SquishImageDescriptor &rhs);
-    unsigned short GetWidth(void) const { return width; }
-    unsigned short GetHeight(void) const { return height; }
-    unsigned short GetDepth(void) const { return depth; }
-    unsigned short GetRowbytes(void) const { return rowbytes; }
-    void Reset(void);
-    bool StreamIn(SquishFile *file);
-    bool StreamOut(SquishFile *file) const;
-    bool HasPalette(void) const { return (flags >> 13) & 1; }
-    void SetPalette(SquishPalette *pal);
-    SquishPalette *GetPalette(void) const { return palette; }
-    void SetTransOff(void);
-    void SetTransColor(SquishPixel trans);
-    SquishPixel GetTransColor(void) const { return SquishPixel(TransEnabled() ? transColor.Pixel.bgra32 : 0xffffffff); }
-    unsigned long GetNativeTransColor(void) const { return nativeTransColor; }
-    bool TransEnabled(void) const { return (flags >> 12) & 1; }
-    void SetPixelFmt(unsigned long pixfmt);
-    unsigned long GetPixelFmt(void) const { return flags & kSquishPixFmtMask; }
-    void SetCompFmt(unsigned long f) { flags &= ~kSquishCompFmtMask; flags |= f; }
-    unsigned long GetCompFmt(void) const { return flags & kSquishCompFmtMask; }
-};
+#include "SquishImageDescriptor.h"
 
 template <class T> inline const T &SquishMax(const T &a, const T &b) { return (a > b) ? a : b; }
 template <class T> inline const T &SquishMin(const T &a, const T &b) { return (a < b) ? a : b; }
@@ -219,44 +146,7 @@ protected:
 
 class SquishFileFilter;
 
-class SquishImageBlock {
-public:
-    SquishImageBlock(void);
-    ~SquishImageBlock(void);
-    bool Create(const SquishImageBlock *srcBlock, const SquishImageDescriptor *creationHints, long srcx, long srcy,
-                long srcw, long srch);
-    bool Create(const unsigned char *src, const SquishImageDescriptor *srcFmt, const SquishImageDescriptor *creationHints,
-                long srcx, long srcy, long srcw, long srch);
-    bool CreateEmpty(SquishImageDescriptor *hints);
-    bool Load(SquishFileFilter *filter, SquishImageDescriptor *creationHints);
-    bool Save(SquishFileFilter *filter);
-    bool Blit(unsigned char *dest, const SquishImageDescriptor *destFmt) const;
-    bool BlitTrans(unsigned char *dest, const SquishImageDescriptor *destFmt) const;
-    bool BlitBlock(unsigned char *dest, const SquishImageDescriptor *destFmt, SquishRect *srcRect, SquishRect *destRect) const;
-    bool BlitBlockTrans(unsigned char *dest, const SquishImageDescriptor *destFmt, SquishRect *srcRect, SquishRect *destRect) const;
-    bool Fill(const SquishPixel &pixel, SquishRect *r);
-    bool Remap(unsigned long newDepth, unsigned long newPixFmt, SquishPalette *newPalette);
-    bool StreamIn(SquishFile *file);
-    bool StreamOut(SquishFile *file) const;
-    long GetX(void) const { return xOffset; }
-    long GetY(void) const { return yOffset; }
-    unsigned long GetWidth(void) const { return desc.width; }
-    unsigned long GetHeight(void) const { return desc.height; }
-    unsigned long GetDepth(void) const { return desc.depth; }
-    const unsigned char *Lock(void) const;
-    unsigned char *Lock(void);
-    void Unlock(const unsigned char *ptr) const;
-    void Unlock(unsigned char *ptr);
-    void Reset(void);
-    static long __cdecl CalcBestRowbytes(unsigned short width, unsigned short depth);
-protected:
-    bool RemapIndexedToIndexed(SquishPalette *newPalette);
-public:
-    short xOffset;
-    short yOffset;
-    SquishImageDescriptor desc;
-    unsigned char *mData;
-};
+#include "SquishImageBlock.h"
 
 // Locks a block's data for the lifetime of the object
 struct ImageDataPtr {
@@ -326,60 +216,8 @@ void RLEEncodeBlock(unsigned char **dest, const unsigned char *src, SquishImageD
 void RLEEncodeBlockTrans(unsigned char **dest, const unsigned char *src, SquishImageDescriptor *destFmt,
                          const SquishImageDescriptor *srcFmt, long srcx, long srcy, long srcw, long srch);
 
-class SquishImageFrame {
-public:
-    SquishImageFrame(void);
-    ~SquishImageFrame(void);
-    unsigned long GetWidth(void) const { return mWidth; }
-    unsigned long GetHeight(void) const { return mHeight; }
-    unsigned long GetDepth(void) const { return mDepth; }
-    unsigned long GetNBlocks(void) const { return mBlocks.size(); }
-    bool StreamIn(SquishFile *file);
-    bool StreamOut(SquishFile *file) const;
-    bool AddBlock(SquishImageBlock *block);
-    bool DeleteBlock(unsigned int index);
-    bool DeleteBlock(SquishImageBlock *block);
-    SquishImageBlock *GetBlock(unsigned int index) const;
-    void Reset(void);
-    void MoveBlockOffsets(short mx, short my);
-    bool Blit(unsigned char *dest, const SquishImageDescriptor *destFmt) const;
-    bool BlitTrans(unsigned char *dest, const SquishImageDescriptor *destFmt) const;
-protected:
-    bool BlitBlock(unsigned char *dest, const SquishImageDescriptor *destFmt, SquishRect *srcRect, SquishRect *destRect, bool blitTrans) const;
-public:
-    bool BlitBlock(unsigned char *d, const SquishImageDescriptor *f, SquishRect *s, SquishRect *r) const { return BlitBlock(d, f, s, r, false); }
-    bool BlitBlockTrans(unsigned char *d, const SquishImageDescriptor *f, SquishRect *s, SquishRect *r) const { return BlitBlock(d, f, s, r, true); }
-    bool Remap(unsigned long newDepth, unsigned long newPixFmt, SquishPalette *newPalette);
-    MBVector<SquishImageBlock *> mBlocks;
-    unsigned short mWidth;
-    unsigned short mHeight;
-    unsigned short mDepth;
-};
+#include "SquishImageFrame.h"
 
-class SquishMovie {
-public:
-    SquishMovie(void);
-    ~SquishMovie(void);
-    unsigned long GetWidth(void) const { return mWidth; }
-    unsigned long GetHeight(void) const { return mHeight; }
-    unsigned long GetDepth(void) const { return mDepth; }
-    unsigned long GetNFrames(void) const { return mFrames.size(); }
-    bool AddFrame(SquishImageFrame *frame);
-protected:
-    bool DeleteFrame(SquishImageFrame *frame, bool deleteData);
-public:
-    bool DeleteFrame(unsigned int index);
-    SquishImageFrame *ExtractFrame(unsigned int index);
-    SquishImageFrame *GetFrame(unsigned int index) const;
-    void Reset(void);
-    bool StreamIn(SquishFile *file);
-    bool StreamOut(SquishFile *file) const;
-    bool Remap(unsigned long newDepth, unsigned long newPixFmt, SquishPalette *newPalette);
-protected:
-    MBVector<SquishImageFrame *> mFrames;
-    unsigned short mWidth;
-    unsigned short mHeight;
-    unsigned short mDepth;
-};
+#include "SquishMovie.h"
 
 #endif

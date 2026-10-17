@@ -37,30 +37,18 @@ public:
 class IMBMemoryBlock;
 class IMBStream;
 
-class IMBResourceFile : public IMBUnknown {
-public:
-    virtual void LoadResource(unsigned long, unsigned long, IMBMemoryBlock **) = 0;
-    virtual void GetStream(unsigned long, unsigned long, IMBStream **) = 0;
-};
+static const MBGUID MBIID_IMBResourceFile = { 0x899e3840, 0x9ea2, 0x11d3, { 0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5 } };
+#include "IMBResourceFile.h"
 
-class IMBResourceFileList : public IMBResourceFile {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBResourceFileList; }
-};
+#include "IMBResourceFileList.h"
 
-class IMBStreamLocator : public IMBUnknown {
-public:
-    virtual long GetStream(IMBStream **) = 0;
-    virtual unsigned long GetID(void) = 0;
-};
+#include "IMBStreamLocator.h"
 
-class IMBResourceStreamLocator : public IMBStreamLocator {
-public:
-    virtual long SetResource(unsigned long, unsigned long) = 0;
-};
+#include "IMBResourceStreamLocator.h"
 
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T>
 class MBComPtr {
 public:

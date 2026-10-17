@@ -53,6 +53,7 @@ struct O_std_basic_string_unsigned_short_std_char_traits_unsigned_short_MBAlloca
 
 
 // sizes and member offsets recorded in the PDB
+// own copy: this unit's own layout asserts, not a class of the game
 struct PDB_Layout {
 };
 #undef OFS

@@ -6,6 +6,7 @@
 
 extern "C" long MBComCreateInstance(IMBUnknown *pOuter, const MBGUID &guid, IMBUnknown **unknown);
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T>
 class MBComPtr {
 public:
@@ -55,34 +56,9 @@ private:
     T *mInterface;
 };
 
-class IMBView : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBView; }
-    virtual unsigned char IsDirty(void) = 0;
-    virtual void Draw(IMBSurface *) = 0;
-    virtual void SetWorldPosition(MBPoint) = 0;
-    virtual MBPoint GetWorldPosition(void) = 0;
-    virtual MBRect GetWorldBounds(void) = 0;
-    virtual void SetScreenPosition(MBPoint) = 0;
-    virtual MBPoint GetScreenPosition(void) = 0;
-    virtual MBRect GetScreenBounds(void) = 0;
-    virtual void SetSize(unsigned short, unsigned short) = 0;
-    virtual unsigned short GetWidth(void) = 0;
-    virtual unsigned short GetHeight(void) = 0;
-    virtual void AttachToWorld(IMBWorld *) = 0;
-    virtual void AttachToScreen(IMBScreen *) = 0;
-    virtual unsigned char IsAttachedToScreen(IMBScreen *) = 0;
-    virtual void GetWorld(IMBWorld **) = 0;
-    virtual MBPoint ScreenToWorldPoint(const MBPoint &) = 0;
-};
+#include "IMBView.h"
 
-class IMBViewManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBViewManager; }
-    virtual void AddView(IMBView *) = 0;
-    virtual void RemoveView(IMBView *) = 0;
-    virtual void FindViewContaingPoint(IMBScreen *, const MBPoint &, IMBView **) = 0;
-};
+#include "IMBViewManager.h"
 
 extern "C" {
 bool MBGetGlobalMouseLocation(MBPoint &globalPoint);

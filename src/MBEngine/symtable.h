@@ -37,9 +37,10 @@ public:
     virtual unsigned long Release(void) = 0;
 };
 
-enum IMBStreamSeekValues { IMBStreamSeekDummy };
-enum IMBStreamError { IMBStreamErrorDummy };
+#include "IMBStreamSeekValues.h"
+#include "IMBStreamError.h"
 
+// own copy: GetGUID is declared, not defined inline, in this unit
 class IMBStream : public IMBUnknown {
 public:
     static const MBGUID &__cdecl GetGUID(void);
@@ -56,58 +57,8 @@ public:
 
 enum { kNumType = 0, kNameType = 1, kStringType = 2 };
 
-class TSymtabNode {
-    TSymtabNode *left;
-    TSymtabNode *right;
-    unsigned long nodeIndex;
-    char name[32];
-public:
-    union {
-        float num;
-        char str[32];
-    } value;
-    unsigned long type;
-    void *param;
+#include "TSymtabNode.h"
 
-    TSymtabNode(void);
-    TSymtabNode(const char *theName, long index);
-    ~TSymtabNode(void);
-    const char *Name(void) { return name; }
-    const char *GetString(void) { return value.str; }
-    TSymtabNode *LeftSubtree(void) { return left; }
-    TSymtabNode *RightSubtree(void) { return right; }
-    void SetValue(float num);
-    void SetValue(long num);
-    void SetValue(const char *str);
-    unsigned long Index(void) const { return nodeIndex; }
-    void Print(void) const;
-    unsigned long StreamOut(IMBStream *outFile);
-    unsigned long StreamIn(const char *buffer);
-
-    friend class TSymtab;
-};
-
-class TSymtab {
-    TSymtabNode *root;
-    long nodeCnt;
-    long symbolTableIndex;
-    static long symbolTableCnt;
-    static TSymtab *symbolTableList;
-    // stand-in: the original's ctype id $E22/$E21 are one past <string> (18/19) + TSymtab's
-    // 2 statics; the obj's PDB data has no further guard/static, so one more static data member
-    // declaration takes it (name unknown; never defined or used)
-    static long sUnknownSymtabStatic;
-    TSymtab *next;
-public:
-    TSymtab(void);
-    ~TSymtab(void);
-    TSymtabNode *Search(const char *pString) const;
-    TSymtabNode *Enter(const char *pString);
-    TSymtabNode *Root(void) const { return root; }
-    TSymtab *Next(void) const { return next; }
-    int NodeCount(void) const { return nodeCnt; }
-    void Print(void) const { root->Print(); }
-    unsigned long StreamOut(IMBStream *outFile);
-};
+#include "TSymtab.h"
 
 #endif

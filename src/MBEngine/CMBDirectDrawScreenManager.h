@@ -19,6 +19,7 @@ public:
 template <class T> class MBVector : public std::vector<T, MBAllocator<T> > {
 };
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}
@@ -81,30 +82,9 @@ struct ScreenData {
     long screenID;
 };
 
-class IMBScreenManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBScreenManager; }
-    virtual bool RequestScreen(long, MBScreenAttributes &) = 0;
-    virtual void Activate(void) = 0;
-    virtual void Deactivate(void) = 0;
-    virtual MBPoint GetGlobalMouseLocation(void) = 0;
-    virtual bool ProcessSystemEvent(void *) = 0;
-    virtual void RemoveScreen(long) = 0;
-    virtual void RemoveAllScreens(void) = 0;
-    virtual unsigned short GetNumScreens(void) = 0;
-    virtual void GetScreenByIndex(unsigned short, IMBScreen **) = 0;
-    virtual void GetScreenByID(long, IMBScreen **) = 0;
-    virtual void FindScreenContainingPoint(const MBPoint &, IMBScreen **) = 0;
-};
+#include "IMBScreenManager.h"
 
-class IMBDirectDrawScreenManager : public IMBScreenManager {
-public:
-    virtual bool EnableDirect3D(bool) = 0;
-    virtual void EnterWindowedMode(void) = 0;
-    virtual void EnterFullScreenMode(void) = 0;
-    virtual void SetHWND(HWND__ *) = 0;
-    virtual void SetDirectDrawEnumerator(MBDDEnumCallback) = 0;
-};
+#include "IMBDirectDrawScreenManager.h"
 
 class CMBDirectDrawScreenManager : public IMBDirectDrawScreenManager {
 public:

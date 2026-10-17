@@ -7,12 +7,7 @@
 static const MBGUID MBIID_IMBWinDC = {0x7fb72430, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 static const MBGUID MBIID_IMBDraw = {0x7fbd40f0, 0x9ea2, 0x11d3, {0xbe, 0xdb, 0x00, 0xa0, 0xc9, 0xcc, 0x4c, 0xc5}};
 
-class IMBWinDC : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBWinDC; }
-    virtual long GetDC(HDC__ **, unsigned long) = 0;
-    virtual long ReleaseDC(HDC__ *) = 0;
-};
+#include "IMBWinDC.h"
 
 class IMBDraw : public IMBUnknown {
 public:
@@ -28,6 +23,7 @@ public:
     virtual long FillEllipse(const MBRect &) = 0;
 };
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}

@@ -30,46 +30,7 @@ struct MBGUID {
 
 // Color constants: internal-linkage objects defined in the colour header; each
 // TU that includes it gets 16 dynamic initializers ($E1..$E47, PDB ldata).
-class MBColorMask {
-public:
-    MBColorMask(unsigned long r, unsigned long g, unsigned long b, unsigned long a) { Set(r, g, b, a); }
-    void Set(unsigned long redmask, unsigned long greenmask, unsigned long bluemask, unsigned long alphamask) {
-        mRedMask = redmask;
-        mBlueMask = bluemask;
-        mGreenMask = greenmask;
-        mAlphaMask = alphamask;
-        mRedShift = GetShiftCount(redmask) + GetBitCount(redmask) - 8;
-        mBlueShift = GetShiftCount(bluemask) + GetBitCount(bluemask) - 8;
-        mGreenShift = GetShiftCount(greenmask) + GetBitCount(greenmask) - 8;
-        mAlphaShift = GetShiftCount(alphamask) + GetBitCount(alphamask) - 8;
-    }
-    unsigned long mRedMask;
-    unsigned long mBlueMask;
-    unsigned long mGreenMask;
-    unsigned long mAlphaMask;
-    char mRedShift;
-    char mBlueShift;
-    char mGreenShift;
-    char mAlphaShift;
-    static unsigned char GetShiftCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (!(mask & 1)) {
-            if (count >= 32)
-                break;
-            mask >>= 1;
-            count++;
-        }
-        return count;
-    }
-    static unsigned char GetBitCount(unsigned long mask) {
-        unsigned char count = 0;
-        while (mask) {
-            mask &= mask - 1;
-            count++;
-        }
-        return count;
-    }
-};
+#include "MBColorMask.h"
 
 const MBColorMask kCM_RGBA32(0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 const MBColorMask kCM_ARGB32(0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
@@ -77,45 +38,7 @@ const MBColorMask kCM_ARGB16(0x7c00, 0x03e0, 0x001f, 0x8000);
 const MBColorMask kCM_RGB16(0xf800, 0x07e0, 0x001f, 0);
 const MBColorMask kCM_BGR16(0x001f, 0x07e0, 0xf800, 0);
 
-class MBColor {
-public:
-    MBColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) { Set(r, g, b, a); }
-    void Set(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-        mRed = r;
-        mBlue = b;
-        mGreen = g;
-        mAlpha = a;
-        mColor = Convert(kCM_ARGB32);
-    }
-    unsigned long Convert(MBColorMask mask) {
-        mColor = 0;
-        if (mask.mRedShift > 0)
-            mColor |= (mRed << mask.mRedShift) & mask.mRedMask;
-        else
-            mColor |= (mRed >> (char)-mask.mRedShift) & mask.mRedMask;
-        if (mask.mGreenShift > 0)
-            mColor |= (mGreen << mask.mGreenShift) & mask.mGreenMask;
-        else
-            mColor |= (mGreen >> (char)-mask.mGreenShift) & mask.mGreenMask;
-        if (mask.mBlueShift > 0)
-            mColor |= (mBlue << mask.mBlueShift) & mask.mBlueMask;
-        else
-            mColor |= (mBlue >> (char)-mask.mBlueShift) & mask.mBlueMask;
-        if (mask.mAlphaShift > 0)
-            mColor |= (mAlpha << mask.mAlphaShift) & mask.mAlphaMask;
-        else
-            mColor |= (mAlpha >> (char)-mask.mAlphaShift) & mask.mAlphaMask;
-        return mColor;
-    }
-    bool operator!=(const MBColor &c) const {
-        return mRed != c.mRed || mGreen != c.mGreen || mBlue != c.mBlue || mAlpha != c.mAlpha;
-    }
-    unsigned char mRed;
-    unsigned char mGreen;
-    unsigned char mBlue;
-    unsigned char mAlpha;
-    unsigned long mColor;
-};
+#include "../MBEngine/MBColor.h"
 
 const MBColor kWhite(255, 255, 255, 0);
 const MBColor kBlack(0, 0, 0, 0);
@@ -129,53 +52,15 @@ const MBColor kGrey25(64, 64, 64, 0);
 const MBColor kGrey50(128, 128, 128, 0);
 const MBColor kGrey75(192, 192, 192, 0);
 
-struct MBPointStruct {
-    long x;
-    long y;
-};
+#include "MBPointStruct.h"
 
-class MBPoint : public MBPointStruct {
-public:
-    MBPoint(void) { x = y = 0; }
-    MBPoint(long ax, long ay) { x = ax; y = ay; }
-    bool operator==(const MBPoint &p) const {
-        if (x == p.x && y == p.y)
-            return true;
-        return false;
-    }
-};
+#include "../MBEngine/MBPoint.h"
 
-struct MBPointStruct3 {
-    long x;
-    long y;
-    long z;
-};
+#include "MBPointStruct3.h"
 
-class MBPoint3 : public MBPointStruct3 {
-public:
-    MBPoint3(long ax, long ay, long az) { x = ax; y = ay; z = az; }
-    MBPoint3(void) { x = y = z = 0; }
-    MBPoint3 operator+(const MBPoint3 &p) const { return MBPoint3(x + p.x, y + p.y, z + p.z); }
-    MBPoint3 &operator+=(const MBPoint3 &p) { x += p.x; y += p.y; z += p.z; return *this; }
-};
+#include "MBPoint3.h"
 
-class MBRect {
-public:
-    MBRect(void) { left = 0; top = 0; right = 0; bottom = 0; }
-    MBRect(long l, long t, long r, long b) { left = l; top = t; right = r; bottom = b; }
-    MBRect(const MBRect &r) { left = r.left; top = r.top; right = r.right; bottom = r.bottom; }
-    MBRect &operator=(const MBRect &r) {
-        if (this != &r) { left = r.left; top = r.top; right = r.right; bottom = r.bottom; }
-        return *this;
-    }
-    bool Contains(const MBPoint &p) const {
-        return left <= p.x && top <= p.y && right >= p.x && bottom >= p.y;
-    }
-    long left;
-    long top;
-    long right;
-    long bottom;
-};
+#include "../MBEngine/MBRect.h"
 
 class IMBUnknown {
 public:
@@ -233,6 +118,7 @@ public:
 
 typedef std::basic_string<char, std::char_traits<char>, MBAllocator<char> > MBString;
 
+// own copy: which members are inline and which are only declared differs per unit (the original's inline budget; NOTES.md)
 template <class T> class MBComPtr {
 public:
     MBComPtr(void) : mInterface(0) {}
@@ -292,178 +178,35 @@ private:
 
 class IMBSurface;
 class IMBObjectGroup;
-class IMBStream : public IMBUnknown {
-};
+#include "IMBStream.h"
 class MBPalette;
 
-class IMBObject : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBObject; }
-    virtual MBPoint3 GetOffset(void) const = 0;
-    virtual MBPoint3 GetPosition(void) const = 0;
-    virtual void Place(const MBPoint3 &) = 0;
-    virtual void Move(const MBPoint3 &) = 0;
-    virtual MBRect GetBounds(void) const = 0;
-    virtual bool IsVisible(void) const = 0;
-    virtual long Show(void) = 0;
-    virtual long Hide(void) = 0;
-    virtual bool IsDirty(void) const = 0;
-    virtual void SetDirty(void) = 0;
-    virtual void ClearDirty(void) = 0;
-    virtual long Draw(IMBSurface *, MBRect &, MBRect &) const = 0;
-    virtual void GetParent(IMBObjectGroup **) const = 0;
-    virtual IMBObjectGroup *SetParent(IMBObjectGroup *) = 0;
-};
+#include "IMBObject.h"
 
-class IMBObjectGroup : public IMBObject {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBObjectGroup; }
-    virtual void GetBackground(IMBObject **) const = 0;
-    virtual void SetBackground(IMBObject *) = 0;
-    virtual void AddObject(IMBObject *) = 0;
-    virtual void RemoveObject(IMBObject *) = 0;
-    virtual void ObjectMoved(IMBObject *) = 0;
-};
+#include "IMBObjectGroup.h"
 
-enum MBPixelFormat { kMBPixelFormatDummy };
+#include "MBPixelFormat.h"
 
-class IMBSurface : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBSurface; }
-    virtual unsigned long GetWidth(void) = 0;
-    virtual unsigned long GetHeight(void) = 0;
-    virtual unsigned long GetPitch(void) = 0;
-    virtual unsigned long GetSize(void) = 0;
-    virtual unsigned long GetDepth(void) = 0;
-    virtual MBPixelFormat GetFormat(void) = 0;
-    virtual long Lock(void **, unsigned long) = 0;
-    virtual long Unlock(void **) = 0;
-    virtual MBColor GetPixelColor(unsigned long, unsigned long) = 0;
-    virtual long SetTransparentColor(MBColor) = 0;
-    virtual MBColor GetTransparentColor(void) = 0;
-    virtual long SetPalette(MBPalette *) = 0;
-    virtual MBPalette *GetPalette(void) = 0;
-    virtual long ColorFill(MBColor, MBRect *) = 0;
-    virtual long Blit(IMBSurface *, MBRect *, MBRect *, unsigned long) = 0;
-};
+#include "IMBSurface.h"
 
-enum MBAnimationProperty { kMBAnimationPropertyDummy };
-enum MBSequenceProperty { kMBSequencePropertyDummy };
-enum MBFrameProperty { kMBFramePropertyDummy };
+#include "MBAnimationProperty.h"
+#include "MBSequenceProperty.h"
+#include "MBFrameProperty.h"
 
-class IMBAnim : public IMBObject {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBAnim; }
-    virtual long Load(unsigned long, IMBStream *, bool) = 0;
-    virtual long Save(IMBStream *) = 0;
-    virtual void Clone(IMBAnim **) = 0;
-    // VC6 lays out overloaded virtuals in reverse declaration order
-    virtual long SetAnimationProperty(MBAnimationProperty, const MBString &) = 0;
-    virtual long SetAnimationProperty(MBAnimationProperty, unsigned long &) = 0;
-    virtual long SetAnimationProperty(MBAnimationProperty, unsigned short) = 0;
-    virtual long SetAnimationProperty(MBAnimationProperty, unsigned char) = 0;
-    virtual long SetSequenceProperty(long, MBSequenceProperty, unsigned short) = 0;
-    virtual long SetSequenceProperty(long, MBSequenceProperty, unsigned char) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, const MBPoint &) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, const MBString &) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, unsigned long) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, unsigned short) = 0;
-    virtual long SetFrameProperty(long, long, MBFrameProperty, unsigned char) = 0;
-    virtual long GetAnimationProperty(MBAnimationProperty, unsigned long &) const = 0;
-    virtual long GetAnimationProperty(MBAnimationProperty, unsigned short &) const = 0;
-    virtual long GetAnimationProperty(MBAnimationProperty, unsigned char &) const = 0;
-    virtual long GetSequenceProperty(long, MBSequenceProperty, unsigned short &) const = 0;
-    virtual long GetSequenceProperty(long, MBSequenceProperty, unsigned char &) const = 0;
-    virtual long GetFrameProperty(long, long, MBFrameProperty, MBPoint &) const = 0;
-    virtual long GetFrameProperty(long, long, MBFrameProperty, unsigned long &) const = 0;
-    virtual long GetFrameProperty(long, long, MBFrameProperty, unsigned short &) const = 0;
-    virtual long GetFrameProperty(long, long, MBFrameProperty, unsigned char &) const = 0;
-    virtual long UseAnimationProperty(MBAnimationProperty, bool) = 0;
-    virtual bool HasAnimationProperty(MBAnimationProperty) const = 0;
-    virtual long UseSequenceProperty(long, MBSequenceProperty, bool) = 0;
-    virtual bool HasSequenceProperty(long, MBSequenceProperty) const = 0;
-    virtual long UseFrameProperty(long, long, MBFrameProperty, bool) = 0;
-    virtual bool HasFrameProperty(long, long, MBFrameProperty) const = 0;
-    virtual void SetCastID(long, long, long) = 0;
-    virtual long GetCastID(long, long) const = 0;
-    virtual void Play(void) = 0;
-    virtual void Stop(void) = 0;
-    virtual long Pause(void) = 0;
-    virtual long Resume(void) = 0;
-    virtual bool IsPaused(void) const = 0;
-    virtual bool IsStalled(void) const = 0;
-    virtual bool IsRendering(void) const = 0;
-    virtual bool IsPlaying(void) const = 0;
-    virtual void Scale(float, float, float) = 0;
-    virtual unsigned long GetNumSequences(void) const = 0;
-    virtual long AddSequence(void) = 0;
-    virtual bool SetCurrentSequence(long) = 0;
-    virtual long GetCurrentSequenceIndex(void) const = 0;
-    virtual unsigned long GetNumFrames(long) const = 0;
-    virtual long AddFrame(long) = 0;
-    virtual bool SetCurrentFrame(long) = 0;
-    virtual long GetCurrentFrameIndex(void) const = 0;
-    virtual unsigned long GetNumCasts(void) const = 0;
-    virtual long AddCastMember(IMBSurface *, const MBPoint &) = 0;
-    virtual void GetCastMemberSurface(long, IMBSurface **) = 0;
-    virtual void SetCastMemberSurface(long, IMBSurface *) = 0;
-    virtual MBPoint GetCastMemberRegistrationPoint(long) const = 0;
-    virtual void SetCastMemberRegistrationPoint(long, const MBPoint &) = 0;
-    virtual MBPoint GetCastMemberAttachmentPoint(long) const = 0;
-    virtual void SetCastMemberAttachmentPoint(long, const MBPoint &) = 0;
-};
+#include "IMBAnim.h"
 
 class IMBEventListener;
 
-class IMBEventManager : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBEventManager; }
-    virtual void BroadcastEvent(long, long, void *) = 0;
-    virtual void AddListener(long, IMBEventListener *) = 0;
-    virtual void RemoveListener(long, IMBEventListener *) = 0;
-    virtual void RemoveListener(IMBEventListener *) = 0;
-};
-class IMBMouseable : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBMouseable; }
-    virtual bool IsRolledOver(const MBPoint &) const = 0;
-    virtual void EnterRollover(const MBPoint &) = 0;
-    virtual void WithinRollover(const MBPoint &) = 0;
-    virtual void LeaveRollover(void) = 0;
-    virtual bool IsClicked(const MBPoint &, short) const = 0;
-    virtual bool IsTrackingClick(void) const = 0;
-    virtual void StartTrackingClick(const MBPoint &, short) = 0;
-    virtual void TrackClick(const MBPoint &) = 0;
-    virtual void StopTrackingClick(const MBPoint &, short) = 0;
-    virtual bool IsActive(void) const = 0;
-    virtual void Activate(void) = 0;
-    virtual void Deactivate(void) = 0;
-    virtual void SetPixelTest(bool) = 0;
-    virtual bool GetPixelTest(void) = 0;
-};
+#include "IMBEventManager.h"
+#include "IMBMouseable.h"
 
-class IMBMemoryBlock : public IMBUnknown {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBMemoryBlock; }
-};
+#include "IMBMemoryBlock.h"
 
-class IMBResourceFile : public IMBUnknown {
-public:
-    virtual void LoadResource(unsigned long, unsigned long, IMBMemoryBlock **) = 0;
-    virtual void GetStream(unsigned long, unsigned long, IMBStream **) = 0;
-};
+#include "IMBResourceFile.h"
 
-enum MBResFileListAddLoc {
-    kResFileListFront = 1,
-    kResFileListRear = 2
-};
+#include "MBResFileListAddLoc.h"
 
-class IMBResourceFileList : public IMBResourceFile {
-public:
-    static const MBGUID &GetGUID(void) { return MBIID_IMBResourceFileList; }
-    virtual void AddFile(IMBResourceFile *, MBResFileListAddLoc, unsigned long) = 0;
-    virtual void RemoveFile(IMBResourceFile *) = 0;
-};
+#include "IMBResourceFileList.h"
 
 enum MBButtonState {
     kButtonUp = 0,
