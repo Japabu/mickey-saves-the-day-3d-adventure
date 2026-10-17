@@ -44,6 +44,7 @@ private:
     Media *m = 0;
     std::deque<AVPacket *> video;
     Stream *sound = 0;
+    unsigned gain_version = 0;  // port_sound_gain_version() when the gain was set
     std::vector<float> pcm;
     int w = 0, h = 0, count = 0;
     AVRational fps{10, 1};

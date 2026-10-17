@@ -69,7 +69,7 @@ EDITS = {
          'void MBSoundChannel::Idle(void)\n{ { unsigned PortSoundGainVersion(); unsigned v = PortSoundGainVersion(); '
          'if (v != mPortGainVersion) { mPortGainVersion = v; VolumeChanged(); } }\n', 1),
         ('    return (short)(mVolume * masterVolume / 127);\n',
-         '    int PortSoundGain(int); return (short)(mVolume * masterVolume / 127 * PortSoundGain(mChannelID) / 100);\n', 1),
+         '    float PortSoundGain(int); return (short)(mVolume * masterVolume / 127 * PortSoundGain(mChannelID));\n', 1),
     ],
     'MfActorLib/MfProtoSkill.cpp': [
         ('        s >> iSampleRate >> bInterpolate;\n',

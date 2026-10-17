@@ -55,7 +55,7 @@ struct Voice {
 
     void apply_stream_gain()
     {
-        float g = stream_volume * (music ? port_music_gain() / 100.0f : 1.0f);
+        float g = stream_volume * (music ? port_music_gain() : 1.0f);
         if (g != stream_gain) {
             stream_gain = g;
             stream->set_gain(g);
@@ -273,7 +273,7 @@ struct Voice {
             return;
         v->scratch.resize((size_t)frames * media::CHANNELS);
         int got = v->produce(v->scratch.data(), frames);
-        float music = v->music ? port_music_gain() / 100.0f : 1.0f;
+        float music = v->music ? port_music_gain() : 1.0f;
         for (int i = 0; i < got; i++) {
             v->scratch[(size_t)i * 2] *= v->gain_l * music;
             v->scratch[(size_t)i * 2 + 1] *= v->gain_r * music;

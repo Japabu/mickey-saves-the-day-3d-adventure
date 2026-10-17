@@ -103,15 +103,38 @@ static std::atomic<int> s_volume[3] = {{-1}, {-1}, {-1}}; // percent; -1 until r
 static std::atomic<unsigned> s_volume_version{1};
 static const char *const kVolumeKeys[3] = {"music volume", "voice volume", "effects volume"};
 
+// The sliders are logarithmic: a slider's percent is a level in decibels over a 40 dB
+// range (100 is full volume, 50 is -20 dB, 0 is silent), so equal steps sound like equal
+// steps. gain() is the amplitude, 0..1.
+static const double kRangeDb = 40;
+
+static float gain(int percent)
+{
+    return percent <= 0 ? 0.0f : (float)pow(10.0, (percent - 100) * kRangeDb / 100 / 20);
+}
+
 static int volume(int which)
 {
-    int v = s_volume[which];
-    if (v < 0) {
-        v = ini_int(kVolumeKeys[which], 100);
-        v = v < 0 ? 0 : v > 100 ? 100 : v;
-        s_volume[which] = v;
-    }
-    return v;
+    static std::once_flag once;
+    std::call_once(once, [] {
+        // port.ini from before the logarithmic sliders holds amplitudes in percent: they
+        // become the slider positions of the same loudness, once
+        std::string scale;
+        bool linear = !ini_get("volume scale", scale);
+        for (int i = 0; i < 3; i++) {
+            int v = ini_int(kVolumeKeys[i], 100);
+            v = v < 0 ? 0 : v > 100 ? 100 : v;
+            if (linear && v > 0 && v < 100) {
+                v = (int)lround(100 + 100 / kRangeDb * 20 * log10(v / 100.0));
+                v = v < 1 ? 1 : v;
+                ini_set(kVolumeKeys[i], v);
+            }
+            s_volume[i] = v;
+        }
+        if (linear)
+            ini_set("volume scale", 1);
+    });
+    return s_volume[which];
 }
 
 static void set_volume(int which, int v)
@@ -425,16 +448,16 @@ void options_draw(uint32_t *px, int w, int h, int k)
 
 extern "C" {
 
-// The volume of a channel of the game's sound manager, in percent: 20 carries the
-// voices, 10 the music (its background music stream is marked with port_music_stream),
-// the others the sound effects.
-int port_sound_gain(int channel)
+// The volume (amplitude, 0..1) of a channel of the game's sound manager: 20 carries the
+// voices (and the movies' sound), 10 the music (its background music stream is marked
+// with port_music_stream), the others the sound effects.
+float port_sound_gain(int channel)
 {
     using namespace win32;
-    return volume(channel == 20 ? VOICES : channel == 10 ? MUSIC : EFFECTS);
+    return gain(volume(channel == 20 ? VOICES : channel == 10 ? MUSIC : EFFECTS));
 }
 
-int port_music_gain(void) { return win32::volume(win32::MUSIC); }
+float port_music_gain(void) { return win32::gain(win32::volume(win32::MUSIC)); }
 
 // Changes whenever a volume changes: the channels apply their new volume then.
 unsigned port_sound_gain_version(void) { return win32::s_volume_version; }

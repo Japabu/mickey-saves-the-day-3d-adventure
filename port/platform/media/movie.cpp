@@ -1,5 +1,6 @@
 // movie.cpp - decoding Bink and Smacker movies with FFmpeg (see movie.h).
 #include "movie.h"
+#include "../port.h"
 
 #include <chrono>
 #include <string.h>
@@ -138,6 +139,12 @@ void Movie::start()
 
 void Movie::push_sound()
 {
+    // the movies' sound follows the voices slider (the cutscenes are mostly speech)
+    unsigned v = port_sound_gain_version();
+    if (v != gain_version) {
+        gain_version = v;
+        sound->set_gain(port_sound_gain(20));
+    }
     if (pcm.empty())
         return;
     sound->put(pcm.data(), (int)(pcm.size() / CHANNELS));
