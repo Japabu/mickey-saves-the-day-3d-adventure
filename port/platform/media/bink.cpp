@@ -12,8 +12,6 @@
 
 #include <string>
 
-#pragma GCC visibility push(hidden)
-
 namespace {
 
 std::string s_error;
@@ -35,8 +33,6 @@ void reset_frame(BinkMovie *b)
 }
 
 }  // namespace
-
-#pragma GCC visibility push(default)
 
 extern "C" {
 

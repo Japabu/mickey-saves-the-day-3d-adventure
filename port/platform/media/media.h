@@ -1,12 +1,12 @@
-// media.h - shared pieces of the media layer: the audio output that Miles, Bink and
-// Smacker play through (SDL3), and reading audio and video with FFmpeg.
+// media.h - shared pieces of the media layer: the sound output that Miles, Bink and
+// Smacker play through (mix.cpp, on the host's output), and reading audio and video with
+// FFmpeg.
 #ifndef PORT_MEDIA_MEDIA_H
 #define PORT_MEDIA_MEDIA_H
 
 #include "../win32/internal.h"
 #include "rad.h"
 
-#include <SDL3/SDL.h>
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -14,6 +14,7 @@ extern "C" {
 #include <libswscale/swscale.h>
 }
 
+#include <mutex>
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -22,19 +23,50 @@ namespace media {
 
 #define MEDIA_LOG(...) win32::log("media", __VA_ARGS__)
 
-// ---- audio output ----
-
-// The output device, opened on first use (AIL_quick_startup or a movie); 0 if there is
-// no audio. Every voice is an SDL audio stream bound to it, SDL mixes them.
-SDL_AudioDeviceID audio_device();
-void audio_shutdown();
-// Master volume, 0..127 (Miles' digital master volume): the device gain.
-void set_master_volume(int volume);
-int master_volume();
+// ---- sound output ----
 
 // Decoded audio is always interleaved 32-bit float stereo, at the file's own rate.
 enum { CHANNELS = 2 };
-SDL_AudioSpec float_spec(int rate);
+
+// A sound being played: frames put into it (or pulled by its callback) are resampled to
+// the output, scaled by its gain and mixed with the others while it is bound. The
+// mixer calls the pull callback, and reads the stream, under the stream's lock; the
+// lock is recursive.
+class Stream {
+public:
+    typedef void (*Pull)(void *user, Stream *s, int frames);
+    explicit Stream(int rate);
+    ~Stream();
+    void put(const float *frames, int count);
+    void clear();
+    int queued();                       // frames put and not yet played
+    void set_gain(float gain);
+    void set_ratio(float ratio);        // plays at rate * ratio (pitch)
+    void set_pull(Pull pull, void *user);  // asked for frames when the queue runs short
+    void bind(bool on);                 // mixed into the output or not
+    void lock();
+    void unlock();
+
+private:
+    friend struct Mixer;
+    int rate;
+    std::vector<float> queue;           // frames not yet played, from `head`
+    size_t head = 0;
+    double frac = 0;                    // position between the first two queued frames
+    float gain = 1, ratio = 1;
+    Pull pull = 0;
+    void *pull_user = 0;
+    bool bound = false;
+    std::recursive_mutex mu;
+};
+
+// Opens the host's sound output on first use (AIL_quick_startup or a movie); false if
+// there is none.
+bool audio_open();
+void audio_shutdown();
+// Master volume, 0..127 (Miles' digital master volume): scales the whole output.
+void set_master_volume(int volume);
+int master_volume();
 
 // ---- reading with FFmpeg ----
 

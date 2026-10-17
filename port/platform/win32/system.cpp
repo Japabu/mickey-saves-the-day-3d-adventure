@@ -23,7 +23,7 @@ using namespace win32;
 
 extern "C" {
 
-__attribute__((visibility("default"))) void port_set_command_line(int argc, char **argv)
+void port_set_command_line(int argc, char **argv)
 {
     set_main_thread();
     s_cmdline = "\"C:\\setup\\hd\\binaries\\Steamboat.exe\"";

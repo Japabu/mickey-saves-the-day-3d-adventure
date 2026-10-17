@@ -7,7 +7,7 @@
 #include "../../src/RuntimeLib/MfJoystick.h"
 #include "win32/internal.h"
 
-#define DI_EXPORT extern "C" __attribute__((visibility("default")))
+#define DI_EXPORT extern "C"
 
 // IID_IDirectInputDevice2A (MfJoystick asks a device for it) and the joystick data format
 // the game hands to SetDataFormat (no device takes it here).

@@ -4,7 +4,7 @@
 
 #include <string.h>
 
-#define DX_EXPORT extern "C" __attribute__((visibility("default")))
+#define DX_EXPORT extern "C"
 
 // the interface identifiers of DirectX 7
 DX_EXPORT const GUID IID_IDirectDraw = {0x6c14db80, 0xa733, 0x11ce, {0xa5, 0x21, 0x00, 0x20, 0xaf, 0x0b, 0xe5, 0x60}};

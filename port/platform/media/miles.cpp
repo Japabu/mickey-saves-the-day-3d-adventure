@@ -1,17 +1,17 @@
-// miles.cpp - the Miles Sound System calls of the game (mss32.dll) on SDL3 audio: the
+// miles.cpp - the Miles Sound System calls of the game (mss32.dll) on the port's mixer: the
 // "quick" API for sounds loaded from memory (MBMilesSoundEngine, CMBMilesSoundManager)
 // and file streams (the background music of SteamboatNode, MBMilesStreamingSoundEngine).
 //
-// A voice is an SDL audio stream bound to the output device; SDL mixes them on its audio
-// thread, which must never wait: a late voice delays them all (the glitches of a stalled
-// mixer). So:
+// A voice is a media::Stream (mix.cpp) bound to the output; the mixer runs on the host's
+// sound thread, which must never wait: a late voice delays them all (the glitches of a
+// stalled mixer). So:
 // - a sound loaded from memory (decoded whole at load) is handed out through the stream's
-//   get-callback, a copy from memory; the game's calls take the SDL stream lock for the
+//   pull callback, a copy from memory; the game's calls take the stream's lock for the
 //   few instructions they change, which is also what the callback runs under;
 // - a file stream is decoded by a thread of its own that keeps about 3/4 s queued in the
-//   SDL stream, so file reads, MP3 decoding and the rewinds of a loop never happen on the
-//   audio thread; the game's calls and that thread share the voice's own mutex.
-// When a voice runs dry SDL plays silence for it (no stale buffer repeats).
+//   stream, so file reads, MP3 decoding and the rewinds of a loop never happen on the
+//   sound thread; the game's calls and that thread share the voice's own mutex.
+// When a voice runs dry the mixer plays silence for it (no stale buffer repeats).
 //
 // Behaviour the game relies on:
 // - loop counts: 0 plays forever, n plays n times; AIL_sample_loop_count is the number of
@@ -22,7 +22,7 @@
 // - AIL_quick_status is QSTAT_DONE once a sound has played out or was halted;
 //   AIL_stream_status is SMP_DONE once a stream has played out.
 // - volumes are 0..127, the pan ("extravol") 0..127 with 64 the centre; the master
-//   volume is the device gain, so it applies to the movies' sound too, as in the original
+//   volume is the mixer's, so it applies to the movies' sound too, as in the original
 //   where Bink and Smacker played through Miles.
 #include "media.h"
 #include "../port.h"
@@ -33,8 +33,6 @@
 #include <mutex>
 #include <string.h>
 #include <thread>
-
-#pragma GCC visibility push(hidden)
 
 namespace {
 
@@ -53,14 +51,14 @@ struct Voice {
     enum State { Idle, Playing, Paused, Done };
     std::atomic<bool> music{false};  // the background music (port_music_stream): the music slider applies
     float stream_volume = 1;         // a file stream's own volume (AIL_set_stream_volume), 0..1
-    float stream_gain = -1;          // what the SDL stream has: stream_volume times the music slider
+    float stream_gain = -1;          // what the stream has: stream_volume times the music slider
 
     void apply_stream_gain()
     {
         float g = stream_volume * (music ? port_music_gain() / 100.0f : 1.0f);
         if (g != stream_gain) {
             stream_gain = g;
-            SDL_SetAudioStreamGain(stream, g);
+            stream->set_gain(g);
         }
     }
 
@@ -74,8 +72,7 @@ struct Voice {
             cv.notify_all();
             feeder.join();
         }
-        if (stream)
-            SDL_DestroyAudioStream(stream);  // unbinds; no callback runs after this
+        delete stream;  // out of the mixer; no callback runs after this
         delete media;
     }
 
@@ -83,22 +80,15 @@ struct Voice {
     bool init(int r)
     {
         rate = speed = r > 0 ? r : 22050;
-        SDL_AudioSpec spec = media::float_spec(rate);
-        // the output side in the same format until the device sets its own on binding: a
-        // stream without one refuses data, and a stream is fed before it is bound
-        stream = SDL_CreateAudioStream(&spec, &spec);
-        if (!stream) {
-            set_error(std::string("SDL_CreateAudioStream: ") + SDL_GetError());
-            return false;
-        }
+        stream = new media::Stream(rate);
         if (media)
             feeder = std::thread([this] { feed_loop(); });
         else
-            SDL_SetAudioStreamGetCallback(stream, feed, this);
+            stream->set_pull(feed, this);
         return true;
     }
 
-    // The decoding thread of a file stream: tops the SDL stream up to 3/4 s, in chunks.
+    // The decoding thread of a file stream: tops the stream up to 3/4 s, in chunks.
     void feed_loop()
     {
         std::unique_lock<std::mutex> l(mu);
@@ -116,9 +106,7 @@ struct Voice {
                 scratch.resize((size_t)CHUNK * media::CHANNELS);
                 int got = produce(scratch.data(), CHUNK);
                 if (got > 0)
-                    SDL_PutAudioStreamData(stream, scratch.data(), (int)(got * (int)sizeof(float) * media::CHANNELS));
-                if (fed_all)
-                    SDL_FlushAudioStream(stream);
+                    stream->put(scratch.data(), got);
                 continue;
             }
             cv.wait_for(l, std::chrono::milliseconds(20));
@@ -127,23 +115,14 @@ struct Voice {
 
     void bind(bool on)
     {
-        SDL_AudioDeviceID dev = media::audio_device();
-        if (!dev || on == bound)
+        if (!media::audio_open() || on == bound)
             return;
-        if (on)
-            bound = SDL_BindAudioStream(dev, stream);
-        else {
-            SDL_UnbindAudioStream(stream);
-            bound = false;
-        }
+        stream->bind(on);
+        bound = on;
     }
 
-    // Frames SDL has been given but not played yet.
-    int queued_frames() const
-    {
-        int q = SDL_GetAudioStreamQueued(stream);
-        return q > 0 ? q / (int)(sizeof(float) * media::CHANNELS) : 0;
-    }
+    // Frames the stream has been given but not played yet.
+    int queued_frames() const { return stream->queued(); }
 
     State status()
     {
@@ -166,7 +145,7 @@ struct Voice {
 
     void start(int loop_count)
     {
-        SDL_ClearAudioStream(stream);
+        stream->clear();
         if (media) {
             fed_some = false;
             if (pos || fed_all)
@@ -185,7 +164,7 @@ struct Voice {
     void halt()
     {
         state = Done;
-        SDL_ClearAudioStream(stream);
+        stream->clear();
         pos = 0;
     }
 
@@ -211,12 +190,7 @@ struct Voice {
         if (s <= 0)
             return;
         speed = s;
-        float ratio = (float)s / (float)rate;
-        if (ratio < 0.01f)
-            ratio = 0.01f;
-        if (ratio > 100.0f)
-            ratio = 100.0f;
-        SDL_SetAudioStreamFrequencyRatio(stream, ratio);
+        stream->set_ratio((float)s / (float)rate);
     }
 
     // Fills up to `frames` frames; returns how many it produced.
@@ -292,12 +266,11 @@ struct Voice {
         return true;
     }
 
-    static void SDLCALL feed(void *userdata, SDL_AudioStream *s, int additional, int)
+    static void feed(void *userdata, media::Stream *s, int frames)
     {
         Voice *v = (Voice *)userdata;
-        if (v->state != Playing || additional <= 0)
+        if (v->state != Playing || frames <= 0)
             return;
-        int frames = additional / (int)(sizeof(float) * media::CHANNELS) + 1;
         v->scratch.resize((size_t)frames * media::CHANNELS);
         int got = v->produce(v->scratch.data(), frames);
         float music = v->music ? port_music_gain() / 100.0f : 1.0f;
@@ -306,12 +279,10 @@ struct Voice {
             v->scratch[(size_t)i * 2 + 1] *= v->gain_r * music;
         }
         if (got > 0)
-            SDL_PutAudioStreamData(s, v->scratch.data(), (int)(got * (int)sizeof(float) * media::CHANNELS));
-        if (v->fed_all)
-            SDL_FlushAudioStream(s);  // the resampler's tail too, so the queue runs empty
+            s->put(v->scratch.data(), got);
     }
 
-    SDL_AudioStream *stream = 0;
+    media::Stream *stream = 0;
     bool bound = false;
     int rate = 22050;
     int speed = 22050;
@@ -343,14 +314,14 @@ Voice *sample(HSAMPLE s) { return (Voice *)s; }
 Voice *stream_voice(HSTREAM s) { return (Voice *)s; }
 
 // The game's side of a voice: a file stream's mutex (and a wake-up for its thread when
-// done), a sound's SDL stream lock.
+// done), a sound's stream lock.
 struct Lock {
     explicit Lock(Voice *v) : v(v)
     {
         if (v->media)
             v->mu.lock();
         else
-            SDL_LockAudioStream(v->stream);
+            v->stream->lock();
     }
     ~Lock()
     {
@@ -358,15 +329,13 @@ struct Lock {
             v->mu.unlock();
             v->cv.notify_all();
         } else {
-            SDL_UnlockAudioStream(v->stream);
+            v->stream->unlock();
         }
     }
     Voice *v;
 };
 
 }  // namespace
-
-#pragma GCC visibility push(default)
 
 extern "C" {
 
@@ -377,12 +346,12 @@ int __stdcall AIL_quick_startup(int use_digital, int use_MIDI, unsigned int outp
     (void)output_rate;
     (void)output_bits;
     (void)output_channels;
-    // The device mixes at its own rate: the game's 22050 Hz, 16-bit request was what 1999
+    // The output mixes at its own rate: the game's 22050 Hz, 16-bit request was what 1999
     // sound cards did well; the sounds are resampled per voice instead.
     if (!use_digital)
         return 0;
-    if (!media::audio_device()) {
-        set_error("no audio device");
+    if (!media::audio_open()) {
+        set_error("no sound output");
         return 0;
     }
     s_started = true;
@@ -474,7 +443,7 @@ int __stdcall AIL_quick_play(HAUDIO audio, unsigned int loop_count)
     }
     v.bind(true);
     audio->status = QSTAT_PLAYING;
-    return media::audio_device() != 0;
+    return media::audio_open();
 }
 
 void __stdcall AIL_quick_halt(HAUDIO audio)
@@ -545,7 +514,7 @@ void __stdcall AIL_quick_set_ms_position(HAUDIO audio, int milliseconds)
         p = 0;
     if (p > v.length_frames())
         p = v.length_frames();
-    SDL_ClearAudioStream(v.stream);
+    v.stream->clear();
     v.pos = p;
 }
 
@@ -647,7 +616,7 @@ void __stdcall AIL_set_stream_loop_count(HSTREAM stream, int count)
 int __stdcall AIL_auto_service_stream(HSTREAM stream, int onoff)
 {
     (void)stream;
-    (void)onoff;  // SDL's callback always services the stream
+    (void)onoff;  // the stream's own thread always services it
     return 1;
 }
 

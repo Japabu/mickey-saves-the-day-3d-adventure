@@ -1,23 +1,27 @@
 // movie.cpp - decoding Bink and Smacker movies with FFmpeg (see movie.h).
 #include "movie.h"
 
+#include <chrono>
 #include <string.h>
-
-#pragma GCC visibility push(hidden)
 
 namespace media {
 
+static uint64_t now_ns()
+{
+    return (uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(
+               std::chrono::steady_clock::now().time_since_epoch()).count();
+}
+
 // How far the sound is decoded ahead of what is heard. The sound is fed from the game's
 // thread (with the pictures), so this is how long that thread may stall before the sound
-// runs dry (SDL then plays silence, and the clock below waits with it).
+// runs dry (the mixer then plays silence, and the clock below waits with it).
 static const double SOUND_LEAD = 1.0;
 // Pictures read ahead while looking for sound, at most.
 static const size_t MAX_QUEUED = 64;
 
 Movie::~Movie()
 {
-    if (sound)
-        SDL_DestroyAudioStream(sound);
+    delete sound;
     drop_packets();
     av_frame_free(&frame);
     delete m;
@@ -38,10 +42,8 @@ bool Movie::open(HANDLE handle, const char *what)
     if (!fps.num || !fps.den)
         fps = AVRational{10, 1};
     frame = av_frame_alloc();
-    if (m->audio && audio_device()) {
-        SDL_AudioSpec spec = float_spec(m->rate);
-        sound = SDL_CreateAudioStream(&spec, &spec);  // fed before binding (see miles.cpp)
-    }
+    if (m->audio && audio_open())
+        sound = new Stream(m->rate);  // fed before binding
     MEDIA_LOG("%s: %dx%d, %d frames at %d/%d fps, %s\n", what, w, h, count, fps.num, fps.den,
               sound ? "with sound" : "silent");
     return true;
@@ -58,8 +60,7 @@ double Movie::seconds_queued() const
 {
     if (!sound)
         return 1e9;
-    int q = SDL_GetAudioStreamQueued(sound);
-    return q > 0 ? q / (double)(sizeof(float) * CHANNELS * m->rate) : 0;
+    return sound->queued() / (double)m->rate;
 }
 
 bool Movie::fill(bool want_video)
@@ -76,10 +77,6 @@ bool Movie::fill(bool want_video)
             m->decode_audio(0, pcm);
             if (!pcm.empty())
                 push_sound();
-            // The resampler holds back its last samples until flushed: without this the
-            // queue never empties and the clock stops just short of the last frame.
-            SDL_FlushAudioStream(sound);
-            SDL_FlushAudioStream(sound);
         }
         return false;
     }
@@ -133,17 +130,17 @@ bool Movie::decode(int index)
 void Movie::start()
 {
     running = true;
-    start_ns = SDL_GetTicksNS();
+    start_ns = now_ns();
     lead_audio();
     if (sound)
-        SDL_BindAudioStream(audio_device(), sound);
+        sound->bind(true);
 }
 
 void Movie::push_sound()
 {
     if (pcm.empty())
         return;
-    SDL_PutAudioStreamData(sound, pcm.data(), (int)(pcm.size() * sizeof(float)));
+    sound->put(pcm.data(), (int)(pcm.size() / CHANNELS));
     pushed += (int64_t)(pcm.size() / CHANNELS);
 }
 
@@ -152,32 +149,31 @@ void Movie::push_sound()
 // the sound has ended.
 double Movie::now() const
 {
-    double wall = (SDL_GetTicksNS() - start_ns) / 1e9;
+    double wall = (now_ns() - start_ns) / 1e9;
     if (!sound)
         return wall;
-    int q = SDL_GetAudioStreamQueued(sound);
-    int64_t queued = q > 0 ? q / (int64_t)(sizeof(float) * CHANNELS) : 0;
+    int64_t queued = sound->queued();
     double heard = (double)(pushed - queued) / m->rate;
     if (eof && queued == 0) {
         if (!sound_end_ns) {
-            sound_end_ns = SDL_GetTicksNS();
+            sound_end_ns = now_ns();
             sound_end_t = heard;
         }
-        return sound_end_t + (SDL_GetTicksNS() - sound_end_ns) / 1e9;
+        return sound_end_t + (now_ns() - sound_end_ns) / 1e9;
     }
     // Starved before the end: the sound is only fed when a frame is decoded, and a frame
     // only when it is due, so a clock that waits for the sound would wait forever. The
     // time goes on from where the sound stopped until decoding refills it.
     if (!eof && queued == 0 && running) {
         if (!starve_ns) {
-            starve_ns = SDL_GetTicksNS();
+            starve_ns = now_ns();
             starve_t = heard;
         }
-        return starve_t + (SDL_GetTicksNS() - starve_ns) / 1e9;
+        return starve_t + (now_ns() - starve_ns) / 1e9;
     }
     if (starve_ns) {
-        if (heard < starve_t + (SDL_GetTicksNS() - starve_ns) / 1e9 - 0.05)
-            return starve_t + (SDL_GetTicksNS() - starve_ns) / 1e9;  // let the sound catch up
+        if (heard < starve_t + (now_ns() - starve_ns) / 1e9 - 0.05)
+            return starve_t + (now_ns() - starve_ns) / 1e9;  // let the sound catch up
         starve_ns = 0;
     }
     return heard;
@@ -193,8 +189,8 @@ bool Movie::due(int index) const
 void Movie::rewind()
 {
     if (sound) {
-        SDL_UnbindAudioStream(sound);
-        SDL_ClearAudioStream(sound);
+        sound->bind(false);
+        sound->clear();
     }
     drop_packets();
     if (m->rewind())

@@ -1,17 +1,16 @@
 // prelude.h - force-included before every source file of the port (clang -include).
 //
 // The decompiled source is written for Visual C++ 5.0/6.0 on 32-bit Windows. This
-// file maps the Microsoft language extensions it uses onto clang on macOS; the
+// file maps the Microsoft language extensions it uses onto clang; the
 // Windows, DirectX and runtime APIs come from the headers in compat/include.
 #ifndef PORT_PRELUDE_H
 #define PORT_PRELUDE_H
 
-// Each original DLL is built as a dylib with hidden symbols; what the DLL exported is
-// exported, an import is an ordinary declaration.
+// All DLLs link into one executable: exports and imports are ordinary declarations.
 #define __declspec(x) PORT_DECLSPEC_##x
-#define PORT_DECLSPEC_dllexport __attribute__((visibility("default")))
+#define PORT_DECLSPEC_dllexport
 #define PORT_DECLSPEC_dllimport
-#define PORT_DECLSPEC_export __attribute__((visibility("default")))
+#define PORT_DECLSPEC_export
 #define PORT_DECLSPEC_noreturn __attribute__((noreturn))
 #define PORT_DECLSPEC_novtable
 #define PORT_DECLSPEC_selectany __attribute__((weak))

@@ -13,8 +13,6 @@
 
 #include <string.h>
 
-#pragma GCC visibility push(hidden)
-
 namespace {
 
 struct SmackMovie {
@@ -67,8 +65,6 @@ void restart(SmackMovie *s)
 }
 
 }  // namespace
-
-#pragma GCC visibility push(default)
 
 extern "C" {
 

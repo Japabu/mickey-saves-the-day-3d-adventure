@@ -3,8 +3,6 @@
 
 #include <string.h>
 
-#pragma GCC visibility push(hidden)
-
 namespace media {
 
 namespace {
@@ -114,15 +112,6 @@ AVCodecContext *open_decoder(AVStream *st)
 
 Bytes *memory_bytes(const void *data, size_t size) { return new MemoryBytes(data, size); }
 Bytes *handle_bytes(HANDLE h, bool close_handle) { return new HandleBytes(h, close_handle); }
-
-SDL_AudioSpec float_spec(int rate)
-{
-    SDL_AudioSpec s;
-    s.format = SDL_AUDIO_F32;
-    s.channels = CHANNELS;
-    s.freq = rate;
-    return s;
-}
 
 Media *Media::open(Bytes *bytes, const char *what)
 {

@@ -7,9 +7,6 @@
 #include <atomic>
 #include <string>
 
-// Everything the platform defines is part of its interface to the game's libraries.
-#pragma GCC visibility push(default)
-
 namespace win32 {
 
 // Diagnostics: PORT_LOG=1 (or a list of channels) in the environment turns them on.

@@ -43,13 +43,13 @@ private:
     double now() const;  // seconds into the movie
     Media *m = 0;
     std::deque<AVPacket *> video;
-    SDL_AudioStream *sound = 0;
+    Stream *sound = 0;
     std::vector<float> pcm;
     int w = 0, h = 0, count = 0;
     AVRational fps{10, 1};
     bool running = false, eof = false;
     uint64_t start_ns = 0;
-    int64_t pushed = 0;                  // sound frames handed to SDL since the start
+    int64_t pushed = 0;                  // sound frames handed to the stream since the start
     mutable uint64_t sound_end_ns = 0;   // when the sound was heard to the end
     mutable uint64_t starve_ns = 0;   // when the sound ran dry before the end (0: it hasn't)
     mutable double starve_t = 0;      // the movie time at that moment
