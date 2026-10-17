@@ -123,4 +123,13 @@ EDITS = {
          '        }\n'
          '    PortCursor(worldMousePosition); }\n', 1),
     ],
+    # Facing the point it stands on: the script of Von Drake's lab (DKinit's face_board,
+    # after the tissue dialogue) turns him toward his own saved position. The direction
+    # is then (0, 0, 0) and its normalization 0/0 made his transform NaN, so he vanished
+    # (the original's x87 arithmetic likely left a tiny nonzero rest). Such a turn is
+    # no turn.
+    'RuntimeLib/MfApiActor.cpp': [
+        ('    float length = (float)sqrt(to.lengthSquared());\n',
+         '    float length = (float)sqrt(to.lengthSquared()); if (!(length > 1e-6f)) return;    // PORT: no direction, no turn\n', 1),
+    ],
 }

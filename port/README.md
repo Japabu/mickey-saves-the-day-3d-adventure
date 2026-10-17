@@ -24,6 +24,9 @@ decompiled code in `src/` stays as the original was; each improvement is new cod
   floor over a few frames instead of jumping when a walk starts; two walking characters
   do not stop for each other (the original cancelled one walk at random, which made
   Mickey pause, snap round and slide in the main menu).
+- **No vanishing characters** (`port/edits/improvements.py`): a script that turns a
+  character toward the point it stands on (Ludwig Von Drake after the tissue) no longer
+  makes its position invalid, which made it disappear.
 - **Leaving the game** (`port/improve/SteamboatApp/credits.cpp`): Yes on the exit board
   always works (Mickey's question is stopped so his goodbye can play; the original
   waited for ever when Yes came while he still asked), and a click, Space, Enter or
