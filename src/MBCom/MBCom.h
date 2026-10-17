@@ -28,43 +28,8 @@ inline void __cdecl operator delete(void *ptr)
         MBfree_release(ptr);
 }
 
-struct MBGUID {
-    unsigned long data1;
-    unsigned short data2;
-    unsigned short data3;
-    unsigned char data4[8];
-    bool operator==(const MBGUID &guid) const;
-    bool operator!=(const MBGUID &guid) const;
-};
-
-// 0x100022d0 ??M@YA_NABUMBGUID@@0@Z (MBComFactory.obj)
-inline bool operator<(const MBGUID &guid1, const MBGUID &guid2)
-{
-    if (guid1.data1 > guid2.data1)
-        return false;
-    if (guid1.data1 < guid2.data1)
-        return true;
-    if (guid1.data2 > guid2.data2)
-        return false;
-    if (guid1.data2 < guid2.data2)
-        return true;
-    if (guid1.data3 > guid2.data3)
-        return false;
-    if (guid1.data3 < guid2.data3)
-        return true;
-    if (*(unsigned long *)&guid1.data4[0] > *(unsigned long *)&guid2.data4[0])
-        return false;
-    if (*(unsigned long *)&guid1.data4[0] < *(unsigned long *)&guid2.data4[0])
-        return true;
-    return *(unsigned long *)&guid1.data4[4] < *(unsigned long *)&guid2.data4[4];
-}
-
-class IMBUnknown {
-public:
-    virtual long QueryInterface(const MBGUID &iid, void **obj) = 0;
-    virtual unsigned long AddRef(void) = 0;
-    virtual unsigned long Release(void) = 0;
-};
+#include "MBGUID.h"
+#include "IMBUnknown.h"
 
 typedef IMBUnknown *(__cdecl *MBClassFactoryFunc)(void);
 

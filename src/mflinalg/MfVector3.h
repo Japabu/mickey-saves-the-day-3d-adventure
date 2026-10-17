@@ -2,7 +2,7 @@
 // MfVector3. Declaration from the SteamboatApp PDB; the members defined here are
 // the ones mflinalg emits with the inline functions of its header.
 #include <math.h>
-#include "MfLinalg.h"
+#include "mflinalg_api.h"
 class MfTransform3;
 
 class MFLINALG_API MfVector3 {

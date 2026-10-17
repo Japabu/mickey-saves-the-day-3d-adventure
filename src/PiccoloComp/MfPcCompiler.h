@@ -1,4 +1,5 @@
 #pragma once
+#include "PiccoloComp_api.h"
 #include "MfAiCompiler.h"
 #include "MfString.h"
 class MfPcBuffer;
@@ -22,7 +23,7 @@ class MfStringList;
 // The Piccolo script compiler (0x74 bytes). The parser (yacc) and the scanner
 // (lex) call back into it to build the code of each function; one instance,
 // pcMainCompiler, is published as "PiccoloCompilerI".
-class __declspec(dllexport) MfPcCompiler : public MfAiCompiler {
+class PICCOLOCOMP_API MfPcCompiler : public MfAiCompiler {
 public:
     MfPcCompiler();
     virtual ~MfPcCompiler();

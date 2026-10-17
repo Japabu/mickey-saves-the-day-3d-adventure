@@ -1,7 +1,7 @@
 #pragma once
 // EG2_Bitmap.h: a Windows device-independent bitmap read from a stream or wrapped around a .bmp in
 // memory (EG2Bitmap.obj, declaration from SteamboatApp.pdb).
-#include "EG2_Asset.h"
+#include "Asset.h"
 #include <windows.h>
 
 class IMBStream;

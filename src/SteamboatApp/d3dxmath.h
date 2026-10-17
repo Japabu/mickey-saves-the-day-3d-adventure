@@ -3,67 +3,9 @@
 // matrix, quaternion, plane and colour types, the inline helpers and the library functions
 // (bodies in d3dumath.cpp). Names from SteamboatApp.pdb and the exported symbols.
 
-struct _D3DVECTOR;
+#include "D3DXVECTOR3.h"
 
-struct D3DXVECTOR3 {
-    D3DXVECTOR3() {}
-    D3DXVECTOR3(const float *pf) { x = pf[0]; y = pf[1]; z = pf[2]; }
-    D3DXVECTOR3(const _D3DVECTOR &v);
-    D3DXVECTOR3(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-    operator float *() { return (float *)&x; }
-    operator const float *() const { return (const float *)&x; }
-    operator _D3DVECTOR *() { return (_D3DVECTOR *)&x; }
-    operator const _D3DVECTOR *() const { return (const _D3DVECTOR *)&x; }
-    operator _D3DVECTOR &() { return *((_D3DVECTOR *)&x); }
-    operator const _D3DVECTOR &() const { return *((const _D3DVECTOR *)&x); }
-    D3DXVECTOR3 &operator+=(const D3DXVECTOR3 &v) { x += v.x; y += v.y; z += v.z; return *this; }
-    D3DXVECTOR3 &operator-=(const D3DXVECTOR3 &v) { x -= v.x; y -= v.y; z -= v.z; return *this; }
-    D3DXVECTOR3 &operator*=(float f) { x *= f; y *= f; z *= f; return *this; }
-    D3DXVECTOR3 &operator/=(float f)
-    {
-        float fInv = 1.0f / f;
-        x *= fInv;
-        y *= fInv;
-        z *= fInv;
-        return *this;
-    }
-    D3DXVECTOR3 operator+() const { return *this; }
-    D3DXVECTOR3 operator-() const { return D3DXVECTOR3(-x, -y, -z); }
-    D3DXVECTOR3 operator+(const D3DXVECTOR3 &v) const { return D3DXVECTOR3(x + v.x, y + v.y, z + v.z); }
-    D3DXVECTOR3 operator-(const D3DXVECTOR3 &v) const { return D3DXVECTOR3(x - v.x, y - v.y, z - v.z); }
-    D3DXVECTOR3 operator*(float f) const { return D3DXVECTOR3(x * f, y * f, z * f); }
-    D3DXVECTOR3 operator/(float f) const
-    {
-        float fInv = 1.0f / f;
-        return D3DXVECTOR3(x * fInv, y * fInv, z * fInv);
-    }
-    int operator==(const D3DXVECTOR3 &v) const { return x == v.x && y == v.y && z == v.z; }
-    int operator!=(const D3DXVECTOR3 &v) const { return x != v.x || y != v.y || z != v.z; }
-    float x;
-    float y;
-    float z;
-};
-
-inline D3DXVECTOR3 operator*(float f, const D3DXVECTOR3 &v)
-{
-    return D3DXVECTOR3(f * v.x, f * v.y, f * v.z);
-}
-
-struct D3DXPLANE {
-    D3DXPLANE() {}
-    D3DXPLANE(const float *pf) { a = pf[0]; b = pf[1]; c = pf[2]; d = pf[3]; }
-    D3DXPLANE(float fa, float fb, float fc, float fd) { a = fa; b = fb; c = fc; d = fd; }
-    operator float *() { return (float *)&a; }
-    operator const float *() const { return (const float *)&a; }
-    D3DXPLANE operator+() const { return *this; }
-    D3DXPLANE operator-() const { return D3DXPLANE(-a, -b, -c, -d); }
-    int operator==(const D3DXPLANE &p) const { return a == p.a && b == p.b && c == p.c && d == p.d; }
-    int operator!=(const D3DXPLANE &p) const { return a != p.a || b != p.b || c != p.c || d != p.d; }
-    float a;
-    float b;
-    float c;
-    float d;
-};
+#include "D3DXPLANE.h"
 
 inline float D3DXVec3Dot(const D3DXVECTOR3 *pV1, const D3DXVECTOR3 *pV2)
 {
@@ -104,63 +46,11 @@ struct D3DXVECTOR2 {
     float y;
 };
 
-struct D3DXVECTOR4 {
-    D3DXVECTOR4() {}
-    D3DXVECTOR4(float fx, float fy, float fz, float fw) { x = fx; y = fy; z = fz; w = fw; }
-    operator float *() { return (float *)&x; }
-    operator const float *() const { return (const float *)&x; }
-    D3DXVECTOR4 operator/(float f) const
-    {
-        float fInv = 1.0f / f;
-        return D3DXVECTOR4(x * fInv, y * fInv, z * fInv, w * fInv);
-    }
-    float x;
-    float y;
-    float z;
-    float w;
-};
+#include "D3DXVECTOR4.h"
 
-struct D3DXMATRIX {
-    D3DXMATRIX() {}
-    float &operator()(unsigned int row, unsigned int col) { return m[row][col]; }
-    float operator()(unsigned int row, unsigned int col) const { return m[row][col]; }
-    operator float *() { return (float *)&_11; }
-    operator const float *() const { return (const float *)&_11; }
-    union {
-        struct {
-            float _11, _12, _13, _14;
-            float _21, _22, _23, _24;
-            float _31, _32, _33, _34;
-            float _41, _42, _43, _44;
-        };
-        float m[4][4];
-    };
-};
+#include "D3DXMATRIX.h"
 
-struct D3DXQUATERNION {
-    D3DXQUATERNION() {}
-    D3DXQUATERNION(float fx, float fy, float fz, float fw) { x = fx; y = fy; z = fz; w = fw; }
-    operator float *() { return (float *)&x; }
-    operator const float *() const { return (const float *)&x; }
-    D3DXQUATERNION &operator/=(float f)
-    {
-        float fInv = 1.0f / f;
-        x *= fInv;
-        y *= fInv;
-        z *= fInv;
-        w *= fInv;
-        return *this;
-    }
-    D3DXQUATERNION operator/(float f) const
-    {
-        float fInv = 1.0f / f;
-        return D3DXQUATERNION(x * fInv, y * fInv, z * fInv, w * fInv);
-    }
-    float x;
-    float y;
-    float z;
-    float w;
-};
+#include "D3DXQUATERNION.h"
 
 struct D3DXCOLOR {
     D3DXCOLOR() {}

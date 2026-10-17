@@ -2,7 +2,7 @@
 // MfMath: table-driven trigonometry and polynomial roots. Declaration from the
 // SteamboatApp PDB. The constructor fills the tables; g_math constructs them at
 // load time.
-#include "MfLinalg.h"
+#include "mflinalg_api.h"
 
 class MFLINALG_API MfMath {
 public:

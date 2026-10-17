@@ -1384,7 +1384,7 @@ static void yy_flex_free( void *ptr )
 #define MIN_HASH_VALUE 2
 #define MAX_HASH_VALUE 43
 
-struct resword { char *name; int token; };
+#include "resword.h"
 
 // 0x100169f0 ?hash@@YAHPADH@Z
 static int hash( register char *str, register int len )

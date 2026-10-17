@@ -1,5 +1,12 @@
 // MfRotation3 (unit quaternion) unit of mflinalg.dll: reconstructed declarations.
 // Layouts copied from mflinalg.h and from the code of this range.
+// own copy: same layouts as the canonical MfMath.h, MfVector3.h, MfXformMatrix3.h
+// and MfRotation3.h, but MfRotation3.cpp's operand orders depend on VC5's symbol
+// counter, which these exact declarations set; compiled against the canonical
+// headers (members renamed) 4 to 10 of its 28 functions differ for every include
+// order and padding tried (sweep of 2026-10-17), including the inline normalize
+// and scalarMult that this object emits. MFAPI stays a plain #define: including
+// mflinalg_api.h instead (MFLINALG_API) made 7 of them differ.
 #ifndef MFROTATION3_H
 #define MFROTATION3_H
 

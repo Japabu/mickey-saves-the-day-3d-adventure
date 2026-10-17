@@ -1,4 +1,7 @@
-// The model changed these declarations for this unit; they are its own and are not generated again.
+// EG2::Asset: the base of the engine's loadable assets (bitmaps): a resource
+// loader and an instance count.
+#ifndef ASSET_H
+#define ASSET_H
 namespace EG2 { class Resource; }
 
 namespace EG2 {
@@ -12,3 +15,5 @@ public:
     int mInstanceCount;
 };
 }
+
+#endif
