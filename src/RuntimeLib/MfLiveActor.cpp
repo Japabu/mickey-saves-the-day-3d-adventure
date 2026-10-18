@@ -1467,7 +1467,7 @@ void MfLiveActor::HandleConformFailure(MfMsg &msg)
         UpdateAppEventHandler(msg);
 }
 
-// TODO 0x100366c0 ?RequestLocoPlan@MfLiveActor@@IAEHHPAVMfLocoSkill@@PAVMfSkill@@ABVMfTransform2@@PAVMfFloor@@HHHPAV1@MMHMMHH@Z: (55% similar) float rounding: the original keeps margin = radius + radius (radius loaded twice) on the x87 stack, here margin is a float spilled to memory (differs on overflow); also the zero in ebp (ebx here), a 4-byte smaller frame, and in the mb0 branch the imported MfRotation3/MfVector3 operator= and here/start copied through the FPU (inline budget)
+// TODO 0x100366c0 ?RequestLocoPlan@MfLiveActor@@IAEHHPAVMfLocoSkill@@PAVMfSkill@@ABVMfTransform2@@PAVMfFloor@@HHHPAV1@MMHMMHH@Z: (55% similar) the original clears a7 and relative only when more stretches follow (`else` of `if (!mLocoPlan.mPath)`), so a walk's last stretch keeps the goal heading; written so here it is 53% similar (VC5 then keeps the zero in edi instead of ebx), so port/edits/RuntimeLib.py makes the port do it; float rounding: the original keeps margin = radius + radius (radius loaded twice) on the x87 stack, here margin is a float spilled to memory (differs on overflow); also the zero in ebp (ebx here), a 4-byte smaller frame, and in the mb0 branch the imported MfRotation3/MfVector3 operator= and here/start copied through the FPU (inline budget)
 // Asks the planner for a walk to goal (on floor, or relative to target).
 // The request is remembered in mLocoPlan so that it can be repeated; the
 // road map gives the floors on the way, and each request covers the stretch
