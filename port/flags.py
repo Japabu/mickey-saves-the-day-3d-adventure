@@ -74,6 +74,11 @@ COMMON = [
     # braced initialisers narrowing a 64-bit `long` into 32-bit Windows fields
     # (RECT r = { 0, 0, rect.Width(), ... }): VC6 had no such rule
     '-Wno-c++11-narrowing',
+    # a non-void function that ends without a return (VC6 left eax as it was; the source
+    # has some, e.g. CSBGridlockGameTile::operator=) returns some value instead of being
+    # unreachable: clang otherwise drops the code on the way there (the tile assignment
+    # copied an actor from a null pointer and the traffic jam hung after the first move)
+    '-fno-strict-return',
     # the complete destructor as an alias of the base destructor: clang otherwise compiles
     # the complete destructor of an abstract class to a trap, and the game deletes through
     # abstract bases with non-virtual destructors (MSVC ran the base destructor)
