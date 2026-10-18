@@ -1,6 +1,7 @@
 // mickey.js - the page around the game (the web host's other half, see
 // port/platform/host/web/shared.h): the ISO is copied once into the site's private
-// storage (copy-worker.js), then Play starts the game (Steamboat.js, on a worker). This
+// storage (copy-worker.js), saved games are exported and imported there, then Play starts
+// the game (Steamboat.js, on a worker). This
 // thread draws its frames with WebGL, turns DOM events into its event ring and plays its
 // sound ring through an AudioWorklet (sound-worklet.js).
 'use strict';
@@ -78,6 +79,8 @@ async function showStart() {
   const cd = await storedCd();
   $('play-row').hidden = !cd;
   $('choose-row').hidden = !!cd;
+  $('saves').hidden = !cd;
+  if (cd) await showSaves();
   say(cd ? `Ready: ${cd.name} (${(cd.size / 1048576).toFixed(0)} MB).` : '');
 }
 
@@ -94,6 +97,185 @@ async function chosen(file) {
     return;
   }
   await showStart();
+}
+
+// ---- Saved games: the game's eight slots are savedgame<N>.ini in its data directory
+// (/opfs/data, host/web/host.cpp) with their index in SGDB.ini: a section [game N data]
+// (icon = N, the slot's picture, which is also the file's number; scene = where it was
+// saved) per slot, and [used games] games = the slot numbers. The game finds its files
+// whatever their case (win32/vfs.cpp), so these are looked up the same way. An exported
+// game is one JSON file: the slot's ini text and the scene.
+
+const SAVE_FORMAT = 'mickey-saves-the-day/saved-game', SLOTS = 8, CRLF = '\r\n';
+
+// The game's directory of ini files, created if asked (as the game would name it).
+async function binariesDir(create) {
+  let dir = await navigator.storage.getDirectory();
+  for (const name of ['data', 'setup', 'hd', 'binaries']) {
+    let found = null;
+    for await (const [n, h] of dir.entries())
+      if (h.kind === 'directory' && n.toLowerCase() === name) found = h;
+    if (!found && !create) return null;
+    dir = found || await dir.getDirectoryHandle(name, { create: true });
+  }
+  return dir;
+}
+
+async function findFile(dir, name) {
+  for await (const [n, h] of dir.entries())
+    if (h.kind === 'file' && n.toLowerCase() === name.toLowerCase()) return h;
+  return null;
+}
+
+async function readText(dir, name) {
+  const h = dir && await findFile(dir, name);
+  return h ? (await h.getFile()).text() : null;
+}
+
+async function writeText(dir, name, text) {
+  const h = await findFile(dir, name) || await dir.getFileHandle(name, { create: true });
+  const w = await h.createWritable();
+  await w.write(text);
+  await w.close();
+}
+
+// An ini text as its sections in order: { name, lines } (the lines before the first
+// section have the name null).
+function iniSections(text) {
+  const sections = [{ name: null, lines: [] }];
+  for (const line of (text || '').split(/\r?\n/)) {
+    const m = /^\s*\[(.*)\]\s*$/.exec(line);
+    if (m) sections.push({ name: m[1].trim(), lines: [] });
+    else sections[sections.length - 1].lines.push(line);
+  }
+  return sections;
+}
+
+function iniValue(lines, key) {
+  for (const line of lines) {
+    const eq = line.indexOf('=');
+    if (eq > 0 && line.slice(0, eq).trim().toLowerCase() === key) return line.slice(eq + 1).trim();
+  }
+  return null;
+}
+
+// The used slots of SGDB.ini: [{ slot, scene }] by slot.
+function sgdbSlots(text) {
+  const sections = iniSections(text);
+  const used = sections.find((s) => s.name?.toLowerCase() === 'used games');
+  const slots = [];
+  for (const token of (used && iniValue(used.lines, 'games') || '').split(',')) {
+    const slot = parseInt(token, 10);
+    if (!(slot >= 1 && slot <= SLOTS) || slots.some((s) => s.slot === slot)) continue;
+    const data = sections.find((s) => s.name?.toLowerCase() === `game ${slot} data`);
+    slots.push({ slot, scene: data && iniValue(data.lines, 'scene') || '' });
+  }
+  return slots.sort((a, b) => a.slot - b.slot);
+}
+
+// SGDB.ini with the given slots, its other sections as they were.
+function sgdbText(old, slots) {
+  const keep = iniSections(old).filter((s) => s.name !== null && s.name.toLowerCase() !== 'used games' &&
+                                              !/^game \d+ data$/i.test(s.name));
+  let out = '';
+  for (const s of slots) out += `[game ${s.slot} data]${CRLF}icon = ${s.slot}${CRLF}scene = ${s.scene}${CRLF}${CRLF}`;
+  out += `[used games]${CRLF}games = ${slots.map((s) => s.slot).join(',')}${CRLF}`;
+  for (const s of keep) {
+    while (s.lines.length && s.lines[s.lines.length - 1].trim() === '') s.lines.pop();
+    out += `${CRLF}[${s.name}]${CRLF}${s.lines.map((l) => l + CRLF).join('')}`;
+  }
+  return out;
+}
+
+function sayAboutSaves(text) { $('saves-message').textContent = text; }
+
+async function savedGameFile(dir, slot) {
+  const h = await findFile(dir, `savedgame${slot}.ini`);
+  if (!h) return null;
+  const file = await h.getFile();
+  const scene = sgdbSlots(await readText(dir, 'SGDB.ini')).find((s) => s.slot === slot)?.scene || '';
+  const json = JSON.stringify({ format: SAVE_FORMAT, version: 1, scene, saved: file.lastModified,
+                                ini: await file.text() });
+  const day = new Date(file.lastModified).toISOString().slice(0, 10);
+  return new File([json], `Mickey saved game ${slot}${scene ? ' ' + scene : ''} ${day}.json`,
+                  { type: 'application/json' });
+}
+
+async function exportSave(slot, share) {
+  try {
+    const file = await savedGameFile(await binariesDir(false), slot);
+    if (!file) { sayAboutSaves(`Slot ${slot} has no saved game file.`); return; }
+    if (share) {
+      await navigator.share({ files: [file], title: 'Mickey Saves the Day: a saved game' });
+      return;
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(file);
+    a.download = file.name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  } catch (err) {
+    if (err.name !== 'AbortError') sayAboutSaves(`Exporting failed: ${err.message}`);
+  }
+}
+
+async function importSave(file) {
+  try {
+    if (file.size > 4 << 20) throw new Error(`${file.name} is too large for a saved game.`);
+    let save;
+    try { save = JSON.parse(await file.text()); } catch (_) { save = null; }
+    if (!save || save.format !== SAVE_FORMAT || typeof save.ini !== 'string')
+      throw new Error(`${file.name} is not a saved game exported from this page.`);
+    const names = iniSections(save.ini).map((s) => s.name?.toLowerCase());
+    if (!names.includes('game') || !names.includes('inventory'))
+      throw new Error(`${file.name} does not hold a saved game.`);
+    const scene = /^[A-Za-z]{2}$/.test(save.scene) ? save.scene.toUpperCase() : 'MX';
+    const dir = await binariesDir(true);
+    const old = await readText(dir, 'SGDB.ini');
+    const slots = sgdbSlots(old);
+    let slot = 1;
+    while (slot <= SLOTS && slots.some((s) => s.slot === slot)) slot++;
+    if (slot > SLOTS) throw new Error('All eight slots are used: erase one in the game first (Start, then a used picture).');
+    await writeText(dir, `savedgame${slot}.ini`, save.ini);
+    slots.push({ slot, scene });
+    slots.sort((a, b) => a.slot - b.slot);
+    await writeText(dir, 'SGDB.ini', sgdbText(old, slots));
+    await showSaves();
+    sayAboutSaves(`Imported into slot ${slot}: in the game, Load shows it.`);
+  } catch (err) {
+    sayAboutSaves(err.message);
+  }
+}
+
+async function showSaves() {
+  const list = $('saves-list');
+  list.replaceChildren();
+  let slots = [];
+  try {
+    const dir = await binariesDir(false);
+    slots = dir ? sgdbSlots(await readText(dir, 'SGDB.ini')) : [];
+  } catch (err) {
+    sayAboutSaves(`The saved games cannot be read: ${err.message}`);
+  }
+  const canShare = !!navigator.canShare?.({ files: [new File([''], 'x.json', { type: 'application/json' })] });
+  for (const { slot, scene } of slots) {
+    const li = document.createElement('li');
+    const label = document.createElement('span');
+    label.textContent = `Slot ${slot}${scene ? ` (saved in ${scene})` : ''}`;
+    li.append(label);
+    const add = (text, share) => {
+      const b = document.createElement('button');
+      b.className = 'secondary';
+      b.textContent = text;
+      b.addEventListener('click', () => exportSave(slot, share));
+      li.append(b);
+    };
+    add('Export', false);
+    if (canShare) add('Share', true);
+    list.append(li);
+  }
+  list.hidden = !slots.length;
+  sayAboutSaves(slots.length ? '' : 'No saved games yet.');
 }
 
 // ---- The game
@@ -298,6 +480,7 @@ async function play() {
       $('game').style.display = 'none';
       $('start').hidden = false;
       say(`The game has ended (${code}).`);
+      showSaves();
     },
     preRun: [(m) => {
       // before the game's main starts on its worker: the shared block, the sound's rate
@@ -317,5 +500,9 @@ async function play() {
 
 $('iso').addEventListener('change', (e) => { if (e.target.files[0]) chosen(e.target.files[0]); });
 $('change').addEventListener('click', () => { $('play-row').hidden = true; $('choose-row').hidden = false; });
+$('save-file').addEventListener('change', (e) => {
+  if (e.target.files[0]) importSave(e.target.files[0]);
+  e.target.value = '';
+});
 $('play').addEventListener('click', play);
 showStart();

@@ -72,7 +72,8 @@ python3 port/web/serve.py               # then open http://localhost:8000/
 ```
 
 The page (`port/web/`) asks for the ISO and copies it into the browser's private
-storage for the site (OPFS) once; saved games stay there too. Nothing is uploaded. The
+storage for the site (OPFS) once; saved games stay there too, and the start page exports
+and imports them as small JSON files to keep or send to someone. Nothing is uploaded. The
 game needs shared memory, so the server must send COOP/COEP headers: `serve.py` does,
 and on hosts that cannot (GitHub Pages) `coi-serviceworker.js` adds them. Add
 `?log=1` (or `?log=<channels>`) to the address for the `PORT_LOG` output in the

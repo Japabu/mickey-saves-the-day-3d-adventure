@@ -110,8 +110,15 @@ if(PORT_TARGET STREQUAL web)
     # a crash in the game prints its stack in the page's console, with function names
     --profiling-funcs --pre-js ${CMAKE_CURRENT_SOURCE_DIR}/platform/host/web/crash.pre.js)
   set_property(TARGET Steamboat APPEND PROPERTY LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/platform/host/web/crash.pre.js)
-  # the page next to it
+  # the page next to it, copied whenever one of its files changes
   file(GLOB PORT_WEB_PAGE CONFIGURE_DEPENDS web/*.html web/*.js)
-  add_custom_command(TARGET Steamboat POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PORT_WEB_PAGE} ${CMAKE_BINARY_DIR})
+  set(PORT_WEB_PAGE_COPIES)
+  foreach(f ${PORT_WEB_PAGE})
+    get_filename_component(name ${f} NAME)
+    add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/${name}
+      COMMAND ${CMAKE_COMMAND} -E copy ${f} ${CMAKE_BINARY_DIR}/${name} DEPENDS ${f})
+    list(APPEND PORT_WEB_PAGE_COPIES ${CMAKE_BINARY_DIR}/${name})
+  endforeach()
+  add_custom_target(web_page DEPENDS ${PORT_WEB_PAGE_COPIES})
+  add_dependencies(Steamboat web_page)
 endif()

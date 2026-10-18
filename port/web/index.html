@@ -19,7 +19,13 @@
   button.secondary { background: transparent; color: var(--dim); border: 1px solid #3a4652; font-weight: 400; }
   input[type=file] { display: none; }
   progress { width: 100%; height: .6rem; margin-top: 1rem; }
-  #message { min-height: 1.5em; }
+  #message, #saves-message { min-height: 1.5em; }
+  .card h2 { font-size: 1.1rem; margin: 0 0 .5rem; }
+  #saves-list { list-style: none; padding: 0; margin: 0 0 1rem; }
+  #saves-list li { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .5rem 0;
+                   border-bottom: 1px solid #2a333c; }
+  #saves-list li span { flex: 1 1 12rem; }
+  #saves-list button { padding: .35rem .8rem; }
   #game { position: fixed; inset: 0; display: none; background: #000; }
   #screen { width: 100%; height: 100%; display: block; outline: none; }
   [hidden] { display: none !important; }
@@ -42,6 +48,17 @@
       <button id="play">Play</button>
       <button id="change" class="secondary">Use another ISO</button>
     </p>
+  </div>
+  <div class="card" id="saves" hidden>
+    <h2>Saved games</h2>
+    <ul id="saves-list"></ul>
+    <div id="saves-message"></div>
+    <p>
+      <label class="button" for="save-file">Import a saved game</label>
+      <input id="save-file" type="file" accept=".json,application/json">
+    </p>
+    <p>Export a saved game to keep it or send it to someone; an imported game goes into a free
+       slot of the eight. The game itself shows them under Load.</p>
   </div>
   <p>Esc opens the port's options (volumes, sharpness, full screen).
      <a href="https://github.com/Japabu/mickey-saves-the-day-3d-adventure">Source on GitHub</a>.</p>
