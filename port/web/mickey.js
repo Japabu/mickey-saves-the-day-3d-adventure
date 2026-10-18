@@ -254,14 +254,18 @@ async function showSaves() {
   try {
     const dir = await binariesDir(false);
     slots = dir ? sgdbSlots(await readText(dir, 'SGDB.ini')) : [];
+    // last used: when the game last wrote the slot's file (an imported one: when it came)
+    for (const s of slots) s.used = (await (await findFile(dir, `savedgame${s.slot}.ini`))?.getFile())?.lastModified || 0;
+    slots.sort((a, b) => b.used - a.used);
   } catch (err) {
     sayAboutSaves(`The saved games cannot be read: ${err.message}`);
   }
   const canShare = !!navigator.canShare?.({ files: [new File([''], 'x.json', { type: 'application/json' })] });
-  for (const { slot, scene } of slots) {
+  const when = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  for (const { slot, scene, used } of slots) {
     const li = document.createElement('li');
     const label = document.createElement('span');
-    label.textContent = `Slot ${slot}${scene ? ` (saved in ${scene})` : ''}`;
+    label.textContent = `Slot ${slot}${scene ? ` (saved in ${scene})` : ''}${used ? `, last played ${when.format(used)}` : ''}`;
     li.append(label);
     const add = (text, share) => {
       const b = document.createElement('button');
