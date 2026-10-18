@@ -99,12 +99,14 @@ async function chosen(file) {
   await showStart();
 }
 
-// ---- Saved games: the game's eight slots are savedgame<N>.ini in its data directory
-// (/opfs/data, host/web/host.cpp) with their index in SGDB.ini: a section [game N data]
-// (icon = N, the slot's picture, which is also the file's number; scene = where it was
-// saved) per slot, and [used games] games = the slot numbers. The game finds its files
-// whatever their case (win32/vfs.cpp), so these are looked up the same way. An exported
-// game is one JSON file: the slot's ini text and the scene.
+// ---- Saved games: the game's eight slots are savedgame<N>.ini in its ini directory
+// (binariesDir) with their index in SGDB.ini: a section [game N data] (icon = the slot's
+// picture; scene = where it was saved) per slot, and [used games] games = the slot
+// numbers. The game's Load shows a slot by its icon and loads savedgame<icon>.ini
+// (SBMainMenuNode.cpp, 453), so the page goes by the icon too; the game writes the same
+// number into both. The game finds its files whatever their case (win32/vfs.cpp), so
+// these are looked up the same way. An exported game is one JSON file: the slot's ini
+// text and the scene.
 
 const SAVE_FORMAT = 'mickey-saves-the-day/saved-game', SLOTS = 8, CRLF = '\r\n';
 // The slots' pictures in the game, as emoji: Mickey's shorts, his glove, his shoe,
@@ -114,17 +116,29 @@ const SLOT_ICONS = [
   ['🎩', "Goofy's hat"], ['🧢', "Donald's cap"], ['🦴', "Pluto's bone"], ['🌼', 'Daisy'],
 ];
 
-// The game's directory of ini files, created if asked (as the game would name it).
-async function binariesDir(create) {
-  let dir = await navigator.storage.getDirectory();
-  for (const name of ['data', 'setup', 'hd', 'binaries']) {
-    let found = null;
+// The game's directory of ini files: <data>/<the CD's language>/setup/hd/binaries
+// (win32/vfs.cpp, overlay_dir), or <data>/setup/hd/binaries from before the folder per
+// language. Null when the game has not run yet: the page does not know the language.
+async function binariesDir() {
+  const sub = async (dir, name) => {
     for await (const [n, h] of dir.entries())
-      if (h.kind === 'directory' && n.toLowerCase() === name) found = h;
-    if (!found && !create) return null;
-    dir = found || await dir.getDirectoryHandle(name, { create: true });
+      if (h.kind === 'directory' && n.toLowerCase() === name) return h;
+    return null;
+  };
+  const walk = async (dir) => {
+    for (const name of ['setup', 'hd', 'binaries'])
+      if (!dir || !(dir = await sub(dir, name))) return null;
+    return dir;
+  };
+  const data = await sub(await navigator.storage.getDirectory(), 'data');
+  if (!data) return null;
+  let found = null;
+  for await (const [n, h] of data.entries()) {
+    if (h.kind !== 'directory' || n === 'setup' || n.startsWith('.')) continue;
+    const dir = await walk(h);
+    if (dir && (!found || await findFile(dir, 'SGDB.ini'))) found = dir;
   }
-  return dir;
+  return found || walk(data);
 }
 
 async function findFile(dir, name) {
@@ -165,7 +179,7 @@ function iniValue(lines, key) {
   return null;
 }
 
-// The used slots of SGDB.ini: [{ slot, scene }] by slot.
+// The used slots of SGDB.ini: [{ slot, icon, scene }] by slot.
 function sgdbSlots(text) {
   const sections = iniSections(text);
   const used = sections.find((s) => s.name?.toLowerCase() === 'used games');
@@ -174,7 +188,8 @@ function sgdbSlots(text) {
     const slot = parseInt(token, 10);
     if (!(slot >= 1 && slot <= SLOTS) || slots.some((s) => s.slot === slot)) continue;
     const data = sections.find((s) => s.name?.toLowerCase() === `game ${slot} data`);
-    slots.push({ slot, scene: data && iniValue(data.lines, 'scene') || '' });
+    const icon = parseInt(data && iniValue(data.lines, 'icon'), 10);
+    slots.push({ slot, icon: icon >= 1 && icon <= SLOTS ? icon : slot, scene: data && iniValue(data.lines, 'scene') || '' });
   }
   return slots.sort((a, b) => a.slot - b.slot);
 }
@@ -184,7 +199,7 @@ function sgdbText(old, slots) {
   const keep = iniSections(old).filter((s) => s.name !== null && s.name.toLowerCase() !== 'used games' &&
                                               !/^game \d+ data$/i.test(s.name));
   let out = '';
-  for (const s of slots) out += `[game ${s.slot} data]${CRLF}icon = ${s.slot}${CRLF}scene = ${s.scene}${CRLF}${CRLF}`;
+  for (const s of slots) out += `[game ${s.slot} data]${CRLF}icon = ${s.icon}${CRLF}scene = ${s.scene}${CRLF}${CRLF}`;
   out += `[used games]${CRLF}games = ${slots.map((s) => s.slot).join(',')}${CRLF}`;
   for (const s of keep) {
     while (s.lines.length && s.lines[s.lines.length - 1].trim() === '') s.lines.pop();
@@ -195,22 +210,22 @@ function sgdbText(old, slots) {
 
 function sayAboutSaves(text) { $('saves-message').textContent = text; }
 
-async function savedGameFile(dir, slot) {
-  const h = await findFile(dir, `savedgame${slot}.ini`);
+async function savedGameFile(dir, icon) {
+  const h = await findFile(dir, `savedgame${icon}.ini`);
   if (!h) return null;
   const file = await h.getFile();
-  const scene = sgdbSlots(await readText(dir, 'SGDB.ini')).find((s) => s.slot === slot)?.scene || '';
+  const scene = sgdbSlots(await readText(dir, 'SGDB.ini')).find((s) => s.icon === icon)?.scene || '';
   const json = JSON.stringify({ format: SAVE_FORMAT, version: 1, scene, saved: file.lastModified,
                                 ini: await file.text() });
   const day = new Date(file.lastModified).toISOString().slice(0, 10);
-  return new File([json], `Mickey saved game ${slot}${scene ? ' ' + scene : ''} ${day}.json`,
+  return new File([json], `Mickey saved game ${SLOT_ICONS[icon - 1][1]}${scene ? ' ' + scene : ''} ${day}.json`,
                   { type: 'application/json' });
 }
 
-async function exportSave(slot, share) {
+async function exportSave(icon, share) {
   try {
-    const file = await savedGameFile(await binariesDir(false), slot);
-    if (!file) { sayAboutSaves(`${SLOT_ICONS[slot - 1][1]} has no saved game file.`); return; }
+    const file = await savedGameFile(await binariesDir(), icon);
+    if (!file) { sayAboutSaves(`${SLOT_ICONS[icon - 1][1]} has no saved game file.`); return; }
     if (share) {
       await navigator.share({ files: [file], title: 'Mickey Saves the Day: a saved game' });
       return;
@@ -236,14 +251,16 @@ async function importSave(file) {
     if (!names.includes('game') || !names.includes('inventory'))
       throw new Error(`${file.name} does not hold a saved game.`);
     const scene = /^[A-Za-z]{2}$/.test(save.scene) ? save.scene.toUpperCase() : 'MX';
-    const dir = await binariesDir(true);
+    const dir = await binariesDir();
+    if (!dir) throw new Error('Play the game once first (until the main menu): then it can take saved games.');
     const old = await readText(dir, 'SGDB.ini');
     const slots = sgdbSlots(old);
+    // a number free both as a slot and as a picture: the new slot gets the same for both
     let slot = 1;
-    while (slot <= SLOTS && slots.some((s) => s.slot === slot)) slot++;
+    while (slot <= SLOTS && slots.some((s) => s.slot === slot || s.icon === slot)) slot++;
     if (slot > SLOTS) throw new Error('All eight slots are used: erase one in the game first (Start, then a used picture).');
     await writeText(dir, `savedgame${slot}.ini`, save.ini);
-    slots.push({ slot, scene });
+    slots.push({ slot, icon: slot, scene });
     slots.sort((a, b) => a.slot - b.slot);
     await writeText(dir, 'SGDB.ini', sgdbText(old, slots));
     await showSaves();
@@ -258,19 +275,20 @@ async function showSaves() {
   list.replaceChildren();
   let slots = [];
   try {
-    const dir = await binariesDir(false);
+    const dir = await binariesDir();
     slots = dir ? sgdbSlots(await readText(dir, 'SGDB.ini')) : [];
     // last used: when the game last wrote the slot's file (an imported one: when it came)
-    for (const s of slots) s.used = (await (await findFile(dir, `savedgame${s.slot}.ini`))?.getFile())?.lastModified || 0;
+    for (const s of slots) s.used = (await (await findFile(dir, `savedgame${s.icon}.ini`))?.getFile())?.lastModified || 0;
     slots.sort((a, b) => b.used - a.used);
   } catch (err) {
     sayAboutSaves(`The saved games cannot be read: ${err.message}`);
   }
   const canShare = !!navigator.canShare?.({ files: [new File([''], 'x.json', { type: 'application/json' })] });
   const when = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
-  for (const { slot, scene, used } of slots) {
+  for (const { slot, icon: pictureNo, scene, used } of slots) {
+    if (pictureNo !== slot) console.warn(`saved game slot ${slot} has the picture ${pictureNo}`);
     const li = document.createElement('li');
-    const [emoji, picture] = SLOT_ICONS[slot - 1];
+    const [emoji, picture] = SLOT_ICONS[pictureNo - 1];
     const icon = document.createElement('b');
     icon.className = 'slot-icon';
     icon.textContent = emoji;
@@ -283,7 +301,7 @@ async function showSaves() {
       const b = document.createElement('button');
       b.className = 'secondary';
       b.textContent = text;
-      b.addEventListener('click', () => exportSave(slot, share));
+      b.addEventListener('click', () => exportSave(pictureNo, share));
       li.append(b);
     };
     add('Export', false);
