@@ -92,6 +92,7 @@ async function chosen(file) {
   try {
     if (navigator.storage.persist) await navigator.storage.persist();
     await copyCd(file);
+    cdLanguageCache = undefined;
   } catch (err) {
     say(`Copying failed: ${err.message}`);
     return;
@@ -100,7 +101,7 @@ async function chosen(file) {
 }
 
 // ---- Saved games: the game's eight slots are savedgame<N>.ini in its ini directory
-// (binariesDir) with their index in SGDB.ini: a section [game N data] (icon = the slot's
+// (gameDirs) with their index in SGDB.ini: a section [game N data] (icon = the slot's
 // picture; scene = where it was saved) per slot, and [used games] games = the slot
 // numbers. The game's Load shows a slot by its icon and loads savedgame<icon>.ini
 // (SBMainMenuNode.cpp, 453), so the page goes by the icon too; the game writes the same
@@ -116,30 +117,79 @@ const SLOT_ICONS = [
   ['🎩', "Goofy's hat"], ['🧢', "Donald's cap"], ['🦴', "Pluto's bone"], ['🌼', 'Daisy'],
 ];
 
-// The game's directory of ini files: <data>/<the CD's language>/setup/hd/binaries
-// (win32/vfs.cpp, overlay_dir), or <data>/setup/hd/binaries from before the folder per
-// language. Null when the game has not run yet: the page does not know the language.
-async function binariesDir() {
-  const sub = async (dir, name) => {
-    for await (const [n, h] of dir.entries())
-      if (h.kind === 'directory' && n.toLowerCase() === name) return h;
-    return null;
-  };
-  const walk = async (dir) => {
-    for (const name of ['setup', 'hd', 'binaries'])
-      if (!dir || !(dir = await sub(dir, name))) return null;
-    return dir;
-  };
-  const data = await sub(await navigator.storage.getDirectory(), 'data');
-  if (!data) return null;
-  let found = null;
-  for await (const [n, h] of data.entries()) {
-    if (h.kind !== 'directory' || n === 'setup' || n.startsWith('.')) continue;
-    const dir = await walk(h);
-    if (dir && (!found || await findFile(dir, 'SGDB.ini'))) found = dir;
-  }
-  return found || walk(data);
+// The game's directories of ini files: <data>/<a CD's language>/setup/hd/binaries
+// (win32/vfs.cpp, overlay_dir), one per language played, and <data>/setup/hd/binaries
+// from before the folder per language (language null): [{ lang, dir }].
+async function subDir(dir, name) {
+  for await (const [n, h] of dir.entries())
+    if (h.kind === 'directory' && n.toLowerCase() === name.toLowerCase()) return h;
+  return null;
 }
+
+async function iniDir(dir) {
+  for (const name of ['setup', 'hd', 'binaries'])
+    if (!dir || !(dir = await subDir(dir, name))) return null;
+  return dir;
+}
+
+async function gameDirs() {
+  const data = await subDir(await navigator.storage.getDirectory(), 'data');
+  if (!data) return [];
+  const out = [];
+  for await (const [n, h] of data.entries()) {
+    if (h.kind !== 'directory' || n.startsWith('.')) continue;
+    const dir = await iniDir(n.toLowerCase() === 'setup' ? data : h);
+    if (dir) out.push({ lang: n.toLowerCase() === 'setup' ? null : n, dir });
+  }
+  return out;
+}
+
+// The CD's language as the port names its folder (vfs.cpp, cd_locale): the `locale` of
+// setup/hd/resources/universal/ini/steamboat.ini on the CD, read from the ISO 9660 image
+// (Joliet names when it has them). Null when it cannot be read.
+let cdLanguageCache;
+async function cdLanguage() {
+  if (cdLanguageCache !== undefined) return cdLanguageCache;
+  cdLanguageCache = null;
+  try {
+    const root = await navigator.storage.getDirectory();
+    const iso = await (await root.getFileHandle('cd.iso')).getFile();
+    const read = async (at, n) => new Uint8Array(await iso.slice(at, at + n).arrayBuffer());
+    let pvd = null, joliet = null;
+    for (let sector = 16; sector < 32; sector++) {
+      const d = await read(sector * 2048, 2048);
+      if (d[0] === 255) break;
+      if (d[0] === 1 && !pvd) pvd = d;
+      if (d[0] === 2 && d[88] === 0x25 && d[89] === 0x2f && [0x40, 0x43, 0x45].includes(d[90])) joliet = d;
+    }
+    const vd = joliet || pvd;
+    const u32 = (b, at) => b[at] | b[at + 1] << 8 | b[at + 2] << 16 | (b[at + 3] << 24 >>> 0);
+    const name = (b, at, n) => joliet
+      ? String.fromCharCode(...Array.from({ length: n / 2 }, (_, i) => b[at + 2 * i] << 8 | b[at + 2 * i + 1]))
+      : String.fromCharCode(...b.slice(at, at + n));
+    let extent = u32(vd, 156 + 2), size = u32(vd, 156 + 10);
+    for (const part of ['setup', 'hd', 'resources', 'universal', 'ini', 'steamboat.ini']) {
+      const dir = await read(extent * 2048, size);
+      let found = false;
+      for (let at = 0; at < dir.length;) {
+        const len = dir[at];
+        if (!len) { at = (Math.floor(at / 2048) + 1) * 2048; continue; }
+        const n = name(dir, at + 33, dir[at + 32]).replace(/;\d+$/, '').replace(/\.$/, '');
+        if (n.toLowerCase() === part) { extent = u32(dir, at + 2); size = u32(dir, at + 10); found = true; break; }
+        at += len;
+      }
+      if (!found) return null;
+    }
+    const text = new TextDecoder('latin1').decode(await read(extent * 2048, size));
+    const locale = (iniValue(text.split(/\r?\n/), 'locale') || '').replace(/[^A-Za-z0-9_]/g, '_');
+    cdLanguageCache = locale || 'cd';
+  } catch (_) {}
+  return cdLanguageCache;
+}
+
+const LANGUAGES = { ger: 'Deutsch', eng: 'English', eng_gbr: 'English (UK)', eng_usa: 'English (US)', fre: 'Français',
+                    spa: 'Español', ita: 'Italiano', dut: 'Nederlands' };
+const languageName = (lang) => lang === null ? 'from an older version' : LANGUAGES[lang.toLowerCase()] || lang;
 
 async function findFile(dir, name) {
   for await (const [n, h] of dir.entries())
@@ -222,9 +272,9 @@ async function savedGameFile(dir, icon) {
                   { type: 'application/json' });
 }
 
-async function exportSave(icon, share) {
+async function exportSave(dir, icon, share) {
   try {
-    const file = await savedGameFile(await binariesDir(), icon);
+    const file = await savedGameFile(dir, icon);
     if (!file) { sayAboutSaves(`${SLOT_ICONS[icon - 1][1]} has no saved game file.`); return; }
     if (share) {
       await navigator.share({ files: [file], title: 'Mickey Saves the Day: a saved game' });
@@ -251,7 +301,10 @@ async function importSave(file) {
     if (!names.includes('game') || !names.includes('inventory'))
       throw new Error(`${file.name} does not hold a saved game.`);
     const scene = /^[A-Za-z]{2}$/.test(save.scene) ? save.scene.toUpperCase() : 'MX';
-    const dir = await binariesDir();
+    // into the folder of the CD's language, which the game makes when it first runs
+    const lang = await cdLanguage();
+    if (!lang) throw new Error("The game's CD image cannot be read: choose it again (Use another ISO).");
+    const dir = (await gameDirs()).find((g) => g.lang !== null && g.lang.toLowerCase() === lang?.toLowerCase())?.dir;
     if (!dir) throw new Error('Play the game once first (until the main menu): then it can take saved games.');
     const old = await readText(dir, 'SGDB.ini');
     const slots = sgdbSlots(old);
@@ -275,17 +328,22 @@ async function showSaves() {
   list.replaceChildren();
   let slots = [];
   try {
-    const dir = await binariesDir();
-    slots = dir ? sgdbSlots(await readText(dir, 'SGDB.ini')) : [];
-    // last used: when the game last wrote the slot's file (an imported one: when it came)
-    for (const s of slots) s.used = (await (await findFile(dir, `savedgame${s.icon}.ini`))?.getFile())?.lastModified || 0;
+    for (const { lang, dir } of await gameDirs()) {
+      for (const s of sgdbSlots(await readText(dir, 'SGDB.ini'))) {
+        // last used: when the game last wrote the slot's file (an imported one: when it came)
+        s.used = (await (await findFile(dir, `savedgame${s.icon}.ini`))?.getFile())?.lastModified || 0;
+        slots.push({ ...s, lang, dir });
+      }
+    }
     slots.sort((a, b) => b.used - a.used);
   } catch (err) {
     sayAboutSaves(`The saved games cannot be read: ${err.message}`);
   }
+  // the language of each game only when they are of more than one
+  const languages = new Set(slots.map((s) => s.lang));
   const canShare = !!navigator.canShare?.({ files: [new File([''], 'x.json', { type: 'application/json' })] });
   const when = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
-  for (const { slot, icon: pictureNo, scene, used } of slots) {
+  for (const { slot, icon: pictureNo, scene, used, lang, dir } of slots) {
     if (pictureNo !== slot) console.warn(`saved game slot ${slot} has the picture ${pictureNo}`);
     const li = document.createElement('li');
     const [emoji, picture] = SLOT_ICONS[pictureNo - 1];
@@ -295,13 +353,14 @@ async function showSaves() {
     icon.title = picture;
     li.append(icon);
     const label = document.createElement('span');
-    label.textContent = `${picture}${scene ? ` (saved in ${scene})` : ''}${used ? `, last played ${when.format(used)}` : ''}`;
+    label.textContent = `${picture}${languages.size > 1 ? `, ${languageName(lang)}` : ''}` +
+                        `${scene ? ` (saved in ${scene})` : ''}${used ? `, last played ${when.format(used)}` : ''}`;
     li.append(label);
     const add = (text, share) => {
       const b = document.createElement('button');
       b.className = 'secondary';
       b.textContent = text;
-      b.addEventListener('click', () => exportSave(pictureNo, share));
+      b.addEventListener('click', () => exportSave(dir, pictureNo, share));
       li.append(b);
     };
     add('Export', false);
