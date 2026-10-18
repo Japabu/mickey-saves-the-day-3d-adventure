@@ -1,7 +1,8 @@
 // options.cpp - the port's options panel (an improvement over the original, which has
-// none): Escape (or Cmd+,) opens it over the game, which pauses meanwhile. Music, voices
-// and sound effects have a volume each, the window can be full screen, and the 3D can
-// be drawn sharper. The choices are kept in port.ini in the data
+// none): Escape (or Cmd+,) opens it over the game, which pauses meanwhile (its music
+// plays on). There is an overall volume and one each for music, voices and sound effects
+// (a voice or sound effect of the game plays while its slider moves), the window can be
+// full screen, and the 3D can be drawn sharper. The choices are kept in port.ini in the data
 // directory, next to `cd = <path>`.
 
 #include "internal.h"
@@ -97,11 +98,11 @@ static int ini_int(const char *key, int fallback)
 
 // ---- the settings
 
-enum Row { MUSIC, VOICES, EFFECTS, FULLSCREEN, SHARPNESS, DONE, ROWS };
+enum Row { OVERALL, MUSIC, VOICES, EFFECTS, FULLSCREEN, SHARPNESS, DONE, ROWS };
 
-static std::atomic<int> s_volume[3] = {{-1}, {-1}, {-1}}; // percent; -1 until read
+static std::atomic<int> s_volume[4] = {{-1}, {-1}, {-1}, {-1}}; // percent, by row; -1 until read
 static std::atomic<unsigned> s_volume_version{1};
-static const char *const kVolumeKeys[3] = {"music volume", "voice volume", "effects volume"};
+static const char *const kVolumeKeys[4] = {"overall volume", "music volume", "voice volume", "effects volume"};
 
 // The sliders are logarithmic: a slider's percent is a level in decibels over a 60 dB
 // range (100 is full volume, 50 is -30 dB, 1 is -59 dB, 0 is silent), so equal steps
@@ -123,7 +124,7 @@ static int volume(int which)
         // ones become the slider positions of the same loudness, once.
         std::string scale;
         int was = ini_get("volume scale", scale) ? atoi(scale.c_str()) : 0;
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             int v = ini_int(kVolumeKeys[i], 100);
             v = v < 0 ? 0 : v > 100 ? 100 : v;
             if (was < 2 && v > 0 && v < 100) {
@@ -148,18 +149,22 @@ static void set_volume(int which, int v)
     s_volume[which] = v;
     s_volume_version++;
     ini_set(kVolumeKeys[which], v);
+    // what the slider changes, to hear: the music plays on, voices and sound effects get
+    // a sample
+    if (which == VOICES || which == EFFECTS)
+        port_preview_sound(which == VOICES ? 1 : 2);
 }
 
 // The panel's texts in the languages of the game's European versions, picked by
 // MICKEY_LANG as the CD's language is (German unless set). Code page 1252.
-enum Text { T_TITLE, T_MUSIC, T_VOICES, T_SOUNDS, T_FULLSCREEN, T_SHARPNESS, T_CONTINUE, TEXTS };
+enum Text { T_TITLE, T_OVERALL, T_MUSIC, T_VOICES, T_SOUNDS, T_FULLSCREEN, T_SHARPNESS, T_CONTINUE, TEXTS };
 static const char *const kTexts[][TEXTS] = {
-    {"Optionen", "Musik", "Stimmen", "Ger\xe4usche", "Vollbild", "3D-Sch\xe4rfe", "Weiter"},
-    {"Options", "Music", "Voices", "Sounds", "Full screen", "3D sharpness", "Continue"},
-    {"Options", "Musique", "Voix", "Bruitages", "Plein \xe9" "cran", "Nettet\xe9 3D", "Continuer"},
-    {"Opciones", "M\xfasica", "Voces", "Efectos", "Pantalla completa", "Nitidez 3D", "Continuar"},
-    {"Opzioni", "Musica", "Voci", "Effetti", "Schermo intero", "Nitidezza 3D", "Continua"},
-    {"Opties", "Muziek", "Stemmen", "Geluiden", "Volledig scherm", "3D-scherpte", "Verder"},
+    {"Optionen", "Lautst\xe4rke", "Musik", "Stimmen", "Ger\xe4usche", "Vollbild", "3D-Sch\xe4rfe", "Weiter"},
+    {"Options", "Volume", "Music", "Voices", "Sounds", "Full screen", "3D sharpness", "Continue"},
+    {"Options", "Volume", "Musique", "Voix", "Bruitages", "Plein \xe9" "cran", "Nettet\xe9 3D", "Continuer"},
+    {"Opciones", "Volumen", "M\xfasica", "Voces", "Efectos", "Pantalla completa", "Nitidez 3D", "Continuar"},
+    {"Opzioni", "Volume", "Musica", "Voci", "Effetti", "Schermo intero", "Nitidezza 3D", "Continua"},
+    {"Opties", "Volume", "Muziek", "Stemmen", "Geluiden", "Volledig scherm", "3D-scherpte", "Verder"},
 };
 
 static const char *tr(Text t)
@@ -187,8 +192,8 @@ static int s_dragging = -1;     // the slider the mouse holds
 static Window *s_window;
 
 // Layout in the game's 640x480 coordinates.
-static const int PX = 130, PY = 96, PW = 380, PH = 288;
-static const int ROW_Y[ROWS] = {164, 200, 236, 274, 310, 352};
+static const int PX = 130, PY = 78, PW = 380, PH = 324;
+static const int ROW_Y[ROWS] = {146, 182, 218, 254, 292, 328, 370};
 static const int LABEL_X = 150, BAR_X = 314, BAR_W = 116, VALUE_X = 488;
 
 static void set_paused(bool paused)
@@ -217,6 +222,8 @@ static void open_panel(Window *w, bool open)
     s_window = w;
     s_row = 0;
     s_dragging = -1;
+    if (!open)
+        port_preview_stop();
     set_paused(open);
     redraw();
 }
@@ -409,8 +416,8 @@ void options_draw(uint32_t *px, int w, int h, int k)
     c.rect(PX - 2, PY - 2, PW + 4, PH + 4, white, 230, 16);    // border
     c.rect(PX, PY, PW, PH, panel, 245, 14);
     c.text(tr(T_TITLE), PX + PW / 2.0, PY + 28, 22, yellow, true, 1);
-    const char *labels[ROWS] = {tr(T_MUSIC), tr(T_VOICES), tr(T_SOUNDS), tr(T_FULLSCREEN), tr(T_SHARPNESS),
-                                tr(T_CONTINUE)};
+    const char *labels[ROWS] = {tr(T_OVERALL), tr(T_MUSIC), tr(T_VOICES), tr(T_SOUNDS), tr(T_FULLSCREEN),
+                                tr(T_SHARPNESS), tr(T_CONTINUE)};
     for (int r = 0; r < ROWS; r++) {
         int y = ROW_Y[r];
         if (r == s_row && r != DONE)
@@ -461,6 +468,17 @@ float port_sound_gain(int channel)
 }
 
 float port_music_gain(void) { return win32::gain(win32::volume(win32::MUSIC)); }
+
+int port_sound_slider(int channel) { return channel == 20 ? 1 : channel == 10 ? 0 : 2; }
+
+// The overall slider spans 30 dB (50 is -15 dB): it scales what the other sliders left.
+float port_overall_gain(void)
+{
+    int v = win32::volume(win32::OVERALL);
+    return v <= 0 ? 0.0f : (float)pow(10.0, (v - 100) * 30.0 / 100 / 20);
+}
+
+int port_options_open(void) { return win32::options_open() ? 1 : 0; }
 
 // Changes whenever a volume changes: the channels apply their new volume then.
 unsigned port_sound_gain_version(void) { return win32::s_volume_version; }

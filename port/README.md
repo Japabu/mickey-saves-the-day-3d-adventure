@@ -18,6 +18,12 @@ decompiled code in `src/` stays as the original was; each improvement is new cod
   painted spot, talks to a character). The original never looked at the 3D scene
   before a click and gave several explain spots the plain glove; on the inventory bar
   the pointing hand now shows only over the buttons and the items usable in the scene.
+  A held item sparkles over what a click with it is used on (an object, a character),
+  not over the floor, where a click only makes Mickey walk.
+- **Options panel** (Escape; `platform/win32/options.cpp`, `platform/media`): an overall
+  volume and one each for music, voices and sound effects, logarithmic and fine at the
+  quiet end; moving the voices or effects slider plays a sample, and the music plays on
+  under the panel. Full screen and the 3D sharpness are set there too.
 - **Smooth movement** (`port/edits/improvements.py`, `port/improve/RuntimeLib/walk.cpp`):
   animations are sampled between their keyframes (the original stepped at 30 Hz, which
   showed as jerks at today's frame rates); a walking character's height follows the

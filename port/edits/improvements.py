@@ -58,7 +58,7 @@ EDITS = {
     ],
     # The options panel's volumes (platform/win32/options.cpp; Escape opens it): every
     # channel's sound gets its slider's gain (20 voices, 10 music, the rest sound effects)
-    # as a float factor with its volume (platform/media/miles.cpp, port_sound_next_gain),
+    # as a float factor with its volume (platform/media/miles.cpp, port_sound_next_channel),
     # again when a slider moves; the background music stream follows
     # the music slider (port/improve/MBEngine/sound.cpp, SteamboatApp/sound.cpp).
     'MBEngine/MBSoundChannel.h': [
@@ -70,7 +70,7 @@ EDITS = {
          'void MBSoundChannel::Idle(void)\n{ { unsigned PortSoundGainVersion(); unsigned v = PortSoundGainVersion(); '
          'if (v != mPortGainVersion) { mPortGainVersion = v; VolumeChanged(); } }\n', 1),
         ('    return (short)(mVolume * masterVolume / 127);\n',
-         '    float PortSoundGain(int); void PortNextSoundGain(float); PortNextSoundGain(PortSoundGain(mChannelID)); '
+         '    void PortNextSoundChannel(int); PortNextSoundChannel(mChannelID); '
          'return (short)(mVolume * masterVolume / 127);\n', 1),
     ],
     'MfActorLib/MfProtoSkill.cpp': [
@@ -103,6 +103,15 @@ EDITS = {
         # once a frame (mouse moves never reach OnMouseMove: the node does not listen on
         # the channel they come on)
         ('void SteamboatNode::Idle()\n{\n', 'void SteamboatNode::Idle()\n{ PortHover3D();\n', 1),
+        # A held item sparkles over an item hotspot or a 3D actor a click with it is used on
+        # (port/improve/SteamboatApp/cursor.cpp): the item cursor gets a sparkle sequence, the
+        # item hotspots' enter and leave events are noted while an item is held too.
+        ('        case 203:\n            if (!sCursorItem)\n                SetCursorSequence(0);\n            break;\n'
+         '        case 202:\n            if (!sCursorItem)\n                SetCursorSequence(((SBItem *)data)->GetRolloverCursor());\n',
+         '        case 203: { void PortOverItemHotspot(bool); PortOverItemHotspot(false); }\n            if (!sCursorItem)\n                SetCursorSequence(0);\n            break;\n'
+         '        case 202: { void PortOverItemHotspot(bool); PortOverItemHotspot(true); }\n            if (!sCursorItem)\n                SetCursorSequence(((SBItem *)data)->GetRolloverCursor());\n', 1),
+        ('        surface->Release();\n    }\n\n    int cursorInt = 0;\n    MBString cursorString = item->GetClassNameA();\n',
+         '        surface->Release();\n    } { void PortAddSparkles(IMBAnim *); PortAddSparkles(cursor); }\n\n    int cursorInt = 0;\n    MBString cursorString = item->GetClassNameA();\n', 1),
     ],
     'SteamboatApp/CSBInventory.h': [
         ('    virtual void WithinRollover(const MBPoint &worldMousePosition);',

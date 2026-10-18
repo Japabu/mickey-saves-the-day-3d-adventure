@@ -28,9 +28,22 @@ unsigned port_sound_gain_version(void);
 int port_setting(const char *key, int fallback);
 int port_scale(void);
 void port_set_scale(int scale);  // takes effect at once (the sharp copies are made again)
-// The slider gain (0..1) of the sound whose volume the game sets next (AIL_quick_set_volume,
-// AIL_set_stream_volume on this thread), applied as a float on top of its 0..127 volume.
-void port_sound_next_gain(float gain);
+// The channel of the game's sound manager whose sound gets its volume next
+// (AIL_quick_set_volume, AIL_set_stream_volume on this thread): its slider's gain applies
+// as a float on top of the 0..127 volume, and the panel knows which slider it plays for.
+void port_sound_next_channel(int channel);
+// Which slider a channel follows: 0 music, 1 voices, 2 sound effects.
+int port_sound_slider(int channel);
+// The options panel: whether it is open, its overall volume (amplitude 0..1, applied to
+// the whole output), and a sample voice line or sound effect at a slider's volume while
+// that slider moves (media/miles.cpp); stopped with the panel.
+int port_options_open(void);
+float port_overall_gain(void);
+void port_preview_sound(int slider);
+void port_preview_stop(void);
+// A sound of the game's loaded databases by name, malloc'd bytes (the game's side,
+// improve/MBEngine/sound.cpp); 0 when there is none.
+int port_read_sound(const char *name, unsigned char **data, unsigned long *size);
 // Marks a Miles stream as the background music (its volume follows the music slider).
 void port_music_stream(void *stream);
 // Blocks until the next display refresh (IDirectDraw::WaitForVerticalBlank).

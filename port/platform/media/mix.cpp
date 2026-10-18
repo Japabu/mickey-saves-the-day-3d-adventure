@@ -7,6 +7,7 @@
 // copies from memory); the game's calls hold those locks for a few instructions.
 #include "media.h"
 #include "../host/host.h"
+#include "../port.h"
 
 #include <algorithm>
 #include <atomic>
@@ -24,15 +25,23 @@ struct Mixer {
 
     static void fill(float *out, int frames, void *user) { ((Mixer *)user)->mix(out, frames); }
 
+    std::vector<float> heard;      // the streams the game's master volume does not scale
+
+    // The game's streams scaled by its master volume (0 while the options panel is open,
+    // which takes the focus from the game), plus those heard in the panel, all scaled by
+    // the panel's overall volume.
     void mix(float *out, int frames)
     {
-        memset(out, 0, (size_t)frames * CHANNELS * sizeof(float));
+        size_t n = (size_t)frames * CHANNELS;
+        memset(out, 0, n * sizeof(float));
+        heard.assign(n, 0.0f);
+        bool options = port_options_open() != 0;
         std::lock_guard<std::mutex> l(mu);
         for (Stream *s : streams)
-            add(s, out, frames);
-        float m = master / 127.0f;
-        for (int i = 0; i < frames * CHANNELS; i++) {
-            float v = out[i] * m;
+            add(s, (s->always || (options && s->in_options)) ? heard.data() : out, frames);
+        float m = master / 127.0f, overall = port_overall_gain();
+        for (size_t i = 0; i < n; i++) {
+            float v = (out[i] * m + heard[i]) * overall;
             out[i] = v > 1 ? 1 : v < -1 ? -1 : v;
         }
     }
@@ -143,6 +152,13 @@ void Stream::bind(bool on)
 {
     std::lock_guard<std::recursive_mutex> l(mu);
     bound = on;
+}
+
+void Stream::set_heard_in_options(bool on, bool a)
+{
+    std::lock_guard<std::recursive_mutex> l(mu);
+    in_options = on;
+    always = a;
 }
 
 void Stream::lock() { mu.lock(); }

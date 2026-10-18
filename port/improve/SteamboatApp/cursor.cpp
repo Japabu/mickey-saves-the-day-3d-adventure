@@ -1,5 +1,6 @@
 // cursor.cpp - improvement over the original (port/edits/improvements.py hooks it in):
-// the cursor shows the highlight only where a click does something.
+// the cursor shows the highlight only where a click does something, and a held item
+// sparkles over what a click with it would be used on.
 #include "SteamboatNode.h"
 #include "CSBInventory.h"
 #include "ViewEventHandler.h"
@@ -9,6 +10,7 @@
 #include "MfAiActorNode.h"
 #include "MfHookData.h"
 #include "MfProperty.h"
+#include <ctype.h>
 
 enum { kPlainCursor = 0, kHighlightCursor = 10, kTalkCursor = 11 };
 
@@ -104,12 +106,105 @@ static long cursor_for(MfAiActor *actor, MfAiActor *player)
     return actor->GetProperty(MfString("HCTalking"), prop) ? kTalkCursor : kPlainCursor;
 }
 
+// ---- A held item sparkles over what a click with it is used on: an item hotspot (the
+// fishing pole) or a 3D actor (a character), not the floor or the scenery, where a click
+// only makes the player walk and puts the item back.
+
+static bool sOverItemHotspot;   // the mouse is over an item hotspot (its enter/leave events)
+static IMBAnim *sSparkleCursor; // the item cursor with a sparkle sequence, and that sequence
+static long sSparkleSeq = -1;
+
+void PortOverItemHotspot(bool over) { sOverItemHotspot = over; }
+
+// A sequence of the item cursor (SteamboatNode::SetCursorItem, sequence 1) with yellow
+// sparkles around the item, centred on the hot spot like the item.
+void PortAddSparkles(IMBAnim *cursor)
+{
+    sSparkleCursor = 0;
+    sSparkleSeq = -1;
+    if (!cursor || cursor->GetNumSequences() < 2)
+        return;
+    long item = cursor->GetCastID(1, 0);
+    IMBSurface *src = 0;
+    cursor->GetCastMemberSurface(item, &src);
+    if (!src)
+        return;
+    IMBScreenManager *screens = 0;
+    IMBScreen *screen = 0;
+    MBGetScreenManager(&screens);
+    if (screens) {
+        screens->GetScreenByIndex(0, &screen);
+        screens->Release();
+    }
+    static const char *const kSparkle[] = {
+        "....Y....",
+        "....Y....",
+        "...YWY...",
+        "YYYWWWYYY",
+        "...YWY...",
+        "....Y....",
+        "....Y....",
+    };
+    const int sw = 9, sh = 7, m = 8; // a sparkle, the margin around the item
+    long iw = (long)src->GetWidth(), ih = (long)src->GetHeight();
+    long w = iw + 2 * m, h = ih + 2 * m;
+    IMBSurface *dst = 0;
+    if (screen) {
+        screen->CreateSurface((unsigned short)w, (unsigned short)h, 0x10, &dst);
+        screen->Release();
+    }
+    if (!dst) {
+        src->Release();
+        return;
+    }
+    MBColor key = src->GetTransparentColor();
+    dst->SetTransparentColor(key);
+    dst->ColorFill(key, 0);
+    MBRect from(0, 0, iw, ih), to(m, m, m + iw, m + ih);
+    src->Blit(dst, &from, &to, 1);
+    MBColor yellow(255, 214, 64, 255), white(255, 255, 255, 255);
+    // three sparkles: top left, top right, bottom right
+    const long at[3][2] = {{0, 2}, {w - sw, 0}, {w - sw - 2, h - sh}};
+    for (int k = 0; k < 3; k++)
+        for (int y = 0; y < sh; y++)
+            for (int x = 0; x < sw; x++) {
+                char c = kSparkle[y][x];
+                if (c == '.')
+                    continue;
+                MBRect px(at[k][0] + x, at[k][1] + y, at[k][0] + x + 1, at[k][1] + y + 1);
+                dst->ColorFill(c == 'W' ? white : yellow, &px);
+            }
+    MBPoint reg = cursor->GetCastMemberRegistrationPoint(item);
+    reg.x -= m;
+    reg.y -= m;
+    long cast = cursor->AddCastMember(dst, reg);
+    long seq = cursor->AddSequence();
+    long frame = cursor->AddFrame(seq);
+    cursor->SetCastID(seq, frame, cast);
+    dst->Release();
+    src->Release();
+    sSparkleCursor = cursor;
+    sSparkleSeq = seq;
+}
+
+// A 3D actor a click with an item is used on: not the player, not a floor.
+static bool takes_item(MfAiActor *actor, MfAiActor *player)
+{
+    if (!actor || actor == player)
+        return false;
+    MBString name = (char *)actor->GetClassNameA();
+    for (size_t i = 0; i < name.size(); i++)
+        name[i] = (char)tolower((unsigned char)name[i]);
+    return name.find("floor") == MBString::npos;
+}
+
 void SteamboatNode::PortHover3D()
 {
     static long sShown = kPlainCursor; // the cursor this function set (not a hotspot)
     long want = kPlainCursor;
+    bool sparkle = false;
     MBMouseEvent evt;
-    if (!sCursorItem && sMfPrimaryActor && sMotivateEventHandler && mMotivateHotspot && mMotivateHotspot->IsActive() &&
+    if (sMfPrimaryActor && sMotivateEventHandler && mMotivateHotspot && mMotivateHotspot->IsActive() &&
         sInputEventChannelActive && MBGetScreenMouseLocation(evt.mMousePos, &evt.mScreen)) {
         MBComPtr<ISBInventory> gui(MBIID_ISBInventory);
         bool onMenu = gui->IsPointOnMenu(evt.mMousePos);
@@ -117,17 +212,29 @@ void SteamboatNode::PortHover3D()
             MfPickData pick;
             MfMouseHookData data;
             CopyMBMouseEventToMfMouseHookData(evt, data);
-            want = cursor_for(sMotivateEventHandler->HandleLButtonUp(&data, pick), sMfPrimaryActor);
+            MfAiActor *actor = sMotivateEventHandler->HandleLButtonUp(&data, pick);
+            if (sCursorItem)
+                sparkle = sOverItemHotspot || takes_item(actor, sMfPrimaryActor);
+            else
+                want = cursor_for(actor, sMfPrimaryActor);
         }
         if (evt.mScreen)
             evt.mScreen->Release();
-        if (onMenu) {
+        if (onMenu && !sCursorItem) {
             sShown = kPlainCursor; // the inventory sets the cursor there (CSBInventory::PortCursor)
             return;
         }
     }
-    if (!mCursor || sCursorItem)
+    if (!mCursor)
         return;
+    if (sCursorItem) {
+        if (mCursor == sSparkleCursor && sSparkleSeq >= 0) {
+            long seq = sparkle ? sSparkleSeq : 1;
+            if (mCursor->GetCurrentSequenceIndex() != seq)
+                mCursor->SetCurrentSequence(seq);
+        }
+        return;
+    }
     long now = mCursor->GetCurrentSequenceIndex();
     if (want == sShown)
         return;

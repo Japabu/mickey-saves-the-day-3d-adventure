@@ -44,6 +44,9 @@ public:
     void set_ratio(float ratio);        // plays at rate * ratio (pitch)
     void set_pull(Pull pull, void *user);  // asked for frames when the queue runs short
     void bind(bool on);                 // mixed into the output or not
+    // heard while the options panel is open, which mutes the game (the background music,
+    // the panel's samples); `always`: also when the game's master volume is 0 otherwise
+    void set_heard_in_options(bool on, bool always = false);
     void lock();
     void unlock();
 
@@ -57,6 +60,7 @@ private:
     Pull pull = 0;
     void *pull_user = 0;
     bool bound = false;
+    bool in_options = false, always = false;
     std::recursive_mutex mu;
 };
 

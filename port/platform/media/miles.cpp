@@ -25,8 +25,9 @@
 //   volume is the mixer's, so it applies to the movies' sound too, as in the original
 //   where Bink and Smacker played through Miles.
 // - the options panel's slider of a sound's channel is a float factor on top of the
-//   volume (port_sound_next_gain): in the 0..127 steps the quiet end of a slider would
-//   be a handful of loud steps and then silence.
+//   volume (port_sound_next_channel): in the 0..127 steps the quiet end of a slider would
+//   be a handful of loud steps and then silence. The panel's samples (port_preview_sound)
+//   play here too.
 #include "media.h"
 #include "../port.h"
 
@@ -34,8 +35,18 @@
 #include <condition_variable>
 #include <atomic>
 #include <mutex>
+#include <stdlib.h>
 #include <string.h>
 #include <thread>
+
+// The game's sounds by name (improve/MBEngine/sound.cpp); none in the tests, which have no
+// game.
+extern "C" __attribute__((weak)) int port_read_sound(const char *, unsigned char **data, unsigned long *size)
+{
+    *data = 0;
+    *size = 0;
+    return 0;
+}
 
 namespace {
 
@@ -50,13 +61,15 @@ void set_error(const std::string &e)
     MEDIA_LOG("miles: %s\n", e.c_str());
 }
 
-// The slider gain the next volume call takes (port_sound_next_gain), -1 when none: the
+// The channel the next volume call is for (port_sound_next_channel), if t_has_next: the
 // game computes a channel's volume and hands it to its sound in one go, on one thread.
-thread_local float t_next_gain = -1;
+// (-1 is a channel too: MBPlaySound's, e.g. the menu buttons' rollover sound.)
+thread_local bool t_has_next = false;
+thread_local int t_next_channel;
 
 struct Voice {
     enum State { Idle, Playing, Paused, Done };
-    float slider = 1;                // its channel's slider gain (port_sound_next_gain)
+    float slider = 1;                // its channel's slider gain (port_sound_next_channel)
     std::atomic<bool> music{false};  // the background music (port_music_stream): the music slider applies
     float stream_volume = 1;         // a file stream's own volume (AIL_set_stream_volume), 0..1
     float stream_gain = -1;          // what the stream has: stream_volume times the music slider
@@ -178,9 +191,9 @@ struct Voice {
 
     void set_volume(int volume, int pan)
     {
-        if (t_next_gain >= 0) {
-            slider = t_next_gain;
-            t_next_gain = -1;
+        if (t_has_next) {
+            slider = port_sound_gain(t_next_channel);
+            t_has_next = false;
         }
         float v = (volume < 0 ? 0 : volume > 127 ? 127 : volume) / 127.0f * slider;
         if (media) {
@@ -347,6 +360,56 @@ struct Lock {
     Voice *v;
 };
 
+// The options panel's samples: short voice lines and sound effects of the game's database
+// that is always loaded (GD), read and decoded on first use, and the one playing. The
+// voice lines are ones the game itself plays (gd15: Mickey and Minnie name the places of
+// the map, SBMapNode; gd13: the dialogue files), so they are in the CD's language: GD
+// also holds lines no scene uses, which the German CD left in English.
+const char *const kVoiceSamples[] = {
+    "gd15xmc0060", "gd15xmc0070", "gd15xmc0100", "gd15xmc0120", "gd15xmc0150", "gd15xmc0180",
+    "gd15xmi0060", "gd15xmi0070", "gd15xmi0100", "gd15xmi0120", "gd15xmi0150", "gd15xmi0180",
+    "gd13xmc0010", "gd13xmc0020", "gd13xmi0010", "gd13xmi0020",
+};
+const char *const kEffectSamples[] = {
+    "GDSEbuttonclick", "GDSEinvenSelect", "GDSEinvenPutaway", "GDSEinventoryUp", "GDSEplutoSneeze",
+    "DASEwhistleblow", "GDSErollover",
+};
+
+struct Sound {
+    std::vector<float> pcm;
+    int rate;
+};
+struct Pool {
+    std::vector<Sound> sounds;
+    bool loaded = false;
+    int last = -1;
+};
+Pool s_pools[3];  // by slider: 1 voices, 2 sound effects
+media::Stream *s_preview = 0;
+int s_preview_slider = 0;
+
+void load_pool(int slider)
+{
+    Pool &p = s_pools[slider];
+    if (p.loaded)
+        return;
+    p.loaded = true;
+    const char *const *names = slider == 1 ? kVoiceSamples : kEffectSamples;
+    size_t count = slider == 1 ? sizeof(kVoiceSamples) / sizeof(*kVoiceSamples)
+                               : sizeof(kEffectSamples) / sizeof(*kEffectSamples);
+    for (size_t i = 0; i < count; i++) {
+        unsigned char *data = 0;
+        unsigned long size = 0;
+        if (!port_read_sound(names[i], &data, &size))
+            continue;
+        Sound snd;
+        if (media::decode_all(media::memory_bytes(data, size), names[i], snd.pcm, snd.rate) && !snd.pcm.empty())
+            p.sounds.push_back(std::move(snd));
+        free(data);
+    }
+    MEDIA_LOG("panel samples %d: %d of %d\n", slider, (int)p.sounds.size(), (int)count);
+}
+
 }  // namespace
 
 extern "C" {
@@ -488,7 +551,7 @@ void __stdcall AIL_quick_unload(HAUDIO audio) { delete quick(audio); }
 void __stdcall AIL_quick_set_volume(HAUDIO audio, int volume, int extravol)
 {
     if (!audio) {
-        t_next_gain = -1;
+        t_has_next = false;
         return;
     }
     Voice &v = quick(audio)->voice;
@@ -560,12 +623,55 @@ HSTREAM __stdcall AIL_open_stream(_DIG_DRIVER *dig, const char *filename, int st
 
 void __stdcall AIL_close_stream(HSTREAM stream) { delete stream_voice(stream); }
 
-void port_sound_next_gain(float gain) { t_next_gain = gain < 0 ? 0 : gain; }
+void port_sound_next_channel(int channel)
+{
+    t_next_channel = channel;
+    t_has_next = true;
+}
+
+// The panel's sample of a slider (1 voices, 2 sound effects): a random one of its pool at
+// that slider's volume; while it plays it follows the slider, then the next one starts.
+void port_preview_sound(int slider)
+{
+    if (slider < 1 || slider > 2 || !media::audio_open())
+        return;
+    load_pool(slider);
+    Pool &p = s_pools[slider];
+    float g = slider == 1 ? port_sound_gain(20) : port_sound_gain(0);
+    if (s_preview && s_preview_slider == slider && s_preview->queued() > 0) {
+        s_preview->set_gain(g);
+        return;
+    }
+    if (p.sounds.empty())
+        return;
+    int n = (int)p.sounds.size();
+    int pick = rand() % n;
+    if (n > 1 && pick == p.last)
+        pick = (pick + 1) % n;
+    p.last = pick;
+    delete s_preview;
+    const Sound &snd = p.sounds[(size_t)pick];
+    s_preview = new media::Stream(snd.rate);
+    s_preview_slider = slider;
+    s_preview->set_heard_in_options(true, true);
+    s_preview->set_gain(g);
+    s_preview->put(snd.pcm.data(), (int)(snd.pcm.size() / media::CHANNELS));
+    s_preview->bind(true);
+}
+
+void port_preview_stop(void)
+{
+    delete s_preview;
+    s_preview = 0;
+}
 
 void port_music_stream(void *stream)
 {
-    if (stream)
-        stream_voice((HSTREAM)stream)->music = true;
+    if (stream) {
+        Voice *v = stream_voice((HSTREAM)stream);
+        v->music = true;
+        v->stream->set_heard_in_options(true);  // it plays on under the options panel
+    }
 }
 
 void __stdcall AIL_start_stream(HSTREAM stream)
@@ -614,7 +720,7 @@ int __stdcall AIL_stream_status(HSTREAM stream)
 void __stdcall AIL_set_stream_volume(HSTREAM stream, int volume)
 {
     if (!stream) {
-        t_next_gain = -1;
+        t_has_next = false;
         return;
     }
     Voice *v = stream_voice(stream);
