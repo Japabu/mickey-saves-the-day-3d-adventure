@@ -356,6 +356,21 @@ async function writeSlot(dir, n, ini, scene) {
   await writeText(dir, 'SGDB.ini', sgdbText(old, slots));
 }
 
+// Deletes a saved game, as the game's own erase does: its file and its entry in SGDB.ini.
+async function deleteSave(dir, slot, icon, label) {
+  if (!confirm(`Delete the saved game ${label}? This cannot be undone; export it first to keep a copy.`)) return;
+  try {
+    const old = await readText(dir, 'SGDB.ini');
+    await writeText(dir, 'SGDB.ini', sgdbText(old, sgdbSlots(old).filter((s) => s.slot !== slot)));
+    const h = await findFile(dir, `savedgame${icon}.ini`);
+    if (h) await dir.removeEntry(h.name);
+    await showSaves();
+    sayAboutSaves(`Deleted ${label}.`);
+  } catch (err) {
+    sayAboutSaves(`Deleting failed: ${err.message}`);
+  }
+}
+
 async function showSaves() {
   const list = $('saves-list');
   list.replaceChildren();
@@ -387,15 +402,16 @@ async function showSaves() {
     label.textContent = `${picture}, ${languageLabel(lang)}` +
                         `${scene ? ` (saved in ${scene})` : ''}${used ? `, last played ${when.format(used)}` : ''}`;
     li.append(label);
-    const add = (text, share) => {
+    const add = (text, className, action) => {
       const b = document.createElement('button');
-      b.className = 'secondary';
+      b.className = className;
       b.textContent = text;
-      b.addEventListener('click', () => exportSave(dir, pictureNo, share));
+      b.addEventListener('click', action);
       li.append(b);
     };
-    add('Export', false);
-    if (canShare) add('Share', true);
+    add('Export', 'secondary', () => exportSave(dir, pictureNo, false));
+    if (canShare) add('Share', 'secondary', () => exportSave(dir, pictureNo, true));
+    add('Delete', 'danger', () => deleteSave(dir, slot, pictureNo, `${emoji} ${picture}, ${languageLabel(lang)}`));
     list.append(li);
   }
   list.hidden = !slots.length;
