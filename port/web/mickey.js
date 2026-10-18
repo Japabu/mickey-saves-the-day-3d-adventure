@@ -107,6 +107,12 @@ async function chosen(file) {
 // game is one JSON file: the slot's ini text and the scene.
 
 const SAVE_FORMAT = 'mickey-saves-the-day/saved-game', SLOTS = 8, CRLF = '\r\n';
+// The slots' pictures in the game, as emoji: Mickey's shorts, his glove, his shoe,
+// Minnie's bow, Goofy's hat, Donald's cap, Pluto's bone, a daisy.
+const SLOT_ICONS = [
+  ['🩳', "Mickey's shorts"], ['🧤', "Mickey's glove"], ['👞', "Mickey's shoe"], ['🎀', "Minnie's bow"],
+  ['🎩', "Goofy's hat"], ['🧢', "Donald's cap"], ['🦴', "Pluto's bone"], ['🌼', 'Daisy'],
+];
 
 // The game's directory of ini files, created if asked (as the game would name it).
 async function binariesDir(create) {
@@ -204,7 +210,7 @@ async function savedGameFile(dir, slot) {
 async function exportSave(slot, share) {
   try {
     const file = await savedGameFile(await binariesDir(false), slot);
-    if (!file) { sayAboutSaves(`Slot ${slot} has no saved game file.`); return; }
+    if (!file) { sayAboutSaves(`${SLOT_ICONS[slot - 1][1]} has no saved game file.`); return; }
     if (share) {
       await navigator.share({ files: [file], title: 'Mickey Saves the Day: a saved game' });
       return;
@@ -241,7 +247,7 @@ async function importSave(file) {
     slots.sort((a, b) => a.slot - b.slot);
     await writeText(dir, 'SGDB.ini', sgdbText(old, slots));
     await showSaves();
-    sayAboutSaves(`Imported into slot ${slot}: in the game, Load shows it.`);
+    sayAboutSaves(`Imported as ${SLOT_ICONS[slot - 1][0]} ${SLOT_ICONS[slot - 1][1]}: in the game, Load shows it.`);
   } catch (err) {
     sayAboutSaves(err.message);
   }
@@ -264,8 +270,14 @@ async function showSaves() {
   const when = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
   for (const { slot, scene, used } of slots) {
     const li = document.createElement('li');
+    const [emoji, picture] = SLOT_ICONS[slot - 1];
+    const icon = document.createElement('b');
+    icon.className = 'slot-icon';
+    icon.textContent = emoji;
+    icon.title = picture;
+    li.append(icon);
     const label = document.createElement('span');
-    label.textContent = `Slot ${slot}${scene ? ` (saved in ${scene})` : ''}${used ? `, last played ${when.format(used)}` : ''}`;
+    label.textContent = `${picture}${scene ? ` (saved in ${scene})` : ''}${used ? `, last played ${when.format(used)}` : ''}`;
     li.append(label);
     const add = (text, share) => {
       const b = document.createElement('button');
