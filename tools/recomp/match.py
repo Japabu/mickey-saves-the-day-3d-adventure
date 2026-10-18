@@ -823,13 +823,26 @@ def compare_constant_data(img, va, original, comp, bases_of):
     return problems
 
 
+_STACK = re.compile(r'\[(?:esp|ebp)(?: [+-] (?:0x)?[0-9a-f]+)?\]')
+_REG = {**{r: 'R32' for r in ('eax', 'ebx', 'ecx', 'edx', 'esi', 'edi', 'ebp')},
+        **{r: 'R16' for r in ('ax', 'bx', 'cx', 'dx', 'si', 'di', 'bp')},
+        **{r: 'R8' for r in ('al', 'ah', 'bl', 'bh', 'cl', 'ch', 'dl', 'dh')}}
+_REGS = re.compile(r'\b(' + '|'.join(sorted(_REG, key=len, reverse=True)) + r')\b')
+
+
 def similarity(orig, mine):
-    """Instruction-level similarity in percent (addresses and call targets ignored),
-    to see whether a change got closer even when the byte count did not move."""
+    """Instruction-level similarity in percent: how close a function's logic is, also
+    when the bytes are not. Addresses and call targets do not count, nor which register
+    an instruction uses or which stack slot it reads or writes (a local kept in edi
+    instead of ebx is the same logic): what is compared is the instructions, calls,
+    constants and member offsets in their order."""
     import difflib
     def norm(code):
-        return [re.sub(r'0x[0-9a-f]{5,}', 'A', t if not t.startswith(('call 0x', 'jmp 0x', 'j')) else t.split()[0])
-                for _, _, t in disasm(code)]
+        out = []
+        for _, _, t in disasm(code):
+            t = re.sub(r'0x[0-9a-f]{5,}', 'A', t if not t.startswith(('call 0x', 'jmp 0x', 'j')) else t.split()[0])
+            out.append(_REGS.sub(lambda m: _REG[m.group(1)], _STACK.sub('[S]', t)))
+        return out
     return 100.0 * difflib.SequenceMatcher(None, norm(orig), norm(mine), autojunk=False).ratio()
 
 

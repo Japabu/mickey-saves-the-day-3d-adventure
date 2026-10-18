@@ -146,13 +146,6 @@ EDITS = {
          '    intptr_t m18;                                           // 0x18 a node\n    int kind;', 1),
     ],
     'RuntimeLib/MfLiveActor.cpp': [
-        # A decompilation error, fixed here rather than in src/ (the faithful form costs
-        # byte similarity, see the TODO of RequestLocoPlan): the original clears the
-        # goal heading's flag (a7) and `relative` only when more stretches of the way
-        # follow. Cleared always, no walk ended facing where it was asked to, and Mickey
-        # stood turned beside the fishing pole with his shoe in it, so its grasp failed.
-        ('        last = 1;\n    a7 = 0;\n    relative = 0;\n',
-         '        last = 1;\n    else { a7 = 0;\n    relative = 0; }\n', 1),
         ('(int)(MfAiActorNode *)parent', '(intptr_t)(MfAiActorNode *)parent', 1),
         ('(int)this', '(intptr_t)this', 2),
         ('= (int)FindRoadCell', '= (intptr_t)FindRoadCell', 1),
