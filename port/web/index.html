@@ -26,6 +26,9 @@
                    border-bottom: 1px solid #2a333c; }
   #saves-list li span { flex: 1 1 12rem; }
   #saves-list button { padding: .35rem .8rem; }
+  #slot-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; max-width: 20rem; }
+  #slot-buttons .slot { font-size: 1.8rem; line-height: 1; padding: .6rem 0; background: #26303a; border: 1px solid #3a4652; }
+  #slot-buttons .slot.used { background: #3a2f1c; border-color: var(--accent); }
   #saves-list .slot-icon { font-size: 1.8rem; line-height: 1; font-weight: 400; }
   #game { position: fixed; inset: 0; display: none; background: #000; }
   #screen { width: 100%; height: 100%; display: block; outline: none; }
@@ -54,12 +57,17 @@
     <h2>Saved games</h2>
     <ul id="saves-list"></ul>
     <div id="saves-message"></div>
+    <div id="slot-picker" hidden>
+      <p>Which picture should the imported game go to, among the <span id="slot-language"></span> games? One with a yellow frame already holds a game, which it replaces.</p>
+      <div id="slot-buttons"></div>
+      <p><button id="slot-cancel" class="secondary">Cancel</button></p>
+    </div>
     <p>
       <label class="button" for="save-file">Import a saved game</label>
       <input id="save-file" type="file" accept=".json,application/json">
     </p>
-    <p>Export a saved game to keep it or send it to someone; an imported game goes into a free
-       slot of the eight. The game itself shows them under Load.</p>
+    <p>Export a saved game to keep it or send it to someone; an imported game goes into the
+       picture you choose. The game itself shows them under Load.</p>
   </div>
   <p>Esc opens the port's options (volumes, sharpness, full screen).
      <a href="https://github.com/Japabu/mickey-saves-the-day-3d-adventure">Source on GitHub</a>.</p>

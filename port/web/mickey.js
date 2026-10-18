@@ -187,9 +187,13 @@ async function cdLanguage() {
   return cdLanguageCache;
 }
 
-const LANGUAGES = { ger: 'Deutsch', eng: 'English', eng_gbr: 'English (UK)', eng_usa: 'English (US)', fre: 'Français',
-                    spa: 'Español', ita: 'Italiano', dut: 'Nederlands' };
-const languageName = (lang) => lang === null ? 'from an older version' : LANGUAGES[lang.toLowerCase()] || lang;
+// The CD languages by their folder names, with a flag. A saved game holds no text, only
+// the game's names for things, but each language keeps its own games (its own folder).
+const LANGUAGES = { ger: ['🇩🇪', 'Deutsch'], eng: ['🇬🇧', 'English'], eng_gbr: ['🇬🇧', 'English (UK)'],
+                    eng_usa: ['🇺🇸', 'English (US)'], fre: ['🇫🇷', 'Français'], spa: ['🇪🇸', 'Español'],
+                    ita: ['🇮🇹', 'Italiano'], dut: ['🇳🇱', 'Nederlands'] };
+const languageLabel = (lang) => lang === null ? 'from an older version of the page'
+  : (LANGUAGES[lang.toLowerCase()] || ['🏳️', lang]).join(' ');
 
 async function findFile(dir, name) {
   for await (const [n, h] of dir.entries())
@@ -306,21 +310,50 @@ async function importSave(file) {
     if (!lang) throw new Error("The game's CD image cannot be read: choose it again (Use another ISO).");
     const dir = (await gameDirs()).find((g) => g.lang !== null && g.lang.toLowerCase() === lang?.toLowerCase())?.dir;
     if (!dir) throw new Error('Play the game once first (until the main menu): then it can take saved games.');
-    const old = await readText(dir, 'SGDB.ini');
-    const slots = sgdbSlots(old);
-    // a number free both as a slot and as a picture: the new slot gets the same for both
-    let slot = 1;
-    while (slot <= SLOTS && slots.some((s) => s.slot === slot || s.icon === slot)) slot++;
-    if (slot > SLOTS) throw new Error('All eight slots are used: erase one in the game first (Start, then a used picture).');
-    await writeText(dir, `savedgame${slot}.ini`, save.ini);
-    slots.push({ slot, icon: slot, scene });
-    slots.sort((a, b) => a.slot - b.slot);
-    await writeText(dir, 'SGDB.ini', sgdbText(old, slots));
-    await showSaves();
-    sayAboutSaves(`Imported as ${SLOT_ICONS[slot - 1][0]} ${SLOT_ICONS[slot - 1][1]}: in the game, Load shows it.`);
+    await pickSlot(dir, lang, save.ini, scene);
   } catch (err) {
     sayAboutSaves(err.message);
   }
+}
+
+// The player picks the picture (slot) an imported game goes to; a used one is replaced
+// after asking. The slot and its picture get the same number, as the game gives them.
+async function pickSlot(dir, lang, ini, scene) {
+  const slots = sgdbSlots(await readText(dir, 'SGDB.ini'));
+  const buttons = $('slot-buttons');
+  buttons.replaceChildren();
+  sayAboutSaves('');
+  $('slot-language').textContent = languageLabel(lang);
+  for (let n = 1; n <= SLOTS; n++) {
+    const [emoji, picture] = SLOT_ICONS[n - 1];
+    const used = slots.find((s) => s.slot === n || s.icon === n);
+    const b = document.createElement('button');
+    b.className = 'slot' + (used ? ' used' : '');
+    b.textContent = emoji;
+    b.title = picture + (used ? ` (used${used.scene ? `, saved in ${used.scene}` : ''})` : ' (free)');
+    b.addEventListener('click', async () => {
+      if (used && !confirm(`${picture} already holds a saved game. Replace it with the imported one?`)) return;
+      $('slot-picker').hidden = true;
+      try {
+        await writeSlot(dir, n, ini, scene);
+        await showSaves();
+        sayAboutSaves(`Imported as ${emoji} ${picture}: in the game, Load shows it.`);
+      } catch (err) {
+        sayAboutSaves(`Importing failed: ${err.message}`);
+      }
+    });
+    buttons.append(b);
+  }
+  $('slot-picker').hidden = false;
+}
+
+async function writeSlot(dir, n, ini, scene) {
+  const old = await readText(dir, 'SGDB.ini');
+  const slots = sgdbSlots(old).filter((s) => s.slot !== n && s.icon !== n);
+  await writeText(dir, `savedgame${n}.ini`, ini);
+  slots.push({ slot: n, icon: n, scene });
+  slots.sort((a, b) => a.slot - b.slot);
+  await writeText(dir, 'SGDB.ini', sgdbText(old, slots));
 }
 
 async function showSaves() {
@@ -339,8 +372,6 @@ async function showSaves() {
   } catch (err) {
     sayAboutSaves(`The saved games cannot be read: ${err.message}`);
   }
-  // the language of each game only when they are of more than one
-  const languages = new Set(slots.map((s) => s.lang));
   const canShare = !!navigator.canShare?.({ files: [new File([''], 'x.json', { type: 'application/json' })] });
   const when = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
   for (const { slot, icon: pictureNo, scene, used, lang, dir } of slots) {
@@ -353,7 +384,7 @@ async function showSaves() {
     icon.title = picture;
     li.append(icon);
     const label = document.createElement('span');
-    label.textContent = `${picture}${languages.size > 1 ? `, ${languageName(lang)}` : ''}` +
+    label.textContent = `${picture}, ${languageLabel(lang)}` +
                         `${scene ? ` (saved in ${scene})` : ''}${used ? `, last played ${when.format(used)}` : ''}`;
     li.append(label);
     const add = (text, share) => {
@@ -593,6 +624,7 @@ async function play() {
 
 $('iso').addEventListener('change', (e) => { if (e.target.files[0]) chosen(e.target.files[0]); });
 $('change').addEventListener('click', () => { $('play-row').hidden = true; $('choose-row').hidden = false; });
+$('slot-cancel').addEventListener('click', () => { $('slot-picker').hidden = true; });
 $('save-file').addEventListener('change', (e) => {
   if (e.target.files[0]) importSave(e.target.files[0]);
   e.target.value = '';
