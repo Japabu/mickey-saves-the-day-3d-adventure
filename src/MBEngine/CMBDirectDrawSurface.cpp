@@ -61,7 +61,7 @@ unsigned long CMBDirectDrawSurface::Release(void)
     return r;
 }
 
-// TODO 0x10057a60 ??1CMBDirectDrawSurface@@QAE@XZ: fixed 2026-10-16: RemoveListener(-8, this) went to the wrong vftable slot (IMBEventManager overload order in CMBDirectDrawSurface.h); left: the original calls _QueryInterface out of line, ours inlines it fully (guid ctor); inline budget (76% similar)
+// TODO 0x10057a60 ??1CMBDirectDrawSurface@@QAE@XZ: fixed 2026-10-16: RemoveListener(-8, this) went to the wrong vftable slot (IMBEventManager overload order in CMBDirectDrawSurface.h); left: the original calls _QueryInterface out of line, ours inlines it fully (guid ctor); inline budget (81% similar)
 CMBDirectDrawSurface::~CMBDirectDrawSurface(void)
 {
     MBComPtr<IMBEventManager> broadcaster(MBIID_IMBEventManager);

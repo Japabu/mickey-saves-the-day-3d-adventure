@@ -23,7 +23,7 @@ Gfx::NodeFactory::~NodeFactory()
 {
 }
 
-// TODO 0x100f1dc0 ?CreateNode@NodeFactory@Gfx@@UBEPAVBasicNode@Graph@@PAVStream@4@V?$_SS@D@@@Z: the original tests each find result twice against -1 (a Find that maps npos to -1; StdString.h's Find returns find() directly, and changing it costs a LODManager claim) and inlines only some of the find calls (38% similar)
+// TODO 0x100f1dc0 ?CreateNode@NodeFactory@Gfx@@UBEPAVBasicNode@Graph@@PAVStream@4@V?$_SS@D@@@Z: the original tests each find result twice against -1 (a Find that maps npos to -1; StdString.h's Find returns find() directly, and changing it costs a LODManager claim) and inlines only some of the find calls (47% similar)
 Graph::BasicNode *Gfx::NodeFactory::CreateNode(Graph::Stream *stream, _SS<char> type) const
 {
     // the type names of the old visual (Vis) and the current (Gfx) file formats
@@ -77,7 +77,7 @@ Graph::BasicNode *Gfx::NodeFactory::CreateNode(Graph::Stream *stream, _SS<char> 
     return node;
 }
 
-// TODO 0x100f2850 ?CreateAttribute@NodeFactory@Gfx@@UBEPAVBasicAttribute@Graph@@PAVStream@4@V?$_SS@D@@@Z: as CreateNode: each find result tested twice against -1 in the original, and only some finds inlined (64% similar)
+// TODO 0x100f2850 ?CreateAttribute@NodeFactory@Gfx@@UBEPAVBasicAttribute@Graph@@PAVStream@4@V?$_SS@D@@@Z: as CreateNode: each find result tested twice against -1 in the original, and only some finds inlined (69% similar)
 Graph::BasicAttribute *Gfx::NodeFactory::CreateAttribute(Graph::Stream *stream, _SS<char> type) const
 {
     Gfx::Attribute *attribute = 0;

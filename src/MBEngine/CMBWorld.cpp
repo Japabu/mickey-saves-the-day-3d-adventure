@@ -68,7 +68,7 @@ void CMBWorld::SetBounds(const MBRect &bounds)
     mBounds = bounds;
 }
 
-// TODO 0x1002ca80 ?Draw@CMBWorld@@UAEJPAVIMBSurface@@AAVMBRect@@1@Z: Draw: inline MBRect::Intersect/SetSize shape right, register allocation differs (worldRect ptr/rb.bottom swap), 343 vs 345 bytes (53% similar)
+// TODO 0x1002ca80 ?Draw@CMBWorld@@UAEJPAVIMBSurface@@AAVMBRect@@1@Z: Draw: inline MBRect::Intersect/SetSize shape right, register allocation differs (worldRect ptr/rb.bottom swap), 343 vs 345 bytes (85% similar)
 long CMBWorld::Draw(IMBSurface *dest, MBRect &worldRect, MBRect &destRect)
 {
     MBRect rootBounds = GetRoot().GetBounds();

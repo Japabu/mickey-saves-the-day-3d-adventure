@@ -321,7 +321,7 @@ void MfSkill::normalize()
     }
 }
 
-// TODO 0x10051140 ?factor@MfSkill@@MAEXXZ: the last assignment (hip = ~root * global) calls the
+// TODO 0x10051140 ?factor@MfSkill@@MAEXXZ: (87% similar) the last assignment (hip = ~root * global) calls the
 // imported MfTransform3 operator= and destructors where this inlines them, and the key temporaries
 // take other frame slots (80% similar)
 // Splits the hip's motion: the root path takes the horizontal position and
@@ -756,7 +756,7 @@ int MfSkill::GetFootNodes(MfDblList &nodes, const MfAiActor *actor)
     return 0;
 }
 
-// TODO 0x100526d0 ?CheckContact@MfSkill@@UAEHPBVMfAiActorNode@@KK@Z: the wrap of the two times into the
+// TODO 0x100526d0 ?CheckContact@MfSkill@@UAEHPBVMfAiActorNode@@KK@Z: (97% similar) the wrap of the two times into the
 // cycle keeps the product in eax and the time in ecx (this keeps them the other way round and spills
 // the quotient), `from -= q * d`, `from = from - ...` give the same; the rest follows (83% similar)
 // Whether the foot node of a locomotion skill touches the ground between two
@@ -940,7 +940,7 @@ void MfSkill::ScaleJoint(int joint, const MfVector3 &scale)
     }
 }
 
-// TODO 0x10052ce0 ?Presample@MfSkill@@UAEXPAVMfActor@@@Z: the original sets each track's interval with the
+// TODO 0x10052ce0 ?Presample@MfSkill@@UAEXPAVMfActor@@@Z: (94% similar) the original sets each track's interval with the
 // out-of-line MfJointPath::SetInterval (10030100; declaring it flips MfJointPath::Key/SetKey, see
 // NOTES), this stores mInterval; it also keeps the key count in memory where this keeps it in ebx
 // (77% similar)

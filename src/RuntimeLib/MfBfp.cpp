@@ -29,7 +29,7 @@ MfBfp::~MfBfp()
         delete[] mPath;
 }
 
-// TODO 0x10054230 ?Plan@MfBfp@@QAEHPAPAVMfVector2@@PAHABV2@V2@HMMMMMMMPAV2@HMMPAVMfTriangleSet@@MPAVMfTransform3@@PAVMfDblList@@7H@Z: the pointers to the start and goal cells swap ebx/edi
+// TODO 0x10054230 ?Plan@MfBfp@@QAEHPAPAVMfVector2@@PAHABV2@V2@HMMMMMMMPAV2@HMMPAVMfTriangleSet@@MPAVMfTransform3@@PAVMfDblList@@7H@Z: (95% similar) the pointers to the start and goal cells swap ebx/edi
 // throughout; the original keeps the straight-line return 0 apart from the last one and puts the failure exit
 // after it, and multiplies the cell size by x and y by the cell size the other way round (returns as
 // separate return 1s: 85%) (86% similar)
@@ -133,7 +133,7 @@ failed:
     return 1;
 }
 
-// TODO 0x10054780 ?Climb@MfBfp@@QAEHAAUMfGridPoint@@@Z: the original keeps the grid width (0x6c) in esi and reloads the workspace width at each neighbour; this tree caches the workspace width and spills this (32% similar)
+// TODO 0x10054780 ?Climb@MfBfp@@QAEHAAUMfGridPoint@@@Z: the original keeps the grid width (0x6c) in esi and reloads the workspace width at each neighbour; this tree caches the workspace width and spills this (57% similar)
 int MfBfp::Climb(MfGridPoint &p)
 {
     int value = mWorkspace.mValues[mWorkspace.mWidth * p.y + p.x];
@@ -401,7 +401,7 @@ void MfBfp::Expand(MfBfpNode *parent, int x, int y)
     Push(node, (int)MfMath::sqrt(dx * dx + dy * dy));
 }
 
-// TODO 0x10055420 ?BuildPath@MfBfp@@QAEPAVMfVector2@@ABV2@0PAUMfBfpNode@@PAH@Z: the path is walked with a copy of node (as in the original); its frame is 4 bytes larger and it schedules the start and goal cell sums between the setup of the first MfVector2 subtraction (42% similar)
+// TODO 0x10055420 ?BuildPath@MfBfp@@QAEPAVMfVector2@@ABV2@0PAUMfBfpNode@@PAH@Z: the path is walked with a copy of node (as in the original); its frame is 4 bytes larger and it schedules the start and goal cell sums between the setup of the first MfVector2 subtraction (69% similar)
 MfVector2 *MfBfp::BuildPath(const MfVector2 &start, const MfVector2 &goal, MfBfpNode *node, int *count)
 {
     int length = 0;
@@ -468,7 +468,7 @@ void MfBfp::CellOf(const MfVector2 &p, MfGridPoint &cell)
     cell.y = (int)((p.y() - mOriginY) / mCellSize + 0.5);
 }
 
-// TODO 0x100557a0 ?Smooth@MfBfp@@QAEXPAPAVMfVector2@@PAH@Z: register and stack layout of the corner pass differ (53% similar)
+// TODO 0x100557a0 ?Smooth@MfBfp@@QAEXPAPAVMfVector2@@PAH@Z: register and stack layout of the corner pass differ (84% similar)
 void MfBfp::Smooth(MfVector2 **path, int *count)
 {
     if (mPathCapacity < *count) {
@@ -526,7 +526,7 @@ void MfBfp::Simplify(MfVector2 **path, int *count, int from, int to)
     }
 }
 
-// TODO 0x10055ac0 ?Shortcut@MfBfp@@QAEHPAPAVMfVector2@@HHH@Z: the original frame has one more slot (24 vs 20 bytes) and the early return shares the epilogue (68% similar)
+// TODO 0x10055ac0 ?Shortcut@MfBfp@@QAEHPAPAVMfVector2@@HHH@Z: the original frame has one more slot (24 vs 20 bytes) and the early return shares the epilogue (91% similar)
 int MfBfp::Shortcut(MfVector2 **path, int from, int to, int check)
 {
     float x0 = (*path)[from].x();

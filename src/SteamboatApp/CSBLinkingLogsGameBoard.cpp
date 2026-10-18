@@ -19,7 +19,7 @@ const float LL_DIFF_HARD = 0.0f;
 const MBString STR_ANIM_FILENAME_PREFIX("LLAN");
 const MBString STR_DEFAULT_PROPERTIES("anim = none : walkable = false : type = path");
 
-// TODO 0x10072050 ??0CSBLinkingLogsGameBoard@@QAE@PAVSBLinkingLogsNode@@@Z: first draft (66% similar)
+// TODO 0x10072050 ??0CSBLinkingLogsGameBoard@@QAE@PAVSBLinkingLogsNode@@@Z: first draft (84% similar)
 CSBLinkingLogsGameBoard::CSBLinkingLogsGameBoard(SBLinkingLogsNode *pNode)
     : m_nNumRow(0), m_nNumCol(0), m_pNode(pNode), m_pActor(0), m_bComplete(false), m_nLevel(1), m_nIdleTimeout(-1),
       m_nLastMoveTime(0), m_nTotalTimeout(-1), m_nGameStartTime(0)
@@ -101,7 +101,7 @@ void CSBLinkingLogsGameBoard::OnIdle()
     }
 }
 
-// TODO 0x10073420 ?InitializeGameBoard@CSBLinkingLogsGameBoard@@QAEXABVMBRect@@J_NPAVIMBStream@@@Z: first draft (45% similar)
+// TODO 0x10073420 ?InitializeGameBoard@CSBLinkingLogsGameBoard@@QAEXABVMBRect@@J_NPAVIMBStream@@@Z: first draft (87% similar)
 void CSBLinkingLogsGameBoard::InitializeGameBoard(const MBRect &refOriginTile, long nLevel, bool bPlayMickye, IMBStream *iStream)
 {
     // read the level's board from the prefs and lay its tiles out row by row
@@ -193,7 +193,7 @@ bool CSBLinkingLogsGameBoard::LoadTypeAttributes(tileattributes &refAttrib, IMBP
     return bLoaded;
 }
 
-// TODO 0x10074280 ?LoadTile@CSBLinkingLogsGameBoard@@IAE_NAAJ0PAVIMBPref@@PAVIMBStream@@ABVCGameBoardPos@@@Z: first draft (70%); the result flag and the stack slots of the buffers and the token list differ
+// TODO 0x10074280 ?LoadTile@CSBLinkingLogsGameBoard@@IAE_NAAJ0PAVIMBPref@@PAVIMBStream@@ABVCGameBoardPos@@@Z: (88% similar) first draft (70%); the result flag and the stack slots of the buffers and the token list differ
 bool CSBLinkingLogsGameBoard::LoadTile(long &nType, long &nProperties, IMBPref *iPref, IMBStream *iStream, const CGameBoardPos &posTile)
 {
     // "row1 col2 = type3 : start": the type number and the extra properties of a square
@@ -225,7 +225,7 @@ bool CSBLinkingLogsGameBoard::LoadTile(long &nType, long &nProperties, IMBPref *
     return bLoaded;
 }
 
-// TODO 0x100748b0 ?LoadBoardSize@CSBLinkingLogsGameBoard@@IAE_NPAVIMBPref@@PAVIMBStream@@@Z: as ParseTimeout, VC6 folds time * difficulty + time into time * (difficulty + 1)
+// TODO 0x100748b0 ?LoadBoardSize@CSBLinkingLogsGameBoard@@IAE_NPAVIMBPref@@PAVIMBStream@@@Z: (89% similar) as ParseTimeout, VC6 folds time * difficulty + time into time * (difficulty + 1)
 bool CSBLinkingLogsGameBoard::LoadBoardSize(IMBPref *iPref, IMBStream *iStream)
 {
     // the size of the board and its time limits (seconds, scaled up by the difficulty)
@@ -396,7 +396,7 @@ void CSBLinkingLogsGameBoard::ParseType(const MBString &strData, tileattributes 
         refAttrib.nProperties |= m_mapTileType[*it];
 }
 
-// TODO 0x10075a20 ?ParseTimeout@CSBLinkingLogsGameBoard@@AAEXABV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@AAUtileattributes@1@@Z: the original
+// TODO 0x10075a20 ?ParseTimeout@CSBLinkingLogsGameBoard@@AAEXABV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@AAUtileattributes@1@@Z: (82% similar) the original
 // multiplies and adds the base time (fld st(0), fmul, fadd); VC6 folds it into base * (1 + diff)
 // here (operand orders tried)
 void CSBLinkingLogsGameBoard::ParseTimeout(const MBString &strData, tileattributes &refAttrib)

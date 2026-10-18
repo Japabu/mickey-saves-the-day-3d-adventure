@@ -2203,7 +2203,7 @@ png_combine_row
 }
 
 #if defined(PNG_READ_INTERLACING_SUPPORTED)
-// TODO 0x101289b0 _png_do_read_interlace_c: register allocation of the pixel loops differs (93% similar)
+// TODO 0x101289b0 _png_do_read_interlace_c: register allocation of the pixel loops differs (96% similar)
 void
 #ifdef PNG_HAVE_ASSEMBLER_READ_INTERLACE
 png_do_read_interlace_c

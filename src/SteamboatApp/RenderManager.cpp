@@ -117,7 +117,7 @@ void RenderManager::EndRenderView(int viewID, Gfx::Node *rootNode, unsigned long
     }
 }
 
-// TODO 0x10035750 ?CreateStandardViewD3D@RenderManager@@IAEXHPAVSurface@Gfx@@@Z: 2 header problems in
+// TODO 0x10035750 ?CreateStandardViewD3D@RenderManager@@IAEXHPAVSurface@Gfx@@@Z: (84% similar) 2 header problems in
 // the graphics library: the original calls SquareMatrix::setValues out of line from the inlined
 // Camera::SetWorldMatrix (VC6 inlines the memcpy, which costs esi/edi and puts this on the stack) and
 // inlines Camera::EnableAutoClipping (a store of m_EAICamera.m_AutoClippingIsEnabled; declared
@@ -173,7 +173,7 @@ RenderManager::RenderManager()
     mRenderTraverser = (Gfx::RenderTraverser *)((Gfx::NodeFactory *)Graph::DataBase::GetInstance()->GetFactory())->MakeRenderTraverser();
 }
 
-// TODO 0x100354a0 ?BeginRenderView@RenderManager@@QAEXHPAVNode@Gfx@@KK@Z: the original calls map::insert out of
+// TODO 0x100354a0 ?BeginRenderView@RenderManager@@QAEXHPAVNode@Gfx@@KK@Z: (41% similar) the original calls map::insert out of
 // line for the first GetView (value_type built inline); VC6 builds the pair out of line here
 void RenderManager::BeginRenderView(int viewID, Gfx::Node *rootNode, unsigned long time, unsigned long renderFlags)
 {

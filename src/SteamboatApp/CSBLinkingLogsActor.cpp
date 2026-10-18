@@ -43,7 +43,7 @@ CSBLinkingLogsActor::~CSBLinkingLogsActor()
     }
 }
 
-// TODO 0x1006ee60 ?SetActor@CSBLinkingLogsActor@@QAEX_N@Z: 58% similar; the original keeps this in a
+// TODO 0x1006ee60 ?SetActor@CSBLinkingLogsActor@@QAEX_N@Z: 76% similar; the original keeps this in a
 // stack slot as well (frame 4 bytes larger) and computes the inlined GetCenter's x and y completely
 // before the GetPosition/GetZ call (registers); same calls and stores
 void CSBLinkingLogsActor::SetActor(bool bPlayMickey)
@@ -58,7 +58,7 @@ void CSBLinkingLogsActor::SetActor(bool bPlayMickey)
     }
 }
 
-// TODO 0x1006f090 ?MoveTo@CSBLinkingLogsActor@@QAEXABVCGameBoardPos@@@Z: 58% similar; inline budget and
+// TODO 0x1006f090 ?MoveTo@CSBLinkingLogsActor@@QAEXABVCGameBoardPos@@@Z: 68% similar; inline budget and
 // registers: the original calls list::insert out of line for every push_back but the last four
 // (Start/Walk with an out-of-line _Buynode, Stop/Idle fully inlined) and keeps eDirection in ebx, 0
 // in edi (VC6: edi, ebx). The turn table is the gridlock actor's (CSBGridlockActor::MoveTo)
@@ -169,7 +169,7 @@ bool CSBLinkingLogsActor::IsMoveing() const
 // the crane's speed (a double literal: the code multiplies by a float constant)
 const float GOHOME_VELOCITY = 120.0;
 
-// TODO 0x1006f7c0 ?Update@CSBLinkingLogsActor@@QAEXXZ: 61% similar; the walking part matches up to the
+// TODO 0x1006f7c0 ?Update@CSBLinkingLogsActor@@QAEXXZ: 86% similar; the walking part matches up to the
 // crane switch; there the original copies vCurrentPoint into vStartPoint with integer moves before the
 // switch, builds the zero tangent before the difference vector, and merges the common
 // StartSound("LLSEcrane") tails of the first two crane cases (VC6 copies through the FPU inside the
@@ -386,7 +386,7 @@ void CSBLinkingLogsActor::PlaceCenterd(MBPoint3 ptPosition)
     m_pAnim->Place(ptTopLeft);
 }
 
-// TODO 0x100705f0 ?SetPathTo@CSBLinkingLogsActor@@QAEXABVCGameBoardPos@@@Z: ebx and edi swapped and
+// TODO 0x100705f0 ?SetPathTo@CSBLinkingLogsActor@@QAEXABVCGameBoardPos@@@Z: (94% similar) ebx and edi swapped and
 // the original reloads m_pCurrentTile for each call (a pointer for the destination tile tried)
 void CSBLinkingLogsActor::SetPathTo(const CGameBoardPos &posDestination)
 {
@@ -415,7 +415,7 @@ void CSBLinkingLogsActor::SetPathTo(const CGameBoardPos &posDestination)
     m_fKeyFramePos = 0.0f;
 }
 
-// TODO 0x10070770 ?GoHome@CSBLinkingLogsActor@@QAEXW4gohome_type@1@@Z: 48% similar; inline budget and
+// TODO 0x10070770 ?GoHome@CSBLinkingLogsActor@@QAEXW4gohome_type@1@@Z: 57% similar; inline budget and
 // registers: the original keeps this in ebp, inlines the steam case's list clear only one level (the
 // iterator ++ and erase(it) called out of line; clear() here calls erase(first, last), erase(begin, end)
 // inlines the ++), builds the home tile's centre without the out-of-line MBPoint3 constructor, calls

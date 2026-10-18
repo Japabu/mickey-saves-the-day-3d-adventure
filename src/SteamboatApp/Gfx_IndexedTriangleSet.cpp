@@ -34,7 +34,7 @@ Gfx::IndexedTriangleSet::IndexedTriangleSet()
 
 // A geodesic sphere (class II icosahedron of frequency 2) around the
 // sphere: unit normals, scaled positions, one triangle per face.
-// TODO 0x100e98d0 ??0IndexedTriangleSet@Gfx@@QAE@ABVBoundingSphere@1@@Z: the original calls Vec<Vec3>::append(const T *, int) out of line for the normal (VC6 here inlines it, see NOTES) and allocates ebx/esi the other way round; same calls and stores otherwise
+// TODO 0x100e98d0 ??0IndexedTriangleSet@Gfx@@QAE@ABVBoundingSphere@1@@Z: (77% similar) the original calls Vec<Vec3>::append(const T *, int) out of line for the normal (VC6 here inlines it, see NOTES) and allocates ebx/esi the other way round; same calls and stores otherwise
 Gfx::IndexedTriangleSet::IndexedTriangleSet(const Gfx::BoundingSphere &sphere)
     : m_CullCW(0), m_nTris(0), m_EnvironmentMapping(false), DrawFunction(0)
 {
@@ -76,7 +76,7 @@ Gfx::IndexedTriangleSet::IndexedTriangleSet(const Gfx::BoundingSphere &sphere)
 
 // The box as twelve triangles over its eight corners (normals point from the
 // centre to the corners).
-// TODO 0x100e9fc0 ??0IndexedTriangleSet@Gfx@@QAE@ABVBoundingBox@1@@Z: the original appends the vertex data and the first 25 indices/primitives through out-of-line Vec::append(const T *, 1) calls with the value in a stack temporary, the rest with the inline append(const T &); written with append(const T &) throughout (same effect)
+// TODO 0x100e9fc0 ??0IndexedTriangleSet@Gfx@@QAE@ABVBoundingBox@1@@Z: (48% similar) the original appends the vertex data and the first 25 indices/primitives through out-of-line Vec::append(const T *, 1) calls with the value in a stack temporary, the rest with the inline append(const T &); written with append(const T &) throughout (same effect)
 Gfx::IndexedTriangleSet::IndexedTriangleSet(const Gfx::BoundingBox &box)
     : m_CullCW(0), m_nTris(0), m_EnvironmentMapping(false), DrawFunction(0)
 {
@@ -263,7 +263,7 @@ void Gfx::IndexedTriangleSet::SetDrawFunction()
 // original: the strip length table is never freed, only the last texture
 // stage decides, and the vertex moved into slot j after a merge is not
 // compared again.
-// TODO 0x100eac30 ?ConvertPackedTriStripSetToIndexedTriangleSet@IndexedTriangleSet@Gfx@@IAEXPAVPackedTriStripSet@2@@Z: the original calls Vec::setLength out of line for the vertex arrays (Vec3, unsigned long, AVec instances emitted by this unit) and inlines it only for m_Prim/m_Indices; VC6 here inlines every call, so the code diverges from the first loop on (29% similar); the operations were taken from the disassembly in order
+// TODO 0x100eac30 ?ConvertPackedTriStripSetToIndexedTriangleSet@IndexedTriangleSet@Gfx@@IAEXPAVPackedTriStripSet@2@@Z: the original calls Vec::setLength out of line for the vertex arrays (Vec3, unsigned long, AVec instances emitted by this unit) and inlines it only for m_Prim/m_Indices; VC6 here inlines every call, so the code diverges from the first loop on (39% similar); the operations were taken from the disassembly in order
 void Gfx::IndexedTriangleSet::ConvertPackedTriStripSetToIndexedTriangleSet(Gfx::PackedTriStripSet *set)
 {
     m_Binding = set->m_Binding;
@@ -401,14 +401,14 @@ int const Gfx::IndexedTriangleSet::Version = 1;
 // 0x100eb5e0 ??_G?$Array@VBoundingBox@Gfx@@@@UAEPAXI@Z
 // 0x100ebaa0 ??1?$Vec@VBoundingBox@Gfx@@@@UAE@XZ
 // 0x100eba80 ??_G?$Vec@VBoundingBox@Gfx@@@@UAEPAXI@Z
-// TODO 0x100ebfa0 ?reallocMem@?$Vec@VBoundingBox@Gfx@@@@IAEXHHH@Z: the original builds the initElements temporary without the BoundingVolume vftable store and EH state
+// TODO 0x100ebfa0 ?reallocMem@?$Vec@VBoundingBox@Gfx@@@@IAEXHHH@Z: (95% similar) the original builds the initElements temporary without the BoundingVolume vftable store and EH state
 // 0x100ec220 ?initElements@?$Vec@VBoundingBox@Gfx@@@@IAEXHH@Z
 // 0x100ec2f0 ??_EBoundingBox@Gfx@@UAEPAXI@Z
 // 0x100ebaf0 ?reallocMem@?$Vec@K@@IAEXHHH@Z
 // 0x100ec2e0 ??_F?$AVec@V?$Vec3@M@@@@QAEXXZ
-// TODO 0x100eb980 ??0?$Vec@VBoundingBox@Gfx@@@@QAE@HM@Z: Vec.h constructor instance; the inlined reallocMem/initElements of BoundingBox differ (see reallocMem below)
-// TODO 0x100ebba0 ?reallocMem@?$Vec@V?$AVec@V?$Vec3@M@@@@@@IAEXHHH@Z: Vec.h instance; the element copy (AVec operator=) and the EH states of the array new differ
-// TODO 0x100ebea0 ?initElements@?$Vec@V?$AVec@V?$Vec3@M@@@@@@IAEXHH@Z: Vec.h instance; the zero AVec temporary is built differently
+// TODO 0x100eb980 ??0?$Vec@VBoundingBox@Gfx@@@@QAE@HM@Z: (77% similar) Vec.h constructor instance; the inlined reallocMem/initElements of BoundingBox differ (see reallocMem below)
+// TODO 0x100ebba0 ?reallocMem@?$Vec@V?$AVec@V?$Vec3@M@@@@@@IAEXHHH@Z: (59% similar) Vec.h instance; the element copy (AVec operator=) and the EH states of the array new differ
+// TODO 0x100ebea0 ?initElements@?$Vec@V?$AVec@V?$Vec3@M@@@@@@IAEXHH@Z: (54% similar) Vec.h instance; the zero AVec temporary is built differently
 // TODO 0x100eb600 ??0?$AVec@H@@QAE@ABV0@@Z: AVec.h copy constructor instance, called by the Convert function in the original; not emitted here (inlined)
 // TODO 0x100eb6c0 ??_G?$AVec@H@@UAEPAXI@Z: not emitted here (IVec's destructor is inlined)
 // TODO 0x100eb6e0 ??1?$AVec@H@@UAE@XZ: not emitted here

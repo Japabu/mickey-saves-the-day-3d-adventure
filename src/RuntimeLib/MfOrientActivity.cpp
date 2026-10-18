@@ -118,7 +118,7 @@ void MfOrientActivity::setInitialConfig(MfTransform3 *config, unsigned long blen
     mPointNodeIndex = mActor->skeletonTraversal()->nodeIndex(mPointNode);
 }
 
-// TODO 0x100490f0 ?Update@MfOrientActivity@@UAE?AW4MfActivityStatus@@K@Z: this in edi (original
+// TODO 0x100490f0 ?Update@MfOrientActivity@@UAE?AW4MfActivityStatus@@K@Z: (80% similar) this in edi (original
 // esi) and the inline budget: the original zeroes the target vector inline, ours calls the
 // imported MfVector3() (60% similar)
 // Turns the chain above the point node so that the node points at the

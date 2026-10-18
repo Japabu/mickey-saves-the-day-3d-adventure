@@ -42,9 +42,9 @@ public:
         }
     }
 
-// TODO 0x1005ffb0 ?RLEDecodeTrans@?$SquishDecode@E@@SAXPAEPBEPBVSquishImageDescriptor@@2@Z: transparent-run handling and slot use not reproduced yet (59% similar)
-// TODO 0x10060db0 ?RLEDecodeTrans@?$SquishDecode@G@@SAXPAEPBEPBVSquishImageDescriptor@@2@Z: transparent-run handling and slot use not reproduced yet (72% similar)
-// TODO 0x10061b60 ?RLEDecodeTrans@?$SquishDecode@K@@SAXPAEPBEPBVSquishImageDescriptor@@2@Z: transparent-run handling and slot use not reproduced yet (54% similar)
+// TODO 0x1005ffb0 ?RLEDecodeTrans@?$SquishDecode@E@@SAXPAEPBEPBVSquishImageDescriptor@@2@Z: transparent-run handling and slot use not reproduced yet (88% similar)
+// TODO 0x10060db0 ?RLEDecodeTrans@?$SquishDecode@G@@SAXPAEPBEPBVSquishImageDescriptor@@2@Z: transparent-run handling and slot use not reproduced yet (94% similar)
+// TODO 0x10061b60 ?RLEDecodeTrans@?$SquishDecode@K@@SAXPAEPBEPBVSquishImageDescriptor@@2@Z: transparent-run handling and slot use not reproduced yet (89% similar)
     static void RLEDecodeTrans(unsigned char *dest, const unsigned char *src, const SquishImageDescriptor *destFmt,
                                const SquishImageDescriptor *srcFmt)
     {
@@ -82,7 +82,7 @@ public:
     }
 
     // Decodes the part srcRect of the image into destRect of the destination (no scaling).
-// TODO 0x100600b0 ?RLEDecodeBlock@?$SquishDecode@E@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (83% similar)
+// TODO 0x100600b0 ?RLEDecodeBlock@?$SquishDecode@E@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (88% similar)
 // EQUIV 0x10060ea0 ?RLEDecodeBlock@?$SquishDecode@G@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: reviewed: register and stack slot choices only (no instruction differs once registers, stack offsets and relocations are normalized). Was: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (73% similar)
 // EQUIV 0x10061c30 ?RLEDecodeBlock@?$SquishDecode@K@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: reviewed: the only difference is the copy of the row count into its register, lea in the original and mov here (the same move). Was: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (65% similar)
     static void RLEDecodeBlock(unsigned char *dest, const unsigned char *src, const SquishImageDescriptor *destFmt,
@@ -161,9 +161,9 @@ public:
     }
 
     // As RLEDecodeBlock, leaving the transparent pixels of the repeat runs alone.
-// TODO 0x10060340 ?RLEDecodeBlockTrans@?$SquishDecode@E@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (33% similar)
-// TODO 0x10061120 ?RLEDecodeBlockTrans@?$SquishDecode@G@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (71% similar)
-// TODO 0x10061e50 ?RLEDecodeBlockTrans@?$SquishDecode@K@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (26% similar)
+// TODO 0x10060340 ?RLEDecodeBlockTrans@?$SquishDecode@E@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (77% similar)
+// TODO 0x10061120 ?RLEDecodeBlockTrans@?$SquishDecode@G@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (95% similar)
+// TODO 0x10061e50 ?RLEDecodeBlockTrans@?$SquishDecode@K@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (65% similar)
     static void RLEDecodeBlockTrans(unsigned char *dest, const unsigned char *src,
                                     const SquishImageDescriptor *destFmt, const SquishImageDescriptor *srcFmt,
                                     const SquishRect *destRect, const SquishRect *srcRect)
@@ -250,9 +250,9 @@ public:
 
     // Decodes srcRect of the image scaled to the size of destRect: columns are repeated or
     // dropped by an accumulator per row, rows are copied or skipped by one per column.
-// TODO 0x10060660 ?RLEDecodeScaledBlock@?$SquishDecode@E@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (57% similar)
-// TODO 0x100613f0 ?RLEDecodeScaledBlock@?$SquishDecode@G@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (71% similar)
-// TODO 0x100620c0 ?RLEDecodeScaledBlock@?$SquishDecode@K@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (75% similar)
+// TODO 0x10060660 ?RLEDecodeScaledBlock@?$SquishDecode@E@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (24% similar)
+// TODO 0x100613f0 ?RLEDecodeScaledBlock@?$SquishDecode@G@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (82% similar)
+// TODO 0x100620c0 ?RLEDecodeScaledBlock@?$SquishDecode@K@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (84% similar)
     static void RLEDecodeScaledBlock(unsigned char *dest, const unsigned char *src,
                                      const SquishImageDescriptor *destFmt, const SquishImageDescriptor *srcFmt,
                                      const SquishRect *destRect, const SquishRect *srcRect)
@@ -326,9 +326,9 @@ public:
     }
 
     // As RLEDecodeScaledBlock, leaving the transparent pixels alone.
-// TODO 0x10060930 ?RLEDecodeScaledBlockTrans@?$SquishDecode@E@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (50% similar)
-// TODO 0x100616f0 ?RLEDecodeScaledBlockTrans@?$SquishDecode@G@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (68% similar)
-// TODO 0x100623a0 ?RLEDecodeScaledBlockTrans@?$SquishDecode@K@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (55% similar)
+// TODO 0x10060930 ?RLEDecodeScaledBlockTrans@?$SquishDecode@E@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (77% similar)
+// TODO 0x100616f0 ?RLEDecodeScaledBlockTrans@?$SquishDecode@G@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (81% similar)
+// TODO 0x100623a0 ?RLEDecodeScaledBlockTrans@?$SquishDecode@K@@SAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (79% similar)
     static void RLEDecodeScaledBlockTrans(unsigned char *dest, const unsigned char *src,
                                           const SquishImageDescriptor *destFmt,
                                           const SquishImageDescriptor *srcFmt, const SquishRect *destRect,
@@ -458,7 +458,7 @@ void RLEBlitTrans(unsigned char *dest, const unsigned char *src, const SquishIma
         SquishDecode<unsigned long>::RLEDecodeTrans(dest, src, destFmt, srcFmt);
 }
 
-// TODO 0x1005f2a0 ?RLEBlitBlock@@YAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (40% similar)
+// TODO 0x1005f2a0 ?RLEBlitBlock@@YAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (83% similar)
 void RLEBlitBlock(unsigned char *dest, const unsigned char *src, const SquishImageDescriptor *destFmt,
                   const SquishImageDescriptor *srcFmt, const SquishRect *destRect, const SquishRect *srcRect)
 {
@@ -471,7 +471,7 @@ void RLEBlitBlock(unsigned char *dest, const unsigned char *src, const SquishIma
         SquishDecode<unsigned long>::RLEDecodeBlock(dest, src, destFmt, srcFmt, destRect, srcRect);
 }
 
-// TODO 0x1005f560 ?RLEBlitBlockTrans@@YAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (25% similar)
+// TODO 0x1005f560 ?RLEBlitBlockTrans@@YAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (73% similar)
 void RLEBlitBlockTrans(unsigned char *dest, const unsigned char *src, const SquishImageDescriptor *destFmt,
                        const SquishImageDescriptor *srcFmt, const SquishRect *destRect, const SquishRect *srcRect)
 {
@@ -484,7 +484,7 @@ void RLEBlitBlockTrans(unsigned char *dest, const unsigned char *src, const Squi
         SquishDecode<unsigned long>::RLEDecodeBlockTrans(dest, src, destFmt, srcFmt, destRect, srcRect);
 }
 
-// TODO 0x1005f890 ?RLEBlitScaledBlock@@YAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (75% similar)
+// TODO 0x1005f890 ?RLEBlitScaledBlock@@YAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (85% similar)
 void RLEBlitScaledBlock(unsigned char *dest, const unsigned char *src, const SquishImageDescriptor *destFmt,
                         const SquishImageDescriptor *srcFmt, const SquishRect *destRect, const SquishRect *srcRect)
 {
@@ -497,7 +497,7 @@ void RLEBlitScaledBlock(unsigned char *dest, const unsigned char *src, const Squ
         SquishDecode<unsigned long>::RLEDecodeScaledBlock(dest, src, destFmt, srcFmt, destRect, srcRect);
 }
 
-// TODO 0x1005fb90 ?RLEBlitScaledBlockTrans@@YAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (42% similar)
+// TODO 0x1005fb90 ?RLEBlitScaledBlockTrans@@YAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (74% similar)
 void RLEBlitScaledBlockTrans(unsigned char *dest, const unsigned char *src, const SquishImageDescriptor *destFmt,
                              const SquishImageDescriptor *srcFmt, const SquishRect *destRect, const SquishRect *srcRect)
 {

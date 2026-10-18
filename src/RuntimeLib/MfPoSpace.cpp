@@ -452,7 +452,7 @@ MfScDataHandle *MfPoSpace::CastRay(MfScDataHandle *self, int nArgs, MfScDataHand
     }
 }
 
-// TODO 0x10078010 ?CheckCollision@MfPoSpace@@QAEPAVMfScDataHandle@@PAV2@HPAPAV2@@Z: block layout and frame differ (the original places the WrongNumber block at the end and has one more 4-byte stack slot, so everything after shifts) and the original's EH table has one more state (4, never stored: the state after the contact data's construction is 5 there, 4 here), so it likely declares one more destructible object; calls, arguments, conditions and the order of the property stores are the original's as read from the disassembly (76% similar)
+// TODO 0x10078010 ?CheckCollision@MfPoSpace@@QAEPAVMfScDataHandle@@PAV2@HPAPAV2@@Z: block layout and frame differ (the original places the WrongNumber block at the end and has one more 4-byte stack slot, so everything after shifts) and the original's EH table has one more state (4, never stored: the state after the contact data's construction is 5 there, 4 here), so it likely declares one more destructible object; calls, arguments, conditions and the order of the property stores are the original's as read from the disassembly (85% similar)
 // CheckCollision(actor, actorList [, data]): whether the actor touches one of
 // the actors of the list; on a hit the object data gets otherActor, myNode,
 // otherNode, collPt and surfaceNormal.
@@ -575,7 +575,7 @@ MfScDataHandle *MfPoSpace::UpdateScene(MfScDataHandle *self, int nArgs, MfScData
     return MfScDataHandle::CreateData(1);
 }
 
-// TODO 0x100789f0 ?SetFogAttributes@MfPoSpace@@QAEPAVMfScDataHandle@@PAV2@HPAPAV2@@Z: identical up to the error path of a non-colour third argument: the original destroys the local MfRenderFogInfo without code (its MfColor leaves the vptr alone) and cross-jumps into the outer error path's InvalidType call; here the implicit destructor stores the imported MfTypedValue vptr after the call, so the calls are not merged (one InvalidType call after the if, tried: 76%). Same calls per path (84% similar)
+// TODO 0x100789f0 ?SetFogAttributes@MfPoSpace@@QAEPAVMfScDataHandle@@PAV2@HPAPAV2@@Z: identical up to the error path of a non-colour third argument: the original destroys the local MfRenderFogInfo without code (its MfColor leaves the vptr alone) and cross-jumps into the outer error path's InvalidType call; here the implicit destructor stores the imported MfTypedValue vptr after the call, so the calls are not merged (one InvalidType call after the if, tried: 76%). Same calls per path (85% similar)
 // SetFogAttributes(enable, type, color, density, start, end): an unknown type
 // becomes linear (0), a negative density 0.5, a start beyond the end 0.1
 // before it.

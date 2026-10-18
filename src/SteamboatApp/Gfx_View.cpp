@@ -91,7 +91,7 @@ void Gfx::View::SetBackgroundColor(unsigned long color)
     m_BackgroundColor = color;
 }
 
-// TODO 0x100ecec0 ?SetupMatrices@View@Gfx@@QAEXXZ: the original recomputes &camera->m_WorldMatrix for every product, here it is kept in a register
+// TODO 0x100ecec0 ?SetupMatrices@View@Gfx@@QAEXXZ: (83% similar) the original recomputes &camera->m_WorldMatrix for every product, here it is kept in a register
 void Gfx::View::SetupMatrices()
 {
     Gfx::Camera *camera = m_pCamera;
@@ -101,7 +101,7 @@ void Gfx::View::SetupMatrices()
                                                                   camera->GetNearClip(), camera->GetFarClip());
 }
 
-// TODO 0x100ecfa0 ?Refresh@View@Gfx@@UAEXXZ: as SetupMatrices
+// TODO 0x100ecfa0 ?Refresh@View@Gfx@@UAEXXZ: (87% similar) as SetupMatrices
 void Gfx::View::Refresh()
 {
     Gfx::Node *scene = m_pScene;
@@ -149,7 +149,7 @@ Gfx::ViewFrustumIntersect Gfx::View::IsBoundingBoxInViewFrustum(const Gfx::Bound
     return Gfx::Partial;
 }
 
-// TODO 0x100ed1c0 ?CalcViewFrustumPlanes@View@Gfx@@IAEXXZ: same calls, constants and order; the original divides 1 by the length in the inlined normalize with fld 1.0 / fdiv st(1) (keeping the length on the FPU stack), VC6 here uses fdivr from memory, and the stack slots of the temporaries differ (57% similar)
+// TODO 0x100ed1c0 ?CalcViewFrustumPlanes@View@Gfx@@IAEXXZ: same calls, constants and order; the original divides 1 by the length in the inlined normalize with fld 1.0 / fdiv st(1) (keeping the length on the FPU stack), VC6 here uses fdivr from memory, and the stack slots of the temporaries differ (93% similar)
 void Gfx::View::CalcViewFrustumPlanes()
 {
     // The side planes in camera coordinates: each passes through the eye

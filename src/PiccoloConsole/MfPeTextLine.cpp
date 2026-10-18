@@ -66,7 +66,7 @@ void MfPeTextLine::Scan(int tabSize)
     ScanText(text, tabSize);
 }
 
-// TODO 0x1001b0d0 ?ScanText@MfPeTextLine@@QAEXAAVMfString@@H@Z: 41% - same logic (checked the constants: VC5 here turns the tab/blank choice into sub/neg/sbb/and 0x17/add 9 where the original branches to push 9 or 0x20, and clears COMMENT_START|CHANGED with a byte and al, 0xed where the original uses a dword and); the comment handling is laid out differently and the unwind states differ
+// TODO 0x1001b0d0 ?ScanText@MfPeTextLine@@QAEXAAVMfString@@H@Z: 78% - same logic (checked the constants: VC5 here turns the tab/blank choice into sub/neg/sbb/and 0x17/add 9 where the original branches to push 9 or 0x20, and clears COMMENT_START|CHANGED with a byte and al, 0xed where the original uses a dword and); the comment handling is laid out differently and the unwind states differ
 void MfPeTextLine::ScanText(MfString &text, int tabSize)
 {
     lexLock.Lock(-1);
@@ -147,7 +147,7 @@ int MfPeTextLine::Draw(int line, MfPeDrawingContext *context, int tabSize, int h
     return text.Length();
 }
 
-// TODO 0x1001b620 ?Get@MfPeLineSyntax@@QAE?AVMfPeMarker@@I@Z: 82% - the original calls MfPeMarker's vector deleting destructor, this build expands delete[] inline
+// TODO 0x1001b620 ?Get@MfPeLineSyntax@@QAE?AVMfPeMarker@@I@Z: 87% - the original calls MfPeMarker's vector deleting destructor, this build expands delete[] inline
 
 // 0x1001b6f0 ?DrawMargin@MfPeTextLine@@QAEXHPAVMfPeDrawingContext@@@Z
 void MfPeTextLine::DrawMargin(int line, MfPeDrawingContext *context)

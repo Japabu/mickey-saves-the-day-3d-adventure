@@ -289,7 +289,7 @@ long CMBWinDIBSurface::ColorFill(MBColor color, MBRect *destRect)
     return result;
 }
 
-// TODO 0x1005a170 ?Blit@CMBWinDIBSurface@@UAEJPAVIMBSurface@@PAVMBRect@@1K@Z: register allocation (dest in ebp vs ebx) and one extra stack slot; GDI BitBlt min()s computed in a different order (59% similar)
+// TODO 0x1005a170 ?Blit@CMBWinDIBSurface@@UAEJPAVIMBSurface@@PAVMBRect@@1K@Z: register allocation (dest in ebp vs ebx) and one extra stack slot; GDI BitBlt min()s computed in a different order (68% similar)
 long CMBWinDIBSurface::Blit(IMBSurface *dest, MBRect *source_rect, MBRect *dest_rect,
                             unsigned long blit_flags)
 {

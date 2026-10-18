@@ -238,7 +238,7 @@ void Gfx::Node::Refresh(Graph::BasicRefreshTraverser &traverser)
     ActiveNode::Refresh(traverser);
 }
 
-// TODO 0x100e3e30 ?WriteHeaderInfo@Node@Gfx@@IAEHPAVWriteTraverser@2@PAE@Z: PushNode's inlined Vec::append keeps len in a register across operator new (as with /Oa); everything before it matches
+// TODO 0x100e3e30 ?WriteHeaderInfo@Node@Gfx@@IAEHPAVWriteTraverser@2@PAE@Z: (85% similar) PushNode's inlined Vec::append keeps len in a register across operator new (as with /Oa); everything before it matches
 int Gfx::Node::WriteHeaderInfo(Gfx::WriteTraverser *traverser, unsigned char *header)
 {
     char name[256];
@@ -320,7 +320,7 @@ int const Gfx::Node::Version = 1;
 
 // 0x100e3a00 ?GetInstance@DataBase@Graph@@SAPAV12@XZ
 // 0x100e35e0 ??_GNode@Gfx@@UAEPAXI@Z
-// TODO 0x100e3490 ??0BoundingBox@Gfx@@QAE@XZ: the out-of-line copy loads GetMaximum() per element (fld/fstp) and drops the BoundingVolume vptr store; the inlined copies in Node() match
+// TODO 0x100e3490 ??0BoundingBox@Gfx@@QAE@XZ: (42% similar) the out-of-line copy loads GetMaximum() per element (fld/fstp) and drops the BoundingVolume vptr store; the inlined copies in Node() match
 // 0x100e34d0 ??1BoundingBox@Gfx@@UAE@XZ
 // 0x100e35c0 ??_GBoundingBox@Gfx@@UAEPAXI@Z
 // 0x100e4260 ??1?$BVolHierNode@VBoundingBox@Gfx@@@Gfx@@UAE@XZ
@@ -411,7 +411,7 @@ void Gfx::BVolHierarchy<T>::Prune(Gfx::BVolHierNode<T> *pHierNode2)
     }
 }
 
-// TODO 0x100e48a0 ?Refresh@?$BVolHierNode@VBoundingBox@Gfx@@@Gfx@@IAEXXZ: 26% similar; the original walks the atom indices with a pointer and a down-counter, keeps this in ebp and calls BoundingBox()'s constructor for the new volume out of line
+// TODO 0x100e48a0 ?Refresh@?$BVolHierNode@VBoundingBox@Gfx@@@Gfx@@IAEXXZ: 64% similar; the original walks the atom indices with a pointer and a down-counter, keeps this in ebp and calls BoundingBox()'s constructor for the new volume out of line
 template <class T>
 void Gfx::BVolHierNode<T>::Refresh()
 {
@@ -435,7 +435,7 @@ void Gfx::BVolHierNode<T>::Refresh()
         *m_pParent += *this;
 }
 
-// TODO 0x100e5f30 ?InitAtomCenterRef@?$BVolHierarchy@VBoundingBox@Gfx@@@Gfx@@AAEXPAVNode@2@AAVBoundingBox@2@@Z: 41% similar; registers renamed (this in edi, the vector in ebp) and the inlined initElements fills by an overlapping copy in the original
+// TODO 0x100e5f30 ?InitAtomCenterRef@?$BVolHierarchy@VBoundingBox@Gfx@@@Gfx@@AAEXPAVNode@2@AAVBoundingBox@2@@Z: 65% similar; registers renamed (this in edi, the vector in ebp) and the inlined initElements fills by an overlapping copy in the original
 template <class T>
 void Gfx::BVolHierarchy<T>::InitAtomCenterRef(Gfx::Node *node, T &volume)
 {
@@ -539,7 +539,7 @@ Gfx::BVolHierNode<T> &Gfx::BVolHierNode<T>::operator=(const T &volume)
     return *this;
 }
 
-// TODO 0x100e53e0 ?Build@?$BVolHierNode@VBoundingBox@Gfx@@@Gfx@@IAEXPAVNode@2@HHAAHAAVBoundingBox@2@AAV?$Vec@UBVolHierCenterRef@Gfx@@@@AAV?$Vec@V?$Vec@UBVolHierCenterRef@Gfx@@@@@@AAV?$BVolHierNodeFactory@VBoundingBox@Gfx@@@2@@Z: the original calls BoundingVolume() and Vec<int>::append out of line where VC6 inlines them here, and inlines the last box's maxima (56%)
+// TODO 0x100e53e0 ?Build@?$BVolHierNode@VBoundingBox@Gfx@@@Gfx@@IAEXPAVNode@2@HHAAHAAVBoundingBox@2@AAV?$Vec@UBVolHierCenterRef@Gfx@@@@AAV?$Vec@V?$Vec@UBVolHierCenterRef@Gfx@@@@@@AAV?$BVolHierNodeFactory@VBoundingBox@Gfx@@@2@@Z: the original calls BoundingVolume() and Vec<int>::append out of line where VC6 inlines them here, and inlines the last box's maxima (82%)
 template <class T>
 void Gfx::BVolHierNode<T>::Build(Gfx::Node *node, int nLeafAtoms, int level, int &maxLevels, T &volume,
                                  Vec<Gfx::BVolHierCenterRef> &vCenterRef,
@@ -643,17 +643,17 @@ void Gfx::BVolHierNode<T>::Build(Gfx::Node *node, int nLeafAtoms, int level, int
     }
 }
 
-// TODO 0x100e34e0 ?GetCenter@BoundingBox@Gfx@@UBEABV?$Vec3@M@@XZ: header instance; the object holds two copies of it, so the tools cannot choose one
-// TODO 0x100e3540 ?GetRadius@BoundingBox@Gfx@@UBEMXZ: header instance; the object holds two copies of it, so the tools cannot choose one
+// TODO 0x100e34e0 ?GetCenter@BoundingBox@Gfx@@UBEABV?$Vec3@M@@XZ: (67% similar) header instance; the object holds two copies of it, so the tools cannot choose one
+// TODO 0x100e3540 ?GetRadius@BoundingBox@Gfx@@UBEMXZ: (95% similar) header instance; the object holds two copies of it, so the tools cannot choose one
 // 0x100e4d80 ??0?$BVolHierNode@VBoundingBox@Gfx@@@Gfx@@QAE@XZ
-// TODO 0x100e4ec0 ??1?$BVolHierNodeFactory@VBoundingBox@Gfx@@@Gfx@@QAE@XZ: the out-of-line copy walks the nodes with a pointer and a down-counter loaded once; the inlined copies (~Node) reload the count like this one (28%)
-// TODO 0x100e4f50 ?reallocMem@?$Vec@UBVolHierCenterRef@Gfx@@@@IAEXHHH@Z: header instance compiled differently here (45%)
+// TODO 0x100e4ec0 ??1?$BVolHierNodeFactory@VBoundingBox@Gfx@@@Gfx@@QAE@XZ: the out-of-line copy walks the nodes with a pointer and a down-counter loaded once; the inlined copies (~Node) reload the count like this one (60%)
+// TODO 0x100e4f50 ?reallocMem@?$Vec@UBVolHierCenterRef@Gfx@@@@IAEXHHH@Z: header instance compiled differently here (72%)
 // EQUIV 0x100e50e0 ?reallocMem@?$Vec@V?$Vec@UBVolHierCenterRef@Gfx@@@@@@IAEXHHH@Z: reviewed: one length copy goes through esi instead of eax with the argument load scheduled between, and the deleting-destructor call uses eax instead of edx; same loads, stores and calls
 // EQUIV 0x100e5d50 ??4BoundingBox@Gfx@@QAEAAV01@ABV01@@Z: reviewed: the implicit copy assignment loads the last maxima component before storing the one before it; the two touch different members, nothing else differs
-// TODO 0x100e5e90 ?setLength@?$Vec@H@@QAEXH@Z: header instance compiled differently here (35%)
-// TODO 0x100e62c0 ?initElements@?$Vec@UBVolHierCenterRef@Gfx@@@@IAEXHH@Z: header instance compiled differently here (19%)
-// TODO 0x100e6320 ??4?$Vec@UBVolHierCenterRef@Gfx@@@@QAEAAV0@ABV0@@Z: header instance compiled differently here (21%)
-// TODO 0x100e6370 ?initElements@?$Vec@V?$Vec@UBVolHierCenterRef@Gfx@@@@@@IAEXHH@Z: header instance compiled differently here (53%)
+// TODO 0x100e5e90 ?setLength@?$Vec@H@@QAEXH@Z: header instance compiled differently here (56%)
+// TODO 0x100e62c0 ?initElements@?$Vec@UBVolHierCenterRef@Gfx@@@@IAEXHH@Z: header instance compiled differently here (38%)
+// TODO 0x100e6320 ??4?$Vec@UBVolHierCenterRef@Gfx@@@@QAEAAV0@ABV0@@Z: header instance compiled differently here (54%)
+// TODO 0x100e6370 ?initElements@?$Vec@V?$Vec@UBVolHierCenterRef@Gfx@@@@@@IAEXHH@Z: header instance compiled differently here (86%)
 // TODO 0x100e64b0 ?append@?$Vec@H@@QAEXPBHH@Z: header instance; the object holds two copies of it, so the tools cannot choose one (Build inlines it where the original calls it)
 
 // the hierarchy of the nodes' bounding boxes is this unit's instance

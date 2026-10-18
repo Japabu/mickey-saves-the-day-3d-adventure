@@ -79,7 +79,7 @@ MfWorld::MfWorld(MfAiAppWorld *app)
 
 // 0x10098fd0 ??_EMfWorld@@UAEPAXI@Z
 
-// TODO 0x10099030 ??1MfWorld@@UAE@XZ: the original destroys mSpaceList without resetting its
+// TODO 0x10099030 ??1MfWorld@@UAE@XZ: (77% similar) the original destroys mSpaceList without resetting its
 // vptr (matches byte for byte when MfSpaceList has no user-declared destructor, but then
 // MfLiveActor::NewParentAfterUngrasp differs); registers ebp/edi swap (70% similar)
 MfWorld::~MfWorld()
@@ -298,7 +298,7 @@ MfAiActor *MfWorld::InstantiateActor(MfProtoActor *proto)
     return actor;
 }
 
-// TODO 0x10099990 ?LoadActor@MfWorld@@UAEPAVMfAiActor@@ABVMfString@@PBVMfAiSpace@@ABVMfTransform3@@H@Z:
+// TODO 0x10099990 ?LoadActor@MfWorld@@UAEPAVMfAiActor@@ABVMfString@@PBVMfAiSpace@@ABVMfTransform3@@H@Z: (84% similar)
 // the space and the zero swap esi/ebp and the space conversions are computed in other
 // places (72% similar)
 // Loads an actor file into the space at xform and tells the hooks.
@@ -763,7 +763,7 @@ int MfWorld::GetProperty(const MfString &name, MfProperty &property)
     return 0;
 }
 
-// TODO 0x1009b0a0 ?SetProperty@MfWorld@@UAEXAAVMfProperty@@@Z: the original calls the imported
+// TODO 0x1009b0a0 ?SetProperty@MfWorld@@UAEXAAVMfProperty@@@Z: (83% similar) the original calls the imported
 // MfProperty::Name (VC5 inline budget), this inlines it (73% similar)
 // Sets the world property of the name, adding it if it is new.
 void MfWorld::SetProperty(MfProperty &property)
@@ -838,7 +838,7 @@ MfTeleportActorData::~MfTeleportActorData()
 {
 }
 
-// TODO 0x1009b420 ?HandleTeleportActorRequest@MfWorld@@QAEXAAVMfMsg@@@Z: the request pointer
+// TODO 0x1009b420 ?HandleTeleportActorRequest@MfWorld@@QAEXAAVMfMsg@@@Z: (72% similar) the request pointer
 // and the hook data are kept in other registers and slots, and the branches after the
 // space lookup are laid out differently (37% similar)
 // Moves the actor into the space (loading it if it is not open) and tells

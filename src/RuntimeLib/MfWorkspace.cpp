@@ -182,7 +182,7 @@ static inline void FillRow(unsigned short *row, int x0, int x1, int value)
         row[x] = (unsigned short)value;
 }
 
-// TODO 0x10059bf0 ?ScanConvert@MfWorkspace@@SAXPAVMfTriangleSet@@PAGHHMMMMMMABVMfTransform3@@G@Z: the frame is 0x18 bytes smaller and the vertex and corner floats live in other slots (the original keeps some in FPU registers); the scan logic is the original's (35% similar)
+// TODO 0x10059bf0 ?ScanConvert@MfWorkspace@@SAXPAVMfTriangleSet@@PAGHHMMMMMMABVMfTransform3@@G@Z: the frame is 0x18 bytes smaller and the vertex and corner floats live in other slots (the original keeps some in FPU registers); the scan logic is the original's (60% similar)
 void MfWorkspace::ScanConvert(MfTriangleSet *model, unsigned short *values, int width, int height,
                               float originX, float scaleX, float originY, float scaleY, float low,
                               float high, const MfTransform3 &placement, unsigned short value)
@@ -414,7 +414,7 @@ void MfWorkspace::Init(MfTriangleSet *floor, float originX, float originY, float
     }
 }
 
-// TODO 0x1005a8f0 ?DistanceTransform@MfWorkspace@@QAEXPAGHH@Z: register allocation and the spills of count and the row stride differ throughout (18% similar)
+// TODO 0x1005a8f0 ?DistanceTransform@MfWorkspace@@QAEXPAGHH@Z: register allocation and the spills of count and the row stride differ throughout (74% similar)
 void MfWorkspace::DistanceTransform(unsigned short *values, int width, int height)
 {
     int count = height * width;

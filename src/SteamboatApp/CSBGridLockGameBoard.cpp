@@ -335,7 +335,7 @@ void CSBGridLockGameBoard::LoadLayout(IMBStream *iStream, long nLevel, tiletypem
     }
 }
 
-// TODO 0x1005b6a0 ?InitGameGrid@CSBGridLockGameBoard@@IAEXPAVIMBStream@@@Z: the original calls vector::size out of line inside the inlined resize and keeps one stack slot less; VC6 inlines the first size() (77% similar)
+// TODO 0x1005b6a0 ?InitGameGrid@CSBGridLockGameBoard@@IAEXPAVIMBStream@@@Z: the original calls vector::size out of line inside the inlined resize and keeps one stack slot less; VC6 inlines the first size() (78% similar)
 void CSBGridLockGameBoard::InitGameGrid(IMBStream *iStream)
 {
     // section "game board size": the number of rows and columns; every square starts with one
@@ -433,7 +433,7 @@ void CSBGridLockGameBoard::InitializeGameBoard(const MBRect &refOriginTile, long
     Update();
 }
 
-// TODO 0x1005c420 ?HandleClick@CSBGridLockGameBoard@@IAEXJJPAVIMBUnknown@@@Z: the original inlines map::find (lower_bound and the key test) and keeps iClickable in the parameter slot; VC6 calls find here (70% similar)
+// TODO 0x1005c420 ?HandleClick@CSBGridLockGameBoard@@IAEXJJPAVIMBUnknown@@@Z: the original inlines map::find (lower_bound and the key test) and keeps iClickable in the parameter slot; VC6 calls find here (90% similar)
 void CSBGridLockGameBoard::HandleClick(long channel, long event, IMBUnknown *iUnknown)
 {
     CSBGridlockGameTile::iunknownmessagemap::iterator it = m_mapIUnknownToTile.find(iUnknown);

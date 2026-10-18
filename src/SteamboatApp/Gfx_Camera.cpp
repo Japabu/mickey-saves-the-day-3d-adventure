@@ -51,7 +51,7 @@ Gfx::Camera::~Camera()
 {
 }
 
-// TODO 0x100f0ad0 ?CalcWorldPointFromScreen@Camera@Gfx@@QAEHABV?$Vec2@M@@AAV?$Vec3@M@@@Z: 33% similar; the original calls transposeCopy, the Vec3 constructor, multVector3Left, setTranslation, the matrix copies and multVecLeft out of line (out-of-class template members), VC6 inlines them here
+// TODO 0x100f0ad0 ?CalcWorldPointFromScreen@Camera@Gfx@@QAEHABV?$Vec2@M@@AAV?$Vec3@M@@@Z: 51% similar; the original calls transposeCopy, the Vec3 constructor, multVector3Left, setTranslation, the matrix copies and multVecLeft out of line (out-of-class template members), VC6 inlines them here
 int Gfx::Camera::CalcWorldPointFromScreen(const Vec2<float> &screenPoint, Vec3<float> &worldPoint)
 {
     // undo the projection and the view of the current transformation for a point on the far
@@ -106,7 +106,7 @@ void Gfx::Camera::Interpolate(Gfx::Camera *camera, int startTime, int duration)
     ScheduleRefresh(false);
 }
 
-// TODO 0x100f0e20 ?Refresh@Camera@Gfx@@MAEXAAVBasicRefreshTraverser@Graph@@@Z: 28% similar, first draft; the original calls setValues, the second matrix's constructor and identity out of line, constructs the first matrix without a call and keeps this in esi; the rotation element order is unverified
+// TODO 0x100f0e20 ?Refresh@Camera@Gfx@@MAEXAAVBasicRefreshTraverser@Graph@@@Z: 56% similar, first draft; the original calls setValues, the second matrix's constructor and identity out of line, constructs the first matrix without a call and keeps this in esi; the rotation element order is unverified
 void Gfx::Camera::Refresh(Graph::BasicRefreshTraverser &traverser)
 {
     Node::Refresh(traverser);
@@ -279,4 +279,4 @@ int const Gfx::Camera::Version = 2;
 // TODO 0x100f1690 ?extractRow@?$SquareMatrix@M$03@@IBEXPAMH@Z: header instance; this unit inlines every use, so VC6 here emits no out-of-line copy
 // TODO 0x100f16d0 ??0?$SquareMatrix@M$03@@QAE@PBM@Z: inline instance; this unit inlines every use, so VC6 here emits no out-of-line copy
 // TODO 0x100f16f0 ?transposeCopy@?$SquareMatrix@M$03@@QBE?AV1@XZ: header instance; this unit inlines every use, so VC6 here emits no out-of-line copy
-// TODO 0x100f1770 ?gaussJordan@?$SquareMatrix@M$03@@QAE_NAAV?$GenMatrix@M@@@Z: 32% similar, first draft (body in TMatrix4.h); the original keeps this in esi and lays the three index vectors out in another order, register use differs throughout
+// TODO 0x100f1770 ?gaussJordan@?$SquareMatrix@M$03@@QAE_NAAV?$GenMatrix@M@@@Z: 75% similar, first draft (body in TMatrix4.h); the original keeps this in esi and lays the three index vectors out in another order, register use differs throughout

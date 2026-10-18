@@ -533,7 +533,7 @@ void MfFSMManager::QueueUnload(MfString name)
 
 // 0x10081560 ??0MfFSMLoadRequest@@QAE@VMfString@@H@Z
 
-// TODO 0x10080eb0 ?LoadBehavior@MfFSMManager@@UAEHVMfString@@HH@Z: same code shape, but the original keeps the ifstream's virtual base offset in a register across is_open/eof (ours keeps the vbtable slot address), which shifts the register choice of the whole function
+// TODO 0x10080eb0 ?LoadBehavior@MfFSMManager@@UAEHVMfString@@HH@Z: (87% similar) same code shape, but the original keeps the ifstream's virtual base offset in a register across is_open/eof (ours keeps the vbtable slot address), which shifts the register choice of the whole function
 int MfFSMManager::LoadBehavior(MfString name, int compile, int activate)
 {
     MfString path(mBhvrDir);

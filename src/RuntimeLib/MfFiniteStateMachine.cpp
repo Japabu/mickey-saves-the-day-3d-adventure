@@ -333,7 +333,7 @@ static MfStateProperty *sToPath[50];
 // the internal transitions taken (only counted)
 static int sInternalTaken;
 
-// TODO 0x1007ea90 ?CollectActions@MfFiniteStateMachine@@QAEPAVMfState@@PAV2@PAVMfStateTransition@@@Z: same size and shape; the original keeps this in ebx and a zero register in ebp (later i), ours this in ebp and no zero register
+// TODO 0x1007ea90 ?CollectActions@MfFiniteStateMachine@@QAEPAVMfState@@PAV2@PAVMfStateTransition@@@Z: (85% similar) same size and shape; the original keeps this in ebx and a zero register in ebp (later i), ours this in ebp and no zero register
 MfState *MfFiniteStateMachine::CollectActions(MfState *state, MfStateTransition *transition)
 {
     MfState *target = transition->mDest->mTarget;
@@ -446,7 +446,7 @@ void MfFiniteStateMachine::Unload()
         mRoot->Unload();
 }
 
-// TODO 0x1007f100 ?Compile@MfFiniteStateMachine@@UAEHPAVMfPcErrorCallBack@@PAH@Z: as LoadCompiled
+// TODO 0x1007f100 ?Compile@MfFiniteStateMachine@@UAEHPAVMfPcErrorCallBack@@PAH@Z: (75% similar) as LoadCompiled
 int MfFiniteStateMachine::Compile(MfPcErrorCallBack *errors, int *error)
 {
     int failures = 0;
@@ -503,7 +503,7 @@ int MfFiniteStateMachine::Compile(MfPcErrorCallBack *errors, int *error)
     return failures;
 }
 
-// TODO 0x1007f4d0 ?LoadCompiled@MfFiniteStateMachine@@QAEXXZ: the original expands MfString::Truncate inline (copy-on-write, calling the imported MfStringRef copy constructor, then MfStringRef::Truncate); see NOTES.md
+// TODO 0x1007f4d0 ?LoadCompiled@MfFiniteStateMachine@@QAEXXZ: (64% similar) the original expands MfString::Truncate inline (copy-on-write, calling the imported MfStringRef copy constructor, then MfStringRef::Truncate); see NOTES.md
 void MfFiniteStateMachine::LoadCompiled()
 {
     UpdatePaths();
@@ -590,7 +590,7 @@ MfFSMCameraSettings::MfFSMCameraSettings(double a, double b, double c, double d)
 // 0x1007fa00 ?GetName@MfFSMMutable@@UAEAAVMfString@@XZ
 // 0x1007fa40 ?Slot30@MfStateProperty@@UAEXHHHH@Z
 // 0x1007fa50 ?Slot33@MfStateProperty@@UAEXHHHHHHHHHHHHHH@Z
-// TODO 0x1007fa60 ?Slot38@MfStateProperty@@UAE?AUMfStatePropertyRect@@H@Z: the original also clears a dead local ([esp]) besides the four fields of the result
+// TODO 0x1007fa60 ?Slot38@MfStateProperty@@UAE?AUMfStatePropertyRect@@H@Z: (82% similar) the original also clears a dead local ([esp]) besides the four fields of the result
 
 // 0x1007faa0 ??1MfFSMCameraSettings@@UAE@XZ
 MfFSMCameraSettings::~MfFSMCameraSettings()

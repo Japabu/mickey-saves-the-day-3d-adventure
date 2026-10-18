@@ -250,7 +250,7 @@ void Gfx::PackedVertexShape::SeparateVertexInfoV3()
     }
 }
 
-// TODO 0x100f5380 ?SeparateVertexInfo@PackedVertexShape@Gfx@@IAEXXZ: 61% - register allocation: our copy keeps the constant 1 of m_TCoords.setLength(1) in ebx for every binding test, the original keeps 0 there (and 1 in ebp only around the texture block), which shifts the loop's stack slots; same structure as SeparateVertexInfoV3 (matching)
+// TODO 0x100f5380 ?SeparateVertexInfo@PackedVertexShape@Gfx@@IAEXXZ: 82% - register allocation: our copy keeps the constant 1 of m_TCoords.setLength(1) in ebx for every binding test, the original keeps 0 there (and 1 in ebp only around the texture block), which shifts the loop's stack slots; same structure as SeparateVertexInfoV3 (matching)
 void Gfx::PackedVertexShape::SeparateVertexInfo()
 {
     // older files interleave the vertex components in m_CList: split them into the lists
@@ -369,7 +369,7 @@ void Gfx::PackedVertexShape::SetPrim(int value, int i, bool refresh)
         ScheduleRefresh(false);
 }
 
-// TODO 0x100f5cd0 ?Clear@PackedVertexShape@Gfx@@QAEXXZ: inline budget: the original inlines the int initElements only, VC6 here also the first Vec3 one
+// TODO 0x100f5cd0 ?Clear@PackedVertexShape@Gfx@@QAEXXZ: (76% similar) inline budget: the original inlines the int initElements only, VC6 here also the first Vec3 one
 void Gfx::PackedVertexShape::Clear()
 {
     m_Prim.setLength(0);
@@ -405,7 +405,7 @@ int const Gfx::PackedVertexShape::Version = 4;
 // 0x100f4160 _$E55
 // 0x100f4170 _$E54
 // 0x100f46f0 ??1?$AVec@V?$RVec@M@@@@UAE@XZ
-// TODO 0x100f5e80 ?ApplySphereMap@PackedVertexShape@Gfx@@IAEXPAVCamera@2@H@Z: 18% - inline budget: the original calls the matrix copies, multRight, multVecLeft, multVector3Left/setTranslation (in inverseAffine) and the Vec3/Vec4 helpers out of line and spills each temporary to its own stack copy; the statements, the unused copies (model, view, inverse, projected, shadowProjection) and their order are recovered from the bytes
+// TODO 0x100f5e80 ?ApplySphereMap@PackedVertexShape@Gfx@@IAEXPAVCamera@2@H@Z: 30% - inline budget: the original calls the matrix copies, multRight, multVecLeft, multVector3Left/setTranslation (in inverseAffine) and the Vec3/Vec4 helpers out of line and spills each temporary to its own stack copy; the statements, the unused copies (model, view, inverse, projected, shadowProjection) and their order are recovered from the bytes
 void Gfx::PackedVertexShape::ApplySphereMap(Gfx::Camera *camera, int stage)
 {
     // texture coordinates from the eye vector reflected about each eye-space normal; the
@@ -503,10 +503,10 @@ void Gfx::PackedVertexShape::ApplySphereMap(Gfx::Camera *camera, int stage)
 // 0x100f74c0 ??_F?$RVec@M@@QAEXXZ
 
 // Template and inline instances this unit also emits:
-// TODO 0x100f6c20 ??0?$AVec@H@@QAE@HM@Z: 49% - inline instance (body in the header); the original reloads e after operator new for the inlined reallocMem's delete test (code without /Oa); a #pragma optimize("a", off) at the end of the unit makes the Vec/AVec/RVec(int, float) constructors match but breaks nine /Oa functions here (ReadInternals, SetBindings, AppendPrims, ...)
+// TODO 0x100f6c20 ??0?$AVec@H@@QAE@HM@Z: 70% - inline instance (body in the header); the original reloads e after operator new for the inlined reallocMem's delete test (code without /Oa); a #pragma optimize("a", off) at the end of the unit makes the Vec/AVec/RVec(int, float) constructors match but breaks nine /Oa functions here (ReadInternals, SetBindings, AppendPrims, ...)
 // 0x100f6d00 ??0?$Vec3@M@@QAE@ABV?$FixedVec@M$03@@@Z
 // TODO 0x100f6d50 ??G?$Vec4@M@@QBE?AV0@ABV0@@Z: not emitted: VC6 inlines Vec4::operator- into ApplySphereMap here, the original calls it out of line
-// TODO 0x100f7060 ?reallocMem@?$Vec@V?$RVec@M@@@@IAEXHHH@Z: 42% - stack slots and register allocation of the inlined RVec element copy/initialization loop
-// TODO 0x100f72b0 ??0?$Vec@M@@QAE@HM@Z: 50% - inline instance (body in the header); the original reloads e after operator new for the inlined reallocMem's delete test (code without /Oa); a #pragma optimize("a", off) at the end of the unit makes the Vec/AVec/RVec(int, float) constructors match but breaks nine /Oa functions here (ReadInternals, SetBindings, AppendPrims, ...)
-// TODO 0x100f7390 ?initElements@?$Vec@V?$RVec@M@@@@IAEXHH@Z: 32% - stack slots and register allocation of the inlined RVec element copy/initialization loop
-// TODO 0x100f74d0 ??0?$RVec@M@@QAE@HM@Z: 49% - inline instance (body in the header); the original reloads e after operator new for the inlined reallocMem's delete test (code without /Oa); a #pragma optimize("a", off) at the end of the unit makes the Vec/AVec/RVec(int, float) constructors match but breaks nine /Oa functions here (ReadInternals, SetBindings, AppendPrims, ...)
+// TODO 0x100f7060 ?reallocMem@?$Vec@V?$RVec@M@@@@IAEXHHH@Z: 72% - stack slots and register allocation of the inlined RVec element copy/initialization loop
+// TODO 0x100f72b0 ??0?$Vec@M@@QAE@HM@Z: 74% - inline instance (body in the header); the original reloads e after operator new for the inlined reallocMem's delete test (code without /Oa); a #pragma optimize("a", off) at the end of the unit makes the Vec/AVec/RVec(int, float) constructors match but breaks nine /Oa functions here (ReadInternals, SetBindings, AppendPrims, ...)
+// TODO 0x100f7390 ?initElements@?$Vec@V?$RVec@M@@@@IAEXHH@Z: 72% - stack slots and register allocation of the inlined RVec element copy/initialization loop
+// TODO 0x100f74d0 ??0?$RVec@M@@QAE@HM@Z: 70% - inline instance (body in the header); the original reloads e after operator new for the inlined reallocMem's delete test (code without /Oa); a #pragma optimize("a", off) at the end of the unit makes the Vec/AVec/RVec(int, float) constructors match but breaks nine /Oa functions here (ReadInternals, SetBindings, AppendPrims, ...)

@@ -154,7 +154,7 @@ MfLocoPlanResult *MfLocoPlanner::PlanToTarget(MfLiveActor *actor, int target, fl
     return result;
 }
 
-// TODO 0x10056670 ?Plan@MfLocoPlanner@@QAEPAUMfLocoPlanResult@@PAVMfLiveActor@@HMMMMPAVMfSkeletonNode@@HPAVMfTransform2@@2PAVMfLocoSkill@@HMHHPAVMfDblList@@H@Z: the calls agree
+// TODO 0x10056670 ?Plan@MfLocoPlanner@@QAEPAUMfLocoPlanResult@@PAVMfLiveActor@@HMMMMPAVMfSkeletonNode@@HPAVMfTransform2@@2PAVMfLocoSkill@@HMHHPAVMfDblList@@H@Z: (81% similar) the calls agree
 // but for MaxProximityDef, which the original inlines (RuntimeLib's MfProtoActor.h, shared, declares it
 // out of line), and two MfTransform3 copies it expands; the original keeps 0 in ebp, so registers and
 // stack slots differ throughout (46% similar)
@@ -477,7 +477,7 @@ MfLocoPlanResult *MfLocoPlanner::Plan(MfLiveActor *actor, int target, float orig
     return result;
 }
 
-// TODO 0x10057d30 ?FindPlace@@YAPAVMfFloor@@AAVMfTransform2@@PAVMfLiveActor@@PAVMfApiActor@@MPAMHMM@Z: the !useAngles branch keeps 2*pi on the FPU
+// TODO 0x10057d30 ?FindPlace@@YAPAVMfFloor@@AAVMfTransform2@@PAVMfLiveActor@@PAVMfApiActor@@MPAMHMM@Z: (80% similar) the !useAngles branch keeps 2*pi on the FPU
 // stack and jumps into the normalising loops (a local for it only drops to 48%); stack slots differ after (55% similar)
 // A free place for actor next to target, between minDistance and
 // *maxDistance from it (in the directions angleFrom..angleTo when useAngles

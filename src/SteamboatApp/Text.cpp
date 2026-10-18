@@ -186,7 +186,7 @@ int Text::findLast(char c) const
     return -1;
 }
 
-// TODO 0x100dde00 ?tokenize@Text@@QBEXAAV?$Vec@VText@@@@PBD@Z: Text temporaries get swapped frame slots and strlen result is spilled
+// TODO 0x100dde00 ?tokenize@Text@@QBEXAAV?$Vec@VText@@@@PBD@Z: (94% similar) Text temporaries get swapped frame slots and strlen result is spilled
 void Text::tokenize(Vec<Text> &tokens, const char *delimiters) const
 {
     int pos = 0;

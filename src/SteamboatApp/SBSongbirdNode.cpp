@@ -104,7 +104,7 @@ void SBSongbirdNode::OnStart()
     mEraseSongDialog.SetButtonNames("yes", "no");
 }
 
-// TODO 0x10094100 ?PlaceNests@SBSongbirdNode@@IAEXXZ: register allocation: the original keeps the bird letter in bl across the loop body and has a 4-byte smaller frame (60% similar)
+// TODO 0x10094100 ?PlaceNests@SBSongbirdNode@@IAEXXZ: register allocation: the original keeps the bird letter in bl across the loop body and has a 4-byte smaller frame (90% similar)
 void SBSongbirdNode::PlaceNests()
 {
     MBComPtr<ISBGameState> gs(MBIID_CSBGameState);
@@ -174,7 +174,7 @@ void SBSongbirdNode::PlaceNests()
     }
 }
 
-// TODO 0x100948e0 ?InitSongGrid@SBSongbirdNode@@IAEXXZ: the original loads the two wire points into integer temporaries and computes both products before the sums; ours adds through the point addresses (38% similar)
+// TODO 0x100948e0 ?InitSongGrid@SBSongbirdNode@@IAEXXZ: the original loads the two wire points into integer temporaries and computes both products before the sums; ours adds through the point addresses (83% similar)
 void SBSongbirdNode::InitSongGrid()
 {
     // four wires, each a polyline of four points; eight squares between two points
@@ -262,7 +262,7 @@ void SBSongbirdNode::LoadSongs()
     MBDebugStr("[SBSongbirdNode::LoadSongs] songs loaded: %d\n", mSongs.size());
 }
 
-// TODO 0x100952a0 ?SaveSong@SBSongbirdNode@@IAEXXZ: inline budget: the original calls append(1, c) and the single-element insert out of line and has a larger frame (69% similar)
+// TODO 0x100952a0 ?SaveSong@SBSongbirdNode@@IAEXXZ: inline budget: the original calls append(1, c) and the single-element insert out of line and has a larger frame (87% similar)
 void SBSongbirdNode::SaveSong()
 {
     // the song is the note of every grid square
@@ -428,7 +428,7 @@ void SBSongbirdNode::OnNestClick(long birdID, void *data)
     mClickHandled = true;
 }
 
-// TODO 0x100961f0 ?OnGridClick@SBSongbirdNode@@IAEXPAUMBMouseEvent@@@Z: register allocation: the original keeps this in ebp and the square pointer in ebx from the start; ours uses edi/ebp (+4 frame) (59% similar)
+// TODO 0x100961f0 ?OnGridClick@SBSongbirdNode@@IAEXPAUMBMouseEvent@@@Z: register allocation: the original keeps this in ebp and the square pointer in ebx from the start; ours uses edi/ebp (+4 frame) (83% similar)
 void SBSongbirdNode::OnGridClick(MBMouseEvent *click)
 {
     MBPoint mousepos = click->mMousePos;

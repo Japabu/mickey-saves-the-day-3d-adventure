@@ -565,7 +565,7 @@ void MfRoadMapBuilder::ClearSearch()
     }
 }
 
-// TODO 0x10060290 ?Search@MfRoadMapBuilder@@QAEPAVMfDblList@@PAUMfRoadPortal@@0@Z: calls and
+// TODO 0x10060290 ?Search@MfRoadMapBuilder@@QAEPAVMfDblList@@PAUMfRoadPortal@@0@Z: (90% similar) calls and
 // tests agree; the original keeps current in ebx and enters the loop past its reload, mine keeps
 // it in ebp and reloads it at the top (68% similar)
 MfDblList *MfRoadMapBuilder::Search(MfRoadPortal *from, MfRoadPortal *to)
@@ -910,7 +910,7 @@ MfColNode *MfRoadMapBuilder::MakeCellBox(MfRoadCell *cell, int margin)
     return node;
 }
 
-// TODO 0x10061300 ?FindSegments@MfRoadMapBuilder@@QAEPAVMfDblList@@PAUMfRoadCell@@0@Z: calls, strings
+// TODO 0x10061300 ?FindSegments@MfRoadMapBuilder@@QAEPAVMfDblList@@PAUMfRoadCell@@0@Z: (87% similar) calls, strings
 // and branches follow the original (the frames are now copied whole, mFrame = ...mGlobalTransform);
 // its frame is 0x50 bytes smaller (the message temporaries and the transforms share slots), it
 // calls the imported MfRotation3 constructor where this build inlines it, and the grid scan
@@ -1210,7 +1210,7 @@ void MfRoadMapBuilder::AddSegment(MfDblList **segments, int row1, int column1, i
     (*segments)->Add(segment);
 }
 
-// TODO 0x10062a60 ?Rasterize@MfRoadMapBuilder@@QAEXPAVMfTriangleSet@@HHHHMM@Z: the scan follows the
+// TODO 0x10062a60 ?Rasterize@MfRoadMapBuilder@@QAEXPAVMfTriangleSet@@HHHHMM@Z: (91% similar) the scan follows the
 // original (same tests, rounding and index); the original keeps two copies of 1/unit, the triangle
 // index in the columns parameter and a frame 0x10 bytes larger (55% similar)
 // Marks the squares of mGrid that the triangles cover: the grid holds rows x
@@ -1367,7 +1367,7 @@ inline void MfRoadMapBuilder::Carry(MfXformMatrix3 &toCell, int r, int i, float 
         return;
     mOtherGrid[index] = 1;
 }
-// TODO 0x10063140 ?RasterizeOther@MfRoadMapBuilder@@QAEXPAVMfTriangleSet@@VMfXformMatrix3@@MMHHHHMMHHHH@Z:
+// TODO 0x10063140 ?RasterizeOther@MfRoadMapBuilder@@QAEXPAVMfTriangleSet@@VMfXformMatrix3@@MMHHHHMMHHHH@Z: (80% similar)
 // the square-to-cell step is written as the inline Carry; the original expands it at its four
 // places with other registers and slots (30% similar)
 // Rasterizes the triangles of the other cell's floor like Rasterize and

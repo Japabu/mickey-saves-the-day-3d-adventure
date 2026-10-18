@@ -259,7 +259,7 @@ void SBActorManager::ListenToDialogueEvent(long event, void *data)
     }
 }
 
-// TODO 0x1003d1a0 ?ListenToMotivateEvent@SBActorManager@@MAEXJPAX@Z: 81% similar; the original's jump
+// TODO 0x1003d1a0 ?ListenToMotivateEvent@SBActorManager@@MAEXJPAX@Z: 85% similar; the original's jump
 // table covers events 302..310 (306..310 lead to the end: some label up to 310 whose code is gone; an
 // empty `case 310:` is dropped by VC6), and it keeps data in esi and &event in edi (VC6: ebp, esi)
 void SBActorManager::ListenToMotivateEvent(long event, void *data)

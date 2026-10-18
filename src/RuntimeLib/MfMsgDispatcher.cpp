@@ -203,7 +203,7 @@ void MfMsgDispatcher::FlushPending()
     mSharedQueues[3]->Clear();
 }
 
-// TODO 0x100688e0 ?LocoPlanningThread@@YAXPAX@Z: calls and arguments agree; the original
+// TODO 0x100688e0 ?LocoPlanningThread@@YAXPAX@Z: (82% similar) calls and arguments agree; the original
 // pushes the float words with mov/push, ours loads the *(float *)& casts through fld/fstp
 // once the registers run out (VC5 does mov/push for float-typed fields, so the original's
 // view of the request probably has float members), and the registers differ from the

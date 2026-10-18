@@ -20,7 +20,7 @@ char const * Gfx::Shape::GetTypeName() const
     return s_TypeInfo.typeName;
 }
 
-// TODO 0x100f3db0 ?Pick@Shape@Gfx@@UAE?AW4Response@NodeTraverser@Graph@@PAVPickTraverser@2@@Z: 47% - same calls and test; the original computes the origin difference z first, calls multVector3Right out of line for both vectors and copies the constructed ray into a second local (0x28 more stack)
+// TODO 0x100f3db0 ?Pick@Shape@Gfx@@UAE?AW4Response@NodeTraverser@Graph@@PAVPickTraverser@2@@Z: 64% - same calls and test; the original computes the origin difference z first, calls multVector3Right out of line for both vectors and copies the constructed ray into a second local (0x28 more stack)
 Graph::NodeTraverser::Response Gfx::Shape::Pick(Gfx::PickTraverser *traverser)
 {
     if (IsVisible()) {

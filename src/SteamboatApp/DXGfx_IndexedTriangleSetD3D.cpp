@@ -61,7 +61,7 @@ DXGfx::IndexedTriangleSetD3D::~IndexedTriangleSetD3D()
 // Hands the changed matrices to the device, sets the cull mode from the
 // current material and draws; in a multi-texture pass (single-texture
 // hardware) the pass's texture coordinates are drawn without z writes.
-// TODO 0x100d7650 ?Render@IndexedTriangleSetD3D@DXGfx@@UAE?AW4Response@NodeTraverser@Graph@@PAVRenderTraverser@Gfx@@@Z: register allocation and scheduling only (66% similar): the original builds the view-matrix argument in ecx before loading the COM interface and keeps the camera/texture-stage values in other registers; same calls, arguments and stores
+// TODO 0x100d7650 ?Render@IndexedTriangleSetD3D@DXGfx@@UAE?AW4Response@NodeTraverser@Graph@@PAVRenderTraverser@Gfx@@@Z: register allocation and scheduling only (88% similar): the original builds the view-matrix argument in ecx before loading the COM interface and keeps the camera/texture-stage values in other registers; same calls, arguments and stores
 Graph::NodeTraverser::Response DXGfx::IndexedTriangleSetD3D::Render(Gfx::RenderTraverser *traverser)
 {
     if (traverser->GetMultiTexturePass() > 0 && traverser->GetMultiTexturePass() >= m_TCoords.length())
@@ -139,7 +139,7 @@ void DXGfx::IndexedTriangleSetD3D::Clean()
 }
 
 // The strided vertex description and the 16-bit index copy for Direct3D.
-// TODO 0x100d7970 ?BuildVertexData@IndexedTriangleSetD3D@DXGfx@@IAEXXZ: no-alias code: the inlined initElements is rep stosd/stosw and the copy loop keeps its pointers in registers only with the pragma at the top of the unit (68% then), which breaks 7 other claims of the unit; a pragma around the function changes nothing
+// TODO 0x100d7970 ?BuildVertexData@IndexedTriangleSetD3D@DXGfx@@IAEXXZ: (65% similar) no-alias code: the inlined initElements is rep stosd/stosw and the copy loop keeps its pointers in registers only with the pragma at the top of the unit (68% then), which breaks 7 other claims of the unit; a pragma around the function changes nothing
 void DXGfx::IndexedTriangleSetD3D::BuildVertexData()
 {
     if (m_D3DIndices.length() != m_Indices.length())
@@ -207,7 +207,7 @@ void DXGfx::IndexedTriangleSetD3D::CopyVertices()
 // Draws the triangle list; when the shape wants its screen rectangle the
 // clip-status extents are collected around the call (initialized inverted:
 // minimum = viewport size, maximum = viewport origin).
-// TODO 0x100d7be0 ?RenderDrawPrimitive@IndexedTriangleSetD3D@DXGfx@@IAE_NPAVRenderTraverser@Gfx@@@Z: register allocation of the draw-call arguments (the original spills m_FVF to a stack slot and reuses esi for &m_StridedData) and the texture-stack size test (sar vs test); same calls, arguments and stores (83% similar)
+// TODO 0x100d7be0 ?RenderDrawPrimitive@IndexedTriangleSetD3D@DXGfx@@IAE_NPAVRenderTraverser@Gfx@@@Z: register allocation of the draw-call arguments (the original spills m_FVF to a stack slot and reuses esi for &m_StridedData) and the texture-stack size test (sar vs test); same calls, arguments and stores (89% similar)
 bool DXGfx::IndexedTriangleSetD3D::RenderDrawPrimitive(Gfx::RenderTraverser *traverser)
 {
     if (Gfx::TextureAttribute::GetStack(0).size() != 0

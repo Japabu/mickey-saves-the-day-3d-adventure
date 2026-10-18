@@ -265,7 +265,7 @@ void __cdecl MfPoBase::WrongNumber(MfString cls, MfString func, int nParams, int
     env->ThrowException(12, (char*)msg);
 }
 
-// TODO 0x10028370 ?PiccoloToPropertyValue@MfPoBase@@SAPAVMfTypedValue@@PAVMfScDataHandle@@H@Z: (65% similar) calls and list walk line up (the script list is an MfScHandleList walked with its own cursor, First/Next); the original copies xf->Transform() into the new value with the imported MfTransform3 copy constructor where ours expands the inline one (the VC5 inline budget, see NOTES), and the registers differ throughout (0 in ebp instead of ebx, the list value kept in esi)
+// TODO 0x10028370 ?PiccoloToPropertyValue@MfPoBase@@SAPAVMfTypedValue@@PAVMfScDataHandle@@H@Z: (87% similar) calls and list walk line up (the script list is an MfScHandleList walked with its own cursor, First/Next); the original copies xf->Transform() into the new value with the imported MfTransform3 copy constructor where ours expands the inline one (the VC5 inline budget, see NOTES), and the registers differ throughout (0 in ebp instead of ebx, the list value kept in esi)
 MfTypedValue* MfPoBase::PiccoloToPropertyValue(MfScDataHandle* h, int copy)
 {
     MfTypedValue* result = 0;

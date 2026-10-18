@@ -47,7 +47,7 @@ DXGfx::ViewD3D::~ViewD3D()
     delete m_pDevice;
 }
 
-// TODO 0x100d4130 ?Create@ViewD3D@DXGfx@@UAEXHH@Z: as Device::Create: the original calls ValList<DDDeviceInfo>::operator[] out of line inside GetCurrentDevice(), VC6 here inlines it (67%)
+// TODO 0x100d4130 ?Create@ViewD3D@DXGfx@@UAEXHH@Z: as Device::Create: the original calls ValList<DDDeviceInfo>::operator[] out of line inside GetCurrentDevice(), VC6 here inlines it (78%)
 void DXGfx::ViewD3D::Create(int width, int height)
 {
     m_pDevice->m_bEnableRendering = FALSE;

@@ -193,7 +193,7 @@ void CSBLLConveyerTile::GetStartPoint(D3DXVECTOR3 &vPt) const
     }
 }
 
-// TODO 0x1007c760 ?GetStartVec@CSBLLConveyerTile@@UBEXAAUD3DXVECTOR3@@ABU2@1@Z: the original reads the direction
+// TODO 0x1007c760 ?GetStartVec@CSBLLConveyerTile@@UBEXAAUD3DXVECTOR3@@ABU2@1@Z: (65% similar) the original reads the direction
 // bits twice and builds the scaled vector in the dead parameter slots
 void CSBLLConveyerTile::GetStartVec(D3DXVECTOR3 &vVec, const D3DXVECTOR3 &vStartPt, const D3DXVECTOR3 &vEndPt) const
 {
@@ -238,7 +238,7 @@ void CSBLLConveyerTile::GetEndPoint(D3DXVECTOR3 &vPt) const
     }
 }
 
-// TODO 0x1007cab0 ?GetEndVec@CSBLLConveyerTile@@UBEXAAUD3DXVECTOR3@@ABU2@1@Z: the original reads the direction
+// TODO 0x1007cab0 ?GetEndVec@CSBLLConveyerTile@@UBEXAAUD3DXVECTOR3@@ABU2@1@Z: (64% similar) the original reads the direction
 // bits twice and builds the scaled vector in the dead parameter slots
 void CSBLLConveyerTile::GetEndVec(D3DXVECTOR3 &vVec, const D3DXVECTOR3 &vStartPt, const D3DXVECTOR3 &vEndPt) const
 {

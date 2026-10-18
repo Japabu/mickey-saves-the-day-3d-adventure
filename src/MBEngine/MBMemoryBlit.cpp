@@ -42,7 +42,7 @@ bool MBBlit(void *source, MBRect *source_rect, unsigned long source_pitch, void 
     return true;
 }
 
-// TODO 0x1006fbd0 ?MBBlitTrans@@YA_NPAXPAVMBRect@@K01KKK@Z: original keeps source in eax, dest in esi, depth in edi and reloads the 8-bit key into bl per pixel; locals vs parameters and MIN operand orders do not reproduce it (33% similar)
+// TODO 0x1006fbd0 ?MBBlitTrans@@YA_NPAXPAVMBRect@@K01KKK@Z: original keeps source in eax, dest in esi, depth in edi and reloads the 8-bit key into bl per pixel; locals vs parameters and MIN operand orders do not reproduce it (93% similar)
 bool MBBlitTrans(void *source, MBRect *source_rect, unsigned long source_pitch, void *dest,
                  MBRect *dest_rect, unsigned long dest_pitch, unsigned long depth,
                  unsigned long trans_value)
@@ -160,9 +160,9 @@ bool MBFill(void *dest, unsigned long width, unsigned long height, unsigned long
     return true;
 }
 
-// TODO 0x100700c0 ?TemplateStretchBlit@@YAXPAEPBEKKKKKK@Z: symmetric two-ended Bresenham stretch; frame is 0x14 (5 slots) with dst_left/src_left reloaded into eax/edx for the map loops, two declaration layouts give 0x18 and other register/slot choices (23% similar)
-// TODO 0x100704c0 ?TemplateStretchBlit@@YAXPAGPBGKKKKKK@Z: as the 8-bit instance (17% similar)
-// TODO 0x100709e0 ?TemplateStretchBlit@@YAXPAKPBKKKKKKK@Z: as the 8-bit instance (17% similar)
+// TODO 0x100700c0 ?TemplateStretchBlit@@YAXPAEPBEKKKKKK@Z: symmetric two-ended Bresenham stretch; frame is 0x14 (5 slots) with dst_left/src_left reloaded into eax/edx for the map loops, two declaration layouts give 0x18 and other register/slot choices (63% similar)
+// TODO 0x100704c0 ?TemplateStretchBlit@@YAXPAGPBGKKKKKK@Z: as the 8-bit instance (33% similar)
+// TODO 0x100709e0 ?TemplateStretchBlit@@YAXPAKPBKKKKKKK@Z: as the 8-bit instance (33% similar)
 template <class T>
 void TemplateStretchBlit(T *dest, const T *source, unsigned long destrows, unsigned long destcols,
                          unsigned long destrowbytes, unsigned long srcrows, unsigned long srccols,
@@ -330,9 +330,9 @@ bool MBStretchBlit(void *source, MBRect *source_rect, unsigned long source_pitch
     return true;
 }
 
-// TODO 0x10071340 ?TemplateStretchTransBlit@@YAXPAEPBEKKKKKKE@Z: same layout problem as TemplateStretchBlit (26% similar)
-// TODO 0x10072040 ?TemplateStretchTransBlit@@YAXPAGPBGKKKKKKG@Z: as the 8-bit instance (18% similar)
-// TODO 0x100724e0 ?TemplateStretchTransBlit@@YAXPAKPBKKKKKKKK@Z: as the 8-bit instance (18% similar)
+// TODO 0x10071340 ?TemplateStretchTransBlit@@YAXPAEPBEKKKKKKE@Z: same layout problem as TemplateStretchBlit (58% similar)
+// TODO 0x10072040 ?TemplateStretchTransBlit@@YAXPAGPBGKKKKKKG@Z: as the 8-bit instance (65% similar)
+// TODO 0x100724e0 ?TemplateStretchTransBlit@@YAXPAKPBKKKKKKKK@Z: as the 8-bit instance (64% similar)
 template <class T>
 void TemplateStretchTransBlit(T *dest, const T *source, unsigned long destrows, unsigned long destcols,
                               unsigned long destrowbytes, unsigned long srcrows, unsigned long srccols,

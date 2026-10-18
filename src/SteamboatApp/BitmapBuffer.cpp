@@ -484,5 +484,5 @@ void BitmapBuffer::SetScreenRect(const tagRECT &rect)
 // 0x10012f30 _$E46
 // 0x10012f70 _$E42
 // 0x10012f90 _$E45
-// TODO 0x10010c40 ??0Exception@DX@@QAE@ABV01@@Z: header instance; this unit emits no out-of-line copy
-// TODO 0x10010c80 ??_GException@DX@@UAEPAXI@Z: header instance; this unit emits no out-of-line copy
+// TODO 0x10010c40 ??0Exception@DX@@QAE@ABV01@@Z: (93% similar) header instance; this unit emits no out-of-line copy
+// TODO 0x10010c80 ??_GException@DX@@UAEPAXI@Z: (85% similar) header instance; this unit emits no out-of-line copy

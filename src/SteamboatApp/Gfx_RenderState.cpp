@@ -33,7 +33,7 @@ Gfx::RenderState::~RenderState()
     DecrementTypeCount();
 }
 
-// TODO 0x10112340 ??8RenderState@Gfx@@QBE_NABV01@@Z: only the register of the material argument differs (ebx in the original, edx here)
+// TODO 0x10112340 ??8RenderState@Gfx@@QBE_NABV01@@Z: (100% similar) only the register of the material argument differs (ebx in the original, edx here)
 bool Gfx::RenderState::operator==(const Gfx::RenderState &state) const
 {
     if (m_TextureAttributes.size() != state.m_TextureAttributes.size())

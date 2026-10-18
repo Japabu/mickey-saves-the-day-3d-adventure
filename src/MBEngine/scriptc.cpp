@@ -795,7 +795,7 @@ inline float BoolLe(float a, float b) { Write((short)vmBoolLe); return (float)(a
 inline float StrCmp(TSymtabNode *a, TSymtabNode *b) { Write((short)vmStrCmp); return (float)MBstrcmp(StrOf(a), StrOf(b)); }
 inline float StrICmp(TSymtabNode *a, TSymtabNode *b) { Write((short)vmStrICmp); return (float)MBstricmp(StrOf(a), StrOf(b)); }
 
-// TODO 0x1002f630 ?yyparse@@YAHXZ: bison 1.25 skeleton matches through the reduce dispatch (frame 0x790 vs 0x6a4: other slot layout); actions decoded rule by rule from the jump table (rules 4..124). Ours inlines all 95 Write(short) sites, the original calls ?Write@@YAXF@Z out of line at 23 of them (the index/opcode writes after Write(vmIndex) in rules 78/79/94/95/121/122, the backpatch writes in 71/73/79/81/84, Write(vmJumpIfZero/vmJump) after AddBackpatch in 72/73/78/83, 123/124); no code-neutral form found yet (22% similar)
+// TODO 0x1002f630 ?yyparse@@YAHXZ: bison 1.25 skeleton matches through the reduce dispatch (frame 0x790 vs 0x6a4: other slot layout); actions decoded rule by rule from the jump table (rules 4..124). Ours inlines all 95 Write(short) sites, the original calls ?Write@@YAXF@Z out of line at 23 of them (the index/opcode writes after Write(vmIndex) in rules 78/79/94/95/121/122, the backpatch writes in 71/73/79/81/84, Write(vmJumpIfZero/vmJump) after AddBackpatch in 72/73/78/83, 123/124); no code-neutral form found yet (59% similar)
 int yyparse(void)
 {
     register int yystate;
@@ -2656,7 +2656,7 @@ const char *__cdecl UniqueName()
     return name;
 }
 
-// TODO 0x10033850 ?StartFunctionBlock@@YAXPBD@Z: inline budget: original builds the first context inline (no MBVector ctor call) and calls back(), the context copy ctor and the single-element insert out of line; ours the other way round (34% similar)
+// TODO 0x10033850 ?StartFunctionBlock@@YAXPBD@Z: inline budget: original builds the first context inline (no MBVector ctor call) and calls back(), the context copy ctor and the single-element insert out of line; ours the other way round (64% similar)
 void StartFunctionBlock(const char *name)
 {
     gNestingLevel++;

@@ -54,7 +54,7 @@ void Gfx::VisibilityList::UpdateVisibilityList(Gfx::Camera *)
 
 #pragma optimize("a", off) // evidence: the file code reloads m_Chunks and the file name after every stream call
 
-// TODO 0x1010d840 ?LoadVisList@VisibilityList@Gfx@@QAEXV?$_SS@D@@@Z: same calls and order; register allocation of the default-list loops (the original keeps i in ebp and the chunk offset on the stack) and the stream state load differ (81% similar)
+// TODO 0x1010d840 ?LoadVisList@VisibilityList@Gfx@@QAEXV?$_SS@D@@@Z: same calls and order; register allocation of the default-list loops (the original keeps i in ebp and the chunk offset on the stack) and the stream state load differ (90% similar)
 void Gfx::VisibilityList::LoadVisList(_SS<char> fileName)
 {
     m_FileName = fileName;
@@ -169,7 +169,7 @@ void Gfx::VisibilityList::DelVisChunk(int chunk, int index)
     }
 }
 
-// TODO 0x1010e360 ?GetVisChunkVis@VisibilityList@Gfx@@QAE_NHH@Z: the original folds basic_string::npos to -1 in the inlined find/Find (as in Graph::DataBase::VerifyFile); VC6 loads it from memory
+// TODO 0x1010e360 ?GetVisChunkVis@VisibilityList@Gfx@@QAE_NHH@Z: (86% similar) the original folds basic_string::npos to -1 in the inlined find/Find (as in Graph::DataBase::VerifyFile); VC6 loads it from memory
 bool Gfx::VisibilityList::GetVisChunkVis(int chunk, int index)
 {
     if (chunk < m_NumChunks) {
@@ -182,7 +182,7 @@ bool Gfx::VisibilityList::GetVisChunkVis(int chunk, int index)
     return false;
 }
 
-// TODO 0x1010e4d0 ?GetVisChunkLod@VisibilityList@Gfx@@QAEHHH@Z: npos folded in the original (see GetVisChunkVis)
+// TODO 0x1010e4d0 ?GetVisChunkLod@VisibilityList@Gfx@@QAEHHH@Z: (54% similar) npos folded in the original (see GetVisChunkVis)
 int Gfx::VisibilityList::GetVisChunkLod(int chunk, int index)
 {
     if (chunk < m_NumChunks) {

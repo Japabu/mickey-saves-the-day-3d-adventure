@@ -12,7 +12,7 @@
 
 static void LogPluginError(const MfString &type, const MfString &message);
 
-// TODO 0x1008c3b0 ?MfFindPlugins@@YAXABVMfString@@0AAVMfStringList@@@Z: the frame has one
+// TODO 0x1008c3b0 ?MfFindPlugins@@YAXABVMfString@@0AAVMfStringList@@@Z: (80% similar) the frame has one
 // slot more below the directory (all locals 4 bytes higher) and the loop keeps the
 // list item in other registers; a named message is further off (35% similar)
 // Adds the plugin files of the plugin directory whose names start with

@@ -352,7 +352,7 @@ public:
     int CenterTransform(MfTransform3 &);
 };
 
-// TODO 0x1002acf0 ?MoveHip@MfManipPlanner@@QAEHABVMfTransform3@@PAVMfActor@@PAVMfSkeletonNode@@PAVMfManipSkill@@H@Z: (63% similar)
+// TODO 0x1002acf0 ?MoveHip@MfManipPlanner@@QAEHABVMfTransform3@@PAVMfActor@@PAVMfSkeletonNode@@PAVMfManipSkill@@H@Z: (85% similar)
 // register allocation: the original keeps the skill in ebx and the node array
 // in memory, this keeps the node array in ebx (same flow and frame; index and
 // cursor loops tried). Shares the setup code with LowerHip
@@ -581,7 +581,7 @@ int MfManipPlanner::RestoreHands(MfHandConfigs *hands, MfActor *actor, MfSkeleto
     }
     return 1;
 }
-// TODO 0x1002bf80 ?LowerHip@MfManipPlanner@@QAEHPAVMfActor@@PAVMfManipSkill@@M@Z: (59% similar)
+// TODO 0x1002bf80 ?LowerHip@MfManipPlanner@@QAEHPAVMfActor@@PAVMfManipSkill@@M@Z: (87% similar)
 // the original builds halfway from constants through the FPU, i.e. with an
 // inline MfRotation3(float, float, float, float) as in mflinalg's header (here
 // an imported call, 0x10 more frame); also the register allocation of MoveHip
@@ -801,7 +801,7 @@ struct MfManipHandApproach {
     MfVector3 mApproach;                                    // 0x48
 };
 
-// TODO 0x10027da0 ?FindHandContacts@MfManipPlanner@@QAEHPAVMfActor@@PAVMfHandle@@0PAVMfManipSkill@@@Z: (37% similar)
+// TODO 0x10027da0 ?FindHandContacts@MfManipPlanner@@QAEHPAVMfActor@@PAVMfHandle@@0PAVMfManipSkill@@@Z: (79% similar)
 // the call sequence is the original's, but the inline budget differs: the
 // original calls the imported MfVector3/MfRotation3 copies and assignments in
 // most places where VC5 expands them here (and keeps this in edi)
@@ -1053,7 +1053,7 @@ int MfManipPlanner::FindHandContacts(MfActor *actor, MfHandle *handle, MfActor *
     return 1;
 }
 
-// TODO 0x1002c6d0 ?OrientGrasp@MfManipPlanner@@QAE?AVMfTransform3@@AAV2@MPAVMfActor@@PAVMfHandle@@PAVMfSkeletonNode@@@Z: (38% similar)
+// TODO 0x1002c6d0 ?OrientGrasp@MfManipPlanner@@QAE?AVMfTransform3@@AAV2@MPAVMfActor@@PAVMfHandle@@PAVMfSkeletonNode@@@Z: (77% similar)
 // same control flow; VC5's inline budget differs (the original calls the
 // imported lengthSquared/operator= where this expands them), so the frame
 // (0x158 here 0x190) and every local offset shift
@@ -1160,7 +1160,7 @@ struct MfManipHandData {
     MfVector3 mPalm;                                        // 0x48 the palm's offset from the handle
 };
 
-// TODO 0x10029bc0 ?SampleConfigs@MfManipPlanner@@QAEHPAVMfActor@@PAVMfHandle@@PAVMfManipSkill@@@Z: (43% similar)
+// TODO 0x10029bc0 ?SampleConfigs@MfManipPlanner@@QAEHPAVMfActor@@PAVMfHandle@@PAVMfManipSkill@@@Z: (81% similar)
 // same control flow and calls; the original has this in ebx and the imported
 // MfTransform3 product in ebp, and its inline budget runs out at other places
 // (imported MfVector3()/operator= calls), which shifts the frame and locals
@@ -1507,7 +1507,7 @@ failed:
     return 0;
 }
 
-// TODO 0x100293f0 ?CloseFingers@MfManipPlanner@@QAEHPAVMfActor@@0PAVMfManipSkill@@@Z: (62% similar) the
+// TODO 0x100293f0 ?CloseFingers@MfManipPlanner@@QAEHPAVMfActor@@0PAVMfManipSkill@@@Z: (89% similar) the
 // code follows the original; its frame is 12 bytes smaller (the hand index and
 // the finger list share a slot, the sampling time stays in ebp), which moves
 // every stack slot and register choice
@@ -1725,7 +1725,7 @@ void MfManipPlanner::KeepDistance(MfLiveActor *actor, MfManipSkill *skill, MfVec
     actor->mSkeleton->syncChildTransforms(0);
 }
 
-// TODO 0x10024120 ?CheckReachable@MfManipPlanner@@QAEHPAVMfLiveActor@@PAVMfManipSkill@@0HPAVMfTransform3@@ABV4@PAVMfSkeletonNode@@PAVMfHandle@@AAVMfVector3@@H3PAVMfLocoSkill@@V7@@Z: (45% similar)
+// TODO 0x10024120 ?CheckReachable@MfManipPlanner@@QAEHPAVMfLiveActor@@PAVMfManipSkill@@0HPAVMfTransform3@@ABV4@PAVMfSkeletonNode@@PAVMfHandle@@AAVMfVector3@@H3PAVMfLocoSkill@@V7@@Z: (81% similar)
 // VC5's inline budget: the original calls the imported MfVector3/MfRotation3
 // constructors and lengthSquared where this expands them, which shifts the frame
 // (0x20 bytes) and every offset; calls and control flow follow the original

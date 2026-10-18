@@ -25,7 +25,7 @@ void (__cdecl *TExecutor::handlers[73])(TExecutor *) = {
     BadOpcodeHandler
 };
 
-// TODO 0x100361e0 ??0TExecutor@@QAE@PAVCMBScript@@PAD@Z: original re-reads cursor and code from the object after every member store (ours keeps codeBlock in a register); cursor = code and helper forms tried (78% similar)
+// TODO 0x100361e0 ??0TExecutor@@QAE@PAVCMBScript@@PAD@Z: original re-reads cursor and code from the object after every member store (ours keeps codeBlock in a register); cursor = code and helper forms tried (87% similar)
 TExecutor::TExecutor(CMBScript *obj, char *codeBlock)
 {
     code = codeBlock;

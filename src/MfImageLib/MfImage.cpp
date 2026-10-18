@@ -89,7 +89,7 @@ int MfImage::RowOffset()
     return m_rowOffset;
 }
 
-// TODO 0x100016d0 ?SampleBilinear@MfImage@@QBEXMMPAEH@Z: x87 code: original interleaves the 4-term bilinear sum with fxch (keeps 4 products on the FP stack, spills this); compiled sums sequentially without fxch, tried 10+ term orders/parenthesizations
+// TODO 0x100016d0 ?SampleBilinear@MfImage@@QBEXMMPAEH@Z: (82% similar) x87 code: original interleaves the 4-term bilinear sum with fxch (keeps 4 products on the FP stack, spills this); compiled sums sequentially without fxch, tried 10+ term orders/parenthesizations
 void MfImage::SampleBilinear(float x, float y, unsigned char *out, int count) const
 {
     int pixelSize = PixelSize(m_format);

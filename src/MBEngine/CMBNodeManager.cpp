@@ -60,7 +60,7 @@ unsigned long CMBNodeManager::Release(void)
     return r;
 }
 
-// TODO 0x1004d880 ??1CMBNodeManager@@QAE@XZ: fixed 2026-10-16: RemoveListener(-3, this) went to the wrong vftable slot (the IMBEventManager overloads were declared in the wrong order); both pointers are now default-constructed and filled by CreateObject as in the original; left: inline budget: original keeps the first CreateObject, list::erase and ~MBComPtr<IMBNode>/_Freefront out of line; ours inlines them (deque/list dtors expand) (61% similar)
+// TODO 0x1004d880 ??1CMBNodeManager@@QAE@XZ: fixed 2026-10-16: RemoveListener(-3, this) went to the wrong vftable slot (the IMBEventManager overloads were declared in the wrong order); both pointers are now default-constructed and filled by CreateObject as in the original; left: inline budget: original keeps the first CreateObject, list::erase and ~MBComPtr<IMBNode>/_Freefront out of line; ours inlines them (deque/list dtors expand) (79% similar)
 CMBNodeManager::~CMBNodeManager(void)
 {
     MBComPtr<IMBPeriodicalManager> _periodicalManager;

@@ -32,14 +32,14 @@ void Gfx::CurrentTransformationMatrix::SetOrthographic(float left, float right, 
     m_ProjectionChanged = true;
 }
 
-// TODO 0x100f2c80 ?PushLeft@CurrentTransformationMatrix@Gfx@@QAEXABV?$TMatrix4@M@@@Z: product loop identical; the original copies the left factor with an out-of-line setValues() and calls vector::insert out of line
+// TODO 0x100f2c80 ?PushLeft@CurrentTransformationMatrix@Gfx@@QAEXABV?$TMatrix4@M@@@Z: (42% similar) product loop identical; the original copies the left factor with an out-of-line setValues() and calls vector::insert out of line
 void Gfx::CurrentTransformationMatrix::PushLeft(const TMatrix4<float> &m)
 {
     m_ModelMatrixStack.push(m * m_ModelMatrixStack.top());
     m_ModelChanged = true;
 }
 
-// TODO 0x100f2d50 ?PushRight@CurrentTransformationMatrix@Gfx@@QAEXABV?$TMatrix4@M@@@Z: as PushLeft
+// TODO 0x100f2d50 ?PushRight@CurrentTransformationMatrix@Gfx@@QAEXABV?$TMatrix4@M@@@Z: (36% similar) as PushLeft
 void Gfx::CurrentTransformationMatrix::PushRight(const TMatrix4<float> &m)
 {
     m_ModelMatrixStack.push(m_ModelMatrixStack.top() * m);

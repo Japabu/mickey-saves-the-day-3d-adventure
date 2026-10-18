@@ -42,7 +42,7 @@ DXGfx::PolyLineSetD3D::~PolyLineSetD3D()
 {
 }
 
-// TODO 0x100d8260 ?Render@PolyLineSetD3D@DXGfx@@UAE?AW4Response@NodeTraverser@Graph@@PAVRenderTraverser@Gfx@@@Z: 86% - the original reuses the CurrentTransformationMatrix pointer after each changed-flag store (no-alias style), ours reloads s_pInstance; a unit-wide /Oa gets 87% and breaks Clean, SetupStrips stays; same calls and arguments
+// TODO 0x100d8260 ?Render@PolyLineSetD3D@DXGfx@@UAE?AW4Response@NodeTraverser@Graph@@PAVRenderTraverser@Gfx@@@Z: 91% - the original reuses the CurrentTransformationMatrix pointer after each changed-flag store (no-alias style), ours reloads s_pInstance; a unit-wide /Oa gets 87% and breaks Clean, SetupStrips stays; same calls and arguments
 Graph::NodeTraverser::Response DXGfx::PolyLineSetD3D::Render(Gfx::RenderTraverser *traverser)
 {
     DX::Device *device = ((DXGfx::ViewD3D *)traverser->GetView())->GetDevice();
@@ -133,7 +133,7 @@ void DXGfx::PolyLineSetD3D::BuildVertexData()
     }
 }
 
-// TODO 0x100d87e0 ?AppendVertices@PolyLineSetD3D@DXGfx@@IAEXH@Z: 26% - inline budget: same structure (setLength with out-of-line reallocMem), but the clamp temporary is spilled and registers differ
+// TODO 0x100d87e0 ?AppendVertices@PolyLineSetD3D@DXGfx@@IAEXH@Z: 59% - inline budget: same structure (setLength with out-of-line reallocMem), but the clamp temporary is spilled and registers differ
 void DXGfx::PolyLineSetD3D::AppendVertices(int n)
 {
     SetupStrips();
@@ -154,7 +154,7 @@ void DXGfx::PolyLineSetD3D::AppendVertices(int n)
     }
 }
 
-// TODO 0x100d8950 ?ChopVertices@PolyLineSetD3D@DXGfx@@IAEXH@Z: 31% - inline budget: our copy inlines Vec::reallocMem into the setLength, the original calls it and inlines only initElements
+// TODO 0x100d8950 ?ChopVertices@PolyLineSetD3D@DXGfx@@IAEXH@Z: 41% - inline budget: our copy inlines Vec::reallocMem into the setLength, the original calls it and inlines only initElements
 void DXGfx::PolyLineSetD3D::ChopVertices(int n)
 {
     SetupStrips();
@@ -164,7 +164,7 @@ void DXGfx::PolyLineSetD3D::ChopVertices(int n)
         m_LitVertices.setLength(m_LitVertices.length() - n);
 }
 
-// TODO 0x100d8a40 ?SetupStrips@PolyLineSetD3D@DXGfx@@IAEXXZ: 54% - matches with a unit-wide #pragma optimize("a", on) (the strip loop keeps m_Prim/m_StripLengths in registers), which breaks Clean, BuildVertexData and the Vec instances; a per-function pragma has no effect
+// TODO 0x100d8a40 ?SetupStrips@PolyLineSetD3D@DXGfx@@IAEXXZ: 77% - matches with a unit-wide #pragma optimize("a", on) (the strip loop keeps m_Prim/m_StripLengths in registers), which breaks Clean, BuildVertexData and the Vec instances; a per-function pragma has no effect
 void DXGfx::PolyLineSetD3D::SetupStrips()
 {
     m_nStrips = m_Prim.length() - 1;
@@ -177,7 +177,7 @@ void DXGfx::PolyLineSetD3D::SetupStrips()
     }
 }
 
-// TODO 0x100d8af0 ?CopyVertices@PolyLineSetD3D@DXGfx@@IAEXXZ: 61% - register allocation: the original keeps 0 in ecx for the compares and the m_ChangedVertices reset, ours uses immediates
+// TODO 0x100d8af0 ?CopyVertices@PolyLineSetD3D@DXGfx@@IAEXXZ: 85% - register allocation: the original keeps 0 in ecx for the compares and the m_ChangedVertices reset, ours uses immediates
 void DXGfx::PolyLineSetD3D::CopyVertices()
 {
     int start = 0;
@@ -221,7 +221,7 @@ void DXGfx::PolyLineSetD3D::CopyUnlitVertex(int i)
     }
 }
 
-// TODO 0x100d8c20 ?CopyLitVertex@PolyLineSetD3D@DXGfx@@IAEXHABV?$Vec4@M@@@Z: 46% - register allocation: the original keeps the colour offset in a stack slot and the vertex pointer in edi; same expression order and calls
+// TODO 0x100d8c20 ?CopyLitVertex@PolyLineSetD3D@DXGfx@@IAEXHABV?$Vec4@M@@@Z: 57% - register allocation: the original keeps the colour offset in a stack slot and the vertex pointer in edi; same expression order and calls
 void DXGfx::PolyLineSetD3D::CopyLitVertex(int i, const Vec4<float> &diffuse)
 {
     int base = m_Stride * i;
@@ -320,10 +320,10 @@ void DXGfx::PolyLineSetD3D::SetDrawFunction()
 // 0x100d8f90 ??_G?$Vec@U_D3DLVERTEX@@@@UAEPAXI@Z
 // 0x100d8fc0 ??1?$Vec@U_D3DLVERTEX@@@@UAE@XZ
 // 0x100d8ff0 ?reallocMem@?$Vec@H@@IAEXHHH@Z
-// TODO 0x100d90b0 ?initElements@?$Vec@H@@IAEXHH@Z: 40% - rep stosd only with /Oa at the end of the unit (template bodies), which breaks the reallocMem instances
+// TODO 0x100d90b0 ?initElements@?$Vec@H@@IAEXHH@Z: 56% - rep stosd only with /Oa at the end of the unit (template bodies), which breaks the reallocMem instances
 // 0x100d90d0 ?reallocMem@?$Vec@U_D3DVERTEX@@@@IAEXHHH@Z
 // TODO 0x100d91c0 ?reallocMem@?$Vec@U_D3DLVERTEX@@@@IAEXHHH@Z: not emitted: our copy inlines Vec<D3DLVERTEX>::reallocMem at every call (inline budget), and emits initElements<D3DVERTEX> instead
-// TODO 0x100d92b0 ?initElements@?$Vec@U_D3DLVERTEX@@@@IAEXHH@Z: 55% - rep stosd only with /Oa at the end of the unit (template bodies), which breaks the reallocMem instances
+// TODO 0x100d92b0 ?initElements@?$Vec@U_D3DLVERTEX@@@@IAEXHH@Z: 62% - rep stosd only with /Oa at the end of the unit (template bodies), which breaks the reallocMem instances
 
 // the run-time type of DXGfx::PolyLineSetD3D (values from the original's data section)
 StdBase::TypeInfo const DXGfx::PolyLineSetD3D::s_TypeInfo = { "DXGfx::PolyLineSetD3D", &Gfx::PolyLineSet::s_TypeInfo };

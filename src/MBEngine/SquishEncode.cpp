@@ -9,9 +9,9 @@ template <class T> class SquishEncode {
 public:
     enum { kLiteralRun = (T)1 << (sizeof(T) * 8 - 1), kMaxRun = kLiteralRun };
 
-// TODO 0x10063000 ?RLEEncodeBlock@?$SquishEncode@E@@SAXPAPAEPBEPAVSquishImageDescriptor@@PBV2@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (23% similar)
-// TODO 0x10063440 ?RLEEncodeBlock@?$SquishEncode@G@@SAXPAPAEPBEPAVSquishImageDescriptor@@PBV2@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (45% similar)
-// TODO 0x100638b0 ?RLEEncodeBlock@?$SquishEncode@K@@SAXPAPAEPBEPAVSquishImageDescriptor@@PBV2@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (48% similar)
+// TODO 0x10063000 ?RLEEncodeBlock@?$SquishEncode@E@@SAXPAPAEPBEPAVSquishImageDescriptor@@PBV2@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (81% similar)
+// TODO 0x10063440 ?RLEEncodeBlock@?$SquishEncode@G@@SAXPAPAEPBEPAVSquishImageDescriptor@@PBV2@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (80% similar)
+// TODO 0x100638b0 ?RLEEncodeBlock@?$SquishEncode@K@@SAXPAPAEPBEPAVSquishImageDescriptor@@PBV2@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (72% similar)
     static void RLEEncodeBlock(unsigned char **destHdl, const unsigned char *src, SquishImageDescriptor *destFmt,
                                const SquishImageDescriptor *srcFmt, long srcx, long srcy, long srcw, long srch)
     {
@@ -78,9 +78,9 @@ public:
     }
 
     // As RLEEncodeBlock; transparent pixels always go into runs of equal pixels.
-// TODO 0x10063200 ?RLEEncodeBlockTrans@?$SquishEncode@E@@SAXPAPAEPBEPAVSquishImageDescriptor@@PBV2@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (29% similar)
-// TODO 0x10063640 ?RLEEncodeBlockTrans@?$SquishEncode@G@@SAXPAPAEPBEPAVSquishImageDescriptor@@PBV2@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (27% similar)
-// TODO 0x10063aa0 ?RLEEncodeBlockTrans@?$SquishEncode@K@@SAXPAPAEPBEPAVSquishImageDescriptor@@PBV2@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (38% similar)
+// TODO 0x10063200 ?RLEEncodeBlockTrans@?$SquishEncode@E@@SAXPAPAEPBEPAVSquishImageDescriptor@@PBV2@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (76% similar)
+// TODO 0x10063640 ?RLEEncodeBlockTrans@?$SquishEncode@G@@SAXPAPAEPBEPAVSquishImageDescriptor@@PBV2@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (73% similar)
+// TODO 0x10063aa0 ?RLEEncodeBlockTrans@?$SquishEncode@K@@SAXPAPAEPBEPAVSquishImageDescriptor@@PBV2@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (67% similar)
     static void RLEEncodeBlockTrans(unsigned char **destHdl, const unsigned char *src,
                                     SquishImageDescriptor *destFmt, const SquishImageDescriptor *srcFmt, long srcx,
                                     long srcy, long srcw, long srch)
@@ -147,7 +147,7 @@ public:
     }
 };
 
-// TODO 0x10062ac0 ?RLEEncodeBlock@@YAXPAPAEPBEPAVSquishImageDescriptor@@PBV1@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (28% similar)
+// TODO 0x10062ac0 ?RLEEncodeBlock@@YAXPAPAEPBEPAVSquishImageDescriptor@@PBV1@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (84% similar)
 void RLEEncodeBlock(unsigned char **dest, const unsigned char *src, SquishImageDescriptor *destFmt,
                     const SquishImageDescriptor *srcFmt, long srcx, long srcy, long srcw, long srch)
 {
@@ -160,7 +160,7 @@ void RLEEncodeBlock(unsigned char **dest, const unsigned char *src, SquishImageD
         SquishEncode<unsigned long>::RLEEncodeBlock(dest, src, destFmt, srcFmt, srcx, srcy, srcw, srch);
 }
 
-// TODO 0x10062d40 ?RLEEncodeBlockTrans@@YAXPAPAEPBEPAVSquishImageDescriptor@@PBV1@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (36% similar)
+// TODO 0x10062d40 ?RLEEncodeBlockTrans@@YAXPAPAEPBEPAVSquishImageDescriptor@@PBV1@JJJJ@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (78% similar)
 void RLEEncodeBlockTrans(unsigned char **dest, const unsigned char *src, SquishImageDescriptor *destFmt,
                          const SquishImageDescriptor *srcFmt, long srcx, long srcy, long srcw, long srch)
 {

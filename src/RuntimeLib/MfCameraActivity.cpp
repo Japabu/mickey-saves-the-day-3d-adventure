@@ -170,7 +170,7 @@ void MfCameraActivity::SetCameraUpVector(int on, const MfVector3 &up)
     mUpVector = up;
 }
 
-// TODO 0x1001b2c0 ?GetTargetCenter@MfCameraActivity@@IAE?AVMfVector3@@H@Z: the two box
+// TODO 0x1001b2c0 ?GetTargetCenter@MfCameraActivity@@IAE?AVMfVector3@@H@Z: (82% similar) the two box
 // corners take each other's stack slots, and the test of local is placed
 // differently in the actor branch (68% similar)
 // The point the camera looks at: the middle of the targets, of the target
@@ -233,7 +233,7 @@ MfVector3 MfCameraActivity::GetTargetDirection()
     return direction.unit();
 }
 
-// TODO 0x1001b6f0 ?UpdateState@MfCameraActivity@@IAEXHAAMM@Z: same calls, tests and stores;
+// TODO 0x1001b6f0 ?UpdateState@MfCameraActivity@@IAEXHAAMM@Z: (89% similar) same calls, tests and stores;
 // the x87 stack is scheduled differently around the exponentials (the original keeps b on
 // the stack after e2 and keeps x on the stack in the critical case) (87% similar)
 // Advances spring i by dt: the damped oscillator x'' + k x' + c x = 0 solved
@@ -285,7 +285,7 @@ float MfCameraActivity::GetTimeStep(unsigned long &time)
     return (time - mLastTime) * 0.001f;
 }
 
-// TODO 0x1001b9a0 ?SetCameraTransform@MfCameraActivity@@IAEXAAVMfTransform3@@M@Z: the order of
+// TODO 0x1001b9a0 ?SetCameraTransform@MfCameraActivity@@IAEXAAVMfTransform3@@M@Z: (86% similar) the order of
 // the calls agrees; the frame is 0x10 bytes smaller here, and the normalization of to inlines
 // lengthSquared where the original calls it. The two normalizations look like mflinalg's inline
 // MfVector3::normalize (the first with lengthSquared inlined and regrouped as y*y + z*z + x*x,
@@ -584,7 +584,7 @@ int MfOrbitCameraActivity::TestViewDirection(int i)
     return 0;
 }
 
-// TODO 0x1001cde0 ?Update@MfOrbitCameraActivity@@UAE?AW4MfActivityStatus@@K@Z: the body follows
+// TODO 0x1001cde0 ?Update@MfOrbitCameraActivity@@UAE?AW4MfActivityStatus@@K@Z: (81% similar) the body follows
 // the original's calls and branches (read from the disassembly); temporaries and the order
 // of some computations differ, the frame is larger here (49% similar)
 // Keeps the camera at a view point around its targets: switches view points

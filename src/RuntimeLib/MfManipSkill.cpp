@@ -31,7 +31,7 @@ long const MfManipSkill::STREAM_TYPE = 'lkSM';
 // 0x100038b0 ?GraspOrientation@MfManipSkill@@QAEMXZ
 // 0x100038c0 ?HandleWrtTrace@MfManipSkill@@QAEAAVMfTransform3@@XZ
 
-// TODO 0x100464f0 ?ScaleJoint@MfManipSkill@@UAEXHABVMfVector3@@@Z: the original copies the home transform
+// TODO 0x100464f0 ?ScaleJoint@MfManipSkill@@UAEXHABVMfVector3@@@Z: (64% similar) the original copies the home transform
 // in inline and back with the imported member assignments (here the other way round) and keeps the
 // loop count on the stack; 44% similar
 // Scaling the root scales the handles with it.
@@ -108,7 +108,7 @@ void MfManipSkill::Copy(const MfSkill &skill)
     mContactForce = other.mContactForce;
 }
 
-// TODO 0x10046b30 ?ComputeInfo@MfManipSkill@@UAEXPAVMfActor@@@Z: the calls agree but for one MfVector3
+// TODO 0x10046b30 ?ComputeInfo@MfManipSkill@@UAEXPAVMfActor@@@Z: (85% similar) the calls agree but for one MfVector3
 // constructor this build inlines; the original's frame is 0x14 bytes larger and it keeps other
 // registers through the hand loop (68% similar)
 // With the actor at the start of the skill: where the handle is relative to
@@ -310,7 +310,7 @@ int MfManipSkill::ComputeFingerData(MfActor *actor)
     return 1;
 }
 
-// TODO 0x10047820 ?UseSubclassData@MfManipSkill@@UAEXABVMfProtoSkill@@@Z: the original keeps the handle
+// TODO 0x10047820 ?UseSubclassData@MfManipSkill@@UAEXABVMfProtoSkill@@@Z: (81% similar) the original keeps the handle
 // loop count in ebx and the handle array in edi (here on the stack) and normalizes the home rotation
 // through stack temporaries (a frame 4 bytes larger); 61% similar
 // The hands, anchors and the handle of the prototype.
@@ -446,7 +446,7 @@ long MfManipSkill::StreamType() const
     return STREAM_TYPE;
 }
 
-// TODO 0x100480e0 ?ReadFromStream@MfManipSkill@@UAE?AW4MfStreamError@@AAVMfStream@@@Z: the hand's vector
+// TODO 0x100480e0 ?ReadFromStream@MfManipSkill@@UAE?AW4MfStreamError@@AAVMfStream@@@Z: (79% similar) the hand's vector
 // is zeroed inline (imported constructor here), the old-format home transform is built from float
 // constants and normalized through stack temporaries; 60% similar
 // Hands of the same node as an earlier hand are dropped; skills of the old
@@ -533,7 +533,7 @@ MfStreamError MfManipSkill::WriteToStream(MfStream &stream) const
     return stream.Status();
 }
 
-// TODO 0x100486c0 ?IsValid@MfManipSkill@@UAEHAAVMfString@@PAVMfActor@@@Z: VC5 merges the repeated message
+// TODO 0x100486c0 ?IsValid@MfManipSkill@@UAEHAAVMfString@@PAVMfActor@@@Z: (65% similar) VC5 merges the repeated message
 // tails of the failure cases here (96 bytes shorter); the original keeps each case whole (54% similar)
 // Checks what a manipulation skill needs; message gets the reason when it
 // is not valid.

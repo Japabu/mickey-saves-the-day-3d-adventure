@@ -319,8 +319,8 @@ void DX::DirectDraw::CopyDriverInfo(IDirectDraw7 *directDraw, GUID *guid)
 // 0x100cfd40 ??1?$ValList@UDDDeviceInfo@DX@@@@QAE@XZ
 // 0x100d0260 ??1L@?$ValList@UDDDeviceInfo@DX@@@@QAE@XZ
 // 0x100cfd00 ??A?$ValList@UDXDisplayModeInfo@DX@@@@QAEAAUDXDisplayModeInfo@DX@@H@Z
-// TODO 0x100cfd90 ?Add@?$ValList@UDDDeviceInfo@DX@@@@QAEHUDDDeviceInfo@DX@@@Z: 52% - same code; the original also keeps this in a stack slot for the EH unwind, so every stack offset moves
-// TODO 0x100d0060 ?RemoveAll@?$ValList@UDXDisplayModeInfo@DX@@@@QAEXXZ: inline in ValList.h; this unit inlines every call, so no out-of-line copy is emitted here
+// TODO 0x100cfd90 ?Add@?$ValList@UDDDeviceInfo@DX@@@@QAEHUDDDeviceInfo@DX@@@Z: 99% - same code; the original also keeps this in a stack slot for the EH unwind, so every stack offset moves
+// TODO 0x100d0060 ?RemoveAll@?$ValList@UDXDisplayModeInfo@DX@@@@QAEXXZ: (100% similar) inline in ValList.h; this unit inlines every call, so no out-of-line copy is emitted here
 // 0x100d00a0 ?AddList@?$ValList@UDXDisplayModeInfo@DX@@@@QAEHABV1@@Z
-// TODO 0x100d0160 ?RemoveAll@?$ValList@UD3DDriverInfo@DX@@@@QAEXXZ: inline in ValList.h; this unit inlines every call, so no out-of-line copy is emitted here
+// TODO 0x100d0160 ?RemoveAll@?$ValList@UD3DDriverInfo@DX@@@@QAEXXZ: (100% similar) inline in ValList.h; this unit inlines every call, so no out-of-line copy is emitted here
 // 0x100d01a0 ?AddList@?$ValList@UD3DDriverInfo@DX@@@@QAEHABV1@@Z

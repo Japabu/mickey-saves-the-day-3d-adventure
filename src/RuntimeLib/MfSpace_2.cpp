@@ -281,7 +281,7 @@ int MfSpace::Load(const MfString &file)
     return stream.Status() ? 7 : 0;
 }
 
-// TODO 0x10097a60 ?GetActorList@MfSpace@@UAEXPAVMfDblList@@ABVMfString@@@Z: (41% similar) the original calls
+// TODO 0x10097a60 ?GetActorList@MfSpace@@UAEXPAVMfDblList@@ABVMfString@@@Z: (58% similar) the original calls
 // the imported MfString::CopyOnWrite in the first ConvertToUpper and expands it
 // in the second (see AddActorSync); VC5 expands both here; the original also keeps
 // two list->Add calls (filtered, unfiltered; cast via neg/sbb) that VC5 tail-merges here
@@ -710,7 +710,7 @@ MfStreamError MfSpace::_WriteActorChildList(MfStream &stream, MfLiveActor *actor
     return stream.Status();
 }
 
-// TODO 0x10096bf0 ?AddActorSync@MfSpace@@QAEHPAVMfLiveActor@@ABVMfTransform3@@H@Z: (35% similar) the original
+// TODO 0x10096bf0 ?AddActorSync@MfSpace@@QAEHPAVMfLiveActor@@ABVMfTransform3@@H@Z: (70% similar) the original
 // calls the imported MfString::CopyOnWrite in ConvertToUpper (VC5 expands it
 // here as in the smaller functions) and keeps the actor in esi; the index
 // string is constructed before mPrototype is reread for the name's ?: (folded
@@ -801,7 +801,7 @@ struct MfFilterItem {
     };
 };
 
-// TODO 0x100970e0 ?RemoveActorSync@MfSpace@@QAEHPAVMfActor@@H@Z: (63% similar) the original calls
+// TODO 0x100970e0 ?RemoveActorSync@MfSpace@@QAEHPAVMfActor@@H@Z: (82% similar) the original calls
 // the imported MfString::CopyOnWrite in ConvertToUpper and re-tests mPrototype in
 // the name's ?: (VC5 expands the first and folds the second here)
 // Takes the actor out of the space; with unregister it is also detached,
@@ -1081,7 +1081,7 @@ void MfSpace::ResetEnv()
         g_world->GoLive(0, 0);
 }
 
-// TODO 0x10094e80 ?_ReadActorInfo@MfSpace@@IAE?AW4MfStreamError@@AAVMfStream@@PAVMfLiveActor@@H@Z: (53% similar)
+// TODO 0x10094e80 ?_ReadActorInfo@MfSpace@@IAE?AW4MfStreamError@@AAVMfStream@@PAVMfLiveActor@@H@Z: (74% similar)
 // the original calls the imported MfString::CopyOnWrite in both ConvertToUpper and
 // the out-of-line allTraversal() (VC5 expands both here), keeps this in ebp and
 // stream in edi, and the root test's bool in the stream parameter's slot; logic
@@ -1229,7 +1229,7 @@ MfStreamError MfSpace::_ReadActorInfo(MfStream &stream, MfLiveActor *parent, int
     return stream.Status();
 }
 
-// TODO 0x10095660 ?_ReadActorChildList@MfSpace@@IAE?AW4MfStreamError@@AAVMfStream@@PAVMfLiveActor@@1@Z: (48% similar)
+// TODO 0x10095660 ?_ReadActorChildList@MfSpace@@IAE?AW4MfStreamError@@AAVMfStream@@PAVMfLiveActor@@1@Z: (81% similar)
 // the original calls the imported MfRotation3 constructor and operator= of
 // MfRotation3/MfVector3 (expanded here; frame 8 bytes larger) and keeps stream in
 // ebx and owner in ebp; it also jumps from the !owner test past the reload of the

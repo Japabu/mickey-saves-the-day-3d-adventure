@@ -54,7 +54,7 @@ void MfJointPath::SetKey(int i, const MfTransform3 &xform)
     mRotations[i] = xform.rotation();
 }
 
-// TODO 0x100302c0 ?Sample@MfJointPath@@QAE?AVMfTransform3@@KH@Z: the original calls the imported
+// TODO 0x100302c0 ?Sample@MfJointPath@@QAE?AVMfTransform3@@KH@Z: (77% similar) the original calls the imported
 // MfRotation3() and copy constructors where these headers expand them inline, and divides
 // by mInterval with fidiv (the registers differ from there; 34% similar)
 // The transform at time: the sample before it, or (with interpolate) the

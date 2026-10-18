@@ -34,7 +34,7 @@ void Gfx::ProjectionMatrix::SetPerspective(float fov, float aspect, float zNear,
     elements[3][3] = 0.0f;
 }
 
-// TODO 0x1010fdf0 ?SetOrthographic@ProjectionMatrix@Gfx@@QAEXMMMMMM@Z: as SetPerspective (constant stores hoisted here) (70% similar)
+// TODO 0x1010fdf0 ?SetOrthographic@ProjectionMatrix@Gfx@@QAEXMMMMMM@Z: as SetPerspective (constant stores hoisted here) (76% similar)
 void Gfx::ProjectionMatrix::SetOrthographic(float left, float right, float bottom, float top, float zNear, float zFar)
 {
     elements[0][0] = 2.0f / (right - left);

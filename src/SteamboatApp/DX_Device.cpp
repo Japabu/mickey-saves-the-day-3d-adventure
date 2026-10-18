@@ -89,7 +89,7 @@ void DX::Device::Release()
     m_D3DTextureStageState.Reset();
 }
 
-// TODO 0x100c9ef0 ?Create@Device@DX@@QAEXHPAVDirectDrawSurface@2@HH@Z: right statements, but VC6 here inlines a different subset of the ValList lookups (Driver/DriverInfo/GetCurrentDevice) and closes the try block differently
+// TODO 0x100c9ef0 ?Create@Device@DX@@QAEXHPAVDirectDrawSurface@2@HH@Z: (77% similar) right statements, but VC6 here inlines a different subset of the ValList lookups (Driver/DriverInfo/GetCurrentDevice) and closes the try block differently
 void DX::Device::Create(int driver, DX::DirectDrawSurface *backBuffer, int width, int height)
 {
     m_pBackBuffer = backBuffer;
@@ -122,7 +122,7 @@ void DX::Device::Create(int driver, DX::DirectDrawSurface *backBuffer, int width
 // the first texture format to try (the original's .data)
 int DX::Device::m_StartFormat = -1;
 
-// TODO 0x100ca1c0 ?CreateZBuffer@Device@DX@@QAEXHHH@Z: as Device::Create: the original calls ValList<D3DDriverInfo>::operator[] out of line inside DriverInfo(int), VC6 here inlines it
+// TODO 0x100ca1c0 ?CreateZBuffer@Device@DX@@QAEXHHH@Z: (77% similar) as Device::Create: the original calls ValList<D3DDriverInfo>::operator[] out of line inside DriverInfo(int), VC6 here inlines it
 void DX::Device::CreateZBuffer(int width, int height, int driver)
 {
     delete m_pZBuffer;
@@ -287,7 +287,7 @@ long DX::Device::ResetTextureStageState()
     return SetTextureStageState();
 }
 
-// TODO 0x100cad70 ?SetTextureStageState@Device@DX@@QAEJHW4_D3DTEXTURESTAGESTATETYPE@@K@Z: the original lowers the switch to one 22-entry jump table, VC6 splits it here (case layout not found)
+// TODO 0x100cad70 ?SetTextureStageState@Device@DX@@QAEJHW4_D3DTEXTURESTAGESTATETYPE@@K@Z: (32% similar) the original lowers the switch to one 22-entry jump table, VC6 splits it here (case layout not found)
 long DX::Device::SetTextureStageState(int stage, D3DTEXTURESTAGESTATETYPE type, unsigned long value)
 {
     HRESULT hr = D3D_OK;
@@ -387,7 +387,7 @@ void DX::Device::EnumTextureFormats()
     m_iD3DTextureFormat = m_StartFormat;
 }
 
-// TODO 0x100cb120 ?EnumTextureFormatsCallback@Device@DX@@KGJPAU_DDPIXELFORMAT@@PAX@Z: 61% - reconstruction; the original mixes inlined and out-of-line ValList lookups and its bit-count loops differ
+// TODO 0x100cb120 ?EnumTextureFormatsCallback@Device@DX@@KGJPAU_DDPIXELFORMAT@@PAX@Z: 87% - reconstruction; the original mixes inlined and out-of-line ValList lookups and its bit-count loops differ
 HRESULT __stdcall DX::Device::EnumTextureFormatsCallback(DDPIXELFORMAT *format, void *context)
 {
     DX::Device *device = (DX::Device *)context;
@@ -446,7 +446,7 @@ HRESULT __stdcall DX::Device::EnumTextureFormatsCallback(DDPIXELFORMAT *format, 
     return DDENUMRET_OK;
 }
 
-// TODO 0x100cb690 ?FindSurfaceDesc@Device@DX@@QAEXPAU_DDSURFACEDESC2@@HHHH@Z: 91% - the original keeps found in a stack slot compared with a zeroed esi; VC6 here tests it in a register, so the register use differs
+// TODO 0x100cb690 ?FindSurfaceDesc@Device@DX@@QAEXPAU_DDSURFACEDESC2@@HHHH@Z: 95% - the original keeps found in a stack slot compared with a zeroed esi; VC6 here tests it in a register, so the register use differs
 void DX::Device::FindSurfaceDesc(DDSURFACEDESC2 *desc, int mipMap, int colorKey, int alpha, int rgb16)
 {
     int count = m_aD3DTextureFormatInfo.Count();

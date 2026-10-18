@@ -28,7 +28,7 @@ char const * DXGfx::TextureAttributeD3D::GetTypeName() const
     return s_TypeInfo.typeName;
 }
 
-// TODO 0x100d9bf0 ??0TextureAttributeD3D@DXGfx@@QAE@XZ: inline budget: the original calls the string's _Tidy and ssasn out of line, VC6 here inlines both (same stores otherwise)
+// TODO 0x100d9bf0 ??0TextureAttributeD3D@DXGfx@@QAE@XZ: (30% similar) inline budget: the original calls the string's _Tidy and ssasn out of line, VC6 here inlines both (same stores otherwise)
 DXGfx::TextureAttributeD3D::TextureAttributeD3D()
     : m_ColorOp(D3DTOP_MODULATE), m_ColorArg1(D3DTA_TEXTURE), m_ColorArg2(D3DTA_DIFFUSE),
       m_AlphaOp(D3DTOP_DISABLE), m_AlphaArg1(D3DTA_TEXTURE), m_AlphaArg2(D3DTA_DIFFUSE), m_Unknownfc(2)
@@ -65,7 +65,7 @@ void DXGfx::TextureAttributeD3D::SetTexture()
     SetTextureStageCompositeMode(m_TextureStageCompositeMode);
 }
 
-// TODO 0x100d9e40 ?Apply@TextureAttributeD3D@DXGfx@@UBEXPAVPassiveTraverser@Graph@@@Z: 68% - the statements and calls are recovered; the original calls operator[] of the device list out of line and lays the !WantTexturing exit out after the try block
+// TODO 0x100d9e40 ?Apply@TextureAttributeD3D@DXGfx@@UBEXPAVPassiveTraverser@Graph@@@Z: 81% - the statements and calls are recovered; the original calls operator[] of the device list out of line and lays the !WantTexturing exit out after the try block
 void DXGfx::TextureAttributeD3D::Apply(Graph::PassiveTraverser *traverser) const
 {
     Gfx::RenderTraverser *renderTraverser = StdBaseCast(traverser, (Gfx::RenderTraverser *)0);
@@ -218,7 +218,7 @@ void DXGfx::TextureAttributeD3D::SetTextureStageCompositeMode(Gfx::TextureAttrib
     }
 }
 
-// TODO 0x100da400 ?GetTextureCache@TextureAttributeD3D@DXGfx@@MAEPAEAAVRefreshTraverser@Gfx@@@Z: 67% - the original keeps the device and paths in stack slots and inlines the string helpers differently; same calls
+// TODO 0x100da400 ?GetTextureCache@TextureAttributeD3D@DXGfx@@MAEPAEAAVRefreshTraverser@Gfx@@@Z: 80% - the original keeps the device and paths in stack slots and inlines the string helpers differently; same calls
 unsigned char *DXGfx::TextureAttributeD3D::GetTextureCache(Gfx::RefreshTraverser &traverser)
 {
     if (!m_CachedSurface) {

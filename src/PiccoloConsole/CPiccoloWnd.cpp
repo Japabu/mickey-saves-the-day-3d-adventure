@@ -910,7 +910,7 @@ BOOL MfPcsFindSelectEdit::PreTranslateMessage(MSG *msg)
     return CWnd::PreTranslateMessage(msg);
 }
 
-// TODO 0x1000bf30 ?OnKeyDown@MfPcsFindSelectEdit@@IAEXIII@Z: 93% - the original branches to push ID_PE_FIND_PREVIOUS or ID_PE_FIND_NEXT, VC5 here computes the id with setl/add (also with an if/else on a local); same calls, arguments and paths (Return/F3 and plain F share the final Default())
+// TODO 0x1000bf30 ?OnKeyDown@MfPcsFindSelectEdit@@IAEXIII@Z: 94% - the original branches to push ID_PE_FIND_PREVIOUS or ID_PE_FIND_NEXT, VC5 here computes the id with setl/add (also with an if/else on a local); same calls, arguments and paths (Return/F3 and plain F share the final Default())
 void MfPcsFindSelectEdit::OnKeyDown(UINT key, UINT repeat, UINT flags)
 {
     if ((key == VK_DOWN || key == VK_UP) && !mOwner->mFindSelect.GetDroppedState()) {

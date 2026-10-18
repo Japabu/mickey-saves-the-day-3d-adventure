@@ -215,7 +215,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance, const char *szWindowClass)
     return RegisterClassEx(&wcex);
 }
 
-// TODO 0x00401ef0 ?WndProc@@YGJPAUHWND__@@IIJ@Z: (66% similar) cases, jump tables and bodies right; inline budget differs: the original calls MBComPtr::Release out of line in CreateObject at every broadcaster but WM_CHAR, calls CreateObject out of line in WM_KEYUP and _QueryInterface out of line everywhere; ours inlines Release in WM_KEYDOWN, WM_IME_ENDCOMPOSITION and WM_IME_CHAR, CreateObject in WM_KEYUP and _QueryInterface in WM_IME_STARTCOMPOSITION, WM_CHAR and WM_IME_CHAR (the budget grows with the caller's own size; Release/CreateObject/destructor/operator bool forms and declaration order tried), and register use follows from that
+// TODO 0x00401ef0 ?WndProc@@YGJPAUHWND__@@IIJ@Z: (82% similar) cases, jump tables and bodies right; inline budget differs: the original calls MBComPtr::Release out of line in CreateObject at every broadcaster but WM_CHAR, calls CreateObject out of line in WM_KEYUP and _QueryInterface out of line everywhere; ours inlines Release in WM_KEYDOWN, WM_IME_ENDCOMPOSITION and WM_IME_CHAR, CreateObject in WM_KEYUP and _QueryInterface in WM_IME_STARTCOMPOSITION, WM_CHAR and WM_IME_CHAR (the budget grows with the caller's own size; Release/CreateObject/destructor/operator bool forms and declaration order tried), and register use follows from that
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static char sAnsiChar[3];

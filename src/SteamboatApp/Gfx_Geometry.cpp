@@ -76,7 +76,7 @@ Vec3<float> Gfx::LineSegment3f::FindClosestPoint(const Vec3<float> &point) const
 // difference (the common normal where both lie inside their segments).
 // Skew segments use the determinant solution of the two lines; parallel ones
 // are resolved by projecting end points onto planes across the direction.
-// TODO 0x101056d0 ?FindClosestPoint@LineSegment3f@Gfx@@QBE?AV?$Vec3@M@@ABV12@AAV3@1@Z: inline budget only: the original inlines Vec3::operator-= inside the inlined operator- (VC6 here calls it), calls mag2 out of line in the parallel normalize and calls operator- out of line in the last branches, so its frame is 0x18 bytes larger; the branch structure, calls and comparisons are the same (with the per-component operator- of Vec3.h this reaches 56%, but LineSegment3f::FindClosestPoint(point) then differs) (46% similar)
+// TODO 0x101056d0 ?FindClosestPoint@LineSegment3f@Gfx@@QBE?AV?$Vec3@M@@ABV12@AAV3@1@Z: inline budget only: the original inlines Vec3::operator-= inside the inlined operator- (VC6 here calls it), calls mag2 out of line in the parallel normalize and calls operator- out of line in the last branches, so its frame is 0x18 bytes larger; the branch structure, calls and comparisons are the same (with the per-component operator- of Vec3.h this reaches 56%, but LineSegment3f::FindClosestPoint(point) then differs) (64% similar)
 Vec3<float> Gfx::LineSegment3f::FindClosestPoint(const Gfx::LineSegment3f &segment, Vec3<float> &pointOnSegment, Vec3<float> &difference) const
 {
     Vec3<float> closest;
@@ -223,7 +223,7 @@ void Gfx::Plane3f::Set(const Vec3<float> &normal, float offset)
     m_Offset = offset;
 }
 
-// TODO 0x10106510 ?Set@Plane3f@Gfx@@QAEXPAPAV?$Vec3@M@@H@Z: x87 register allocation of the Newell loop only: the original keeps center[0] in memory and loads each sum before the difference; same operations and stores (83% similar)
+// TODO 0x10106510 ?Set@Plane3f@Gfx@@QAEXPAPAV?$Vec3@M@@H@Z: x87 register allocation of the Newell loop only: the original keeps center[0] in memory and loads each sum before the difference; same operations and stores (85% similar)
 void Gfx::Plane3f::Set(Vec3<float> **points, int nPoints)
 {
     GFX_ASSERT(nPoints >= 3, kThisFile, 376);
@@ -268,7 +268,7 @@ void Gfx::Plane3f::Set(AVec<Vec3<float> > &points, int nPoints)
     m_Offset = -center.dot(normal);
 }
 
-// TODO 0x101068e0 ?Set@Plane3f@Gfx@@QAEXAAV?$Vec3@M@@00@Z: x87 stack use of the inlined cross product differs (the original reloads v.x/v.y from memory and pops two values at the end)
+// TODO 0x101068e0 ?Set@Plane3f@Gfx@@QAEXAAV?$Vec3@M@@00@Z: (89% similar) x87 stack use of the inlined cross product differs (the original reloads v.x/v.y from memory and pops two values at the end)
 void Gfx::Plane3f::Set(Vec3<float> &a, Vec3<float> &b, Vec3<float> &c)
 {
     Vec3<float> u = b - a;
@@ -285,7 +285,7 @@ void Gfx::Plane3f::Get(Vec3<float> &normal, float &offset)
     offset = m_Offset;
 }
 
-// TODO 0x10106a30 ?Intersects@Plane3f@Gfx@@QBE_NABVRay3f@2@AAM@Z: the original shares the "t = max; return false" tail between the t < 0 and the parallel case and reloads &t in each path; here t stays in ebx (early-return form: separate tails)
+// TODO 0x10106a30 ?Intersects@Plane3f@Gfx@@QBE_NABVRay3f@2@AAM@Z: (81% similar) the original shares the "t = max; return false" tail between the t < 0 and the parallel case and reloads &t in each path; here t stays in ebx (early-return form: separate tails)
 bool Gfx::Plane3f::Intersects(const Gfx::Ray3f &ray, float &t) const
 {
     float denom = m_Normal.dot(ray.GetDirection());
@@ -367,7 +367,7 @@ Gfx::LineSegment3f Gfx::Polygon3f::GetEdge(int i) const
 
 // Inside test in the projection plane: barycentric coordinates for a
 // triangle, the crossings test (Haines) otherwise.
-// TODO 0x10106d80 ?IsAround@Polygon3f@Gfx@@QBE_NABV?$Vec3@M@@@Z: the crossings loop matches; in the triangle branch the original keeps px/py in slots of their own and the inverse in y's slot (frame 8 bytes larger, the triangle-fail path returns through its own tail), one product loads its other operand; same arithmetic and compares (75% similar)
+// TODO 0x10106d80 ?IsAround@Polygon3f@Gfx@@QBE_NABV?$Vec3@M@@@Z: the crossings loop matches; in the triangle branch the original keeps px/py in slots of their own and the inverse in y's slot (frame 8 bytes larger, the triangle-fail path returns through its own tail), one product loads its other operand; same arithmetic and compares (88% similar)
 bool Gfx::Polygon3f::IsAround(const Vec3<float> &point) const
 {
     int X = _projCoordX;
@@ -531,7 +531,7 @@ float Gfx::Polygon3f::ComputeDistanceSquared(const Gfx::LineSegment3f &segment) 
 
 // Two polygons intersect when an edge of one, taken as a ray from the
 // previous corner, meets the other within the edge.
-// TODO 0x10107990 ?Intersects@Polygon3f@Gfx@@QBE_NABV12@@Z: scheduling of the six array stores at the top only (the original reads the other polygon before this one's point list); the loops match (89% similar)
+// TODO 0x10107990 ?Intersects@Polygon3f@Gfx@@QBE_NABV12@@Z: scheduling of the six array stores at the top only (the original reads the other polygon before this one's point list); the loops match (90% similar)
 bool Gfx::Polygon3f::Intersects(const Gfx::Polygon3f &other) const
 {
     int counts[2];
@@ -563,7 +563,7 @@ bool Gfx::Polygon3f::Intersects(const Gfx::Polygon3f &other) const
 
 // The smallest distance between corners of the two polygons (the other
 // polygon's corners are read as one array behind its first pointer).
-// TODO 0x10107ad0 ?ComputeApproximateDistance@Polygon3f@Gfx@@QBEMABV12@@Z: register allocation only (eax/edx swapped for the other polygon and the point lists) (87% similar)
+// TODO 0x10107ad0 ?ComputeApproximateDistance@Polygon3f@Gfx@@QBEMABV12@@Z: register allocation only (eax/edx swapped for the other polygon and the point lists) (96% similar)
 float Gfx::Polygon3f::ComputeApproximateDistance(const Gfx::Polygon3f &other) const
 {
     float minDistance = FLT_MAX;
@@ -639,7 +639,7 @@ void Gfx::Polygon3f::_setProjCoords()
 // The distance of two edges (edges[k][0] to edges[k][1]) if it is smaller
 // than minDistance: the distance of the two lines where each edge crosses
 // the other's line, else the distance of the closest end points.
-// TODO 0x10107e90 ?_coniderEdgeDistance@Polygon3f@Gfx@@IBEXQAY01PAPAV?$Vec3@M@@AAM@Z: inline budget: the original inlines all three operator- (with -=) at the top and operator-/mag2 in the end-point loop, VC6 here calls some of them out of line (frame 4 bytes larger, other slots); the branch structure (shared success tail, loop tests k < 2 at the bottom, unsigned i), the operations and the compares are the original's (51% similar)
+// TODO 0x10107e90 ?_coniderEdgeDistance@Polygon3f@Gfx@@IBEXQAY01PAPAV?$Vec3@M@@AAM@Z: inline budget: the original inlines all three operator- (with -=) at the top and operator-/mag2 in the end-point loop, VC6 here calls some of them out of line (frame 4 bytes larger, other slots); the branch structure (shared success tail, loop tests k < 2 at the bottom, unsigned i), the operations and the compares are the original's (84% similar)
 void Gfx::Polygon3f::_coniderEdgeDistance(Vec3<float> **edges[][2], float &minDistance) const
 {
     Vec3<float> offset = **edges[1][0] - **edges[0][0];

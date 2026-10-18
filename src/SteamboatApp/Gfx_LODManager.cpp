@@ -43,7 +43,7 @@ void Gfx::LODManager::InitializeFieldOfViewCoverage(float fieldOfView, float low
     ComputeCoverageFactors();
 }
 
-// TODO 0x100eddc0 ?SetRanges@LODManager@Gfx@@QAEXPAVNode@2@M@Z: the original calls Vec::append(const T *, int) out of line (as every unit of the binary does); VC6 inlines it here (in-class, out-of-class and auto_inline(off) definitions tried)
+// TODO 0x100eddc0 ?SetRanges@LODManager@Gfx@@QAEXPAVNode@2@M@Z: (58% similar) the original calls Vec::append(const T *, int) out of line (as every unit of the binary does); VC6 inlines it here (in-class, out-of-class and auto_inline(off) definitions tried)
 void Gfx::LODManager::SetRanges(Gfx::Node *root, float coverage)
 {
     Graph::SearchTraverser traverser;
@@ -88,7 +88,7 @@ int Gfx::LODManager::CreateGroup(GroupManagementMethod method)
     return m_GroupList.length() - 1;
 }
 
-// TODO 0x100ee1a0 ?AddNode@LODManager@Gfx@@QAEXHPAVLODNode@2@@Z: Vec::append(const T *, int) called out of line in the original, inlined here (see SetRanges)
+// TODO 0x100ee1a0 ?AddNode@LODManager@Gfx@@QAEXHPAVLODNode@2@@Z: (50% similar) Vec::append(const T *, int) called out of line in the original, inlined here (see SetRanges)
 void Gfx::LODManager::AddNode(int group, Gfx::LODNode *lodNode)
 {
     if (lodNode) {
@@ -122,7 +122,7 @@ void Gfx::LODManager::AddNode(int group, Gfx::LODNode *lodNode)
     }
 }
 
-// TODO 0x100ee3e0 ?InsertNode@LODManager@Gfx@@QAEXHPAVLODNode@2@H@Z: Vec::insert(const T *, int, int) called out of line in the original, inlined here (see SetRanges)
+// TODO 0x100ee3e0 ?InsertNode@LODManager@Gfx@@QAEXHPAVLODNode@2@H@Z: (52% similar) Vec::insert(const T *, int, int) called out of line in the original, inlined here (see SetRanges)
 void Gfx::LODManager::InsertNode(int group, Gfx::LODNode *lodNode, int position)
 {
     if (lodNode) {
@@ -199,7 +199,7 @@ void Gfx::LODManager::SetMaxVisibleObjectsPerGroup(int group, int count)
     m_GroupInfo[group].maxVisibleObjects = count;
 }
 
-// TODO 0x100ee780 ?SetRangesBasedOnVisibility@LODManager@Gfx@@AAEXH@Z: register allocation: the original keeps the visibility list in ebp and spills group * 24 (ours the other way round)
+// TODO 0x100ee780 ?SetRangesBasedOnVisibility@LODManager@Gfx@@AAEXH@Z: (83% similar) register allocation: the original keeps the visibility list in ebp and spills group * 24 (ours the other way round)
 void Gfx::LODManager::SetRangesBasedOnVisibility(int group)
 {
     int i;
@@ -228,7 +228,7 @@ void Gfx::LODManager::SetRangesBasedOnVisibility(int group)
     }
 }
 
-// TODO 0x100ee950 ?CalculateDistanceFromCenterPoint@LODManager@Gfx@@AAEXHPAVView@2@@Z: the original calls SquareMatrix() and Vec3(x, y, z) out of line (inline budget) and caches the matrix list length
+// TODO 0x100ee950 ?CalculateDistanceFromCenterPoint@LODManager@Gfx@@AAEXHPAVView@2@@Z: (71% similar) the original calls SquareMatrix() and Vec3(x, y, z) out of line (inline budget) and caches the matrix list length
 void Gfx::LODManager::CalculateDistanceFromCenterPoint(int group, Gfx::View *view)
 {
     Vec<NodeInfo *> &list = m_GroupList[group];
@@ -268,7 +268,7 @@ void Gfx::LODManager::SortByDistance(int group)
     } while (!sorted);
 }
 
-// TODO 0x100eec80 ?SetRangesByForce@LODManager@Gfx@@AAEXH@Z: the original walks the node list with a pointer loaded once (no reload after SetVisible)
+// TODO 0x100eec80 ?SetRangesByForce@LODManager@Gfx@@AAEXH@Z: (68% similar) the original walks the node list with a pointer loaded once (no reload after SetVisible)
 void Gfx::LODManager::SetRangesByForce(int group)
 {
     GroupInfo &groupInfo = m_GroupInfo[group];
@@ -305,7 +305,7 @@ void Gfx::LODManager::SetRangesByForce(int group)
         list[i]->lodNode->SetVisible(false);
 }
 
-// TODO 0x100eed90 ?ComputeRanges@LODManager@Gfx@@AAEXPAVLODNode@2@M@Z: the original calls SquareMatrix() and Vec3::operator- out of line (inline budget)
+// TODO 0x100eed90 ?ComputeRanges@LODManager@Gfx@@AAEXPAVLODNode@2@M@Z: (80% similar) the original calls SquareMatrix() and Vec3::operator- out of line (inline budget)
 void Gfx::LODManager::ComputeRanges(Gfx::LODNode *lodNode, float coverage)
 {
     if (lodNode) {
@@ -391,12 +391,12 @@ void Gfx::LODManager::ComputeCoverageFactors()
 // 0x100f0490 _$E84
 
 // Template and inline instances this unit also emits:
-// TODO 0x100ef0e0 ?Format@?$_SS@D@@QAAXPBDZZ: 67% - the inline instance compiles differently here
+// TODO 0x100ef0e0 ?Format@?$_SS@D@@QAAXPBDZZ: 79% - the inline instance compiles differently here
 // TODO 0x100ef520 ?append@?$Vec@PAVLODNode@Gfx@@@@QAEXPBQAVLODNode@Gfx@@H@Z: inline instance (body in the header); this unit does not emit an out-of-line copy yet
 // TODO 0x100ef5c0 ?append@?$Vec@M@@QAEXPBMH@Z: inline instance (body in the header); this unit does not emit an out-of-line copy yet
 // TODO 0x100ef660 ?append@?$Vec@PAUNodeInfo@LODManager@Gfx@@@@QAEXPBQAUNodeInfo@LODManager@Gfx@@H@Z: inline instance (body in the header); this unit does not emit an out-of-line copy yet
 // TODO 0x100ef700 ?insert@?$Vec@PAUNodeInfo@LODManager@Gfx@@@@QAEXPBQAUNodeInfo@LODManager@Gfx@@HH@Z: inline instance (body in the header); this unit does not emit an out-of-line copy yet
-// TODO 0x100ef8f0 ?reallocMem@?$Vec@V?$Vec@PAUNodeInfo@LODManager@Gfx@@@@@@IAEXHHH@Z: 50% - the inline instance compiles differently here
-// TODO 0x100efc30 ?reallocMem@?$Vec@V?$IVec@H@@@@IAEXHHH@Z: 23% - the inline instance compiles differently here
-// TODO 0x100efe80 ?initElements@?$Vec@V?$IVec@H@@@@IAEXHH@Z: 38% - the inline instance compiles differently here
+// TODO 0x100ef8f0 ?reallocMem@?$Vec@V?$Vec@PAUNodeInfo@LODManager@Gfx@@@@@@IAEXHHH@Z: 91% - the inline instance compiles differently here
+// TODO 0x100efc30 ?reallocMem@?$Vec@V?$IVec@H@@@@IAEXHHH@Z: 56% - the inline instance compiles differently here
+// TODO 0x100efe80 ?initElements@?$Vec@V?$IVec@H@@@@IAEXHH@Z: 72% - the inline instance compiles differently here
 // TODO 0x100f03c0 ?multRight@?$SquareMatrix@M$03@@QAEHABV1@@Z: inline instance (body in the header); this unit does not emit an out-of-line copy yet

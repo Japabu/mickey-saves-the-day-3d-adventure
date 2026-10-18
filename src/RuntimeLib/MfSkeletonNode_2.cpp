@@ -439,7 +439,7 @@ int MfSkeletonNode::GetSplineEnd(MfTransform3 &transform)
     return 0;
 }
 
-// TODO 0x1004f520 ?SetProperty@MfSkeletonNode@@UAEXAAVMfProperty@@@Z: the original calls the imported MfProperty::Name() where MfProperty.h expands the inline accessor, and keeps the two branches' *existing = property calls apart (each followed by found = 1 and a jump), where this tree cross-jumps them into one call; the block structure differs, so not reviewed-equivalent. Calls, conditions and stores along each path are the same (61% similar)
+// TODO 0x1004f520 ?SetProperty@MfSkeletonNode@@UAEXAAVMfProperty@@@Z: the original calls the imported MfProperty::Name() where MfProperty.h expands the inline accessor, and keeps the two branches' *existing = property calls apart (each followed by found = 1 and a jump), where this tree cross-jumps them into one call; the block structure differs, so not reviewed-equivalent. Calls, conditions and stores along each path are the same (74% similar)
 // A property of the prototype node or of the instance takes the value, else
 // the instance gets a copy (announced with MF_HOOK_MISC_DATA, kind 5).
 void MfSkeletonNode::SetProperty(MfProperty &property)
@@ -463,7 +463,7 @@ void MfSkeletonNode::SetProperty(MfProperty &property)
         (&mInstProperties)->Add(new MfProperty(property));
 }
 
-// TODO 0x1004f6b0 ?SetProperty@MfSkeletonNode@@UAEXPAVMfProperty@@@Z: the original calls the imported MfProperty::Name() where MfProperty.h expands the inline accessor, and keeps the two branches' Replace calls apart (each with its own jump), where this tree cross-jumps them into one call; the block structure differs, so not reviewed-equivalent. Calls, conditions and stores along each path are the same (61% similar)
+// TODO 0x1004f6b0 ?SetProperty@MfSkeletonNode@@UAEXPAVMfProperty@@@Z: the original calls the imported MfProperty::Name() where MfProperty.h expands the inline accessor, and keeps the two branches' Replace calls apart (each with its own jump), where this tree cross-jumps them into one call; the block structure differs, so not reviewed-equivalent. Calls, conditions and stores along each path are the same (83% similar)
 // As SetProperty(MfProperty &), but the property itself replaces the old one
 // or is added.
 void MfSkeletonNode::SetProperty(MfProperty *property)
@@ -486,7 +486,7 @@ void MfSkeletonNode::SetProperty(MfProperty *property)
         (&mInstProperties)->Add(property);
 }
 
-// TODO 0x1004e840 ?ScaleSubtree@MfSkeletonNode@@UAEXVMfVector3@@HH@Z: the expanded MfRotation3::normalize spills the length to the stack in the original (this tree keeps it on the FPU) and the rotated scale's temporary keeps its EH state one store longer; calls, conditions and stores are the same (78% similar)
+// TODO 0x1004e840 ?ScaleSubtree@MfSkeletonNode@@UAEXVMfVector3@@HH@Z: the expanded MfRotation3::normalize spills the length to the stack in the original (this tree keeps it on the FPU) and the rotated scale's temporary keeps its EH state one store longer; calls, conditions and stores are the same (92% similar)
 // Scales the subtree (with sameOwner set only the nodes of the same actor):
 // the first node's translation scales in the parent's frame, the geometry in
 // the node's own (the magnitudes of the scale turned into it). The render

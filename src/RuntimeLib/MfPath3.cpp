@@ -29,7 +29,7 @@ void MfPath3::Allocate(int numKeys)
     mKeys = numKeys ? new MfTransform3[numKeys] : 0;
 }
 
-// TODO 0x1004ab50 ?Transform@MfPath3@@QAE?AVMfTransform3@@M@Z: the zero register (edi, ours
+// TODO 0x1004ab50 ?Transform@MfPath3@@QAE?AVMfTransform3@@M@Z: (86% similar) the zero register (edi, ours
 // ebx) and the inline budget: the original copies the last key vectors inline where ours calls the
 // imported MfVector3 copy constructor; the key wrap i - i / 36 * 36 divides by 36 and
 // subtracts in the original, ours divides by -36 and adds (same value; i %= ARC_KEYS gives
@@ -214,7 +214,7 @@ void MfPath3::SetLine(const MfTransform3 &start, const MfVector3 &goal, const Mf
     mToRotation = start.rotation();
 }
 
-// TODO 0x1004bc10 ?SetMove@MfPath3@@QAEXABVMfTransform3@@ABVMfVector3@@0MH@Z: the original calls the
+// TODO 0x1004bc10 ?SetMove@MfPath3@@QAEXABVMfTransform3@@ABVMfVector3@@0MH@Z: (73% similar) the original calls the
 // imported MfVector3::lengthSquared for the normalizations, which this MfVector3.h expands (69% similar)
 void MfPath3::SetMove(const MfTransform3 &from, const MfVector3 &velocity, const MfTransform3 &to, float duration,
                       int flags)

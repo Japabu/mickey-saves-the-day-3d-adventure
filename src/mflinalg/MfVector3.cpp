@@ -184,7 +184,7 @@ void MfVector3::interpolate(const MfVector3 &a, const MfVector3 &b,
     _z = ca * a._z + cb * b._z + cc * c._z + cd * d._z;
 }
 
-// TODO 0x100061e0 ?tangent@MfVector3@@QAEXABV1@000M@Z: (61% similar) the original keeps s*s unrounded for ca and spills it (float) for cb, here the other way round, and evaluates cc as (-3t - (-6)s) t; a real rounding difference from the CSE spill choice; statement orders and include sets tried
+// TODO 0x100061e0 ?tangent@MfVector3@@QAEXABV1@000M@Z: (75% similar) the original keeps s*s unrounded for ca and spills it (float) for cb, here the other way round, and evaluates cc as (-3t - (-6)s) t; a real rounding difference from the CSE spill choice; statement orders and include sets tried
 // Unit tangent of the Bezier curve of interpolate().
 void MfVector3::tangent(const MfVector3 &a, const MfVector3 &b,
                         const MfVector3 &c, const MfVector3 &d, float t)
@@ -200,7 +200,7 @@ void MfVector3::tangent(const MfVector3 &a, const MfVector3 &b,
     normalize();
 }
 
-// TODO 0x10006350 ?Premultiply@MfVector3@@QAEXABVMfTransform3@@@Z: (31% similar) the original copies only y and z of the quaternion to locals and loads x and w directly; the a and d coefficients are kept unrounded for the x row and spilled for the others (rounding differs); best include set found 87%, not adopted
+// TODO 0x10006350 ?Premultiply@MfVector3@@QAEXABVMfTransform3@@@Z: (36% similar) the original copies only y and z of the quaternion to locals and loads x and w directly; the a and d coefficients are kept unrounded for the x row and spilled for the others (rounding differs); best include set found 87%, not adopted
 // Applies t to this point: rotation, then translation.
 void MfVector3::Premultiply(const MfTransform3 &t)
 {
@@ -218,7 +218,7 @@ void MfVector3::Premultiply(const MfTransform3 &t)
     _z = nz + tr._z;
 }
 
-// TODO 0x10006480 ?Multiply@MfVector3@@QAEXABVMfTransform3@@ABV1@@Z: (42% similar) the original keeps a and d unrounded on the x87 stack for the x row (float-rounded for y and z), here a is rounded for every row; also loads p after copying y and z (no esi); declaration orders, accessor forms and include sets tried
+// TODO 0x10006480 ?Multiply@MfVector3@@QAEXABVMfTransform3@@ABV1@@Z: (54% similar) the original keeps a and d unrounded on the x87 stack for the x row (float-rounded for y and z), here a is rounded for every row; also loads p after copying y and z (no esi); declaration orders, accessor forms and include sets tried
 // This = t applied to the point p.
 void MfVector3::Multiply(const MfTransform3 &t, const MfVector3 &p)
 {

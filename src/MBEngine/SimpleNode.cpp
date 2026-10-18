@@ -575,7 +575,7 @@ unsigned long DatabaseMgr::Database::ReleaseDBRef()
     return mCount;
 }
 
-// TODO 0x10005a40 ?Initialize@DatabaseMgr@@QAE_NABV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@0@Z: inline budget: the first guid ctor is expanded inline (Release and _QueryInterface calls) in the original, ours calls CreateObject; control flow not verified past that
+// TODO 0x10005a40 ?Initialize@DatabaseMgr@@QAE_NABV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@0@Z: (69% similar) inline budget: the first guid ctor is expanded inline (Release and _QueryInterface calls) in the original, ours calls CreateObject; control flow not verified past that
 bool DatabaseMgr::Initialize(const MBString &cdPath, const MBString &hdPath)
 {
     bool success = false;

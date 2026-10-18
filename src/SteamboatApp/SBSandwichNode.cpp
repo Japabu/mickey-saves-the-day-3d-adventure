@@ -50,7 +50,7 @@ SBSandwichNode::~SBSandwichNode()
 {
 }
 
-// TODO 0x1008e4a0 ?OnStart@SBSandwichNode@@UAEXXZ: inline budget: the original calls the CreateAnim
+// TODO 0x1008e4a0 ?OnStart@SBSandwichNode@@UAEXXZ: (93% similar) inline budget: the original calls the CreateAnim
 // temporaries' Release out of line up to SHStartButton and inlines it from SHMachine on, calls
 // operator= for SHMinnie and inlines the last prototype loop's AddRef; VC6 here chooses otherwise,
 // and ebx/ebp are swapped (83% similar)
@@ -556,7 +556,7 @@ void SBSandwichNode::InitializeLevel(int level)
     SetNumberBrooms(5);
 }
 
-// TODO 0x10090d00 ?SetNumberBrooms@SBSandwichNode@@IAEXH@Z: inline choices differ (the original
+// TODO 0x10090d00 ?SetNumberBrooms@SBSandwichNode@@IAEXH@Z: (93% similar) inline choices differ (the original
 // inlines the size test and calls the two-argument insert out of line; tried size()/empty(),
 // insert/push_back, the IMBWorld helpers) (78% similar)
 void SBSandwichNode::SetNumberBrooms(int num)

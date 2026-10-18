@@ -2841,7 +2841,7 @@ MfScDataHandle *MfPoActor::PMCreateLocoActivity(MfScDataHandle *self, int nArgs,
     return 0;
 }
 
-// TODO 0x10018270 ?PMRequestGraspPlan@MfPoActor@@AAEPAVMfScDataHandle@@PAV2@HPAPAV2@@Z: logic and calls line up; the original keeps the error flag in ebp and the argument count in memory (one stack slot more), and branches the argument checks into a single flag store
+// TODO 0x10018270 ?PMRequestGraspPlan@MfPoActor@@AAEPAVMfScDataHandle@@PAV2@HPAPAV2@@Z: (78% similar) logic and calls line up; the original keeps the error flag in ebp and the argument count in memory (one stack slot more), and branches the argument checks into a single flag store
 MfScDataHandle *MfPoActor::PMRequestGraspPlan(MfScDataHandle *self, int nArgs, MfScDataHandle **args)
 {
     if (nArgs < 5 || nArgs > 11) {
@@ -2948,7 +2948,7 @@ MfScDataHandle *MfPoActor::PMRequestGraspPlan(MfScDataHandle *self, int nArgs, M
     return MfScDataHandle::CreateData(-1);
 }
 
-// TODO 0x100188f0 ?PMRequestTouchPlan@MfPoActor@@AAEPAVMfScDataHandle@@PAV2@HPAPAV2@@Z: (66% similar) logic and calls line up; as PMRequestGraspPlan the original keeps the argument count in memory and the error flag in edi (one stack slot more), which shifts every stack slot
+// TODO 0x100188f0 ?PMRequestTouchPlan@MfPoActor@@AAEPAVMfScDataHandle@@PAV2@HPAPAV2@@Z: (84% similar) logic and calls line up; as PMRequestGraspPlan the original keeps the argument count in memory and the error flag in edi (one stack slot more), which shifts every stack slot
 MfScDataHandle *MfPoActor::PMRequestTouchPlan(MfScDataHandle *self, int nArgs, MfScDataHandle **args)
 {
     // the original's argument count test can never be true (so a wrong count
@@ -3165,7 +3165,7 @@ MfScDataHandle *MfPoActor::PMRequestPlacePlan(MfScDataHandle *self, int nArgs, M
 // PMRequestSitPlan changes that function's instruction order)
 #include "MfScHandleList.h"
 
-// TODO 0x1001cd40 ?PMCreateCameraActivity@MfPoActor@@AAEPAVMfScDataHandle@@PAV2@HPAPAV2@@Z: (61% similar) logic, calls and block order line up; the original calls actors.Append through the local list's vptr where ours calls MfDblList::Append directly (also with (&actors)->Append), gives the spline form its own copy of the GetPiccoloHandle/cleanup tail (a separate return there is still merged by ours), keeps this in edi, the list flag and list pointer in swapped slots, and places the shared cleanup and WrongNumber after the first argument error report
+// TODO 0x1001cd40 ?PMCreateCameraActivity@MfPoActor@@AAEPAVMfScDataHandle@@PAV2@HPAPAV2@@Z: (75% similar) logic, calls and block order line up; the original calls actors.Append through the local list's vptr where ours calls MfDblList::Append directly (also with (&actors)->Append), gives the spline form its own copy of the GetPiccoloHandle/cleanup tail (a separate return there is still merged by ours), keeps this in edi, the list flag and list pointer in swapped slots, and places the shared cleanup and WrongNumber after the first argument error report
 MfScDataHandle *MfPoActor::PMCreateCameraActivity(MfScDataHandle *self, int nArgs, MfScDataHandle **args)
 {
     if (nArgs < 3 || nArgs > 6) {
@@ -3356,7 +3356,7 @@ MfScDataHandle *MfPoActor::PMCreateCameraActivity(MfScDataHandle *self, int nArg
     return 0;
 }
 
-// TODO 0x1001a9b0 ?PMCreate3dPathActivity@MfPoActor@@AAEPAVMfScDataHandle@@PAV2@HPAPAV2@@Z: (54% similar) logic, calls and block order line up (91% at the instruction level); the original keeps getActivity in edi for the first two forms and in memory for the rest and the skill pointers in memory, which shifts registers and slots throughout; some shared InvalidType tails are merged differently
+// TODO 0x1001a9b0 ?PMCreate3dPathActivity@MfPoActor@@AAEPAVMfScDataHandle@@PAV2@HPAPAV2@@Z: (79% similar) logic, calls and block order line up (91% at the instruction level); the original keeps getActivity in edi for the first two forms and in memory for the rest and the skill pointers in memory, which shifts registers and slots throughout; some shared InvalidType tails are merged differently
 MfScDataHandle *MfPoActor::PMCreate3dPathActivity(MfScDataHandle *self, int nArgs, MfScDataHandle **args)
 {
     // the original's argument count test can never be true (a wrong count

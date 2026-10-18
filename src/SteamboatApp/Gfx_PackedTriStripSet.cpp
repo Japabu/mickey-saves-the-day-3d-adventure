@@ -65,7 +65,7 @@ void Gfx::PackedTriStripSet::Read(Graph::Stream *stream)
     ReadInternals(stream, version);
 }
 
-// TODO 0x100f3850 ?GetAtom@PackedTriStripSet@Gfx@@UAEHHPAPAV?$Vec3@M@@@Z: register allocation (the original keeps diff in edx and pushes the registers after the pointer tests)
+// TODO 0x100f3850 ?GetAtom@PackedTriStripSet@Gfx@@UAEHHPAPAV?$Vec3@M@@@Z: (94% similar) register allocation (the original keeps diff in edx and pushes the registers after the pointer tests)
 int Gfx::PackedTriStripSet::GetAtom(int atom, Vec3<float> **coords)
 {
     // binary search for the strip that holds triangle atom
@@ -130,7 +130,7 @@ void Gfx::PackedTriStripSet::WriteInternals(Gfx::WriteTraverser *traverser)
     stream->Write((short)m_EnvironmentMapping);
 }
 
-// TODO 0x100f3a80 ?ReadInternals@PackedTriStripSet@Gfx@@IAEXPAVStream@Graph@@H@Z: register allocation (stream in edi, this in esi in the original)
+// TODO 0x100f3a80 ?ReadInternals@PackedTriStripSet@Gfx@@IAEXPAVStream@Graph@@H@Z: (87% similar) register allocation (stream in edi, this in esi in the original)
 void Gfx::PackedTriStripSet::ReadInternals(Graph::Stream *stream, int version)
 {
     if (version > 0) {
@@ -144,7 +144,7 @@ void Gfx::PackedTriStripSet::ReadInternals(Graph::Stream *stream, int version)
     SetDrawFunction();
 }
 
-// TODO 0x100f3ad0 ?Refresh@PackedTriStripSet@Gfx@@MAEXAAVBasicRefreshTraverser@Graph@@@Z: the original turns the strip loop into a counted loop with the coordinate pointers in registers
+// TODO 0x100f3ad0 ?Refresh@PackedTriStripSet@Gfx@@MAEXAAVBasicRefreshTraverser@Graph@@@Z: (92% similar) the original turns the strip loop into a counted loop with the coordinate pointers in registers
 void Gfx::PackedTriStripSet::Refresh(Graph::BasicRefreshTraverser &traverser)
 {
     int *prim = m_Prim;

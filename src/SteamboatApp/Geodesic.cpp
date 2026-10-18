@@ -92,7 +92,7 @@ void Geodesic::init_crd()
     }
 }
 
-// TODO 0x10108620 ?spherical@Geodesic@@QAEXXZ: all but the phi formulas: the original squares x before y and lets the class I branch share only the atan tail; VC6 squares y first (both operand orders, 2.0 tried)
+// TODO 0x10108620 ?spherical@Geodesic@@QAEXXZ: (84% similar) all but the phi formulas: the original squares x before y and lets the class I branch share only the atan tail; VC6 squares y first (both operand orders, 2.0 tried)
 void Geodesic::spherical()
 {
     long i, j, n;
@@ -271,7 +271,7 @@ void Geodesic::chord_factor()
     cout << '\r' << "                             " << '\r';
 }
 
-// TODO 0x10108f80 ?face_factor@Geodesic@@QAEXXZ: 86% similar: the same searches, the original keeps the second index of some searches on the stack and the face pointer in other registers
+// TODO 0x10108f80 ?face_factor@Geodesic@@QAEXXZ: 95% similar: the same searches, the original keeps the second index of some searches on the stack and the face pointer in other registers
 void Geodesic::face_factor()
 {
     long n, k, j, f;
@@ -438,7 +438,7 @@ void Geodesic::save_PRN(char *file)
     out.close();
 }
 
-// TODO 0x10109af0 ?icosa_sphere@Geodesic@@QAEXJ@Z: 63% similar: same branches and calls; the original adds the constant terms in another order and keeps the shifted theta in locals
+// TODO 0x10109af0 ?icosa_sphere@Geodesic@@QAEXJ@Z: 87% similar: same branches and calls; the original adds the constant terms in another order and keeps the shifted theta in locals
 void Geodesic::icosa_sphere(long face)
 {
     long n, f;
@@ -597,7 +597,7 @@ void Geodesic::icosa_sphere(long face)
         }
     }
 }
-// TODO 0x1010a800 ?octa_sphere@Geodesic@@QAEXJ@Z: 60% similar: same branches and calls; the original adds the constant terms in another order and keeps the shifted theta in locals (as icosa_sphere)
+// TODO 0x1010a800 ?octa_sphere@Geodesic@@QAEXJ@Z: 87% similar: same branches and calls; the original adds the constant terms in another order and keeps the shifted theta in locals (as icosa_sphere)
 void Geodesic::octa_sphere(long face)
 {
     long n, f;
@@ -720,7 +720,7 @@ void Geodesic::octa_sphere(long face)
         }
     }
 }
-// TODO 0x1010b160 ?tetra_sphere@Geodesic@@QAEXJ@Z: 91% similar: same code; the original adds the 60 degree term right after rotate_phi and forms the array addresses per access (VC6 keeps the element pointers)
+// TODO 0x1010b160 ?tetra_sphere@Geodesic@@QAEXJ@Z: 95% similar: same code; the original adds the 60 degree term right after rotate_phi and forms the array addresses per access (VC6 keeps the element pointers)
 void Geodesic::tetra_sphere(long face)
 {
     long n;
@@ -977,7 +977,7 @@ void Geodesic::save_ascii(char *file)
 }
 
 
-// TODO 0x1010c8b0 ?chord_length@Geodesic@@QAENNNNN@Z: the original keeps both radian angles in memory (a new local and the phi1 slot) and loads them for every sin/cos; VC6 keeps them on the FPU stack (rotate_theta, same shape, matches)
+// TODO 0x1010c8b0 ?chord_length@Geodesic@@QAENNNNN@Z: (55% similar) the original keeps both radian angles in memory (a new local and the phi1 slot) and loads them for every sin/cos; VC6 keeps them on the FPU stack (rotate_theta, same shape, matches)
 double Geodesic::chord_length(double theta1, double phi1, double theta2, double phi2)
 {
     double p1 = DEG2RAD * phi1;

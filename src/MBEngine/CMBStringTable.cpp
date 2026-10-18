@@ -59,7 +59,7 @@ bool CMBStringTable::Load(unsigned long id, IMBStream *in)
     return true;
 }
 
-// TODO 0x100486a0 ?Load@CMBStringTable@@UAE_NPBD@Z: Load(const char*): original calls MBComPtr<IMBPref>::Release in both CreateObject Attach paths and inlines the string dtors; ours the reverse (inline budget); 5 compiles (64% similar)
+// TODO 0x100486a0 ?Load@CMBStringTable@@UAE_NPBD@Z: Load(const char*): original calls MBComPtr<IMBPref>::Release in both CreateObject Attach paths and inlines the string dtors; ours the reverse (inline budget); 5 compiles (85% similar)
 bool CMBStringTable::Load(const char *filename)
 {
     MBComPtr<IMBFileSpec> fileSpec(MBIID_IMBFileSpec);

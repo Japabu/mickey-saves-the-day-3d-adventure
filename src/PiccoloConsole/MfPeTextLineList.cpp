@@ -15,7 +15,7 @@ MfPeTextLineList::~MfPeTextLineList()
     Clear();
 }
 
-// TODO 0x1001bc50 ?Clear@MfPeTextLineList@@UAEXXZ: 82% - the original copies the next line into a second register and tests it again before the delete
+// TODO 0x1001bc50 ?Clear@MfPeTextLineList@@UAEXXZ: 92% - the original copies the next line into a second register and tests it again before the delete
 void MfPeTextLineList::Clear()
 {
     MfDblListItem *item;

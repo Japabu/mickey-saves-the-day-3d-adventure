@@ -105,7 +105,7 @@ int MfMath::quadratic(float a, float b, float c, float &r1, float &r2)
     return 0;
 }
 
-// TODO 0x100013f0 ?cubic@MfMath@@SAHMMMMAAM00@Z: (85% similar) the original keeps the discriminant q*q + p*p*p unrounded on the x87 stack across the branch (fcom, no store) and keeps the first pow() result on the stack across the second call; here both are spilled to float slots, so the rounding differs
+// TODO 0x100013f0 ?cubic@MfMath@@SAHMMMMAAM00@Z: (86% similar) the original keeps the discriminant q*q + p*p*p unrounded on the x87 stack across the branch (fcom, no store) and keeps the first pow() result on the stack across the second call; here both are spilled to float slots, so the rounding differs
 // Roots of a x^3 + b x^2 + c x + d (Cardano). Returns 1 with three roots, 3 when
 // only r1 is real, 4 when a is zero.
 int MfMath::cubic(float a, float b, float c, float d, float &r1, float &r2, float &r3)

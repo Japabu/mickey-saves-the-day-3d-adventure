@@ -60,7 +60,7 @@ MfPoActorNode::MfPoActorNode(ExemplarChild) : MfPoBase(0), mActorNode(0)
 {
 }
 
-// TODO 0x10023650 ??0MfPoActorNode@@IAE@VExemplar@MfScData@@@Z: VC5 inline budget: identical for 4150 bytes, then the original still expands the inline MfScClassInfoText constructor for the last property (numTriangles) where this source calls the import (the opposite of MfPoCamera)
+// TODO 0x10023650 ??0MfPoActorNode@@IAE@VExemplar@MfScData@@@Z: (82% similar) VC5 inline budget: identical for 4150 bytes, then the original still expands the inline MfScClassInfoText constructor for the last property (numTriangles) where this source calls the import (the opposite of MfPoCamera)
 MfPoActorNode::MfPoActorNode(MfScData::Exemplar) : MfPoBase(0), mActorNode(0)
 {
     uiFlags = (uiFlags & ~0x400) | 0x200;
@@ -296,7 +296,7 @@ MfScDataObject::MfPropertyErrorCode MfPoActorNode::GetProperty(const MfString &n
     return err;
 }
 
-// TODO 0x10025720 ?SetProperty@MfPoActorNode@@UAE?AW4MfPropertyErrorCode@MfScDataObject@@PAVMfScDataHandle@@ABVMfString@@0H@Z: calls, inline-versus-import decisions and control flow line up (the imported MfVector3/MfRotation3 constructors and assignments come out of this file as in the original); the frame layout differs: the original puts err at the lowest slot and allocates the temporaries of the spline cases differently
+// TODO 0x10025720 ?SetProperty@MfPoActorNode@@UAE?AW4MfPropertyErrorCode@MfScDataObject@@PAVMfScDataHandle@@ABVMfString@@0H@Z: (85% similar) calls, inline-versus-import decisions and control flow line up (the imported MfVector3/MfRotation3 constructors and assignments come out of this file as in the original); the frame layout differs: the original puts err at the lowest slot and allocates the temporaries of the spline cases differently
 MfScDataObject::MfPropertyErrorCode MfPoActorNode::SetProperty(MfScDataHandle *self, const MfString &name,
                                                                MfScDataHandle *value, int release)
 {

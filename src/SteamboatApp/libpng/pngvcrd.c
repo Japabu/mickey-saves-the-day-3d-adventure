@@ -971,7 +971,7 @@ end48:
 
 #if defined(PNG_READ_INTERLACING_SUPPORTED)
 
-// TODO 0x1012a1e0 _png_do_read_interlace: the MMX path (inline assembly in the upstream source) and the register allocation of the C fallback differ (93% similar)
+// TODO 0x1012a1e0 _png_do_read_interlace: the MMX path (inline assembly in the upstream source) and the register allocation of the C fallback differ (95% similar)
 void
 png_do_read_interlace(png_row_infop row_info, png_bytep row, int pass,
    png_uint_32 transformations)

@@ -129,7 +129,7 @@ void MfPeRegion::AdvancePivotEnd(int lastLine, int column)
         mPivotEnd.x = column;
 }
 
-// TODO 0x1001ad60 ?GetRun@MfPeRegion@@QAEHHHPAH@Z: 68% - the original zeroes eax before the first test and keeps the line in edx
+// TODO 0x1001ad60 ?GetRun@MfPeRegion@@QAEHHHPAH@Z: 92% - the original zeroes eax before the first test and keeps the line in edx
 int MfPeRegion::GetRun(int line, int column, int *length)
 {
     if (!mActive || line < mStart.y || line > mEnd.y)

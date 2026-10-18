@@ -132,7 +132,7 @@ int MfPcChunkList::ShrinkJumps(int)
     return changed;
 }
 
-// TODO 0x10003a80 ?Walk@MfPcChunkList@@QAEXXZ: (same results, but the branch layout differs) one branch goes straight to the shared target instead of through a second test of the same flag
+// TODO 0x10003a80 ?Walk@MfPcChunkList@@QAEXXZ: (100% similar) (same results, but the branch layout differs) one branch goes straight to the shared target instead of through a second test of the same flag
 void MfPcChunkList::Walk()
 {
     MfDblListItem *pli;

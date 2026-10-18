@@ -219,7 +219,7 @@ long CMBPref::SetLong(IMBStream *stream, const MBString &section, const MBString
     return SetString(stream, section, keyName, svalue);
 }
 
-// TODO 0x1004fee0 ?ReadStreamIntoTree@CMBPref@@IAEXXZ: inline budget/register allocation in the parser loops; structure reconstructed (83% similar)
+// TODO 0x1004fee0 ?ReadStreamIntoTree@CMBPref@@IAEXXZ: inline budget/register allocation in the parser loops; structure reconstructed (91% similar)
 void CMBPref::ReadStreamIntoTree(void)
 {
     unsigned long length = mStream->GetStreamSize();
@@ -288,7 +288,7 @@ void CMBPref::ReadStreamIntoTree(void)
     }
 }
 
-// TODO 0x100504f0 ?ReadTokenToEOL@CMBPref@@IAE_NAAV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@AAKD0@Z: original loop is not rotated (length test only at the top, back edge to it); while/for(;;)/early return all rotate (79% similar)
+// TODO 0x100504f0 ?ReadTokenToEOL@CMBPref@@IAE_NAAV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@AAKD0@Z: original loop is not rotated (length test only at the top, back edge to it); while/for(;;)/early return all rotate (87% similar)
 bool CMBPref::ReadTokenToEOL(MBString &buffer, unsigned long &startPos, char stopChar, MBString &dest)
 {
     MBString returnValue("");

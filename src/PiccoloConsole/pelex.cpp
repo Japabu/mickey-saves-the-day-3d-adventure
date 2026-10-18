@@ -932,7 +932,7 @@ static yy_state_type yy_try_NUL_trans( yy_state_type yy_current_state )
 	}
 
 
-// TODO 0x1001c860 ?yyunput@@YAXHPAD@Z: 47% - this build computes dest - source once for both pointers, the original twice (the same source matches in PiccoloComp.dll: the optimizer decides by the context of the unit)
+// TODO 0x1001c860 ?yyunput@@YAXHPAD@Z: 77% - this build computes dest - source once for both pointers, the original twice (the same source matches in PiccoloComp.dll: the optimizer decides by the context of the unit)
 static void yyunput( int c, register char *yy_bp )
 	{
 	register char *yy_cp = yy_c_buf_p;

@@ -24,7 +24,7 @@ Graph::NodeTraverser::~NodeTraverser()
 {
 }
 
-// TODO 0x100e1fa0 ?Traverse@NodeTraverser@Graph@@QAEXAAVBasicNode@2@@Z: Vec::remove shift loop: original increments index before the body; append loads len via lea
+// TODO 0x100e1fa0 ?Traverse@NodeTraverser@Graph@@QAEXAAVBasicNode@2@@Z: (97% similar) Vec::remove shift loop: original increments index before the body; append loads len via lea
 void Graph::NodeTraverser::Traverse(Graph::BasicNode &node)
 {
     m_NodeCount = 0;

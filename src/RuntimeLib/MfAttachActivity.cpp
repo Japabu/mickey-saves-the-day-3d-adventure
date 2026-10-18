@@ -34,7 +34,7 @@ MfAttachActivity::MfAttachActivity()
 // 0x10019780 ?PrintName@MfAttachActivity@@UBE?AVMfString@@XZ
 // 0x100197b0 ??_GMfAttachActivity@@UAEPAXI@Z
 
-// TODO 0x100197d0 ??0MfAttachActivity@@QAE@PAVMfActor@@KPAVMfSkill@@ABVMfTransform3@@H@Z: calls and
+// TODO 0x100197d0 ??0MfAttachActivity@@QAE@PAVMfActor@@KPAVMfSkill@@ABVMfTransform3@@H@Z: (88% similar) calls and
 // frame agree; the two local transforms sit in each other's stack slots, the
 // skill+4 load is scheduled before the GetNodeName call, and the end calls the
 // imported ~MfTransform3 of the locals where the original drops them (81%
@@ -110,7 +110,7 @@ MfActivityStatus MfAttachActivity::Update(unsigned long time)
     return MfActivity::Update(time);
 }
 
-// TODO 0x10019d10 ?_CheckBubble@MfAttachActivity@@MAEXAAK@Z: first body (as MfManipActivity's,
+// TODO 0x10019d10 ?_CheckBubble@MfAttachActivity@@MAEXAAK@Z: (75% similar) first body (as MfManipActivity's,
 // with me4 the sample goes back in thirds until the bubbles are free); the call sequence
 // follows the original, locals and argument details do not (44% similar)
 // Moves the bubbles to the sampled configuration and reports the collisions

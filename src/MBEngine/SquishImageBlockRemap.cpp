@@ -177,7 +177,7 @@ inline unsigned char *RemapShortToLong(unsigned short *data, SquishImageDescript
     return newdata;
 }
 
-// TODO 0x10064e30 ?Remap@SquishImageBlock@@QAE_NKKPAVSquishPalette@@@Z: per-format cases reconstructed, but ours is 374 bytes shorter (a format path is merged or missing) (34% similar)
+// TODO 0x10064e30 ?Remap@SquishImageBlock@@QAE_NKKPAVSquishPalette@@@Z: per-format cases reconstructed, but ours is 374 bytes shorter (a format path is merged or missing) (57% similar)
 // 0x10065900 ?Unlock@ImageDataPtr@@QAEXXZ
 bool SquishImageBlock::Remap(unsigned long newDepth, unsigned long newPixFmt, SquishPalette *newPalette)
 {
@@ -302,7 +302,7 @@ bool SquishImageBlock::RemapIndexedToIndexed(SquishPalette *newPalette)
     return true;
 }
 
-// TODO 0x10065a80 ?RemapHiColorToIndex@@YA_NPAKPAPAEAAVSquishImageDescriptor@@PAVSquishPalette@@@Z: loops reconstructed; branch layout and register allocation differ (44% similar)
+// TODO 0x10065a80 ?RemapHiColorToIndex@@YA_NPAKPAPAEAAVSquishImageDescriptor@@PAVSquishPalette@@@Z: loops reconstructed; branch layout and register allocation differ (84% similar)
 bool RemapHiColorToIndex(unsigned long *data, unsigned char **newdata, SquishImageDescriptor &desc,
                          SquishPalette *newPalette)
 {
@@ -359,7 +359,7 @@ bool RemapHiColorToIndex(unsigned long *data, unsigned char **newdata, SquishIma
     return true;
 }
 
-// TODO 0x10065cb0 ?RemapHiColorToHiColor@@YA_NPAKPAPAEAAVSquishImageDescriptor@@KG@Z: loops reconstructed; branch layout and register allocation differ (76% similar)
+// TODO 0x10065cb0 ?RemapHiColorToHiColor@@YA_NPAKPAPAEAAVSquishImageDescriptor@@KG@Z: loops reconstructed; branch layout and register allocation differ (91% similar)
 bool RemapHiColorToHiColor(unsigned long *data, unsigned char **newdata, SquishImageDescriptor &desc,
                            unsigned long newPixFmt, unsigned short dummy)
 {

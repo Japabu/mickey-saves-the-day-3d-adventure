@@ -41,7 +41,7 @@ DXGfx::ShadowAttributeD3D::~ShadowAttributeD3D()
 {
 }
 
-// TODO 0x100d98e0 ?Push@ShadowAttributeD3D@DXGfx@@UBEXPAVPassiveTraverser@Graph@@@Z: 81% similar: only the TMatrix4 temporaries differ: the original builds the results of operator* and operator- with an out-of-line setValues straight into the result, VC6 copies them through a temporary (rep movsd plus the copy constructor); SquareMatrix(const T *) calling setValues changes nothing
+// TODO 0x100d98e0 ?Push@ShadowAttributeD3D@DXGfx@@UBEXPAVPassiveTraverser@Graph@@@Z: 92% similar: only the TMatrix4 temporaries differ: the original builds the results of operator* and operator- with an out-of-line setValues straight into the result, VC6 copies them through a temporary (rep movsd plus the copy constructor); SquareMatrix(const T *) calling setValues changes nothing
 void DXGfx::ShadowAttributeD3D::Push(Graph::PassiveTraverser *traverser) const
 {
     Vec4<float> plane(m_Plane.GetNormal(), m_Plane.GetOffset());

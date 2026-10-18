@@ -19,7 +19,7 @@ Graph::ActiveNode::~ActiveNode()
 {
 }
 
-// TODO 0x100df790 ?Traverse@ActiveNode@Graph@@UAE?AW4Response@NodeTraverser@2@AAVPassiveTraverser@2@@Z: PushNode/PopNode: original calls reallocMem out of line (inline budget) and keeps &path in ebx
+// TODO 0x100df790 ?Traverse@ActiveNode@Graph@@UAE?AW4Response@NodeTraverser@2@AAVPassiveTraverser@2@@Z: (60% similar) PushNode/PopNode: original calls reallocMem out of line (inline budget) and keeps &path in ebx
 Graph::NodeTraverser::Response Graph::ActiveNode::Traverse(Graph::PassiveTraverser &traverser)
 {
     if (StdBaseCast(&traverser, (Graph::BasicRefreshTraverser *)0))

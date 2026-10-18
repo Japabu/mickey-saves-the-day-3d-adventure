@@ -1817,7 +1817,7 @@ static double RadiansToDegrees = 180.0 / kPI;
 // SetView is not no-alias code: the original reloads mMfCameraNode after every call and calls
 // map::find out of line; only with "a" off does VC6 do the same (tested).
 #pragma optimize("a", off)
-// TODO 0x100a9a00 ?SetView@SteamboatNode@@UAEXABVMfString@@@Z: 29% similar (with G's inline SetFOV,
+// TODO 0x100a9a00 ?SetView@SteamboatNode@@UAEXABVMfString@@@Z: 58% similar (with G's inline SetFOV,
 // SetWorldMatrix and toMat); the original's inlined matrix code indexes with operator[] and calls clamp
 // out of line for each element (toMat's mat(i, j) has no clamp; written out with [] here it was 27%),
 // and keeps space in edi and this in esi (VC6: esi, ebp), which shifts every instruction. The fov and
@@ -2121,7 +2121,7 @@ void SteamboatNode::KillSound(const long channelID)
         soundManager->StopChannel(channelID);
 }
 
-// TODO 0x100ab480 ?PlaySfx@SteamboatNode@@UAEXPBD@Z: as KillSound
+// TODO 0x100ab480 ?PlaySfx@SteamboatNode@@UAEXPBD@Z: (81% similar) as KillSound
 void SteamboatNode::PlaySfx(const char *name)
 {
     MBComPtr<IMBSoundManager> soundManager(MBIID_IMBSoundManager);
@@ -2191,7 +2191,7 @@ MfAiActor *SteamboatNode::GetMfPrimaryActor()
     return sMfPrimaryActor;
 }
 
-// TODO 0x100aba00 ?LoadItems@SteamboatNode@@MAEXXZ: 76% similar; the original gives stream the lower stack slot than fileSpec (here the other way round) and is 2 bytes longer
+// TODO 0x100aba00 ?LoadItems@SteamboatNode@@MAEXXZ: 93% similar; the original gives stream the lower stack slot than fileSpec (here the other way round) and is 2 bytes longer
 void SteamboatNode::LoadItems()
 {
     // scene.ini lists the scene's items (item0, item1, ...); each one is loaded as a Motivate
@@ -2384,7 +2384,7 @@ void SteamboatNode::LoadHotspots()
     }
 }
 
-// TODO 0x100adc00 ?ClearHotspots@SteamboatNode@@MAEXXZ: first draft (45% similar; the original inlines the SBMouseEvent destructor in the second and third loops and the third clear)
+// TODO 0x100adc00 ?ClearHotspots@SteamboatNode@@MAEXXZ: first draft (89% similar; the original inlines the SBMouseEvent destructor in the second and third loops and the third clear)
 void SteamboatNode::ClearHotspots()
 {
     // the click data of each hotspot, button and clickable belongs to the scene
@@ -3238,7 +3238,7 @@ void __cdecl SteamboatNode::SetActiveMouseMonitor(IMBMouseMonitor *monitor)
     sCurrentActiveNode->mMouseMonitor = monitor;
 }
 
-// TODO 0x100b0f80 ?CreateAndLoadAnim@SteamboatNode@@SAJABV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@AAPAVIMBAnim@@@Z: the inlined CreateObject keeps unk->Release in both branches and tests the -2 result again (VC6 merges and folds them)
+// TODO 0x100b0f80 ?CreateAndLoadAnim@SteamboatNode@@SAJABV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@AAPAVIMBAnim@@@Z: (92% similar) the inlined CreateObject keeps unk->Release in both branches and tests the -2 result again (VC6 merges and folds them)
 long __cdecl SteamboatNode::CreateAndLoadAnim(const MBString &strAnimName, IMBAnim *&pAnim)
 {
     MBComPtr<IMBAnim> iAnim;

@@ -930,7 +930,7 @@ void MfLiveActor::LoadHFSM(int arg)
         LoadBehaviors(arg);
 }
 
-// TODO 0x10034970 ?OldLoadHFSM@MfLiveActor@@QAEHXZ: (66% similar) control-flow layout: after SetActorHandle the original duplicates the `if (live) GoLive(0)` test of the failure tail where this jumps to the shared tail; otherwise the same calls in the same order (istream::get / MfString::operator<<(char) cached in other registers, virtual base offset kept in a register)
+// TODO 0x10034970 ?OldLoadHFSM@MfLiveActor@@QAEHXZ: (87% similar) control-flow layout: after SetActorHandle the original duplicates the `if (live) GoLive(0)` test of the failure tail where this jumps to the shared tail; otherwise the same calls in the same order (istream::get / MfString::operator<<(char) cached in other registers, virtual base offset kept in a register)
 // Loads the old single-file behaviour <prototype>.hfsm if the actor has one;
 // 0 if not (LoadHFSM then loads the behaviour files).
 int MfLiveActor::OldLoadHFSM()
@@ -2013,7 +2013,7 @@ int MfLiveActor::RequestManipMoveTo(int a1, MfLiveActor *target, MfManipSkill *s
     return eventID;
 }
 
-// TODO 0x10038390 ?HandleManipGC@MfLiveActor@@IAEXAAVMfMsg@@@Z: (84% similar) control-flow layout (logic and calls otherwise the same): the original puts
+// TODO 0x10038390 ?HandleManipGC@MfLiveActor@@IAEXAAVMfMsg@@@Z: (89% similar) control-flow layout (logic and calls otherwise the same): the original puts
 // the discarding of a stale path right after the tests (here it goes to the end; early
 // return, if/else both ways, a negated condition and nested ifs tried); the three
 // duration computations stay separate when the motion is assigned after them
@@ -2089,7 +2089,7 @@ void MfLiveActor::HandleManipGC(MfMsg &msg)
     }
 }
 
-// TODO 0x10038890 ?HandleManipMoveTo@MfLiveActor@@IAEXAAVMfMsg@@@Z: (60% similar) control-flow layout: the original places the stale-path discard after the Contains/request tests and merges the two MakeManipActivity calls after seven arguments (here after three, with the early return in the middle); it also calls the local ??_EMfTransform3 for each delete [] where this expands ??_M + delete (same effect)
+// TODO 0x10038890 ?HandleManipMoveTo@MfLiveActor@@IAEXAAVMfMsg@@@Z: (73% similar) control-flow layout: the original places the stale-path discard after the Contains/request tests and merges the two MakeManipActivity calls after seven arguments (here after three, with the early return in the middle); it also calls the local ??_EMfTransform3 for each delete [] where this expands ??_M + delete (same effect)
 void MfLiveActor::HandleManipMoveTo(MfMsg &msg)
 {
     MfManipMoveResultData *data = (MfManipMoveResultData *)msg.mData;
@@ -2697,7 +2697,7 @@ struct MfActivityDoneData : public MfMsgDataBlock {
     MfActivity *mActivity;                                  // 0x08
 };
 
-// TODO 0x1003a2f0 ?HandleActivityFinished@MfLiveActor@@IAEXAAVMfMsg@@@Z: (87% similar) control-flow layout: in the MfManipActivity/cmd-state branch the original duplicates RemoveActivity(0, 0) + ChangeCmdState for a null activity where this merges p ? p + 0x14 : 0 (as both do in the loco branch); also a 4-byte larger frame, other slots and independently ordered EH state stores
+// TODO 0x1003a2f0 ?HandleActivityFinished@MfLiveActor@@IAEXAAVMfMsg@@@Z: (96% similar) control-flow layout: in the MfManipActivity/cmd-state branch the original duplicates RemoveActivity(0, 0) + ChangeCmdState for a null activity where this merges p ? p + 0x14 : 0 (as both do in the loco branch); also a 4-byte larger frame, other slots and independently ordered EH state stores
 // One of the actor's activities finished: removes it, continues a walk with
 // the path that was planned meanwhile (or asks for a new one when the walk
 // ended away from the goal), advances the command state and tells the

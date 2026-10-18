@@ -218,7 +218,7 @@ CConsoleFrame::CConsoleFrame(int, int resourceId)
 // 0x10001b90 ??1MfThreadWork@@UAE@XZ
 // 0x10001ba0 ??_GMfThreadWork@@UAEPAXI@Z
 
-// TODO 0x10001bc0 ?DoWork@MfExecWork@@UAEXXZ: 54% - same code, different register allocation (the original keeps this in ebx with a spill at [esp+0x18] and 0 in ebp)
+// TODO 0x10001bc0 ?DoWork@MfExecWork@@UAEXXZ: 70% - same code, different register allocation (the original keeps this in ebx with a spill at [esp+0x18] and 0 in ebp)
 void MfExecWork::DoWork()
 {
     int count = 0;
@@ -522,7 +522,7 @@ int CConsoleFrame::KbhKeyDown(int key, int flags, MfAiPiccoloEditor *)
     return handled;
 }
 
-// TODO 0x10003460 ?OnCreate@CConsoleFrame@@IAEHPAUtagCREATESTRUCTA@@@Z: 79% - register allocation; the original keeps the saved resource handle of the PiccoloConsoleContext in ebx for the inline destructor, this build loads it again from the object
+// TODO 0x10003460 ?OnCreate@CConsoleFrame@@IAEHPAUtagCREATESTRUCTA@@@Z: 81% - register allocation; the original keeps the saved resource handle of the PiccoloConsoleContext in ebx for the inline destructor, this build loads it again from the object
 int CConsoleFrame::OnCreate(LPCREATESTRUCT cs)
 {
     if (CPiccoloFileEditor::OnCreate(cs) == -1)

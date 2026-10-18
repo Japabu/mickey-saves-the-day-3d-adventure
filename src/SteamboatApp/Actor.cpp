@@ -205,7 +205,7 @@ void Actor::ClearMaps()
     mMatrixMap.clear();
 }
 
-// TODO 0x1000a7b0 ?FindVertexClusterAttributes@Actor@@IAEXPAVNode@Gfx@@@Z: 33% similar; the original inlines the second clear's erase but calls std::copy, VC6 here calls erase (a direct erase inlines copy too)
+// TODO 0x1000a7b0 ?FindVertexClusterAttributes@Actor@@IAEXPAVNode@Gfx@@@Z: 61% similar; the original inlines the second clear's erase but calls std::copy, VC6 here calls erase (a direct erase inlines copy too)
 void Actor::FindVertexClusterAttributes(Gfx::Node *node)
 {
     // the triangle sets of the model and the vertex clusters that deform them
@@ -312,7 +312,7 @@ void Actor::UpdateHeadData()
     mHeadNode->SetForceChild(mCurrentHeadPosition);
 }
 
-// TODO 0x1000b3d0 ?CopyMotivateData@Actor@@IAEXXZ: 26% similar; the original calls Quaternion::toMat3 and the Vec4 constructor out of line (0x1000fcb0), VC6 inlines both here and the frame grows
+// TODO 0x1000b3d0 ?CopyMotivateData@Actor@@IAEXXZ: 92% similar; the original calls Quaternion::toMat3 and the Vec4 constructor out of line (0x1000fcb0), VC6 inlines both here and the frame grows
 void Actor::CopyMotivateData()
 {
     // move every vertex cluster to the global transform of its Motivate node
@@ -470,7 +470,7 @@ const tagRECT &Actor::GetScreenRect(int buffer)
 // TODO 0x1000bad0 ??0?$Vec4@M@@QAE@MMMM@Z: header instance that our object does not emit (VC6 inlines it at the call that the original makes out of line; see the caller's TODO)
 // TODO 0x1000bfe0 ?_Destroy@?$vector@PAVIndexedTriangleSet@Gfx@@V?$allocator@PAVIndexedTriangleSet@Gfx@@@std@@@std@@IAEXPAPAVIndexedTriangleSet@Gfx@@0@Z: header instance that our object does not emit (VC6 inlines it at the call that the original makes out of line; see the caller's TODO)
 // TODO 0x1000c930 ?insert@?$vector@PAVVertexClusterAttribute@Gfx@@V?$allocator@PAVVertexClusterAttribute@Gfx@@@std@@@std@@QAEXPAPAVVertexClusterAttribute@Gfx@@IABQAV34@@Z: header instance that our object does not emit (VC6 inlines it at the call that the original makes out of line; see the caller's TODO)
-// TODO 0x1000fad0 ?Left@?$_SS@D@@QBE?AV1@H@Z: StdString.h instance, 79% similar; Left goes straight to substr as in the original, but VC6 keeps 0 in ebp from the start where the original saves ebp later
+// TODO 0x1000fad0 ?Left@?$_SS@D@@QBE?AV1@H@Z: StdString.h instance, 83% similar; Left goes straight to substr as in the original, but VC6 keeps 0 in ebp from the start where the original saves ebp later
 // EQUIV 0x1000fcb0 ?toMat3@?$Quaternion@M@@QBEXAAV?$TMatrix3@M@@@Z: reviewed: the original keeps w*w in a stack slot (VC6 here on the FPU stack) and multiplies each product's operands in the other order (e[2]*e[1] against e[1]*e[2], ...); same products, sums, constant and stores
 // CopyMotivateData calls toMat3 out of line in the original; this unit's copy comes from instantiating the class
 template class Quaternion<float>;

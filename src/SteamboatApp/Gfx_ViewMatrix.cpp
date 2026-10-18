@@ -5,7 +5,7 @@ Gfx::ViewMatrix::ViewMatrix()
 {
 }
 
-// TODO 0x1010f970 ?SetView@ViewMatrix@Gfx@@QAEXABV?$Vec3@M@@00@Z: inline budget: the original inlines the Vec3 operator-=/operator- and translate bodies and calls only mag2, multScal, the SquareMatrix constructor, composeByCols and multRight; VC6 here calls five more of the inline helpers out of line; normalize divides with fld 1.0 / fdiv st(1) in the original (as View::CalcViewFrustumPlanes) (60% similar)
+// TODO 0x1010f970 ?SetView@ViewMatrix@Gfx@@QAEXABV?$Vec3@M@@00@Z: inline budget: the original inlines the Vec3 operator-=/operator- and translate bodies and calls only mag2, multScal, the SquareMatrix constructor, composeByCols and multRight; VC6 here calls five more of the inline helpers out of line; normalize divides with fld 1.0 / fdiv st(1) in the original (as View::CalcViewFrustumPlanes) (84% similar)
 void Gfx::ViewMatrix::SetView(const Vec3<float> &from, const Vec3<float> &at, const Vec3<float> &up)
 {
     Vec3<float> dir = from - at;

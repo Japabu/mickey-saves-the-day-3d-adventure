@@ -20,7 +20,7 @@ Gfx::IntersectionRecord::IntersectionRecord()
 {
 }
 
-// TODO 0x100e23d0 ??0IntersectionRecord@Gfx@@QAE@ABV01@@Z: member copies and EH states laid out differently (open)
+// TODO 0x100e23d0 ??0IntersectionRecord@Gfx@@QAE@ABV01@@Z: (51% similar) member copies and EH states laid out differently (open)
 Gfx::IntersectionRecord::IntersectionRecord(const Gfx::IntersectionRecord &record)
     : m_GroupPath(record.m_GroupPath), m_Path1(record.m_Path1), m_Path2(record.m_Path2),
       m_Matrix1(record.m_Matrix1), m_Matrix2(record.m_Matrix2), m_AtomList(record.m_AtomList),
@@ -29,7 +29,7 @@ Gfx::IntersectionRecord::IntersectionRecord(const Gfx::IntersectionRecord &recor
 {
 }
 
-// TODO 0x100e25f0 ??0IntersectionRecord@Gfx@@QAE@ABVTraversalPath@1@00ABV?$TMatrix4@M@@1ABV?$Vec@H@@ABV?$Vec3@M@@33ABVBoundingVolume@1@4@Z: member copies and EH states laid out differently (open)
+// TODO 0x100e25f0 ??0IntersectionRecord@Gfx@@QAE@ABVTraversalPath@1@00ABV?$TMatrix4@M@@1ABV?$Vec@H@@ABV?$Vec3@M@@33ABVBoundingVolume@1@4@Z: (72% similar) member copies and EH states laid out differently (open)
 Gfx::IntersectionRecord::IntersectionRecord(const Gfx::TraversalPath &groupPath, const Gfx::TraversalPath &path1,
                                             const Gfx::TraversalPath &path2, const TMatrix4<float> &matrix1,
                                             const TMatrix4<float> &matrix2, const Vec<int> &atomList,
@@ -42,7 +42,7 @@ Gfx::IntersectionRecord::IntersectionRecord(const Gfx::TraversalPath &groupPath,
 {
 }
 
-// TODO 0x100e27c0 ?Set@IntersectionRecord@Gfx@@QAEXABVTraversalPath@2@00ABV?$TMatrix4@M@@1ABV?$Vec@H@@ABV?$Vec3@M@@33ABVBoundingVolume@2@4@Z: the original reads the BoundingSphere temporaries from the stack, here through the constructor result
+// TODO 0x100e27c0 ?Set@IntersectionRecord@Gfx@@QAEXABVTraversalPath@2@00ABV?$TMatrix4@M@@1ABV?$Vec@H@@ABV?$Vec3@M@@33ABVBoundingVolume@2@4@Z: (83% similar) the original reads the BoundingSphere temporaries from the stack, here through the constructor result
 void Gfx::IntersectionRecord::Set(const Gfx::TraversalPath &groupPath, const Gfx::TraversalPath &path1,
                                   const Gfx::TraversalPath &path2, const TMatrix4<float> &matrix1,
                                   const TMatrix4<float> &matrix2, const Vec<int> &atomList,
@@ -62,12 +62,12 @@ void Gfx::IntersectionRecord::Set(const Gfx::TraversalPath &groupPath, const Gfx
     m_Sphere2 = Gfx::BoundingSphere(volume2);
 }
 
-// TODO 0x100e2920 ??1IntersectionRecord@Gfx@@QAE@XZ: the original has no EH state for the atom list (Vec<int>) while it is destroyed
+// TODO 0x100e2920 ??1IntersectionRecord@Gfx@@QAE@XZ: (69% similar) the original has no EH state for the atom list (Vec<int>) while it is destroyed
 Gfx::IntersectionRecord::~IntersectionRecord()
 {
 }
 
-// TODO 0x100e29b0 ??4IntersectionRecord@Gfx@@QAEAAV01@ABV01@@Z: the original keeps &m_Matrix1/&m_Matrix2 (operator= results) in eax
+// TODO 0x100e29b0 ??4IntersectionRecord@Gfx@@QAEAAV01@ABV01@@Z: (98% similar) the original keeps &m_Matrix1/&m_Matrix2 (operator= results) in eax
 Gfx::IntersectionRecord &Gfx::IntersectionRecord::operator=(const Gfx::IntersectionRecord &record)
 {
     m_GroupPath = record.m_GroupPath;
@@ -89,7 +89,7 @@ Gfx::IntersectionStack::IntersectionStack()
 {
 }
 
-// TODO 0x100e2b50 ??0IntersectionStack@Gfx@@QAE@ABV01@@Z: Vec copy constructor laid out differently (open)
+// TODO 0x100e2b50 ??0IntersectionStack@Gfx@@QAE@ABV01@@Z: (57% similar) Vec copy constructor laid out differently (open)
 Gfx::IntersectionStack::IntersectionStack(const Gfx::IntersectionStack &stack)
     : m_Intersections(stack.m_Intersections)
 {

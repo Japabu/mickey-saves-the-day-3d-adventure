@@ -255,5 +255,5 @@ void ScriptHelpNode::StopScript(unsigned long id)
 // 0x10003a40 _$E78
 // 0x10003a60 _$E77
 // 0x10003a70 ?id@?$ctype@G@std@@$E
-// TODO 0x10001330 _$E68: sScriptManager construction: the original calls the multimap's _Tree constructor out of line (inline budget); ours inlines it
+// TODO 0x10001330 _$E68: (71% similar) sScriptManager construction: the original calls the multimap's _Tree constructor out of line (inline budget); ours inlines it
 // TODO 0x10002860 ??0?$_Tree@KU?$pair@$$CBKPAVIMBScript@@@std@@U_Kfn@?$multimap@KPAVIMBScript@@U?$less@K@std@@V?$MBAllocator@PAVIMBScript@@@@@2@U?$less@K@2@V?$MBAllocator@PAVIMBScript@@@@@std@@QAE@ABU?$less@K@1@_NABV?$MBAllocator@PAVIMBScript@@@@@Z: the multimap _Tree constructor $E68 calls out of line; our compile inlines it into $E68 (inline budget), so it is not emitted

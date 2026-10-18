@@ -136,7 +136,7 @@ void CMBResourceTree::GetStream(unsigned long resID, unsigned long type, IMBStre
     }
 }
 
-// TODO 0x1000fd30 ?AddDirectory@CMBResourceTree@@IAE_NPBVIMBFileSpec@@@Z: original computes files.size() once with the begin()==0 test threaded straight to the loop exit and keeps this in edi; count variable and plain for both differ (51% similar)
+// TODO 0x1000fd30 ?AddDirectory@CMBResourceTree@@IAE_NPBVIMBFileSpec@@@Z: original computes files.size() once with the begin()==0 test threaded straight to the loop exit and keeps this in edi; count variable and plain for both differ (82% similar)
 bool CMBResourceTree::AddDirectory(const IMBFileSpec *dir)
 {
     MBVector<MBComPtr<IMBFileSpec> > files;

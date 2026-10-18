@@ -144,7 +144,7 @@ long CMBFont::LoadCharacterMap(unsigned long id, IMBStream *in)
     return 0;
 }
 
-// TODO 0x1006a100 ?DrawText@CMBFont@@UAEJPAVIMBSurface@@JJQBDK@Z: DrawText(x,y,char): original keeps dx in edi, dy in ebp+stack plus a 4-byte CSE spill; rect fill form unknown (SetSize vs MBRect(MBPoint,MBSize) temps) (45% similar)
+// TODO 0x1006a100 ?DrawText@CMBFont@@UAEJPAVIMBSurface@@JJQBDK@Z: DrawText(x,y,char): original keeps dx in edi, dy in ebp+stack plus a 4-byte CSE spill; rect fill form unknown (SetSize vs MBRect(MBPoint,MBSize) temps) (82% similar)
 long CMBFont::DrawText(IMBSurface *dest, long x, long y, const char *const text, unsigned long count)
 {
     long dx = x;
@@ -171,7 +171,7 @@ long CMBFont::DrawText(IMBSurface *dest, long x, long y, const char *const text,
     return 0;
 }
 
-// TODO 0x1006a240 ?DrawText@CMBFont@@UAEJPAVIMBSurface@@AAVMBRect@@QBDK@Z: DrawText(rect,char): same rect-fill problem as 1006a100, plus Intersect/Blit path (40% similar)
+// TODO 0x1006a240 ?DrawText@CMBFont@@UAEJPAVIMBSurface@@AAVMBRect@@QBDK@Z: DrawText(rect,char): same rect-fill problem as 1006a100, plus Intersect/Blit path (69% similar)
 long CMBFont::DrawText(IMBSurface *dest, MBRect &destRect, const char *const text, unsigned long count)
 {
     long dx = destRect.left;
@@ -213,7 +213,7 @@ long CMBFont::GetTextSize(IMBSurface *dest, const char *text, unsigned long coun
     return 0;
 }
 
-// TODO 0x1006a470 ?DrawText@CMBFont@@UAEJPAVIMBSurface@@JJQBGK@Z: DrawText(x,y,wide): same rect-fill problem as 1006a100 (46% similar)
+// TODO 0x1006a470 ?DrawText@CMBFont@@UAEJPAVIMBSurface@@JJQBGK@Z: DrawText(x,y,wide): same rect-fill problem as 1006a100 (81% similar)
 long CMBFont::DrawText(IMBSurface *dest, long x, long y, const unsigned short *const text, unsigned long count)
 {
     long dx = x;
@@ -241,7 +241,7 @@ long CMBFont::DrawText(IMBSurface *dest, long x, long y, const unsigned short *c
     return 0;
 }
 
-// TODO 0x1006a5a0 ?DrawText@CMBFont@@UAEJPAVIMBSurface@@AAVMBRect@@QBGK@Z: DrawText(rect,wide): same rect-fill problem as 1006a240 (36% similar)
+// TODO 0x1006a5a0 ?DrawText@CMBFont@@UAEJPAVIMBSurface@@AAVMBRect@@QBGK@Z: DrawText(rect,wide): same rect-fill problem as 1006a240 (70% similar)
 long CMBFont::DrawText(IMBSurface *dest, MBRect &destRect, const unsigned short *const text, unsigned long count)
 {
     long dx = destRect.left;

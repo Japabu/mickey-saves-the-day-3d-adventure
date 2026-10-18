@@ -52,7 +52,7 @@ IMBUnknown *MakeCMBMemorySurface(void)
     return p;
 }
 
-// TODO 0x1006b4d0 ??0CMBMemorySurface@@QAE@XZ: alpha mask Set: original calls GetShiftCount and GetBitCount out of line (inline budget), ours inlines GetBitCount(0); rest shifted (51% similar)
+// TODO 0x1006b4d0 ??0CMBMemorySurface@@QAE@XZ: alpha mask Set: original calls GetShiftCount and GetBitCount out of line (inline budget), ours inlines GetBitCount(0); rest shifted (81% similar)
 CMBMemorySurface::CMBMemorySurface(void)
     : mRawImage(0), mWidth(0), mHeight(0), mPalette(0), mLockCount(0)
 {

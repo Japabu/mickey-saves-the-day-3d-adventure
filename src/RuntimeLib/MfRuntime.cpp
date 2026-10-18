@@ -125,7 +125,7 @@ BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID)
 // the libraries whose version must be the runtime's
 static const char *gLibraries[] = { "mfutil", "mflinalg", "mfactorlib", "runtimelib", 0 };
 
-// TODO 0x10003a10 ?VerifyLibraryVersions@MfRuntime@@AAEHVMfString@@@Z: the frame is 4 bytes
+// TODO 0x10003a10 ?VerifyLibraryVersions@MfRuntime@@AAEHVMfString@@@Z: (76% similar) the frame is 4 bytes
 // larger and the library pointer is set up after the first test (62% similar)
 // Warns of every library whose file version is not version; 0 if any.
 int MfRuntime::VerifyLibraryVersions(MfString version)
@@ -224,7 +224,7 @@ void ShowAccessKeyMessage()
     MessageBox(0, "To use the Motivate Runtime with your own application,\nan access key is required. Please contact the Motion\nFactory for assistance.", "Motivate Runtime", MB_ICONSTOP);
 }
 
-// TODO 0x10003dd0 ?Shutdown@MfRuntime@@UAEHXZ: registers rotate through the vtable calls, the
+// TODO 0x10003dd0 ?Shutdown@MfRuntime@@UAEHXZ: (77% similar) registers rotate through the vtable calls, the
 // hook data is set up in another order and the early return gets its own epilogue (56% similar)
 // Stops everything Initialize started and tells the hooks.
 int MfRuntime::Shutdown()
@@ -526,7 +526,7 @@ int MfHookManager::CallHooks(unsigned long id, MfHookData *data)
 void MfFindPlugins(const MfString &prefix, const MfString &type, MfStringList &list);
 int MfLoadPlugin(const MfString &type, const MfString &name, MfPluginInfo *info);
 
-// TODO 0x10004990 ?LoadHookPlugins@@YAXXZ: the frame is 4 bytes smaller and the zero is kept
+// TODO 0x10004990 ?LoadHookPlugins@@YAXXZ: (74% similar) the frame is 4 bytes smaller and the zero is kept
 // in esi instead of ebx ()
 // Loads the hook plugins (hoo*.dll) and lets each add its hooks.
 static void LoadHookPlugins()

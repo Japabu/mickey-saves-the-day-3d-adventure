@@ -86,7 +86,7 @@ void Gfx::MatrixTransform::Pop()
     Gfx::CurrentTransformationMatrix::s_pInstance->Pop();
 }
 
-// TODO 0x10104430 ?WriteInternals@MatrixTransform@Gfx@@IAEXPAVWriteTraverser@2@@Z: the original keeps this in esi and the stream in edi and pushes the stream in each branch; VC6 swaps the registers and pushes it before the test (if/else, early return and repeated GetStream() all give the same code)
+// TODO 0x10104430 ?WriteInternals@MatrixTransform@Gfx@@IAEXPAVWriteTraverser@2@@Z: (91% similar) the original keeps this in esi and the stream in edi and pushes the stream in each branch; VC6 swaps the registers and pushes it before the test (if/else, early return and repeated GetStream() all give the same code)
 void Gfx::MatrixTransform::WriteInternals(Gfx::WriteTraverser *traverser)
 {
     Node::WriteInternals(traverser);

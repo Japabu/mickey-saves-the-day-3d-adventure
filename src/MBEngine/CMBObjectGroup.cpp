@@ -176,7 +176,7 @@ MBRect CMBObjectGroup::GetBounds(void) const
     return bounds;
 }
 
-// TODO 0x10025910 ?ClipRectsToObject@CMBObjectGroup@@ABE_NPAVIMBObject@@AAVMBRect@@1@Z: ClipRectsToObject: dest/src rect update order and 3 extra spill slots not reproduced; 5 compiles (29% similar)
+// TODO 0x10025910 ?ClipRectsToObject@CMBObjectGroup@@ABE_NPAVIMBObject@@AAVMBRect@@1@Z: ClipRectsToObject: dest/src rect update order and 3 extra spill slots not reproduced; 5 compiles (53% similar)
 bool CMBObjectGroup::ClipRectsToObject(IMBObject *obj, MBRect &srcRect, MBRect &destRect) const
 {
     MBRect objRect = obj->GetBounds();
@@ -241,7 +241,7 @@ void CMBObjectGroup::SetBackground(IMBObject *newBg)
     }
 }
 
-// TODO 0x10025c20 ?FindObject@CMBObjectGroup@@AAE?AViterator@?$_Tree@JU?$pair@$$CBJPAVIMBObject@@@std@@U_Kfn@?$multimap@JPAVIMBObject@@U?$less@J@std@@V?$MBAllocator@PAVIMBObject@@@@@2@U?$less@J@2@V?$MBAllocator@PAVIMBObject@@@@@std@@PAVIMBObject@@@Z: FindObject: original inlines _Inc in the second (begin..end) loop, ours calls it in both; 6 compiles (46% similar)
+// TODO 0x10025c20 ?FindObject@CMBObjectGroup@@AAE?AViterator@?$_Tree@JU?$pair@$$CBJPAVIMBObject@@@std@@U_Kfn@?$multimap@JPAVIMBObject@@U?$less@J@std@@V?$MBAllocator@PAVIMBObject@@@@@2@U?$less@J@2@V?$MBAllocator@PAVIMBObject@@@@@std@@PAVIMBObject@@@Z: FindObject: original inlines _Inc in the second (begin..end) loop, ours calls it in both; 6 compiles (71% similar)
 MBObjectMap::iterator CMBObjectGroup::FindObject(IMBObject *obj)
 {
     MBObjectMap::iterator it = mObjects.lower_bound(obj->GetPosition().z);

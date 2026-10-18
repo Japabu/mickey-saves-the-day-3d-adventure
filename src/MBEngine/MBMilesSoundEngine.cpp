@@ -26,7 +26,7 @@ MBMilesSoundEngine::~MBMilesSoundEngine(void)
     MBMilesSoundEngine::DisposeSound();
 }
 
-// TODO 0x10043620 ?LoadSound@MBMilesSoundEngine@@UAE_NPAVIMBSoundDescription@@@Z: LoadSound: orig keeps this in ebx (spilled), soundLoaded in memory, no tail-merge of soundLoaded=true; Release of MBComPtr out-of-line only when declared-only; 6 variants tried (56% similar)
+// TODO 0x10043620 ?LoadSound@MBMilesSoundEngine@@UAE_NPAVIMBSoundDescription@@@Z: LoadSound: orig keeps this in ebx (spilled), soundLoaded in memory, no tail-merge of soundLoaded=true; Release of MBComPtr out-of-line only when declared-only; 6 variants tried (78% similar)
 bool MBMilesSoundEngine::LoadSound(IMBSoundDescription *soundDescription)
 {
     bool soundLoaded = false;

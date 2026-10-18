@@ -19,7 +19,7 @@ void DXGfx::DisplayD3D::Create(HWND hwnd, IDirectDraw7 *directDraw, GUID *guid)
         mInstance = new DisplayD3D(hwnd, directDraw, guid);
 }
 
-// TODO 0x100d4bb0 ?SetSurfaceProperties@DisplayD3D@DXGfx@@UAEXABUSurfaceDesc@Gfx@@@Z: the original loads height, width and depth into three saved registers before the byte stores (no-alias scheduling); plain, chained and /Oa forms all keep them in edx
+// TODO 0x100d4bb0 ?SetSurfaceProperties@DisplayD3D@DXGfx@@UAEXABUSurfaceDesc@Gfx@@@Z: (50% similar) the original loads height, width and depth into three saved registers before the byte stores (no-alias scheduling); plain, chained and /Oa forms all keep them in edx
 void DXGfx::DisplayD3D::SetSurfaceProperties(const Gfx::SurfaceDesc &desc)
 {
     m_PrimarySurfaceDesc.systemMemory = desc.systemMemory;
@@ -31,7 +31,7 @@ void DXGfx::DisplayD3D::SetSurfaceProperties(const Gfx::SurfaceDesc &desc)
     m_dwPreferredDepth = m_PrimarySurfaceDesc.depth = desc.depth;
 }
 
-// TODO 0x100d4c00 ?Initialize@DisplayD3D@DXGfx@@UAEXXZ: matches only with #pragma optimize("a", on) for the whole unit (the inlined ValList lookup stores cnum after loading next), which breaks six other functions here; a per-function pragma has no effect
+// TODO 0x100d4c00 ?Initialize@DisplayD3D@DXGfx@@UAEXXZ: (97% similar) matches only with #pragma optimize("a", on) for the whole unit (the inlined ValList lookup stores cnum after loading next), which breaks six other functions here; a per-function pragma has no effect
 void DXGfx::DisplayD3D::Initialize()
 {
     Gfx::CurrentTransformationMatrix::Create();
@@ -190,7 +190,7 @@ DXGfx::DisplayD3D::DisplayD3D(HWND hwnd, IDirectDraw7 *directDraw, GUID *guid)
 
 // 0x100d5230 ??_GDisplayD3D@DXGfx@@MAEPAXI@Z
 
-// TODO 0x100d5260 ??1DisplayD3D@DXGfx@@MAE@XZ: identical except that VC6 here pops edi (the CurrentTransformationMatrix pointer) before the buffer compare, the original after it
+// TODO 0x100d5260 ??1DisplayD3D@DXGfx@@MAE@XZ: (91% similar) identical except that VC6 here pops edi (the CurrentTransformationMatrix pointer) before the buffer compare, the original after it
 DXGfx::DisplayD3D::~DisplayD3D()
 {
     if (m_lpDDClipper) {
@@ -294,7 +294,7 @@ void DXGfx::DisplayD3D::CreateFrontBuffer()
     m_bInitialized = 1;
 }
 
-// TODO 0x100d5750 ?AssignBuffers@DisplayD3D@DXGfx@@IAEXPAUIDirectDrawSurface7@@0@Z: the clipper block differs in register choice only (edx/eax/ecx rotated); the same block in CreateFrontBuffer matches
+// TODO 0x100d5750 ?AssignBuffers@DisplayD3D@DXGfx@@IAEXPAUIDirectDrawSurface7@@0@Z: (91% similar) the clipper block differs in register choice only (edx/eax/ecx rotated); the same block in CreateFrontBuffer matches
 void DXGfx::DisplayD3D::AssignBuffers(IDirectDrawSurface7 *frontBuffer, IDirectDrawSurface7 *backBuffer)
 {
     HRESULT hr;
@@ -344,7 +344,7 @@ void DXGfx::DisplayD3D::AssignBuffers(IDirectDrawSurface7 *frontBuffer, IDirectD
     m_bInitialized = 1;
 }
 
-// TODO 0x100d5a80 ?SetCoopLevel@DisplayD3D@DXGfx@@QAEHH@Z: the windowed branch differs in register choice only (ecx/edx swapped around the SetCooperativeLevel call); the full-screen branch matches
+// TODO 0x100d5a80 ?SetCoopLevel@DisplayD3D@DXGfx@@QAEHH@Z: (92% similar) the windowed branch differs in register choice only (ecx/edx swapped around the SetCooperativeLevel call); the full-screen branch matches
 int DXGfx::DisplayD3D::SetCoopLevel(int fullScreen)
 {
     if (fullScreen) {
@@ -374,7 +374,7 @@ int DXGfx::DisplayD3D::SetCoopLevel(int fullScreen)
     return 1;
 }
 
-// TODO 0x100d5ba0 ?SetDisplayMode@DisplayD3D@DXGfx@@QAEHH@Z: same as Initialize: matches only with a unit-wide /Oa pragma
+// TODO 0x100d5ba0 ?SetDisplayMode@DisplayD3D@DXGfx@@QAEHH@Z: (91% similar) same as Initialize: matches only with a unit-wide /Oa pragma
 int DXGfx::DisplayD3D::SetDisplayMode(int mode)
 {
     m_bIgnoreWM_SIZE = 1;

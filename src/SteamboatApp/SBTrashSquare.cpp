@@ -82,7 +82,7 @@ CSBTrashTile *SBTrashSquare::PeekTopTile() const
     return 0;
 }
 
-// TODO 0x1009ff00 ?GetPosition@SBTrashSquare@@UAE?AVMBPoint3@@H@Z: same arithmetic, the original walks mPosition through a pointer and keeps more registers (constructor and operator+ forms tried) (22% similar)
+// TODO 0x1009ff00 ?GetPosition@SBTrashSquare@@UAE?AVMBPoint3@@H@Z: same arithmetic, the original walks mPosition through a pointer and keeps more registers (constructor and operator+ forms tried) (58% similar)
 MBPoint3 SBTrashSquare::GetPosition(int nextTile)
 {
     // each layer sits 8 pixels higher and in front of the one below

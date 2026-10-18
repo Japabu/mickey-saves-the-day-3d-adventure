@@ -87,7 +87,7 @@ Gfx::IndexedVertexShape::IndexedVertexShape()
     ST[3][1] = 0.5f;
 }
 
-// TODO 0x100f9760 ??0IndexedVertexShape@Gfx@@IAE@ABVShape@1@@Z: the original records EH states (and keeps the member addresses) for m_SpecularColors and m_TCoords; VC6 here constructs them from esi without states
+// TODO 0x100f9760 ??0IndexedVertexShape@Gfx@@IAE@ABVShape@1@@Z: (80% similar) the original records EH states (and keeps the member addresses) for m_SpecularColors and m_TCoords; VC6 here constructs them from esi without states
 Gfx::IndexedVertexShape::IndexedVertexShape(const Gfx::Shape &shape)
     : Shape(shape), m_Stride(0), m_nVerts(0), m_NormalOffset(0), m_ColorOffset(0), m_TextureOffset(0),
       m_Binding(0x421), m_CoordStride(3), m_NormalStride(3), m_ColorStride(2), m_TextureStride(3)
@@ -285,7 +285,7 @@ void Gfx::IndexedVertexShape::SeparateVertexInfoV3()
     }
 }
 
-// TODO 0x100fa720 ?SeparateVertexInfo@IndexedVertexShape@Gfx@@IAEXXZ: same operations; the original walks the coordinates with pointers and keeps i in ebx (register allocation of the copy loop)
+// TODO 0x100fa720 ?SeparateVertexInfo@IndexedVertexShape@Gfx@@IAEXXZ: (75% similar) same operations; the original walks the coordinates with pointers and keeps i in ebx (register allocation of the copy loop)
 void Gfx::IndexedVertexShape::SeparateVertexInfo()
 {
     m_nVerts = m_CList.length() / m_Stride;
@@ -324,7 +324,7 @@ void Gfx::IndexedVertexShape::SeparateVertexInfo()
     m_CList.setLength(0);
 }
 
-// TODO 0x100fab40 ?InitOffsets@IndexedVertexShape@Gfx@@IAEXH@Z: the original loads the constant 3 into esi once before the version test, VC6 here in each branch
+// TODO 0x100fab40 ?InitOffsets@IndexedVertexShape@Gfx@@IAEXH@Z: (84% similar) the original loads the constant 3 into esi once before the version test, VC6 here in each branch
 void Gfx::IndexedVertexShape::InitOffsets(int version)
 {
     if (version < 2) {
@@ -375,7 +375,7 @@ void Gfx::IndexedVertexShape::SetBindings(int nverts, Bind normal, Bind color, B
     m_nVerts = nverts;
 }
 
-// TODO 0x100faed0 ?Clear@IndexedVertexShape@Gfx@@QAEXXZ: inline budget: the original inlines the int initElements only, VC6 here also the first Vec3 one
+// TODO 0x100faed0 ?Clear@IndexedVertexShape@Gfx@@QAEXXZ: (68% similar) inline budget: the original inlines the int initElements only, VC6 here also the first Vec3 one
 void Gfx::IndexedVertexShape::Clear()
 {
     m_Indices.setLength(0);
@@ -412,7 +412,7 @@ int const Gfx::IndexedVertexShape::Version = 4;
 // 0x100f90f0 _$E55
 // 0x100f9100 _$E54
 
-// TODO 0x100fb080 ?ApplySphereMap@IndexedVertexShape@Gfx@@IAEXPAVCamera@2@H@Z: 22% - inline budget: the original calls the Vec3 operators (-, * float, +, dot, mag2, multScal), multVec3PointLeftAffine (GetWorldFrom) and multVector3Right out of line and sums the point transform from the translation down; same operations and order of the vertex loop
+// TODO 0x100fb080 ?ApplySphereMap@IndexedVertexShape@Gfx@@IAEXPAVCamera@2@H@Z: 47% - inline budget: the original calls the Vec3 operators (-, * float, +, dot, mag2, multScal), multVec3PointLeftAffine (GetWorldFrom) and multVector3Right out of line and sums the point transform from the translation down; same operations and order of the vertex loop
 void Gfx::IndexedVertexShape::ApplySphereMap(Gfx::Camera *camera, int stage)
 {
     // texture coordinates from the eye vector reflected about each world-space normal
@@ -442,4 +442,4 @@ void Gfx::IndexedVertexShape::ApplySphereMap(Gfx::Camera *camera, int stage)
 }
 
 // Template and inline instances this unit also emits:
-// TODO 0x100fb3b0 ??0?$Vec@K@@QAE@HM@Z: 50% - inline instance (body in the header); the original reloads e after operator new for the inlined reallocMem's delete test (code without /Oa); a #pragma optimize("a", off) at the end of the unit makes the Vec/AVec/RVec(int, float) constructors match but breaks nine /Oa functions here (ReadInternals, SetBindings, AppendPrims, ...)
+// TODO 0x100fb3b0 ??0?$Vec@K@@QAE@HM@Z: 74% - inline instance (body in the header); the original reloads e after operator new for the inlined reallocMem's delete test (code without /Oa); a #pragma optimize("a", off) at the end of the unit makes the Vec/AVec/RVec(int, float) constructors match but breaks nine /Oa functions here (ReadInternals, SetBindings, AppendPrims, ...)

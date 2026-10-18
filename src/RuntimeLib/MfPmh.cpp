@@ -582,7 +582,7 @@ MfScPropTokenTable *MfPmhCollision::sTokens;
 // 0x1006b1b0 ??_GMfPmhCollision@@UAEPAXI@Z
 // 0x1006b1d0 ??1MfPmhCollision@@UAE@XZ
 
-// TODO 0x1006ae20 ??0MfPmhCollision@@QAE@PAVMfAiActor@@@Z: the first token keeps the new
+// TODO 0x1006ae20 ??0MfPmhCollision@@QAE@PAVMfAiActor@@@Z: (83% similar) the first token keeps the new
 // pointer in eax instead of esi (one more mov), which shifts the rest (81% similar)
 MfPmhCollision::MfPmhCollision(MfAiActor *receiver)
     : MfPiccoloMessageHandler(receiver)
@@ -751,7 +751,7 @@ MfPmhNewSpace::MfPmhNewSpace(MfAiActor *receiver)
     }
 }
 
-// TODO 0x1006b910 ?GetProperty@MfPmhNewSpace@@UAEHABVMfString@@PAPAVMfScDataHandle@@@Z: the original
+// TODO 0x1006b910 ?GetProperty@MfPmhNewSpace@@UAEHABVMfString@@PAPAVMfScDataHandle@@@Z: (76% similar) the original
 // reads the list's pliLast inline (an inline accessor this MfDblList.h lacks) and compares the
 // token with the zero register (85% similar with the inline GetFirst)
 int MfPmhNewSpace::GetProperty(const MfString &name, MfScDataHandle **value)

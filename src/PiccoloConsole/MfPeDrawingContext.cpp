@@ -369,7 +369,7 @@ void MfPeDrawingContext::EraseMargin(int line)
     mDC->SetBkColor(background);
 }
 
-// TODO 0x10011fc0 ?DrawGlyphs@MfPeDrawingContext@@QAEXHH@Z: 89% - the Ellipse right edge is computed as left - top + bottom - 1 and the CGdiObject vtable is kept in ebp from the start
+// TODO 0x10011fc0 ?DrawGlyphs@MfPeDrawingContext@@QAEXHH@Z: 90% - the Ellipse right edge is computed as left - top + bottom - 1 and the CGdiObject vtable is kept in ebp from the start
 void MfPeDrawingContext::DrawGlyphs(int line, int glyphs)
 {
     CRect rect;

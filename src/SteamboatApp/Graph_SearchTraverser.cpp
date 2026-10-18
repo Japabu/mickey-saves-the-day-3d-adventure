@@ -26,7 +26,7 @@ Graph::SearchTraverser::~SearchTraverser()
 {
 }
 
-// TODO 0x100e0b40 ?Traverse@SearchTraverser@Graph@@QAEXAAVActiveNode@2@@Z: first of two m_FindList clears: original drops the else-if initElements test of setLength
+// TODO 0x100e0b40 ?Traverse@SearchTraverser@Graph@@QAEXAAVActiveNode@2@@Z: (81% similar) first of two m_FindList clears: original drops the else-if initElements test of setLength
 void Graph::SearchTraverser::Traverse(Graph::ActiveNode &node)
 {
     if (m_FindList.length() > 0)

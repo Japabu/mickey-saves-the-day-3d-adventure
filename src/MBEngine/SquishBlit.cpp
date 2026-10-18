@@ -103,7 +103,7 @@ void SquishBlit(unsigned char *dest, const unsigned char *src, const SquishImage
         SquishBlitter<unsigned long>::Blit(dest, src, destFmt, srcFmt, bytes, height);
 }
 
-// TODO 0x1005e7f0 ?SquishBlitTrans@@YAXPAEPBEPBVSquishImageDescriptor@@2@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (45% similar)
+// TODO 0x1005e7f0 ?SquishBlitTrans@@YAXPAEPBEPBVSquishImageDescriptor@@2@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (75% similar)
 void SquishBlitTrans(unsigned char *dest, const unsigned char *src, const SquishImageDescriptor *destFmt,
                      const SquishImageDescriptor *srcFmt)
 {
@@ -118,7 +118,7 @@ void SquishBlitTrans(unsigned char *dest, const unsigned char *src, const Squish
         SquishBlitter<unsigned long>::BlitTrans(dest, src, destFmt, srcFmt, bytes, height);
 }
 
-// TODO 0x1005e9f0 ?SquishBlitBlock@@YAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (38% similar)
+// TODO 0x1005e9f0 ?SquishBlitBlock@@YAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (75% similar)
 void SquishBlitBlock(unsigned char *dest, const unsigned char *src, const SquishImageDescriptor *destFmt,
                      const SquishImageDescriptor *srcFmt, const SquishRect *destRect, const SquishRect *srcRect)
 {
@@ -137,7 +137,7 @@ void SquishBlitBlock(unsigned char *dest, const unsigned char *src, const Squish
         SquishBlitter<unsigned long>::BlitBlock(dest, src, destRowbytes, srcRowbytes, bytes, lines2copy);
 }
 
-// TODO 0x1005eb70 ?SquishBlitBlockTrans@@YAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (35% similar)
+// TODO 0x1005eb70 ?SquishBlitBlockTrans@@YAXPAEPBEPBVSquishImageDescriptor@@2PBVSquishRect@@3@Z: row and run loops reconstructed (size within 10%); branch layout and register allocation differ (70% similar)
 void SquishBlitBlockTrans(unsigned char *dest, const unsigned char *src, const SquishImageDescriptor *destFmt,
                           const SquishImageDescriptor *srcFmt, const SquishRect *destRect,
                           const SquishRect *srcRect)

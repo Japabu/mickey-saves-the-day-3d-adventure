@@ -24,7 +24,7 @@ MfFSMMutable *MfTransEnterBy::Clone()
     return copy;
 }
 
-// TODO 0x10089ef0 ?FormatForExecution@MfTransEnterBy@@UAEXPAVMfFiniteStateMachine@@@Z: same calls; the original clears state and parent right after loading the type and has no zero register, ours keeps 0 in edi from the start
+// TODO 0x10089ef0 ?FormatForExecution@MfTransEnterBy@@UAEXPAVMfFiniteStateMachine@@@Z: (86% similar) same calls; the original clears state and parent right after loading the type and has no zero register, ours keeps 0 in edi from the start
 void MfTransEnterBy::FormatForExecution(MfFiniteStateMachine *machine)
 {
     mMachine = machine;

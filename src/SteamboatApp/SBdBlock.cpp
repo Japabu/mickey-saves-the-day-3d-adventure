@@ -77,7 +77,7 @@ SBdBlock::~SBdBlock()
         broadcaster->RemoveListener(700, this);
 }
 
-// TODO 0x10045e60 ?LoadFromPref@SBdBlock@@UAEXV?$MBComPtr@VIMBStream@@@@V?$MBComPtr@VIMBPref@@@@@Z: not matching yet (inline choices of the string temporaries)
+// TODO 0x10045e60 ?LoadFromPref@SBdBlock@@UAEXV?$MBComPtr@VIMBStream@@@@V?$MBComPtr@VIMBPref@@@@@Z: (91% similar) not matching yet (inline choices of the string temporaries)
 void SBdBlock::LoadFromPref(MBComPtr<IMBStream> stream, MBComPtr<IMBPref> pref)
 {
     int success = pref->GetString(stream, mBlockName, "conditional", mConditionalString, "");
@@ -110,7 +110,7 @@ void SBdBlock::LoadFromPref(MBComPtr<IMBStream> stream, MBComPtr<IMBPref> pref)
     }
 }
 
-// TODO 0x100465c0 ?ParseTrigger@SBdBlock@@IAEXXZ: not matching yet (loop shape)
+// TODO 0x100465c0 ?ParseTrigger@SBdBlock@@IAEXXZ: (78% similar) not matching yet (loop shape)
 void SBdBlock::ParseTrigger()
 {
     int len = mTriggerString.size();

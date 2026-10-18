@@ -89,7 +89,7 @@ MfManipActivity::MfManipActivity(MfActor *actor, unsigned long time, MfManipSkil
     mHandle = handle;
 }
 
-// TODO 0x10045150 ??1MfManipActivity@@UAE@XZ: the original expands the first delete [] and calls the local ??_EMfTransform3 (10005f20) for the second (as in MfLiveActor::HandleManipMoveTo); here both are expanded (inline budget; 84% similar)
+// TODO 0x10045150 ??1MfManipActivity@@UAE@XZ: the original expands the first delete [] and calls the local ??_EMfTransform3 (10005f20) for the second (as in MfLiveActor::HandleManipMoveTo); here both are expanded (inline budget; 86% similar)
 MfManipActivity::~MfManipActivity()
 {
     MfMTPath *path = mMTPath;
@@ -155,7 +155,7 @@ MfActivityStatus MfManipActivity::Update(unsigned long time)
     return MfActivity::Update(time);
 }
 
-// TODO 0x10045570 ?_CheckBubble@MfManipActivity@@MAEXAAK@Z: first body: the calls and their order
+// TODO 0x10045570 ?_CheckBubble@MfManipActivity@@MAEXAAK@Z: (75% similar) first body: the calls and their order
 // agree; locals, the message data arguments and the inline expansions are not settled (40% similar)
 // Moves the bubbles to the sampled configuration; a bubble whose way meets
 // the space's environment reports the collision to both actors (with

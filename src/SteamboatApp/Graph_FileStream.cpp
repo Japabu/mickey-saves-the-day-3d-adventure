@@ -57,7 +57,7 @@ bool Graph::FileStream::Open(const char *fileName, OpenMode mode)
     return false;
 }
 
-// TODO 0x100e1830 ?Open@FileStream@Graph@@QAE_NVText@@V?$Vec@VText@@@@W4OpenMode@12@@Z: the original calls Vec<Text>::append(const T *, int) out of line, VC6 inlines it (as in Gfx_LODManager; a definition after the use inlines too)
+// TODO 0x100e1830 ?Open@FileStream@Graph@@QAE_NVText@@V?$Vec@VText@@@@W4OpenMode@12@@Z: (66% similar) the original calls Vec<Text>::append(const T *, int) out of line, VC6 inlines it (as in Gfx_LODManager; a definition after the use inlines too)
 bool Graph::FileStream::Open(Text fileName, Vec<Text> searchPath, OpenMode mode)
 {
     if (searchPath.length() == 0)

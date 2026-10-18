@@ -48,7 +48,7 @@ void Gfx::PickTraverser::AddHit(float t, const Graph::Path &path, const Vec3<flo
     m_HitPoints.push_back(point);
 }
 
-// TODO 0x10110450 ?GetClosestHitPath@PickTraverser@Gfx@@QAEPBVPath@Graph@@AAV?$Vec3@M@@PAPAUTypeInfo@StdBase@@HW4HitCriteriaType@12@@Z: register allocation and frame layout differ (ebx/ebp swapped, one more spill)
+// TODO 0x10110450 ?GetClosestHitPath@PickTraverser@Gfx@@QAEPBVPath@Graph@@AAV?$Vec3@M@@PAPAUTypeInfo@StdBase@@HW4HitCriteriaType@12@@Z: (84% similar) register allocation and frame layout differ (ebx/ebp swapped, one more spill)
 const Graph::Path *Gfx::PickTraverser::GetClosestHitPath(Vec3<float> &point, StdBase::TypeInfo **types, int nTypes,
     HitCriteriaType criteria)
 {
@@ -139,7 +139,7 @@ char const * Gfx::PickTraverser::GetTypeName() const
 // 0x101106d0 ??1?$vector@MV?$allocator@M@std@@@std@@QAE@XZ
 // 0x10110700 ??1?$vector@VTraversalPath@Gfx@@V?$allocator@VTraversalPath@Gfx@@@std@@@std@@QAE@XZ
 // 0x10110740 ?_Destroy@?$vector@V?$Vec3@M@@V?$allocator@V?$Vec3@M@@@std@@@std@@IAEXPAV?$Vec3@M@@0@Z
-// TODO 0x10110750 ?insert@?$vector@MV?$allocator@M@std@@@std@@QAEXPAMIABM@Z: 48% similar: the STL instance is compiled under the unit's /Oa (VC6 keeps _First/_Last in registers), the original reloads them after its stores; "a" off at the end of the unit breaks ClearHits and the TraversalPath vector instead
+// TODO 0x10110750 ?insert@?$vector@MV?$allocator@M@std@@@std@@QAEXPAMIABM@Z: 86% similar: the STL instance is compiled under the unit's /Oa (VC6 keeps _First/_Last in registers), the original reloads them after its stores; "a" off at the end of the unit breaks ClearHits and the TraversalPath vector instead
 // 0x10110960 ?insert@?$vector@VTraversalPath@Gfx@@V?$allocator@VTraversalPath@Gfx@@@std@@@std@@QAEXPAVTraversalPath@Gfx@@IABV34@@Z
 // 0x10110c50 ?_Ucopy@?$vector@V?$Vec3@M@@V?$allocator@V?$Vec3@M@@@std@@@std@@IAEPAV?$Vec3@M@@PBV3@0PAV3@@Z
 // 0x10110ca0 ?_Ufill@?$vector@V?$Vec3@M@@V?$allocator@V?$Vec3@M@@@std@@@std@@IAEXPAV?$Vec3@M@@IABV3@@Z

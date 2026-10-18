@@ -73,7 +73,7 @@ void SBLinkingLogsNode::OnEnd()
     }
 }
 
-// TODO 0x1007a7e0 ?InitGame@SBLinkingLogsNode@@IAEXXZ: same code with ebx and edi swapped and the
+// TODO 0x1007a7e0 ?InitGame@SBLinkingLogsNode@@IAEXXZ: (86% similar) same code with ebx and edi swapped and the
 // board rectangle built in another order (local order tried)
 void SBLinkingLogsNode::InitGame()
 {

@@ -49,7 +49,7 @@ SBMainMenuNode::~SBMainMenuNode()
 {
 }
 
-// TODO 0x10082390 ?OnStart@SBMainMenuNode@@UAEXXZ: the original calls broadcaster's CreateObject out of line and inlines gameState's; VC6 inlines both here (47% similar)
+// TODO 0x10082390 ?OnStart@SBMainMenuNode@@UAEXXZ: the original calls broadcaster's CreateObject out of line and inlines gameState's; VC6 inlines both here (91% similar)
 void SBMainMenuNode::OnStart()
 {
     SetBackgroundMusicState(true);
@@ -84,7 +84,7 @@ void SBMainMenuNode::OnKeyDown(MBKeyboardEvent &key)
     SteamboatNode::OnKeyDown(key);
 }
 
-// TODO 0x100828a0 ?OnLMouseDown@SBMainMenuNode@@UAEXAAUMBMouseEvent@@@Z: the original calls the MfVector3 constructor of data.dir out of line (pickPoint and data.pos inline) and the MBString assign out of line; VC6 inlines all of them here (constructor forms tried: body, init list, setValue, chained assignment) (49% similar)
+// TODO 0x100828a0 ?OnLMouseDown@SBMainMenuNode@@UAEXAAUMBMouseEvent@@@Z: the original calls the MfVector3 constructor of data.dir out of line (pickPoint and data.pos inline) and the MBString assign out of line; VC6 inlines all of them here (constructor forms tried: body, init list, setValue, chained assignment) (62% similar)
 void SBMainMenuNode::OnLMouseDown(MBMouseEvent &evt)
 {
     if (!mUIStarted) {
@@ -106,7 +106,7 @@ void SBMainMenuNode::OnLMouseDown(MBMouseEvent &evt)
     SteamboatNode::OnLMouseDown(evt);
 }
 
-// TODO 0x10082b40 ?OnLMouseUp@SBMainMenuNode@@UAEXAAUMBMouseEvent@@@Z: as OnLMouseDown (42% similar)
+// TODO 0x10082b40 ?OnLMouseUp@SBMainMenuNode@@UAEXAAUMBMouseEvent@@@Z: as OnLMouseDown (63% similar)
 void SBMainMenuNode::OnLMouseUp(MBMouseEvent &evt)
 {
     MfPickData pickData;
@@ -155,7 +155,7 @@ void SBMainMenuNode::OnAnimSeqStarted(unsigned long id, unsigned long seq)
     SimpleNode::OnAnimSeqStarted(id, seq);
 }
 
-// TODO 0x10082f00 ?ListenToEvent@SBMainMenuNode@@UAEXJJPAX@Z: same size and statements as the original (locals named and sized after the PDB); the locals sit in other stack slots (the string temporaries and the MBString allocator byte) (73% similar)
+// TODO 0x10082f00 ?ListenToEvent@SBMainMenuNode@@UAEXJJPAX@Z: same size and statements as the original (locals named and sized after the PDB); the locals sit in other stack slots (the string temporaries and the MBString allocator byte) (90% similar)
 void SBMainMenuNode::ListenToEvent(long channel, long event, void *data)
 {
     if (channel == 100) {
@@ -770,7 +770,7 @@ void SBMainMenuNode::RemoveCharacterSelectionButtons()
     RemoveButton(mBackButton);
 }
 
-// TODO 0x10086540 ?CreateDifficultyButtons@SBMainMenuNode@@IAEXXZ: the original inlines the release of the first CreateAnim temporary (minnie) and calls MBComPtr<IMBAnim>::Release for the second; VC6 calls it for both here (switch order, if/else and a default case tried) (89% similar)
+// TODO 0x10086540 ?CreateDifficultyButtons@SBMainMenuNode@@IAEXXZ: the original inlines the release of the first CreateAnim temporary (minnie) and calls MBComPtr<IMBAnim>::Release for the second; VC6 calls it for both here (switch order, if/else and a default case tried) (93% similar)
 void SBMainMenuNode::CreateDifficultyButtons()
 {
     CreateTitleScreen();

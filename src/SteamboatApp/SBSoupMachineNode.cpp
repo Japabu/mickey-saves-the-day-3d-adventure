@@ -19,7 +19,7 @@ SBSoupMachineNode::~SBSoupMachineNode()
 {
 }
 
-// TODO 0x10098cf0 ?OnStart@SBSoupMachineNode@@UAEXXZ: 62% similar: frame layout differs (gs and the CreateAnim temporaries sit 4 bytes lower in the original), and the original tests the loop as i - 100 < 9 where VC6 compares i < 109 (writing i - 100 < 9 makes VC6 count from 0, 80% but further off)
+// TODO 0x10098cf0 ?OnStart@SBSoupMachineNode@@UAEXXZ: 92% similar: frame layout differs (gs and the CreateAnim temporaries sit 4 bytes lower in the original), and the original tests the loop as i - 100 < 9 where VC6 compares i < 109 (writing i - 100 < 9 makes VC6 count from 0, 80% but further off)
 void SBSoupMachineNode::OnStart()
 {
     MBComPtr<ISBGameState> gs(MBIID_CSBGameState);

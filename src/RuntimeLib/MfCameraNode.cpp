@@ -120,7 +120,7 @@ void MfCameraNode::DetachView(MfRenderView *view)
     }
 }
 
-// TODO 0x1001f110 ?SyncAllViews@MfCameraNode@@UAEXH@Z: the original keeps this on the stack and tests the flags inside the loop (flags & 1, flags & 6 separately); VC5 here hoists flags & 2/4/8 out of the loop and merges the first test into flags & 7
+// TODO 0x1001f110 ?SyncAllViews@MfCameraNode@@UAEXH@Z: (73% similar) the original keeps this on the stack and tests the flags inside the loop (flags & 1, flags & 6 separately); VC5 here hoists flags & 2/4/8 out of the loop and merges the first test into flags & 7
 void MfCameraNode::SyncAllViews(int flags)
 {
     MfDblListItem *pos;
@@ -164,7 +164,7 @@ void MfCameraNode::RestoreFOV()
         mCamera.mFieldOfView = 1.0f;
 }
 
-// TODO 0x1001f240 ?MakeYUp@MfCameraNode@@QAEXAAVMfTransform3@@@Z: the original frame is 0x10 bytes larger and calls the imported MfVector3::lengthSquared (VC5 inline budget); the rest of the code is the same
+// TODO 0x1001f240 ?MakeYUp@MfCameraNode@@QAEXAAVMfTransform3@@@Z: (75% similar) the original frame is 0x10 bytes larger and calls the imported MfVector3::lengthSquared (VC5 inline budget); the rest of the code is the same
 // Turns a local transform of the camera so that the camera's up vector
 // points up in the world.
 void MfCameraNode::MakeYUp(MfTransform3 &xform)
@@ -190,7 +190,7 @@ void MfCameraNode::MakeYUp(MfTransform3 &xform)
     }
 }
 
-// TODO 0x1001f4a0 ?PointAt@MfCameraNode@@QAEXVMfVector3@@@Z: the code differs only in stack
+// TODO 0x1001f4a0 ?PointAt@MfCameraNode@@QAEXVMfVector3@@@Z: (89% similar) the code differs only in stack
 // slots (forward and up swap places with the temporaries), but the unwind order differs: the
 // original's states after the rotation destroy a vector at -0x88 twice and then a rotation at
 // -0x48, here a vector at -0x48 and then -0x7c (78% similar)

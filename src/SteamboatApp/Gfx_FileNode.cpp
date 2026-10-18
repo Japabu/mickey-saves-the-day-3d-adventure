@@ -35,7 +35,7 @@ Gfx::FileNode::~FileNode()
     delete m_pStream;
 }
 
-// TODO 0x1010efa0 ?RemoveDirectoryPath@FileNode@Gfx@@QAEXPAD@Z: 46% - the inlined Vec::remove shifts the Text elements with the refcount code in another register order
+// TODO 0x1010efa0 ?RemoveDirectoryPath@FileNode@Gfx@@QAEXPAD@Z: 84% - the inlined Vec::remove shifts the Text elements with the refcount code in another register order
 void Gfx::FileNode::RemoveDirectoryPath(char *path)
 {
     for (int i = 0; i < m_DirectoryPaths.length(); i++) {
@@ -52,7 +52,7 @@ void Gfx::FileNode::RemoveAllDirectoryPaths()
 }
 
 #pragma optimize("a", off) // evidence: Open reloads m_pStream after every call
-// TODO 0x1010f160 ?Open@FileNode@Gfx@@UAE_NXZ: 74% - the inlined Vec::append(Text) loads len and alloclen in another order (as ReadInternals)
+// TODO 0x1010f160 ?Open@FileNode@Gfx@@UAE_NXZ: 80% - the inlined Vec::append(Text) loads len and alloclen in another order (as ReadInternals)
 bool Gfx::FileNode::Open()
 {
     if (!mCopyOfContents) {
@@ -111,7 +111,7 @@ void Gfx::FileNode::Read(Graph::Stream *stream)
     ReadInternals(stream, version);
 }
 
-// TODO 0x1010f440 ?ReadInternals@FileNode@Gfx@@IAEXPAVStream@Graph@@H@Z: one instruction choice in the inlined append (len + 1 as lea from a reloaded len in the original, inc here)
+// TODO 0x1010f440 ?ReadInternals@FileNode@Gfx@@IAEXPAVStream@Graph@@H@Z: (97% similar) one instruction choice in the inlined append (len + 1 as lea from a reloaded len in the original, inc here)
 void Gfx::FileNode::ReadInternals(Graph::Stream *stream, int)
 {
     m_FileName = readText(stream);
@@ -160,9 +160,9 @@ int const Gfx::FileNode::Version = 0;
 // 0x1010f930 _$E82
 
 // Template and inline instances this unit also emits:
-// TODO 0x1010f390 ??0Text@@QAE@ABV0@@Z: inline instance (body in the header); this unit does not emit an out-of-line copy yet
-// TODO 0x1010f700 ??0?$Vec@VText@@@@QAE@ABV0@@Z: inline instance (body in the header); this unit does not emit an out-of-line copy yet
-// TODO 0x1010f830 ?initElements@?$Vec@VText@@@@IAEXHH@Z: 63% - the inline instance compiles differently here
+// TODO 0x1010f390 ??0Text@@QAE@ABV0@@Z: (78% similar) inline instance (body in the header); this unit does not emit an out-of-line copy yet
+// TODO 0x1010f700 ??0?$Vec@VText@@@@QAE@ABV0@@Z: (62% similar) inline instance (body in the header); this unit does not emit an out-of-line copy yet
+// TODO 0x1010f830 ?initElements@?$Vec@VText@@@@IAEXHH@Z: 75% - the inline instance compiles differently here
 
 // the run-time type of Gfx::FileNode (values from the original's data section)
 StdBase::TypeInfo const Gfx::FileNode::s_TypeInfo = { "Gfx::FileNode", &Gfx::IONode::s_TypeInfo };

@@ -83,5 +83,5 @@
 // 0x10118c00 _$E69
 
 // Not claimed (static initializers and header instances of this object):
-// TODO 0x101189a0 ??1ScriptManager@@QAE@XZ: MBEngine source compiled with /GX, 70% similar (CreateObject inlined, the original calls it)
+// TODO 0x101189a0 ??1ScriptManager@@QAE@XZ: MBEngine source compiled with /GX, 83% similar (CreateObject inlined, the original calls it)
 // TODO 0x10119cc0 (unnamed): the ctype guard initializer followed by its atexit stub; our _$E pair has the same code but the function list merges the two (tool)

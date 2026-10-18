@@ -32,7 +32,7 @@ SBMapNode::~SBMapNode()
 {
 }
 
-// TODO 0x10088020 ?OnStart@SBMapNode@@UAEXXZ: VC6 calls the temporaries' Release out of line in the loop, the original inlines it (frame 8 bytes smaller)
+// TODO 0x10088020 ?OnStart@SBMapNode@@UAEXXZ: (80% similar) VC6 calls the temporaries' Release out of line in the loop, the original inlines it (frame 8 bytes smaller)
 void SBMapNode::OnStart()
 {
     static bool introplayed;

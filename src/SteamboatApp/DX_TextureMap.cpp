@@ -24,7 +24,7 @@ DX::TextureMap::~TextureMap()
     }
 }
 
-// TODO 0x100d3100 ?LoadTexture@TextureMap@DX@@QAEXABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@PAVDevice@2@AAUDirectDrawSurfaceAttrib@2@@Z: 58% - same calls now (CanMIPMap reads m_DirectDrawDevices.Curr() directly, as the original calls Curr); the original inlines one of the three DDDeviceInfo temporaries\' destructors further (its buffer delete) and gives each thrown exception its own stack slot inside the try block
+// TODO 0x100d3100 ?LoadTexture@TextureMap@DX@@QAEXABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@PAVDevice@2@AAUDirectDrawSurfaceAttrib@2@@Z: 81% - same calls now (CanMIPMap reads m_DirectDrawDevices.Curr() directly, as the original calls Curr); the original inlines one of the three DDDeviceInfo temporaries\' destructors further (its buffer delete) and gives each thrown exception its own stack slot inside the try block
 void DX::TextureMap::LoadTexture(const std::string &fileName, DX::Device *device, DX::DirectDrawSurfaceAttrib &attrib)
 {
     HRESULT hr;

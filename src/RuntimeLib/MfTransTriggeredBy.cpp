@@ -168,7 +168,7 @@ void MfTransTriggeredBy::Search(MfString text, int, int caseSensitive, int, int,
     foundIn = 0;
 }
 
-// TODO 0x1008bc70 ?Compile@MfTransTriggeredBy@@UAEXPAVMfScPiccoloObjectFile@@PAVMfPcErrorCallBack@@AAH@Z: the original keeps a separate compiler->Release() on each path; VC5 merges ours
+// TODO 0x1008bc70 ?Compile@MfTransTriggeredBy@@UAEXPAVMfScPiccoloObjectFile@@PAVMfPcErrorCallBack@@AAH@Z: (82% similar) the original keeps a separate compiler->Release() on each path; VC5 merges ours
 void MfTransTriggeredBy::Compile(MfScPiccoloObjectFile *objectFile, MfPcErrorCallBack *errors, int &failures)
 {
     MfAiCompiler *compiler;

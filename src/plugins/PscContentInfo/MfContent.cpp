@@ -167,7 +167,7 @@ MfString MfContent::GetDataPath()
     return m_dataPath;
 }
 
-// TODO 0x10001d20 ?ChooseContentProc@MfContent@@SGHPAXIIJ@Z: (71% similar) WM_INITDIALOG lines up apart from registers (the original keeps msg and then hDlg in ebx, 0 in ebp, the string conversion import in edi); in WM_COMMAND the original keeps IDCANCEL's NULL_STRING assignment as its own block before IDOK and merges only the call with IDOK's failure path (ours merges the whole tail); tried a switch on msg, function-scope content/hList
+// TODO 0x10001d20 ?ChooseContentProc@MfContent@@SGHPAXIIJ@Z: (86% similar) WM_INITDIALOG lines up apart from registers (the original keeps msg and then hDlg in ebx, 0 in ebp, the string conversion import in edi); in WM_COMMAND the original keeps IDCANCEL's NULL_STRING assignment as its own block before IDOK and merges only the call with IDOK's failure path (ours merges the whole tail); tried a switch on msg, function-scope content/hList
 BOOL CALLBACK MfContent::ChooseContentProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     BOOL result = FALSE;

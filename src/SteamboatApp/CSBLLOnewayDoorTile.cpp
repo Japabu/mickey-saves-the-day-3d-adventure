@@ -43,7 +43,7 @@ void CSBLLOnewayDoorTile::OnAnimEvent(long event, const MBAnimEventStruct &refEv
     }
 }
 
-// TODO 0x1007e530 ?CanMoveTo@CSBLLOnewayDoorTile@@UBE_NABVCLinkingLogsTile@@@Z: 96% similar; in the kUp
+// TODO 0x1007e530 ?CanMoveTo@CSBLLOnewayDoorTile@@UBE_NABVCLinkingLogsTile@@@Z: 99% similar; in the kUp
 // case the original calls Col() on the source tile's position before this tile's (the kDown case
 // matches) and normalizes the && result in bl; swapping the operands moves the temporaries too.
 // Same comparisons, calls and result

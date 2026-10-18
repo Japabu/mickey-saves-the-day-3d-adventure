@@ -433,7 +433,7 @@ int MfActor::getProperty(MfString name, MfProperty &property)
     return 0;
 }
 
-// TODO 0x1000f860 ?setProperty@MfActor@@QAEXAAVMfProperty@@@Z: as SetProperty(MfProperty *): the original calls the imported MfProperty::Name() where MfProperty.h expands the inline accessor; here the else-if (instance property) block also moves to the end of the function, the original keeps it in line. Calls, conditions and stores along each path are the same (50% similar)
+// TODO 0x1000f860 ?setProperty@MfActor@@QAEXAAVMfProperty@@@Z: as SetProperty(MfProperty *): the original calls the imported MfProperty::Name() where MfProperty.h expands the inline accessor; here the else-if (instance property) block also moves to the end of the function, the original keeps it in line. Calls, conditions and stores along each path are the same (66% similar)
 // As SetProperty(MfProperty *), but copying: an existing property (of the
 // prototype or the actor) takes the value, else the actor gets a copy.
 void MfActor::setProperty(MfProperty &property)
@@ -781,7 +781,7 @@ void MfActor::RemoveSubtree(int index)
     setSkeleton(mSkeleton, 0);
 }
 
-// TODO 0x10010a20 ?RenameNode@MfActor@@SAXPAVMfProtoActor@@PAVMfProtoNode@@VMfString@@@Z: inline budget: the original calls the imported MfString::CopyOnWrite(int) in both ConvertToUpper expansions where MfString.h expands it (59% similar)
+// TODO 0x10010a20 ?RenameNode@MfActor@@SAXPAVMfProtoActor@@PAVMfProtoNode@@VMfString@@@Z: inline budget: the original calls the imported MfString::CopyOnWrite(int) in both ConvertToUpper expansions where MfString.h expands it (65% similar)
 // Renames a prototype node; every instance re-keys the node in its dictionary
 // (by upper-case name).
 void MfActor::RenameNode(MfProtoActor *proto, MfProtoNode *node, MfString name)
@@ -889,7 +889,7 @@ void MfActor::MoveSubtree(int index, int parentIndex)
     node->setTransform(~parentGlobal * global);
 }
 
-// TODO 0x10010f60 ?SetHomeTransforms@MfActor@@SAXPAVMfProtoActor@@PAVMfTransform3@@@Z: inline budget: the original calls the imported MfTransform3::operator=, MfRotation3::normalize and the MfVector3/MfRotation3 default constructors where this tree expands them (the frame and every later offset shift with it); calls, conditions and stores are the same in the same order (43% similar)
+// TODO 0x10010f60 ?SetHomeTransforms@MfActor@@SAXPAVMfProtoActor@@PAVMfTransform3@@@Z: inline budget: the original calls the imported MfTransform3::operator=, MfRotation3::normalize and the MfVector3/MfRotation3 default constructors where this tree expands them (the frame and every later offset shift with it); calls, conditions and stores are the same in the same order (73% similar)
 // Gives the prototype's geometry nodes new home transforms (one per node of
 // the geometry traversal; the root's translation is cleared) and moves every
 // pivot to its node's origin. Without a collision model on the first node the
@@ -1145,7 +1145,7 @@ void MfActor::ShowNodes(int type, int show)
         MfRenderer::Instance()->RenderAllViews();
 }
 
-// TODO 0x10011bc0 ?MakeSubTreeColNode@MfActor@@QAEPAVMfColNode@@H@Z: the open sprite-test shape (NOTES): the original keeps the constant 1 in ebx for the whole function (EH state, the owned flag, the check-style test, the style compares) and the new MfColNode in a stack slot; this tree loads the style into a register and threads the null-collision-node jump past the re-test of the node's collision node, which the original repeats (a control-flow difference, so not reviewed-equivalent). Calls, conditions and stores are the same (68% similar)
+// TODO 0x10011bc0 ?MakeSubTreeColNode@MfActor@@QAEPAVMfColNode@@H@Z: the open sprite-test shape (NOTES): the original keeps the constant 1 in ebx for the whole function (EH state, the owned flag, the check-style test, the style compares) and the new MfColNode in a stack slot; this tree loads the style into a register and threads the null-collision-node jump past the re-test of the node's collision node, which the original repeats (a control-flow difference, so not reviewed-equivalent). Calls, conditions and stores are the same (89% similar)
 // A collision node whose model collects the checked skeleton nodes of the
 // subtree under node index (sprites left out).
 MfColNode *MfActor::MakeSubTreeColNode(int index)
@@ -1300,7 +1300,7 @@ MfAiKChain *MfActor::CreateKChain(const MfString &endNodeName, int numLinks, con
     return chain;
 }
 
-// TODO 0x10012840 ?SetInstanceName@MfActor@@UAEHABVMfString@@@Z: the original re-tests mPrototype in the name's ?: (VC5 folds it here, the MfSpace::RemoveActorSync shape), keeps the MfActor pointer in a stack slot and expands the two ConvertToUpper calls differently (the second with an inline MfStringRef constructor); calls, conditions and stores are the same (46% similar)
+// TODO 0x10012840 ?SetInstanceName@MfActor@@UAEHABVMfString@@@Z: the original re-tests mPrototype in the name's ?: (VC5 folds it here, the MfSpace::RemoveActorSync shape), keeps the MfActor pointer in a stack slot and expands the two ConvertToUpper calls differently (the second with an inline MfStringRef constructor); calls, conditions and stores are the same (61% similar)
 // Renames the actor (the space's actor dictionary is keyed by the upper-case
 // instance name). An actor without a name first gets the default name
 // <prototype name><instance index>. Returns 0 when the space already has an

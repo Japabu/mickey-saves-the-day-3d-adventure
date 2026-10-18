@@ -61,7 +61,7 @@ MfTimedMsg::~MfTimedMsg()
         delete mMsg;
 }
 
-// TODO 0x10069770 ??0MfTimerQueue@@QAE@XZ: the original repeats the store and the return
+// TODO 0x10069770 ??0MfTimerQueue@@QAE@XZ: (78% similar) the original repeats the store and the return
 // after both outcomes of the new
 MfTimerQueue::MfTimerQueue()
     : mQueue(new MfTimedMsgQueue)

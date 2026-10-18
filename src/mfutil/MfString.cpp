@@ -640,7 +640,7 @@ unsigned long MfString::Hash(int size) const
     return h % size;
 }
 
-// TODO 0x1000e220 ?GetVariable@MfString@@QAEHABV1@@Z: (40% similar) VC5 inline choice: the original calls MfString::CopyOnWrite (0x100015b0) out of line for ConvertToLower and StripWhiteSpace, ours inlines both; with that found stays in a stack slot instead of edi and the slots shift by 4. Not an EQUIV: the original also tail-merges the environment case's last ~MfString into the registry case's (layout). Logic otherwise the original's (reviewed 2026-10-16)
+// TODO 0x1000e220 ?GetVariable@MfString@@QAEHABV1@@Z: (72% similar) VC5 inline choice: the original calls MfString::CopyOnWrite (0x100015b0) out of line for ConvertToLower and StripWhiteSpace, ours inlines both; with that found stays in a stack slot instead of edi and the slots shift by 4. Not an EQUIV: the original also tail-merges the environment case's last ~MfString into the registry case's (layout). Logic otherwise the original's (reviewed 2026-10-16)
 // Looks name up in the places the profile entry PATHS\<name>_ORDER lists, comma
 // separated: "env" (the environment) and "reg" (the PATHS section of the
 // profile). Without that entry the environment comes first.

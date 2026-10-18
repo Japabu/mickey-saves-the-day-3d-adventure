@@ -26,7 +26,7 @@ Attribute const *AttributeStack::GetTop()
     return top;
 }
 
-// TODO 0x100fb5d0 ?Push@AttributeStack@Gfx@@QAEXPBVAttribute@2@@Z: 86% similar: the inlined Vec::append; the original forms len + 1 with lea and picks the larger size into eax, VC6 keeps it in edi (grown < n tried in Vec.h: 84%)
+// TODO 0x100fb5d0 ?Push@AttributeStack@Gfx@@QAEXPBVAttribute@2@@Z: 92% similar: the inlined Vec::append; the original forms len + 1 with lea and picks the larger size into eax, VC6 keeps it in edi (grown < n tried in Vec.h: 84%)
 void AttributeStack::Push(Attribute const *attribute)
 {
     m_Stack.append(attribute);

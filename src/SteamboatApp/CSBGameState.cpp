@@ -162,7 +162,7 @@ void CSBGameState::RandomizeRecycleItems(int seed, int nPossibleInstances, int n
     }
 }
 
-// TODO 0x1001f480 ?LoadItemFromPref@CSBGameState@@IAE_NV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@PAVSBItem@@V?$MBComPtr@VIMBStream@@@@V?$MBComPtr@VIMBPref@@@@@Z: register choice: the original keeps the
+// TODO 0x1001f480 ?LoadItemFromPref@CSBGameState@@IAE_NV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@PAVSBItem@@V?$MBComPtr@VIMBStream@@@@V?$MBComPtr@VIMBPref@@@@@Z: (86% similar) register choice: the original keeps the
 // constant 0 in esi and nLocations on the stack, VC6 here gives esi to nLocations; it also inlines
 // section's destructor on the false path only (67% similar)
 bool CSBGameState::LoadItemFromPref(MBString section, SBItem *sbitem, MBComPtr<IMBStream> stream, MBComPtr<IMBPref> pref)
@@ -243,7 +243,7 @@ void CSBGameState::LoadRecycleItemsFromPref(MBComPtr<IMBStream> stream, MBComPtr
     RandomizeRecycleItems(mSeed, mNumInstances, mPossibleLocations);
 }
 
-// TODO 0x10020b80 ?ReadFromFile@CSBGameState@@UAEXAAV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@@Z: the original calls fileSpec's
+// TODO 0x10020b80 ?ReadFromFile@CSBGameState@@UAEXAAV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@@Z: (89% similar) the original calls fileSpec's
 // CreateObject out of line and inlines pref's; VC6 inlines both here (39% similar)
 void CSBGameState::ReadFromFile(MBString &prefFile)
 {
@@ -307,7 +307,7 @@ bool CSBGameState::HasVisitedScene(MBString &code)
     return pos >= 0 && pos < mVisitedScenes.length();
 }
 
-// TODO 0x10024ad0 ?EnableItemHotspots@CSBGameState@@UAEXV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@_N@Z: the original calls
+// TODO 0x10024ad0 ?EnableItemHotspots@CSBGameState@@UAEXV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@_N@Z: (50% similar) the original calls
 // basic_string::compare(pos, n, s, len) out of line and inlines the iterator ++ (_Lockit), VC6 does the
 // opposite here (34% similar)
 void CSBGameState::EnableItemHotspots(MBString spaceCode, bool enable)
@@ -380,7 +380,7 @@ MBString CSBGameState::GetProperty(const char *name, const MBString &defaultValu
     return defaultValue;
 }
 
-// TODO 0x10021530 ?Load@CSBGameState@@UAEXPAVIMBStream@@PAVIMBPref@@PAVMfAiActor@@@Z: inline budget and stack slots: the
+// TODO 0x10021530 ?Load@CSBGameState@@UAEXPAVIMBStream@@PAVIMBPref@@PAVMfAiActor@@@Z: (93% similar) inline budget and stack slots: the
 // original calls assign() for the "location" key and _Eos() in every later inlined one, and calls
 // _Tidy() for the last temporaries; it keeps this at esp+0x18 and the iterator at esp+0x1c (78% similar)
 void CSBGameState::Load(IMBStream *pPrefStream, IMBPref *pPref, MfAiActor *player)
@@ -456,7 +456,7 @@ void CSBGameState::Load(IMBStream *pPrefStream, IMBPref *pPref, MfAiActor *playe
         SetProperty("HCMickeyCaptive", 1L);
 }
 
-// TODO 0x10023030 ?Save@CSBGameState@@UAEXPAVIMBStream@@PAVIMBPref@@_N@Z: stack slots differ (this, the list
+// TODO 0x10023030 ?Save@CSBGameState@@UAEXPAVIMBStream@@PAVIMBPref@@_N@Z: (90% similar) stack slots differ (this, the list
 // iterator, the MfString), and the original builds strTemp as default construction plus assign
 // without our zero register (81% similar)
 void CSBGameState::Save(IMBStream *pPrefStream, IMBPref *pPref, bool bExit)

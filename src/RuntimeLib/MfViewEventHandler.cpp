@@ -328,7 +328,7 @@ static inline const MfString &ActorName(MfActor *actor)
     return actor->mName;
 }
 
-// TODO 0x1008f9b0 ?ShowCameraOptions@MfViewEventHandler@@QAEXPAVMfRenderView@@@Z: the calls and
+// TODO 0x1008f9b0 ?ShowCameraOptions@MfViewEventHandler@@QAEXPAVMfRenderView@@@Z: (81% similar) the calls and
 // the expanded InstanceName are right; registers differ (the camera mode in ebp
 // instead of ebx, the zeros of the null handlers hoisted into registers where
 // the original clears eax after each comparison) and the frame is 4 bytes

@@ -49,7 +49,7 @@ void CSBGridlockActor::SetPosition(const CGameBoardPos &posTilePosition, CGameBo
 
 // 0x10055750 ??0ActionStep@CSBGridlockActor@@QAE@W4direction@CGameBoardPos@@W4action@1@ABV3@@Z (inline)
 
-// TODO 0x10054c40 ?MoveTo@CSBGridlockActor@@UAEXABVCGameBoardPos@@_N@Z: all but the end matches; the original still inlines the push_back of the stop step and calls the last ActionStep constructor out of line, VC6 here the reverse (inline budget; insert(end(), ...) for the last two inlines both inserts but then the constructor too) (98% similar)
+// TODO 0x10054c40 ?MoveTo@CSBGridlockActor@@UAEXABVCGameBoardPos@@_N@Z: all but the end matches; the original still inlines the push_back of the stop step and calls the last ActionStep constructor out of line, VC6 here the reverse (inline budget; insert(end(), ...) for the last two inlines both inserts but then the constructor too) (99% similar)
 void CSBGridlockActor::MoveTo(const CGameBoardPos &posTilePosition, bool bLastMove)
 {
     ActionStep stepRest;

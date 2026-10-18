@@ -151,7 +151,7 @@ void MfXformMatrix3::rotate(const MfVector3 &v, MfVector3 &r) const
     r.z() = _m[2][0] * x + _m[2][1] * y + _m[2][2] * z;
 }
 
-// TODO 0x10006e30 ?setValue@MfXformMatrix3@@QAEXABVMfRotation3@@ABVMfVector3@@@Z: (64% similar) the original spills the doubled products 2wy/2wz and 2xz differently: m[0][2] and m[2][0] use the unrounded x*z and a float-rounded w*y in the original, the other way round here (CSE spill choice, a real rounding difference); every declaration order of w, x, y, z tried (best 69%)
+// TODO 0x10006e30 ?setValue@MfXformMatrix3@@QAEXABVMfRotation3@@ABVMfVector3@@@Z: (76% similar) the original spills the doubled products 2wy/2wz and 2xz differently: m[0][2] and m[2][0] use the unrounded x*z and a float-rounded w*y in the original, the other way round here (CSE spill choice, a real rounding difference); every declaration order of w, x, y, z tried (best 69%)
 // Rotation matrix of the unit quaternion r, then the translation t.
 void MfXformMatrix3::setValue(const MfRotation3 &r, const MfVector3 &t)
 {

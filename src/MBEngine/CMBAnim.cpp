@@ -22,7 +22,7 @@ MBList<CMBAnim *> CMBAnim::sAnimList;
 // 0x1001ac30 $E71 / 0x1001ac20 $E72
 MBPixelFormat CMBAnim::sCachedScreenPixelFormat;
 
-// TODO 0x1001acb0 ??0CMBAnim@@QAE@XZ: member initialisation scheduled differently (ours zeroes the members before the 100 defaults; ebp/edi swapped) (65% similar)
+// TODO 0x1001acb0 ??0CMBAnim@@QAE@XZ: member initialisation scheduled differently (ours zeroes the members before the 100 defaults; ebp/edi swapped) (77% similar)
 CMBAnim::CMBAnim(void)
     : mProperties(0), mExternalCanvas(0), mExternalSequence(0), mDelay(100), mZPlane(100),
       mQuietBackground(false), mAutoUnload(false), mDontAdjustZPlane(false),
@@ -166,7 +166,7 @@ long CMBAnim::Load(unsigned long id, IMBStream *in, bool unpackFrames)
     return 0;
 }
 
-// TODO 0x1001b380 ?Clone@CMBAnim@@UAEXPAPAVIMBAnim@@@Z: register allocation: original keeps the new anim in ebp (one more frame slot), ours in a stack slot (59% similar)
+// TODO 0x1001b380 ?Clone@CMBAnim@@UAEXPAPAVIMBAnim@@@Z: register allocation: original keeps the new anim in ebp (one more frame slot), ours in a stack slot (83% similar)
 void CMBAnim::Clone(IMBAnim **clone)
 {
     *clone = 0;
@@ -381,7 +381,7 @@ bool CMBAnim::ReadFrameInfo(IMBStream *stream, long version, long sequenceIndex,
     return true;
 }
 
-// TODO 0x1001bd90 ?ReadCast@CMBAnim@@IAE_NPAVIMBStream@@J@Z: ours is 334 bytes larger with a 0x14 larger frame: different inlining of the cast-reading helpers (43% similar)
+// TODO 0x1001bd90 ?ReadCast@CMBAnim@@IAE_NPAVIMBStream@@J@Z: ours is 334 bytes larger with a 0x14 larger frame: different inlining of the cast-reading helpers (73% similar)
 bool CMBAnim::ReadCast(IMBStream *stream, long version)
 {
     unsigned long size;
@@ -1310,7 +1310,7 @@ unsigned long CMBAnim::GetType(void)
     return 'anm ';
 }
 
-// TODO 0x1001d880 ?Draw@CMBAnim@@UBEJPAVIMBSurface@@AAVMBRect@@1@Z: original keeps a rect value in ebp (+4 frame); register allocation (62% similar)
+// TODO 0x1001d880 ?Draw@CMBAnim@@UBEJPAVIMBSurface@@AAVMBRect@@1@Z: original keeps a rect value in ebp (+4 frame); register allocation (81% similar)
 long CMBAnim::Draw(IMBSurface *dest, MBRect &worldRect, MBRect &destRect) const
 {
     MBRect srcRect(worldRect);

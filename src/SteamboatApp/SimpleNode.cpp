@@ -156,11 +156,11 @@
 // 0x101146a0 _$E75
 
 // Not claimed (static initializers and header instances of this object):
-// TODO 0x101139b0 ??0SimpleNode@@QAE@PAVIMBGameEngine@@_N@Z: MBEngine source compiled with /GX, 82% similar (VC6 inlines differently: the inline budget)
-// TODO 0x10114210 ?ListenToEvent@SimpleNode@@UAEXJJPAX@Z: MBEngine source compiled with /GX, 80% similar (VC6 inlines differently: the inline budget)
+// TODO 0x101139b0 ??0SimpleNode@@QAE@PAVIMBGameEngine@@_N@Z: MBEngine source compiled with /GX, 85% similar (VC6 inlines differently: the inline budget)
+// TODO 0x10114210 ?ListenToEvent@SimpleNode@@UAEXJJPAX@Z: MBEngine source compiled with /GX, 85% similar (VC6 inlines differently: the inline budget)
 // TODO 0x10114c10 ?CloneAnim@SimpleNode@@QAE?AV?$MBComPtr@VIMBAnim@@@@ABV2@@Z: MBEngine source compiled with /GX, 92% similar (VC6 inlines differently: the inline budget)
 // TODO 0x10115670 ??0Database@DatabaseMgr@@QAE@PAVIMBResourceFile@@@Z: MBEngine source compiled with /GX, 92% similar (VC6 inlines differently: the inline budget)
-// TODO 0x10115810 ?Initialize@DatabaseMgr@@QAE_NABV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@0@Z: MBEngine source compiled with /GX, 63% similar (VC6 inlines differently: the inline budget)
+// TODO 0x10115810 ?Initialize@DatabaseMgr@@QAE_NABV?$basic_string@DU?$char_traits@D@std@@V?$MBAllocator@D@@@std@@0@Z: MBEngine source compiled with /GX, 79% similar (VC6 inlines differently: the inline budget)
 // TODO 0x10116b80 ?AddRef@?$MBComPtr@VIMBFileSpec@@@@QAEXXZ: header/template instance that our object does not emit (VC6 inlines it or another unit provides it)
-// TODO 0x10116d00 ?_Grow@?$basic_string@GU?$char_traits@G@std@@V?$MBAllocator@G@@@std@@AAE_NI_N@Z: header/template instance, 53% similar
+// TODO 0x10116d00 ?_Grow@?$basic_string@GU?$char_traits@G@std@@V?$MBAllocator@G@@@std@@AAE_NI_N@Z: header/template instance, 78% similar
 // TODO 0x10117740 (unnamed): the ctype guard initializer followed by its atexit stub; our _$E pair has the same code but the function list merges the two (tool)

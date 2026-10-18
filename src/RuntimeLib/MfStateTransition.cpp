@@ -160,7 +160,7 @@ MfScDataHandle *MfStateTransition::GetActionFunction()
     return 0;
 }
 
-// TODO 0x10088450 ?Take@MfStateTransition@@QAEPAVMfState@@PAVMfScVirtualMachine@@@Z: structure matches; ebx/ebp swapped for ExecuteFunction/GetThread as in MfStateExitPort::Exit, the result and outer stack slots swapped, and GetThread is kept in a register in the choice point branch
+// TODO 0x10088450 ?Take@MfStateTransition@@QAEPAVMfState@@PAVMfScVirtualMachine@@@Z: (92% similar) structure matches; ebx/ebp swapped for ExecuteFunction/GetThread as in MfStateExitPort::Exit, the result and outer stack slots swapped, and GetThread is kept in a register in the choice point branch
 MfState *MfStateTransition::Take(MfScVirtualMachine *vm)
 {
     MfState *entered = 0;

@@ -815,7 +815,7 @@ void MfRenderView::CreateWindowClass()
     }
 }
 
-// TODO 0x1008e1e0 ?WndProc@MfRenderView@@KGJPAUHWND__@@IIJ@Z: window and wParam swap
+// TODO 0x1008e1e0 ?WndProc@MfRenderView@@KGJPAUHWND__@@IIJ@Z: (60% similar) window and wParam swap
 // ebx/edi and every case here gets its own copy of the epilogue where the original jumps
 // to one (50% similar)
 // The window procedure of the views: sizes, paints and the mouse go to the
@@ -1060,7 +1060,7 @@ void MfRenderView::NormalizeCoord(int x, int y, float &nx, float &ny)
     }
 }
 
-// TODO 0x1008eba0 ?ConstructRay@MfRenderView@@QAE_NMMAAVMfVector3@@0@Z: as in MfCameraNode::MakeYUp
+// TODO 0x1008eba0 ?ConstructRay@MfRenderView@@QAE_NMMAAVMfVector3@@0@Z: (82% similar) as in MfCameraNode::MakeYUp
 // the original calls the imported MfVector3::lengthSquared (VC5 inline budget) and keeps
 // the direction in memory; here it is inlined (82% similar)
 // The ray through the normalized view point x, y: from the camera through

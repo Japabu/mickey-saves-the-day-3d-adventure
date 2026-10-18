@@ -37,7 +37,7 @@ void Gfx::RenderTraverser::Traverse(Gfx::Node &node)
     m_RenderTime = GetTickCount() - m_RenderTime;
 }
 
-// TODO 0x100fbd80 ?Visit@RenderTraverser@Gfx@@UAE?AW4Response@NodeTraverser@Graph@@AAVBasicNode@5@@Z: 68% similar: same statements and calls; the original copies the TMatrix4 results with an out-of-line setValues where VC6 copies with rep movsd (the TMatrix4 copy puzzle, see ShadowAttributeD3D::Push), keeps the matrices in a larger frame and lays out the exits in another order
+// TODO 0x100fbd80 ?Visit@RenderTraverser@Gfx@@UAE?AW4Response@NodeTraverser@Graph@@AAVBasicNode@5@@Z: 87% similar: same statements and calls; the original copies the TMatrix4 results with an out-of-line setValues where VC6 copies with rep movsd (the TMatrix4 copy puzzle, see ShadowAttributeD3D::Push), keeps the matrices in a larger frame and lays out the exits in another order
 Graph::NodeTraverser::Response Gfx::RenderTraverser::Visit(Graph::BasicNode &basicNode)
 {
     Graph::NodeTraverser::Response response = Graph::NodeTraverser::Continue;
@@ -139,7 +139,7 @@ char const * Gfx::RenderTraverser::GetTypeName() const
 // 0x100fc1f0 ?insert@?$vector@W4ViewFrustumIntersect@Gfx@@V?$allocator@W4ViewFrustumIntersect@Gfx@@@std@@@std@@QAEPAW4ViewFrustumIntersect@Gfx@@PAW434@ABW434@@Z
 // 0x100fc3c0 ?_Destroy@?$vector@W4ViewFrustumIntersect@Gfx@@V?$allocator@W4ViewFrustumIntersect@Gfx@@@std@@@std@@IAEXPAW4ViewFrustumIntersect@Gfx@@0@Z
 // 0x100fc3d0 ?size@?$vector@W4ViewFrustumIntersect@Gfx@@V?$allocator@W4ViewFrustumIntersect@Gfx@@@std@@@std@@QBEIXZ
-// TODO 0x100fc3f0 ?insert@?$vector@W4ViewFrustumIntersect@Gfx@@V?$allocator@W4ViewFrustumIntersect@Gfx@@@std@@@std@@QAEXPAW4ViewFrustumIntersect@Gfx@@IABW434@@Z: 47% similar: the STL instance is compiled under the unit's /Oa (VC6 keeps _First/_Last in registers), the original reloads them after its stores (as PickTraverser's vector<float>::insert)
+// TODO 0x100fc3f0 ?insert@?$vector@W4ViewFrustumIntersect@Gfx@@V?$allocator@W4ViewFrustumIntersect@Gfx@@@std@@@std@@QAEXPAW4ViewFrustumIntersect@Gfx@@IABW434@@Z: 86% similar: the STL instance is compiled under the unit's /Oa (VC6 keeps _First/_Last in registers), the original reloads them after its stores (as PickTraverser's vector<float>::insert)
 // 0x100fc600 ?_Ucopy@?$vector@W4ViewFrustumIntersect@Gfx@@V?$allocator@W4ViewFrustumIntersect@Gfx@@@std@@@std@@IAEPAW4ViewFrustumIntersect@Gfx@@PBW434@0PAW434@@Z
 // 0x100fc630 ?_Ufill@?$vector@W4ViewFrustumIntersect@Gfx@@V?$allocator@W4ViewFrustumIntersect@Gfx@@@std@@@std@@IAEXPAW4ViewFrustumIntersect@Gfx@@IABW434@@Z
 // 0x100fc660 ?_Construct@std@@YAXPAW4ViewFrustumIntersect@Gfx@@ABW423@@Z

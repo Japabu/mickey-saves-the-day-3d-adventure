@@ -242,7 +242,7 @@ long CMBUniFont::GetTextSize(IMBSurface *dest, const char *text, unsigned long c
     return GetTextSize(dest, unicode.c_str(), count, size);
 }
 
-// TODO 0x1006e190 ?DrawText@CMBUniFont@@UAEJPAVIMBSurface@@JJQBGK@Z: DrawText(x,y,wide): rect fill / temp layout differs (same open problem as CMBFont DrawText) (54% similar)
+// TODO 0x1006e190 ?DrawText@CMBUniFont@@UAEJPAVIMBSurface@@JJQBGK@Z: DrawText(x,y,wide): rect fill / temp layout differs (same open problem as CMBFont DrawText) (82% similar)
 long CMBUniFont::DrawText(IMBSurface *dest, long x, long y, const unsigned short *const text, unsigned long count)
 {
     long dx = x;
@@ -272,7 +272,7 @@ long CMBUniFont::DrawText(IMBSurface *dest, long x, long y, const unsigned short
     return 0;
 }
 
-// TODO 0x1006e2f0 ?DrawText@CMBUniFont@@UAEJPAVIMBSurface@@AAVMBRect@@QBGK@Z: DrawText(rect,wide): same rect fill problem plus Intersect path (43% similar)
+// TODO 0x1006e2f0 ?DrawText@CMBUniFont@@UAEJPAVIMBSurface@@AAVMBRect@@QBGK@Z: DrawText(rect,wide): same rect fill problem plus Intersect path (70% similar)
 long CMBUniFont::DrawText(IMBSurface *dest, MBRect &destRect, const unsigned short *const text, unsigned long count)
 {
     long dx = destRect.left;

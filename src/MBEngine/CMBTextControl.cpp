@@ -231,7 +231,7 @@ IMBObjectGroup *CMBTextControl::SetParent(IMBObjectGroup *newParent)
     return oldParent;
 }
 
-// TODO 0x10028a00 ?Draw@CMBTextControl@@UBEJPAVIMBSurface@@AAVMBRect@@1@Z: register allocation: edi and ebp swapped throughout (64% similar)
+// TODO 0x10028a00 ?Draw@CMBTextControl@@UBEJPAVIMBSurface@@AAVMBRect@@1@Z: register allocation: edi and ebp swapped throughout (85% similar)
 long CMBTextControl::Draw(IMBSurface *dest, MBRect &worldRect, MBRect &destRect) const
 {
     if (IsVisible()) {

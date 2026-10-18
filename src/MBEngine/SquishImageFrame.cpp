@@ -169,7 +169,7 @@ bool SquishImageFrame::BlitTrans(unsigned char *dest, const SquishImageDescripto
     return true;
 }
 
-// TODO 0x100664f0 ?BlitBlock@SquishImageFrame@@IBE_NPAEPBVSquishImageDescriptor@@PAVSquishRect@@2_N@Z: structure right (Intersect/Clip/Scale inline, ScaledLong 4th call out of line); register/stack layout differs; 3 compiles (27% similar)
+// TODO 0x100664f0 ?BlitBlock@SquishImageFrame@@IBE_NPAEPBVSquishImageDescriptor@@PAVSquishRect@@2_N@Z: structure right (Intersect/Clip/Scale inline, ScaledLong 4th call out of line); register/stack layout differs; 3 compiles (78% similar)
 bool SquishImageFrame::BlitBlock(unsigned char *dest, const SquishImageDescriptor *destFmt, SquishRect *srcRect, SquishRect *destRect, bool blitTrans) const
 {
     unsigned long blockCnt = GetNBlocks();

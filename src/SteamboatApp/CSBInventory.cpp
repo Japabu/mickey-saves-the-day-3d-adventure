@@ -122,7 +122,7 @@ void CSBInventory::Show(bool bShow)
     }
 }
 
-// TODO 0x1006a610 ?GetBounds@CSBInventory@@UBE?AVMBRect@@XZ: loop layout and register choice differ (the original places the search loop's back edge last and counts the second loop down in ebx)
+// TODO 0x1006a610 ?GetBounds@CSBInventory@@UBE?AVMBRect@@XZ: (84% similar) loop layout and register choice differ (the original places the search loop's back edge last and counts the second loop down in ebx)
 MBRect CSBInventory::GetBounds() const
 {
     MBRect rectBounds;

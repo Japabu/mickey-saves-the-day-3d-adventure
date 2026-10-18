@@ -28,7 +28,7 @@ MfFloor::~MfFloor()
 {
 }
 
-// TODO 0x10021020 ?CreateFloor@MfFloor@@SAXPAVMfProtoNode@@PAVMfTriangleSet@@HPAVMfSkeletonNode@@AAVMfRay@@@Z:
+// TODO 0x10021020 ?CreateFloor@MfFloor@@SAXPAVMfProtoNode@@PAVMfTriangleSet@@HPAVMfSkeletonNode@@AAVMfRay@@@Z: (78% similar)
 // the calls and the order agree; the original keeps more of the vectors as named locals
 // (its frame is 0x154 bytes, the inner loop's normal inline) and lays out the vectors
 // differently (51% similar)
@@ -111,7 +111,7 @@ void MfFloor::CreateFloor(MfProtoNode *proto, MfTriangleSet *source, int tri, Mf
     proto->FloorInfo()->mHeight = 0.0f;
 }
 
-// TODO 0x10021a10 ?CreateProjectedFloor@MfFloor@@SAXPAVMfProtoNode@@PAVMfTriangleSet@@PAVMfSkeletonNode@@@Z:
+// TODO 0x10021a10 ?CreateProjectedFloor@MfFloor@@SAXPAVMfProtoNode@@PAVMfTriangleSet@@PAVMfSkeletonNode@@@Z: (88% similar)
 // the home transform is built differently: the original fills a temporary rotation (four
 // floats through the FPU, as an inline float constructor would) and translation, assigns
 // them with the imported MfRotation3/MfVector3 operator= and then normalizes inline; here

@@ -296,7 +296,7 @@ h2v2_downsample (j_compress_ptr cinfo, jpeg_component_info * compptr,
  * with smoothing.  One row of context is required.
  */
 
-// TODO 0x1000bb70 _h2v2_smooth_downsample: (91% similar) stock 6b body with outptr declared first (49% with the stock order; every order of the pointer and INT32 declarations tried); same size, the loads and adds of the first- and last-column sums are scheduled in another order with other registers
+// TODO 0x1000bb70 _h2v2_smooth_downsample: (93% similar) stock 6b body with outptr declared first (49% with the stock order; every order of the pointer and INT32 declarations tried); same size, the loads and adds of the first- and last-column sums are scheduled in another order with other registers
 METHODDEF(void)
 h2v2_smooth_downsample (j_compress_ptr cinfo, jpeg_component_info * compptr,
 			JSAMPARRAY input_data, JSAMPARRAY output_data)

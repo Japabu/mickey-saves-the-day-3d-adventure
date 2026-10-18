@@ -225,7 +225,7 @@ bool SquishImageBlock::Blit(unsigned char *dest, const SquishImageDescriptor *de
     return true;
 }
 
-// TODO 0x100647e0 ?BlitBlock@SquishImageBlock@@QBE_NPAEPBVSquishImageDescriptor@@PAVSquishRect@@2@Z: flow matches; the original keeps the locked data in edi (all four registers pushed up front), ours in ebx with edi pushed late (21% similar)
+// TODO 0x100647e0 ?BlitBlock@SquishImageBlock@@QBE_NPAEPBVSquishImageDescriptor@@PAVSquishRect@@2@Z: flow matches; the original keeps the locked data in edi (all four registers pushed up front), ours in ebx with edi pushed late (70% similar)
 bool SquishImageBlock::BlitBlock(unsigned char *dest, const SquishImageDescriptor *destFmt, SquishRect *srcRect,
                                  SquishRect *destRect) const
 {
@@ -276,7 +276,7 @@ bool SquishImageBlock::BlitTrans(unsigned char *dest, const SquishImageDescripto
     return returnVal;
 }
 
-// TODO 0x10064a00 ?BlitBlockTrans@SquishImageBlock@@QBE_NPAEPBVSquishImageDescriptor@@PAVSquishRect@@2@Z: same data-register choice as BlitBlock (38% similar)
+// TODO 0x10064a00 ?BlitBlockTrans@SquishImageBlock@@QBE_NPAEPBVSquishImageDescriptor@@PAVSquishRect@@2@Z: same data-register choice as BlitBlock (73% similar)
 bool SquishImageBlock::BlitBlockTrans(unsigned char *dest, const SquishImageDescriptor *destFmt, SquishRect *srcRect,
                                       SquishRect *destRect) const
 {

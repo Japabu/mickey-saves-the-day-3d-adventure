@@ -62,7 +62,7 @@ MfGestureActivity::MfGestureActivity()
     md4 = 0;
 }
 
-// TODO 0x10021e60 ??0MfGestureActivity@@QAE@PAVMfActor@@KPAVMfSkill@@HH@Z: same calls and imports; the original keeps skill in ebx and reloads options from the stack, ours keeps options in ebx; further down the blocks after the bubble-model setup come in another order, not yet checked (76% similar)
+// TODO 0x10021e60 ??0MfGestureActivity@@QAE@PAVMfActor@@KPAVMfSkill@@HH@Z: same calls and imports; the original keeps skill in ebx and reloads options from the stack, ours keeps options in ebx; further down the blocks after the bubble-model setup come in another order, not yet checked (85% similar)
 MfGestureActivity::MfGestureActivity(MfActor *actor, unsigned long startTime, MfSkill *skill, int cc, int options)
     : MfAtomicActivity(actor, startTime, skill)
 {
@@ -212,7 +212,7 @@ void MfGestureActivity::_FixTrace()
 {
 }
 
-// TODO 0x100228f0 ?_CheckBubble@MfGestureActivity@@MAEXAAK@Z: first body: a ray check along each
+// TODO 0x100228f0 ?_CheckBubble@MfGestureActivity@@MAEXAAK@Z: (80% similar) first body: a ray check along each
 // bubble's step, then a sphere check; on a hit (with md4) four bisection steps between the last
 // free sample and this one; the call sequence follows the original, locals and the message
 // arguments are not settled (47% similar)

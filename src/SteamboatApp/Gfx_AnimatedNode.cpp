@@ -25,7 +25,7 @@ Gfx::AnimatedNode::AnimatedNode()
 {
 }
 
-// TODO 0x1010e990 ?Traverse@AnimatedNode@Gfx@@UAE?AW4Response@NodeTraverser@Graph@@AAVPassiveTraverser@5@@Z: VC6 keeps 0 in ebx (cmp/stores with bl) where the original uses test and immediates; the fixed-frame Visit is not merged into the tail in the original
+// TODO 0x1010e990 ?Traverse@AnimatedNode@Gfx@@UAE?AW4Response@NodeTraverser@Graph@@AAVPassiveTraverser@5@@Z: (75% similar) VC6 keeps 0 in ebx (cmp/stores with bl) where the original uses test and immediates; the fixed-frame Visit is not merged into the tail in the original
 Graph::NodeTraverser::Response Gfx::AnimatedNode::Traverse(Graph::PassiveTraverser &traverser)
 {
     int nChildren = CountChildren();

@@ -397,7 +397,7 @@ MfString MfManagerActivity::PrintName() const
     return name;
 }
 
-// TODO 0x10044c80 ?RemoveActivityThatRefersToThisActor@MfManagerActivity@@QAEXPAVMfLiveActor@@@Z: the original calls the local list's virtual Append through the vtable (mfutil's Append is Insert(pData, LP_AFTER, pliLast), what ours expands inline), and its branches jump to two shared Append blocks, so the block layout differs; the tests and fields (+0x43c, mTargetNode->+0x24, +0xb8, CheckTarget) are the same (84% similar)
+// TODO 0x10044c80 ?RemoveActivityThatRefersToThisActor@MfManagerActivity@@QAEXPAVMfLiveActor@@@Z: the original calls the local list's virtual Append through the vtable (mfutil's Append is Insert(pData, LP_AFTER, pliLast), what ours expands inline), and its branches jump to two shared Append blocks, so the block layout differs; the tests and fields (+0x43c, mTargetNode->+0x24, +0xb8, CheckTarget) are the same (92% similar)
 // Removes the hold, compliant, manipulation and camera activities that refer
 // to actor (below this one too).
 void MfManagerActivity::RemoveActivityThatRefersToThisActor(MfLiveActor *actor)

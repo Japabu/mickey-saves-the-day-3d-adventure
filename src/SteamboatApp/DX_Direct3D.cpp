@@ -5,7 +5,7 @@
 
 #define THIS_FILE "D:\\tugboat\\code\\SDK\\Scene\\DirectX\\DXDirect3D.cpp"
 
-// TODO 0x1012e230 ?EnumD3DDevicesCallback@Direct3D@DX@@KGJPAD0PAU_D3DDeviceDesc7@@PAX@Z: 58% - reconstruction; the flag computations and the desktop-mode search differ in register use and order
+// TODO 0x1012e230 ?EnumD3DDevicesCallback@Direct3D@DX@@KGJPAD0PAU_D3DDeviceDesc7@@PAX@Z: 80% - reconstruction; the flag computations and the desktop-mode search differ in register use and order
 HRESULT __stdcall DX::Direct3D::EnumD3DDevicesCallback(char *description, char *name, D3DDEVICEDESC7 *desc, void *context)
 {
     if (!description || !name || !context)
@@ -106,7 +106,7 @@ void DX::Direct3D::EnumDrivers()
         throw DX::Exception(hr, THIS_FILE, 213, "Error enumerating Direct3D devices");
 }
 
-// TODO 0x1012e9b0 ?PickDriver@Direct3D@DX@@QAEXPAHK@Z: 24% - reconstruction; the original mixes inlined and out-of-line ValList lookups and the loop structure is not recovered
+// TODO 0x1012e9b0 ?PickDriver@Direct3D@DX@@QAEXPAHK@Z: 49% - reconstruction; the original mixes inlined and out-of-line ValList lookups and the loop structure is not recovered
 void DX::Direct3D::PickDriver(int *driver, unsigned long depthMask)
 {
     int device = GetCurrentDeviceIndex();
@@ -144,7 +144,7 @@ void DX::Direct3D::PickDriver(int *driver, unsigned long depthMask)
         *driver = -100;
 }
 
-// TODO 0x1012eca0 ?VerifyDriverAndMode@Direct3D@DX@@QAEXPAH0@Z: 60% - the branch structure is recovered, the inlined lookups and the order of the mode cases are not
+// TODO 0x1012eca0 ?VerifyDriverAndMode@Direct3D@DX@@QAEXPAH0@Z: 82% - the branch structure is recovered, the inlined lookups and the order of the mode cases are not
 void DX::Direct3D::VerifyDriverAndMode(int *driverOut, int *modeOut)
 {
     int driver = *driverOut;

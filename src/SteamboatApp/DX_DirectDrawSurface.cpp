@@ -104,7 +104,7 @@ long DX::DirectDrawSurface::Restore()
     return hr;
 }
 
-// TODO 0x100d0710 ?LoadSurface@DirectDrawSurface@DX@@QAEXPBDPAU_DDSURFACEDESC2@@KHHHPAK@Z: 58% - the string temporaries (Right, the lower-case copy) and their EH states differ
+// TODO 0x100d0710 ?LoadSurface@DirectDrawSurface@DX@@QAEXPBDPAU_DDSURFACEDESC2@@KHHHPAK@Z: 79% - the string temporaries (Right, the lower-case copy) and their EH states differ
 void DX::DirectDrawSurface::LoadSurface(const char *fileName, DDSURFACEDESC2 *desc, unsigned long flags, int mipMap,
                                         int alpha, int colorKeyed, unsigned long *colorKey)
 {
@@ -306,7 +306,7 @@ DX::PNGFileFormat *DX::DirectDrawSurface::LoadPNG(const char *fileName)
     return result;
 }
 
-// TODO 0x100d1210 ?LoadPPMSurface@DirectDrawSurface@DX@@QAEXPBDPAU_DDSURFACEDESC2@@KPAK@Z: 75% - reconstruction of the SDK-style PPM loader; loop variables and the colour-key stores differ
+// TODO 0x100d1210 ?LoadPPMSurface@DirectDrawSurface@DX@@QAEXPBDPAU_DDSURFACEDESC2@@KPAK@Z: 94% - reconstruction of the SDK-style PPM loader; loop variables and the colour-key stores differ
 void DX::DirectDrawSurface::LoadPPMSurface(const char *fileName, DDSURFACEDESC2 *desc, unsigned long flags, unsigned long *colorKey)
 {
     HRESULT hr;
@@ -498,7 +498,7 @@ void DX::DirectDrawSurface::GetSurfDesc(DDSURFACEDESC2 *desc)
         throw DX::Exception(hr, THIS_FILE, 931, "Error getting surface description");
 }
 
-// TODO 0x100d1ae0 ?CountMipMapFiles@DirectDrawSurface@DX@@IAEHPBD@Z: 61% - the string temporaries and their EH states differ
+// TODO 0x100d1ae0 ?CountMipMapFiles@DirectDrawSurface@DX@@IAEHPBD@Z: 89% - the string temporaries and their EH states differ
 int DX::DirectDrawSurface::CountMipMapFiles(const char *fileName)
 {
     int count = 1;
@@ -517,7 +517,7 @@ int DX::DirectDrawSurface::CountMipMapFiles(const char *fileName)
     return count;
 }
 
-// TODO 0x100d1eb0 ?GetMipMapFileName@DirectDrawSurface@DX@@IAE?AV?$_SS@D@@PBDH@Z: 71% - the string temporaries and their EH states differ
+// TODO 0x100d1eb0 ?GetMipMapFileName@DirectDrawSurface@DX@@IAE?AV?$_SS@D@@PBDH@Z: 97% - the string temporaries and their EH states differ
 _SS<char> DX::DirectDrawSurface::GetMipMapFileName(const char *fileName, int level)
 {
     _SS<char> name(fileName);
@@ -528,7 +528,7 @@ _SS<char> DX::DirectDrawSurface::GetMipMapFileName(const char *fileName, int lev
     return mipName;
 }
 
-// TODO 0x100d2080 ?Copy8_to_5551@DirectDrawSurface@DX@@IAEXPAUHBITMAP__@@@Z: 47% - the colour-table reads (the original loads the RGBQUAD as a dword and shifts) and the register allocation differ
+// TODO 0x100d2080 ?Copy8_to_5551@DirectDrawSurface@DX@@IAEXPAUHBITMAP__@@@Z: 82% - the colour-table reads (the original loads the RGBQUAD as a dword and shifts) and the register allocation differ
 void DX::DirectDrawSurface::Copy8_to_5551(HBITMAP bitmap)
 {
     BITMAP bm;
@@ -592,7 +592,7 @@ void DX::DirectDrawSurface::Copy8_to_Palette8(DX::PNGFileFormat *png, unsigned l
     }
 }
 
-// TODO 0x100d2380 ?Copy8_to_16@DirectDrawSurface@DX@@IAEXPAUPNGFileFormat@2@PAKPAUIDirectDrawSurface7@@@Z: 86% - register allocation of the shift/scale locals differs
+// TODO 0x100d2380 ?Copy8_to_16@DirectDrawSurface@DX@@IAEXPAUPNGFileFormat@2@PAKPAUIDirectDrawSurface7@@@Z: 96% - register allocation of the shift/scale locals differs
 void DX::DirectDrawSurface::Copy8_to_16(DX::PNGFileFormat *png, unsigned long *colorKey, IDirectDrawSurface7 *surface)
 {
     PALETTEENTRY *palette = new PALETTEENTRY[256];
@@ -628,7 +628,7 @@ void DX::DirectDrawSurface::Copy8_to_16(DX::PNGFileFormat *png, unsigned long *c
     delete[] palette;
 }
 
-// TODO 0x100d25a0 ?Copy32_to_16@DirectDrawSurface@DX@@IAEXPAUPNGFileFormat@2@PAUIDirectDrawSurface7@@@Z: 65% - the channel order and the shift/scale arguments are guessed
+// TODO 0x100d25a0 ?Copy32_to_16@DirectDrawSurface@DX@@IAEXPAUPNGFileFormat@2@PAUIDirectDrawSurface7@@@Z: 94% - the channel order and the shift/scale arguments are guessed
 void DX::DirectDrawSurface::Copy32_to_16(DX::PNGFileFormat *png, IDirectDrawSurface7 *surface)
 {
     DDSURFACEDESC2 ddsd;
@@ -686,7 +686,7 @@ void DX::DirectDrawSurface::GetShiftAndScale(DDPIXELFORMAT &format, int &redScal
 
 // 0x100d1d60 ?ssasn@@YAXAAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@ABV12@@Z
 // TODO 0x100d27d0 ??0?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QAE@ABV?$allocator@D@1@@Z: not emitted by this unit yet
-// TODO 0x100d27f0 ?Right@?$_SS@D@@QBE?AV1@H@Z: 54% - the original passes a constant -1 length to substr and builds the result through its own EH frame
-// TODO 0x100d2980 ??H@YA?AV?$_SS@D@@ABV0@PBD@Z: 43% - the original builds _SS(pA) first and inlines operator+(s1, s2) differently
-// TODO 0x100d2af0 ??H@YA?AV?$_SS@D@@ABV0@0@Z: 81% - append(s2) in the original uses a constant npos (VC6 here loads basic_string::npos)
+// TODO 0x100d27f0 ?Right@?$_SS@D@@QBE?AV1@H@Z: 82% - the original passes a constant -1 length to substr and builds the result through its own EH frame
+// TODO 0x100d2980 ??H@YA?AV?$_SS@D@@ABV0@PBD@Z: 42% - the original builds _SS(pA) first and inlines operator+(s1, s2) differently
+// TODO 0x100d2af0 ??H@YA?AV?$_SS@D@@ABV0@0@Z: 90% - append(s2) in the original uses a constant npos (VC6 here loads basic_string::npos)
 // 0x100d2e80 ?BufferRel@?$_SS@D@@QAEXH@Z

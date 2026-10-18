@@ -27,7 +27,7 @@ CMBScript::CMBScript(void)
     _mRefCnt = 0;
 }
 
-// TODO 0x1003c5c0 ?Load@CMBScript@@UAE_NKPAVIMBStream@@@Z: inline budget: original calls CreateObject out of line for outStream/newBlock (and the operator= of mCodeBlock), ours inlines them; block structure of the failure returns unverified (46% similar)
+// TODO 0x1003c5c0 ?Load@CMBScript@@UAE_NKPAVIMBStream@@@Z: inline budget: original calls CreateObject out of line for outStream/newBlock (and the operator= of mCodeBlock), ours inlines them; block structure of the failure returns unverified (73% similar)
 bool CMBScript::Load(unsigned long id, IMBStream *inStream)
 {
     if (!inStream)

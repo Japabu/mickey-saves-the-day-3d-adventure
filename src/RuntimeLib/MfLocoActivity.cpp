@@ -138,7 +138,7 @@ static inline float Abs(float x)
     return x < 0.0f ? -x : x;
 }
 
-// TODO 0x1003e430 ?Update@MfLocoActivity@@UAE?AW4MfActivityStatus@@K@Z: control flow and calls agree; the original expands the mflinalg inlines (MfVector3/MfRotation3 constructors, operator=) only in the path part and calls the imports in the sampling part, which shifts the frame; the inline MfPath2 point count and key lookup test their flags the other way round (63% similar)
+// TODO 0x1003e430 ?Update@MfLocoActivity@@UAE?AW4MfActivityStatus@@K@Z: control flow and calls agree; the original expands the mflinalg inlines (MfVector3/MfRotation3 constructors, operator=) only in the path part and calls the imports in the sampling part, which shifts the frame; the inline MfPath2 point count and key lookup test their flags the other way round (82% similar)
 MfActivityStatus MfLocoActivity::Update(unsigned long time)
 {
     if (time < mStartTime)
@@ -333,7 +333,7 @@ void MfLocoActivity::_InitBubbleModel(MfSkill *skill, MfActor *actor, int withCh
     }
 }
 
-// TODO 0x1003f450 ?_CheckBubble@MfLocoActivity@@MAEXAAK@Z: the call sequence and branches
+// TODO 0x1003f450 ?_CheckBubble@MfLocoActivity@@MAEXAAK@Z: (90% similar) the call sequence and branches
 // follow the original (conform to the floor, the two bubble passes, the slide with mbc and the
 // three upright halvings); the frame has the original size but the locals sit in other
 // slots, and edi/ebx swap as the zero and import registers (27% similar)
@@ -509,7 +509,7 @@ void MfLocoActivity::_CheckBubble(unsigned long &sample)
     mActor->UseFilter(0, 2, 5, filter);
 }
 
-// TODO 0x10040620 ?_ConformToFloor@MfLocoActivity@@IAEHK@Z: calls, branches and constants
+// TODO 0x10040620 ?_ConformToFloor@MfLocoActivity@@IAEHK@Z: (90% similar) calls, branches and constants
 // agree; the original expands the mflinalg/mfutil inlines only in part (it calls the imported
 // MfVector3/MfRotation3 constructors and MfRotation3::operator=, and MfDblList::Append through
 // the vtable), which shifts the frame by 4 (59% similar)

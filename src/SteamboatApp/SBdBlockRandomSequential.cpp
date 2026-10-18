@@ -28,7 +28,7 @@ void SBdBlockRandomSequential::LoadFromPref(MBComPtr<IMBStream> stream, MBComPtr
     }
 }
 
-// TODO 0x1004b640 ?GetLineGroup@SBdBlockRandomSequential@@UAEPAVSBdLineGroup@@PAVMfAiActor@@@Z: not matching yet (frame layout and zero register)
+// TODO 0x1004b640 ?GetLineGroup@SBdBlockRandomSequential@@UAEPAVSBdLineGroup@@PAVMfAiActor@@@Z: (81% similar) not matching yet (frame layout and zero register)
 SBdLineGroup *SBdBlockRandomSequential::GetLineGroup(MfAiActor *mfPrimaryActor)
 {
     MBString lineGroupName("");

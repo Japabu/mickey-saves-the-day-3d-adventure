@@ -207,7 +207,7 @@ SBObjectGroup::ObjectMap::iterator SBObjectGroup::FindObject(IMBObject *obj)
     return mObjects.end();
 }
 
-// TODO 0x1002c9a0 ?ClipRectsToObject@SBObjectGroup@@ABE_NPAVIMBObject@@AAVMBRect@@1@Z: same operations; the
+// TODO 0x1002c9a0 ?ClipRectsToObject@SBObjectGroup@@ABE_NPAVIMBObject@@AAVMBRect@@1@Z: (66% similar) same operations; the
 // original keeps objBlitRect in registers and schedules the Offset with x first (Offset(point) or
 // (dx, dy), += or Offset for destRect tried)
 bool SBObjectGroup::ClipRectsToObject(IMBObject *obj, MBRect &srcRect, MBRect &destRect) const

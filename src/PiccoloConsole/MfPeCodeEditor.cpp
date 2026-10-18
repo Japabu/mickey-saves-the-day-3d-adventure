@@ -461,7 +461,7 @@ void MfPeCodeEditor::StandardAutoScrollTest(CPoint point, int &outside, int &bor
     border = !inner.PtInRect(point) && client.PtInRect(point);
 }
 
-// TODO 0x1000e030 ?OnMouseMove@MfPeCodeEditor@@IAEXIVCPoint@@@Z: 91% - the slots of the outside/border flags and the margin scroll test are laid out differently
+// TODO 0x1000e030 ?OnMouseMove@MfPeCodeEditor@@IAEXIVCPoint@@@Z: 96% - the slots of the outside/border flags and the margin scroll test are laid out differently
 void MfPeCodeEditor::OnMouseMove(UINT flags, CPoint point)
 {
     if (mDragPending) {
@@ -545,7 +545,7 @@ void MfPeCodeEditor::SetModificationFlag(int modified)
         mSavedItem = mUndoItem;
 }
 
-// TODO 0x1000e400 ?AddCommand@MfPeCodeEditor@@AAEXPAVMfPeCommand@@@Z: 59% - register allocation of the merge of typed characters differs
+// TODO 0x1000e400 ?AddCommand@MfPeCodeEditor@@AAEXPAVMfPeCommand@@@Z: 80% - register allocation of the merge of typed characters differs
 void MfPeCodeEditor::AddCommand(MfPeCommand *command)
 {
     if (mReadOnly) {
@@ -636,7 +636,7 @@ BOOL MfPeCodeEditor::PreTranslateMessage(MSG *msg)
     return CWnd::PreTranslateMessage(msg);
 }
 
-// TODO 0x1000eb20 ?OnKeyDown@MfPeCodeEditor@@IAEXIII@Z: 86% - same calls per key (checked against logicdiff: the original shares one copy of the IsSelectionPastLineEnd/CollapseSelection block between two keys by a jump, VC5 here keeps a copy in each, which is the extra call pair; the "@*" reference is a vtable store both sides have); the switch and the shared tails are laid out differently (3299 bytes instead of 3275)
+// TODO 0x1000eb20 ?OnKeyDown@MfPeCodeEditor@@IAEXIII@Z: 90% - same calls per key (checked against logicdiff: the original shares one copy of the IsSelectionPastLineEnd/CollapseSelection block between two keys by a jump, VC5 here keeps a copy in each, which is the extra call pair; the "@*" reference is a vtable store both sides have); the switch and the shared tails are laid out differently (3299 bytes instead of 3275)
 void MfPeCodeEditor::OnKeyDown(UINT key, UINT repeat, UINT flags)
 {
     int control = GetKeyState(VK_CONTROL) < 0;
@@ -940,7 +940,7 @@ LRESULT MfPeCodeEditor::OnGotoLine(WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// TODO 0x1000ff60 ?OnTimer@MfPeCodeEditor@@IAEXI@Z: 79% - the original shares the stop-timers block of the horizontal scroll tests at the end
+// TODO 0x1000ff60 ?OnTimer@MfPeCodeEditor@@IAEXI@Z: 80% - the original shares the stop-timers block of the horizontal scroll tests at the end
 void MfPeCodeEditor::OnTimer(UINT id)
 {
     if (id == 52) {
@@ -1189,7 +1189,7 @@ void MfPeCodeEditor::UninstallGlobalKeyboardHandler(MfPeKbdHandler *handler)
     listGlobalKeyboardHandlers.Delete(pli);
 }
 
-// TODO 0x10010b20 ?SendToKeyboardHandlers@MfPeCodeEditor@@AAEXHHHH@Z: 56% - register choice flips with unrelated changes of the unit (hash order of the optimizer)
+// TODO 0x10010b20 ?SendToKeyboardHandlers@MfPeCodeEditor@@AAEXHHHH@Z: 84% - register choice flips with unrelated changes of the unit (hash order of the optimizer)
 void MfPeCodeEditor::SendToKeyboardHandlers(int key, int shift, int control, int alt)
 {
     int flags = (shift != 0) | (control ? 2 : 0) | (alt ? 4 : 0);

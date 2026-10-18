@@ -21,7 +21,7 @@ DX::TextureMapManager::~TextureMapManager()
     Release(false);
 }
 
-// TODO 0x100ccbc0 ?GetTextureMap@TextureMapManager@DX@@QAEPAVTextureMap@2@AAUDirectDrawSurfaceAttrib@2@PAVDevice@2@_N@Z: 72% - the original calls the small std::string helpers out of line, VC6 here inlines them
+// TODO 0x100ccbc0 ?GetTextureMap@TextureMapManager@DX@@QAEPAVTextureMap@2@AAUDirectDrawSurfaceAttrib@2@PAVDevice@2@_N@Z: 85% - the original calls the small std::string helpers out of line, VC6 here inlines them
 DX::TextureMap *DX::TextureMapManager::GetTextureMap(DX::DirectDrawSurfaceAttrib &attrib, DX::Device *device, bool ownDC)
 {
     StringToTextureMap::iterator it = m_TextureMaps.find(std::string(attrib.fileName.c_str()));
@@ -52,7 +52,7 @@ DX::TextureMap *DX::TextureMapManager::GetTextureMap(DX::DirectDrawSurfaceAttrib
 
 // 0x100cceb0 ??1?$pair@$$CBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@PAVTextureMap@DX@@@std@@QAE@XZ
 
-// TODO 0x100ccef0 ?Release@TextureMapManager@DX@@QAEX_N@Z: 39% - the original calls _Tree::erase, the list node string destructor and its _Refcnt/deallocate helpers out of line; VC6 here inlines them
+// TODO 0x100ccef0 ?Release@TextureMapManager@DX@@QAEX_N@Z: 71% - the original calls _Tree::erase, the list node string destructor and its _Refcnt/deallocate helpers out of line; VC6 here inlines them
 void DX::TextureMapManager::Release(bool clearPaths)
 {
     m_FirstTime = true;
@@ -65,7 +65,7 @@ void DX::TextureMapManager::Release(bool clearPaths)
         m_Paths.erase(m_Paths.begin(), m_Paths.end());
 }
 
-// TODO 0x100cd000 ?LoadTextureSubr@TextureMapManager@DX@@IAEXPAVTextureMap@2@AAUDirectDrawSurfaceAttrib@2@PAVDevice@2@@Z: 56% - as GetTextureMap: basic_string::operator[] and the string copy are out of line in the original
+// TODO 0x100cd000 ?LoadTextureSubr@TextureMapManager@DX@@IAEXPAVTextureMap@2@AAUDirectDrawSurfaceAttrib@2@PAVDevice@2@@Z: 79% - as GetTextureMap: basic_string::operator[] and the string copy are out of line in the original
 void DX::TextureMapManager::LoadTextureSubr(DX::TextureMap *map, DX::DirectDrawSurfaceAttrib &attrib, DX::Device *device)
 {
     try {

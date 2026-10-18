@@ -95,7 +95,7 @@ void SBTrashBashNode::OnEnd()
     SteamboatNode::OnEnd();
 }
 
-// TODO 0x1009d360 ?LoadTrash@SBTrashBashNode@@IAEXXZ: the loop runs while count <= numTrash - 1 and the random square index is taken before indexing, as in the original; left: the original reads the object pointer before the GetRoot call (VC6 here after it), and the locals sit in other stack slots (76% similar)
+// TODO 0x1009d360 ?LoadTrash@SBTrashBashNode@@IAEXXZ: the loop runs while count <= numTrash - 1 and the random square index is taken before indexing, as in the original; left: the original reads the object pointer before the GetRoot call (VC6 here after it), and the locals sit in other stack slots (95% similar)
 void SBTrashBashNode::LoadTrash()
 {
     ClearBoard();
@@ -175,7 +175,7 @@ void SBTrashBashNode::LoadTrash()
     }
 }
 
-// TODO 0x1009db70 ?InitGameboard@SBTrashBashNode@@IAEXXZ: the original walks kSlots with pointers and keeps &mLeveler and &mTrashSquares on the stack (index forms tried) (50% similar)
+// TODO 0x1009db70 ?InitGameboard@SBTrashBashNode@@IAEXXZ: the original walks kSlots with pointers and keeps &mLeveler and &mTrashSquares on the stack (index forms tried) (80% similar)
 void SBTrashBashNode::InitGameboard()
 {
     for (int i = 0; i < 6; i++) {
@@ -275,7 +275,7 @@ void SBTrashBashNode::PlayTile(SBTrashSquare *square)
     }
 }
 
-// TODO 0x1009e270 ?Idle@SBTrashBashNode@@UAEXXZ: MBComPtr inlining: the original calls clock's CreateObject out of line and inlines the later two GUID constructors; VC6 inlines all three (also with an explicit CreateObject call) (60% similar)
+// TODO 0x1009e270 ?Idle@SBTrashBashNode@@UAEXXZ: MBComPtr inlining: the original calls clock's CreateObject out of line and inlines the later two GUID constructors; VC6 inlines all three (also with an explicit CreateObject call) (82% similar)
 void SBTrashBashNode::Idle()
 {
     SteamboatNode::Idle();

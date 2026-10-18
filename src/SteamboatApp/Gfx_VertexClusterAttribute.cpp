@@ -38,7 +38,7 @@ Gfx::VertexClusterAttribute::VertexClusterAttribute()
 
 #pragma optimize("a", on) // back to no-alias code
 
-// TODO 0x100e68a0 ?AddCluster@VertexClusterAttribute@Gfx@@QAEXH@Z: inline budget (the original calls the AVec/IVec constructors and the TMatrix3 operator= out of line)
+// TODO 0x100e68a0 ?AddCluster@VertexClusterAttribute@Gfx@@QAEXH@Z: (84% similar) inline budget (the original calls the AVec/IVec constructors and the TMatrix3 operator= out of line)
 void Gfx::VertexClusterAttribute::AddCluster(int post)
 {
     Gfx::ClusterData *cluster = new Gfx::ClusterData;
@@ -59,7 +59,7 @@ void Gfx::VertexClusterAttribute::AddFrame(TMatrix3<float> &mat, Vec3<float> &po
         AddFrame(mat, pos, m_nclusters - 1);
 }
 
-// TODO 0x100e6b10 ?AddFrame@VertexClusterAttribute@Gfx@@QAEXAAV?$TMatrix3@M@@AAV?$Vec3@M@@H@Z: the inlined appends load len before alloclen in the original
+// TODO 0x100e6b10 ?AddFrame@VertexClusterAttribute@Gfx@@QAEXAAV?$TMatrix3@M@@AAV?$Vec3@M@@H@Z: (90% similar) the inlined appends load len before alloclen in the original
 void Gfx::VertexClusterAttribute::AddFrame(TMatrix3<float> &mat, Vec3<float> &pos, int i)
 {
     if (m_clusters.length()) {
@@ -152,7 +152,7 @@ void Gfx::VertexClusterAttribute::ApplyClusters(Gfx::Shape *shape, unsigned long
 // Moves the shape's coordinates: post clusters back to their rest positions
 // first, then every other cluster's vertices by its frame matrix and
 // position, then the post clusters on top of the moved coordinates.
-// TODO 0x100e6fc0 ?ApplyClustersToIndexedShape@VertexClusterAttribute@Gfx@@IAEXPAVIndexedVertexShape@2@K@Z: the original treats the coordinate copies as not aliasing the cluster's lengths and pointers (it hoists them and counts the first loop down); VC6 here reloads them after every Vec3 copy even with /Oa; same loops, calls, indices and arithmetic (66% similar)
+// TODO 0x100e6fc0 ?ApplyClustersToIndexedShape@VertexClusterAttribute@Gfx@@IAEXPAVIndexedVertexShape@2@K@Z: the original treats the coordinate copies as not aliasing the cluster's lengths and pointers (it hoists them and counts the first loop down); VC6 here reloads them after every Vec3 copy even with /Oa; same loops, calls, indices and arithmetic (84% similar)
 void Gfx::VertexClusterAttribute::ApplyClustersToIndexedShape(Gfx::IndexedVertexShape *shape, unsigned long)
 {
     if (shape->m_Coords.length() < 3)
@@ -216,7 +216,7 @@ void Gfx::VertexClusterAttribute::ApplyClustersToIndexedShape(Gfx::IndexedVertex
 }
 
 // The same for a packed shape.
-// TODO 0x100e7390 ?ApplyClustersToPackedShape@VertexClusterAttribute@Gfx@@IAEXPAVPackedVertexShape@2@K@Z: the original treats the coordinate copies as not aliasing the cluster's lengths and pointers (it hoists them and counts the first loop down); VC6 here reloads them after every Vec3 copy even with /Oa; same loops, calls, indices and arithmetic (66% similar)
+// TODO 0x100e7390 ?ApplyClustersToPackedShape@VertexClusterAttribute@Gfx@@IAEXPAVPackedVertexShape@2@K@Z: the original treats the coordinate copies as not aliasing the cluster's lengths and pointers (it hoists them and counts the first loop down); VC6 here reloads them after every Vec3 copy even with /Oa; same loops, calls, indices and arithmetic (84% similar)
 void Gfx::VertexClusterAttribute::ApplyClustersToPackedShape(Gfx::PackedVertexShape *shape, unsigned long)
 {
     if (shape->m_Coords.length() < 3)
@@ -440,7 +440,7 @@ void Gfx::VertexClusterAttribute::ReadInternals(Graph::Stream *stream, int versi
 // A cluster with three frames: the centre and radius of the circle through
 // its three positions (the perpendicular through the middle of the second
 // edge, scaled to meet the first edge's perpendicular plane).
-// TODO 0x100e7f20 ?Compute3pointCenter@VertexClusterAttribute@Gfx@@AAEXPAVClusterData@2@@Z: inline budget: the original inlines the two edge subtractions (with -=) and the cross products and calls the Vec3(x, y, z) constructor for the halved-edge sums, mag2, multScal, dot, operator-, operator+ and operator*= out of line; VC6 here already calls the first operator-= out of line, so frame and slots differ; the sequence of vector operations was read from the original (26% similar)
+// TODO 0x100e7f20 ?Compute3pointCenter@VertexClusterAttribute@Gfx@@AAEXPAVClusterData@2@@Z: inline budget: the original inlines the two edge subtractions (with -=) and the cross products and calls the Vec3(x, y, z) constructor for the halved-edge sums, mag2, multScal, dot, operator-, operator+ and operator*= out of line; VC6 here already calls the first operator-= out of line, so frame and slots differ; the sequence of vector operations was read from the original (65% similar)
 void Gfx::VertexClusterAttribute::Compute3pointCenter(Gfx::ClusterData *cluster)
 {
     if (m_nframes == 3) {
@@ -461,7 +461,7 @@ void Gfx::VertexClusterAttribute::Compute3pointCenter(Gfx::ClusterData *cluster)
     }
 }
 
-// TODO 0x100e8280 ?InterpolateClusterFrames@VertexClusterAttribute@Gfx@@IAEXPAVClusterData@2@M@Z: 21% similar: same branches and arithmetic; the original calls SquareMatrix<float, 3>::setValues and Vec3(x, y, z) out of line (VC6 inlines both: rep movsd and direct stores), forms the fraction with fisub from a spilled int and keeps it on the FPU stack
+// TODO 0x100e8280 ?InterpolateClusterFrames@VertexClusterAttribute@Gfx@@IAEXPAVClusterData@2@M@Z: 49% similar: same branches and arithmetic; the original calls SquareMatrix<float, 3>::setValues and Vec3(x, y, z) out of line (VC6 inlines both: rep movsd and direct stores), forms the fraction with fisub from a spilled int and keeps it on the FPU stack
 void Gfx::VertexClusterAttribute::InterpolateClusterFrames(Gfx::ClusterData *cluster, float t)
 {
     int n = m_nframes;
@@ -565,9 +565,9 @@ int const Gfx::VertexClusterAttribute::Version = 4;
 // 0x100e9160 ?reallocMem@?$Vec@V?$Vec3@M@@@@IAEXHHH@Z
 // 0x100e9290 ??0?$SquareMatrix@M$02@@QAE@ABV0@@Z
 // EQUIV 0x100e8e30 ?verify@?$Vec@PAVClusterData@Gfx@@@@QAEHH@Z: reviewed: only the stack slots of the two spilled values (alloclen for the fild, the new length) are swapped
-// TODO 0x100e8950 ??0?$AVec@V?$Vec3@M@@@@QAE@HM@Z: 51% similar: matches without /Oa (the original reloads e after new and keeps the delete [] test); "a" off at the end of the unit makes it match but breaks six other instances of the unit
-// TODO 0x100e8a40 ??0?$IVec@H@@QAE@HM@Z: 49% similar: as AVec<Vec3<float> >(int, float) (matches without /Oa)
-// TODO 0x100e8f50 ?reallocMem@?$Vec@V?$TMatrix3@M@@@@IAEXHHH@Z: 41% similar: the TMatrix3 copies in the inlined element loop (TMatrix3 copy puzzle); neither /Oa setting matches
+// TODO 0x100e8950 ??0?$AVec@V?$Vec3@M@@@@QAE@HM@Z: 75% similar: matches without /Oa (the original reloads e after new and keeps the delete [] test); "a" off at the end of the unit makes it match but breaks six other instances of the unit
+// TODO 0x100e8a40 ??0?$IVec@H@@QAE@HM@Z: 70% similar: as AVec<Vec3<float> >(int, float) (matches without /Oa)
+// TODO 0x100e8f50 ?reallocMem@?$Vec@V?$TMatrix3@M@@@@IAEXHHH@Z: 57% similar: the TMatrix3 copies in the inlined element loop (TMatrix3 copy puzzle); neither /Oa setting matches
 // TODO 0x100e8c10 ??0?$Vec@V?$TMatrix3@M@@@@QAE@HM@Z: not emitted by our object (the IVec/AVec constructors inline Vec(int, float))
 // TODO 0x100e8d30 ??0?$Vec@V?$Vec3@M@@@@QAE@HM@Z: not emitted by our object (as Vec<TMatrix3<float> >(int, float))
 

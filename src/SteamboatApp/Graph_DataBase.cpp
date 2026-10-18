@@ -13,7 +13,7 @@ Graph::DataBase::~DataBase()
     mNodeList.RemoveAll();
 }
 
-// TODO 0x100dfc60 ?VerifyFile@DataBase@Graph@@QAE_NPAVStream@2@V?$_SS@D@@@Z: original folds basic_string::npos to -1 (inlined find, Find), VC6 loads it from memory here
+// TODO 0x100dfc60 ?VerifyFile@DataBase@Graph@@QAE_NPAVStream@2@V?$_SS@D@@@Z: (82% similar) original folds basic_string::npos to -1 (inlined find, Find), VC6 loads it from memory here
 bool Graph::DataBase::VerifyFile(Graph::Stream *stream, _SS<char> header)
 {
     int length;
@@ -65,7 +65,7 @@ Graph::BasicNode *Graph::DataBase::ReadDB(const char *fileName)
     return 0;
 }
 
-// TODO 0x100e00c0 ?ReadNode@DataBase@Graph@@QAEPAVBasicNode@2@PAVStream@2@PAV32@@Z: Find compares with -1 immediates in the original (npos folded), VC6 loads npos
+// TODO 0x100e00c0 ?ReadNode@DataBase@Graph@@QAEPAVBasicNode@2@PAVStream@2@PAV32@@Z: (64% similar) Find compares with -1 immediates in the original (npos folded), VC6 loads npos
 Graph::BasicNode *Graph::DataBase::ReadNode(Graph::Stream *stream, Graph::BasicNode *parent)
 {
     mCurrentParentNode = parent;
@@ -96,7 +96,7 @@ Graph::DataBase::DataBase()
     mCurrentParentNode = 0;
 }
 
-// TODO 0x100e0400 ?ReadHeader@DataBase@Graph@@IAE?AV?$_SS@D@@PAVStream@2@@Z: identical except the copy into the return value: original calls assign(const char *, size_t), VC6 inlines it
+// TODO 0x100e0400 ?ReadHeader@DataBase@Graph@@IAE?AV?$_SS@D@@PAVStream@2@@Z: (83% similar) identical except the copy into the return value: original calls assign(const char *, size_t), VC6 inlines it
 _SS<char> Graph::DataBase::ReadHeader(Graph::Stream *stream)
 {
     short length = 0;
@@ -109,7 +109,7 @@ _SS<char> Graph::DataBase::ReadHeader(Graph::Stream *stream)
     return header;
 }
 
-// TODO 0x100e05e0 ?ReadAttributeHeader@DataBase@Graph@@IAE?AV?$_SS@D@@PAVStream@2@@Z: as ReadHeader (assign(const char *, size_t) inlined in the copy)
+// TODO 0x100e05e0 ?ReadAttributeHeader@DataBase@Graph@@IAE?AV?$_SS@D@@PAVStream@2@@Z: (83% similar) as ReadHeader (assign(const char *, size_t) inlined in the copy)
 _SS<char> Graph::DataBase::ReadAttributeHeader(Graph::Stream *stream)
 {
     int length = 0;

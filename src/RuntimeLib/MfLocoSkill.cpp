@@ -106,7 +106,7 @@ void MfLocoSkill::PermuteJoints(MfProtoActor *proto, MfPermutation *permutation)
     }
 }
 
-// TODO 0x10041930 ?normalize@MfLocoSkill@@MAEXXZ: setting the root key to (turn, -start) calls the imported
+// TODO 0x10041930 ?normalize@MfLocoSkill@@MAEXXZ: (81% similar) setting the root key to (turn, -start) calls the imported
 // MfRotation3/MfVector3 operator= in the original (as the nested members of an inline MfTransform3
 // assignment do), here the two assignments are expanded; the rest follows (65% similar)
 // Moves the sampled root path so that the hip starts above the origin and
@@ -469,7 +469,7 @@ unsigned long MfLocoSkill::BestMatchIndex(MfActor *actor)
 }
 
 // (also after CycleLength, see BestMatchIndex)
-// TODO 0x10041e40 ?factor@MfLocoSkill@@MAEXXZ: as MfSkill::factor: the last assignment (hip = ~root *
+// TODO 0x10041e40 ?factor@MfLocoSkill@@MAEXXZ: (83% similar) as MfSkill::factor: the last assignment (hip = ~root *
 // global) calls the imported MfTransform3 operator= and destructors where this expands them (76% similar)
 // Splits the hip's motion: the root path takes the height-free forward
 // position and the heading (unwrapped and folded to the nearer of the two

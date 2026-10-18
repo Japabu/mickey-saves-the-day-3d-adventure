@@ -38,7 +38,7 @@ MfStreamError WriteGCPath(MfStream &stream, MfActor *actor, MfGCPath *path)
     return stream.Status();
 }
 
-// TODO 0x10009110 ?ReadGCPath@@YA?AW4MfStreamError@@AAVMfStream@@PAVMfActor@@AAPAUMfGCPath@@@Z: the original expands the MfGCPath destructor and constructor inline (MfGCPath.h declares the destructor out of line) (34% similar)
+// TODO 0x10009110 ?ReadGCPath@@YA?AW4MfStreamError@@AAVMfStream@@PAVMfActor@@AAPAUMfGCPath@@@Z: the original expands the MfGCPath destructor and constructor inline (MfGCPath.h declares the destructor out of line) (60% similar)
 MfStreamError ReadGCPath(MfStream &stream, MfActor *actor, MfGCPath *&result)
 {
     result = 0;
@@ -142,7 +142,7 @@ MfStreamError ReadConfig(MfStream &stream, MfActor *actor, MfTransform3 *&result
     return stream.Status();
 }
 
-// TODO 0x10009690 ?WritePath@@YA?AW4MfStreamError@@AAVMfStream@@PAVMfPath2@@@Z: the bounds loop and the quantization differ in register and temporary choice; the original calls the imported MfTransform2 assignment (51% similar)
+// TODO 0x10009690 ?WritePath@@YA?AW4MfStreamError@@AAVMfStream@@PAVMfPath2@@@Z: the bounds loop and the quantization differ in register and temporary choice; the original calls the imported MfTransform2 assignment (80% similar)
 // A ring path as its arc, an open path as its points: every 16th point
 // whole, the others as bytes of the step from the point before.
 MfStreamError WritePath(MfStream &stream, MfPath2 *path)
@@ -212,7 +212,7 @@ MfStreamError WritePath(MfStream &stream, MfPath2 *path)
     return stream.Status();
 }
 
-// TODO 0x10009b30 ?ReadPath@@YA?AW4MfStreamError@@AAVMfStream@@AAPAVMfPath2@@@Z: the x sum is
+// TODO 0x10009b30 ?ReadPath@@YA?AW4MfStreamError@@AAVMfStream@@AAPAVMfPath2@@@Z: (96% similar) the x sum is
 // grouped as the original adds it; what is left: the original frame is 8 bytes larger (the arc
 // transform and the two vectors in slots of their own), and here the EH state is reset to -1
 // before the final Status call, which the original does not do (88% similar)
@@ -275,7 +275,7 @@ MfStreamError ReadPath(MfStream &stream, MfPath2 *&result)
     return stream.Status();
 }
 
-// TODO 0x10009e70 ?WritePath3@@YA?AW4MfStreamError@@AAVMfStream@@PAVMfPath3@@@Z: the original does not fold the ARC test of NumKeys inside the KEYS branch (tests the known kind again and passes the count through a stack temporary); ours folds it; the ternary form of NumKeys does the same (89% similar)
+// TODO 0x10009e70 ?WritePath3@@YA?AW4MfStreamError@@AAVMfStream@@PAVMfPath3@@@Z: the original does not fold the ARC test of NumKeys inside the KEYS branch (tests the known kind again and passes the count through a stack temporary); ours folds it; the ternary form of NumKeys does the same (93% similar)
 MfStreamError WritePath3(MfStream &stream, MfPath3 *path)
 {
     stream << path->mKind;

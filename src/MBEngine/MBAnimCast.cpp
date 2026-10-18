@@ -174,7 +174,7 @@ bool MBAnimCast::ReloadSquishFrame(bool needToSeek)
     return true;
 }
 
-// TODO 0x1002d120 ?SquishFrameToSurface@MBAnimCast@@IAE_NXZ: SquishFrameToSurface: original calls MBColor::Convert out of line (inline budget) and uses ebp for this; ours inlines Convert (49% similar)
+// TODO 0x1002d120 ?SquishFrameToSurface@MBAnimCast@@IAE_NXZ: SquishFrameToSurface: original calls MBColor::Convert out of line (inline budget) and uses ebp for this; ours inlines Convert (63% similar)
 bool MBAnimCast::SquishFrameToSurface(void)
 {
     if (mSurface)

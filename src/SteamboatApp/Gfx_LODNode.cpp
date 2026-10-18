@@ -41,14 +41,14 @@ const RVec<float> &Gfx::LODNode::GetRangeLimits()
     return m_RangeLimits;
 }
 
-// TODO 0x100ec570 ?SetRangeLimit@LODNode@Gfx@@QAEXHM@Z: the inlined Vec::verify/reallocMem keep len and e in registers (as with /Oa); a pragma here or around Vec.h does not give it
+// TODO 0x100ec570 ?SetRangeLimit@LODNode@Gfx@@QAEXHM@Z: (59% similar) the inlined Vec::verify/reallocMem keep len and e in registers (as with /Oa); a pragma here or around Vec.h does not give it
 void Gfx::LODNode::SetRangeLimit(int i, float limit)
 {
     if (!m_Locked)
         m_RangeLimits.setValueVerify(i, limit);
 }
 
-// TODO 0x100ec670 ?SetRangeLimits@LODNode@Gfx@@QAEXABV?$RVec@M@@@Z: the inlined RVec assignment copies with rep movsd after the length test in the original
+// TODO 0x100ec670 ?SetRangeLimits@LODNode@Gfx@@QAEXABV?$RVec@M@@@Z: (84% similar) the inlined RVec assignment copies with rep movsd after the length test in the original
 void Gfx::LODNode::SetRangeLimits(const RVec<float> &limits)
 {
     if (!m_Locked)
@@ -85,7 +85,7 @@ Graph::NodeTraverser::Response Gfx::LODNode::Traverse(Graph::PassiveTraverser &t
     return ActiveNode::Traverse(traverser);
 }
 
-// TODO 0x100ec7c0 ?SelectLOD@LODNode@Gfx@@QAEXPAVTraverser@2@@Z: the original calls multVec3PointLeftAffine out of line (here inlined)
+// TODO 0x100ec7c0 ?SelectLOD@LODNode@Gfx@@QAEXPAVTraverser@2@@Z: (56% similar) the original calls multVec3PointLeftAffine out of line (here inlined)
 void Gfx::LODNode::SelectLOD(Gfx::Traverser *traverser)
 {
     if (m_Slave) {
@@ -166,7 +166,7 @@ void Gfx::LODNode::ReadInternals(Graph::Stream *stream, int version)
     stream->Read(&m_ForceChild);
 }
 
-// TODO 0x100eca60 ?GetEyeDistance@LODNode@Gfx@@AAEMABV?$Vec3@M@@@Z: the inlined multVec3PointLeftAffine sums each row starting with elements[3][j] in the original
+// TODO 0x100eca60 ?GetEyeDistance@LODNode@Gfx@@AAEMABV?$Vec3@M@@@Z: (77% similar) the inlined multVec3PointLeftAffine sums each row starting with elements[3][j] in the original
 float Gfx::LODNode::GetEyeDistance(const Vec3<float> &eye)
 {
     Vec3<float> center = Gfx::CurrentTransformationMatrix::GetInstance()->GetModelMatrix().multVec3PointLeftAffine(m_Center);

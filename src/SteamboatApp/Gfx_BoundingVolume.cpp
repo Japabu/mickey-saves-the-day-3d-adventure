@@ -39,7 +39,7 @@ Gfx::MatrixStack<float, 32> Gfx::BoundingVolume::s_RightIntersectionMatrixStack;
 Gfx::MatrixStack<float, 32> Gfx::BoundingVolume::s_IntersectionMatrixStack;
 bool Gfx::BoundingVolume::s_SwapIntersectionOperands = false;
 
-// TODO 0x100fcf90 ?PushLeftIntersectionMatrix@BoundingVolume@Gfx@@SAXABV?$TMatrix4@M@@@Z: inlining differs (original inlines multInverseAffine but calls SquareMatrix copy ctor, setValues and the second Push)
+// TODO 0x100fcf90 ?PushLeftIntersectionMatrix@BoundingVolume@Gfx@@SAXABV?$TMatrix4@M@@@Z: (40% similar) inlining differs (original inlines multInverseAffine but calls SquareMatrix copy ctor, setValues and the second Push)
 void Gfx::BoundingVolume::PushLeftIntersectionMatrix(const TMatrix4<float> &matrix)
 {
     if (s_SwapIntersectionOperands) {
@@ -51,7 +51,7 @@ void Gfx::BoundingVolume::PushLeftIntersectionMatrix(const TMatrix4<float> &matr
     }
 }
 
-// TODO 0x100fd1c0 ?PushRightIntersectionMatrix@BoundingVolume@Gfx@@SAXABV?$TMatrix4@M@@@Z: same inlining difference as PushLeftIntersectionMatrix (mirror image of it; the original calls the SquareMatrix copy constructor, setValues and the last Push out of line)
+// TODO 0x100fd1c0 ?PushRightIntersectionMatrix@BoundingVolume@Gfx@@SAXABV?$TMatrix4@M@@@Z: (79% similar) same inlining difference as PushLeftIntersectionMatrix (mirror image of it; the original calls the SquareMatrix copy constructor, setValues and the last Push out of line)
 void Gfx::BoundingVolume::PushRightIntersectionMatrix(const TMatrix4<float> &matrix)
 {
     if (s_SwapIntersectionOperands) {
@@ -135,7 +135,7 @@ Gfx::BoundingSphere::BoundingSphere(const Gfx::BoundingVolume &volume)
 {
 }
 
-// TODO 0x100fd5d0 ??0BoundingSphere@Gfx@@QAE@ABVBoundingBox@1@_N@Z: x87 register use of the running maximum differs
+// TODO 0x100fd5d0 ??0BoundingSphere@Gfx@@QAE@ABVBoundingBox@1@_N@Z: (90% similar) x87 register use of the running maximum differs
 Gfx::BoundingSphere::BoundingSphere(const Gfx::BoundingBox &box, bool largestExtent)
     : BoundingVolume(box.GetCenter())
 {
@@ -260,7 +260,7 @@ Vec3<float> Gfx::BoundingSphere::FindClosestPoint(const Vec3<float> &point, Vec3
 
 #pragma optimize("a", on) // back to no-alias code for the rest of the unit
 
-// TODO 0x100fdf40 ?FindClosestPoint@BoundingSphere@Gfx@@QBE?AV?$Vec3@M@@ABV12@AAV3@1ABV?$TMatrix4@M@@@Z: the inlined multVec3PointLeft sums each row starting with elements[3][j] in the original
+// TODO 0x100fdf40 ?FindClosestPoint@BoundingSphere@Gfx@@QBE?AV?$Vec3@M@@ABV12@AAV3@1ABV?$TMatrix4@M@@@Z: (87% similar) the inlined multVec3PointLeft sums each row starting with elements[3][j] in the original
 Vec3<float> Gfx::BoundingSphere::FindClosestPoint(const Gfx::BoundingSphere &sphere, Vec3<float> &spherePoint,
     Vec3<float> &direction, const TMatrix4<float> &matrix) const
 {
@@ -270,7 +270,7 @@ Vec3<float> Gfx::BoundingSphere::FindClosestPoint(const Gfx::BoundingSphere &sph
     return point;
 }
 
-// TODO 0x100fe0e0 ?FindClosestPoint@BoundingSphere@Gfx@@QBE?AV?$Vec3@M@@ABVBoundingBox@2@AAV3@1ABV?$TMatrix4@M@@@Z: the inlined multVec3PointLeftAffine/multVector3Left sum each row in another order in the original (open problem, see NOTES)
+// TODO 0x100fe0e0 ?FindClosestPoint@BoundingSphere@Gfx@@QBE?AV?$Vec3@M@@ABVBoundingBox@2@AAV3@1ABV?$TMatrix4@M@@@Z: (65% similar) the inlined multVec3PointLeftAffine/multVector3Left sum each row in another order in the original (open problem, see NOTES)
 Vec3<float> Gfx::BoundingSphere::FindClosestPoint(const Gfx::BoundingBox &box, Vec3<float> &boxPoint,
     Vec3<float> &direction, const TMatrix4<float> &matrix) const
 {
@@ -325,7 +325,7 @@ Vec3<float> Gfx::BoundingSphere::FindClosestPoint(const Gfx::Polygon3f &polygon,
     return point;
 }
 
-// TODO 0x100fe660 ?FindClosestPoint@BoundingSphere@Gfx@@QBE?AV?$Vec3@M@@ABVPolygon3f@2@AAV3@1ABV?$TMatrix4@M@@@Z: the inlined multVec3PointLeftAffine sums each row in another order in the original (open problem, see NOTES); multVector3Left is called out of line there
+// TODO 0x100fe660 ?FindClosestPoint@BoundingSphere@Gfx@@QBE?AV?$Vec3@M@@ABVPolygon3f@2@AAV3@1ABV?$TMatrix4@M@@@Z: (79% similar) the inlined multVec3PointLeftAffine sums each row in another order in the original (open problem, see NOTES); multVector3Left is called out of line there
 Vec3<float> Gfx::BoundingSphere::FindClosestPoint(const Gfx::Polygon3f &polygon, Vec3<float> &polygonPoint,
     Vec3<float> &direction, const TMatrix4<float> &matrix) const
 {
@@ -475,13 +475,13 @@ bool Gfx::BoundingSphere::operator==(const Gfx::BoundingSphere &sphere)
         && m_Radius == sphere.m_Radius;
 }
 
-// TODO 0x100ff300 ?TransformAffine@BoundingSphere@Gfx@@QBE?AV12@ABV?$TMatrix4@M@@@Z: the inlined multVec3PointLeft sums each row starting with elements[3][j] in the original (open problem, see NOTES)
+// TODO 0x100ff300 ?TransformAffine@BoundingSphere@Gfx@@QBE?AV12@ABV?$TMatrix4@M@@@Z: (83% similar) the inlined multVec3PointLeft sums each row starting with elements[3][j] in the original (open problem, see NOTES)
 Gfx::BoundingSphere Gfx::BoundingSphere::TransformAffine(const TMatrix4<float> &matrix) const
 {
     return Gfx::BoundingSphere(Vec3<float>(matrix.multVec3PointLeft(GetCenter())), m_Radius);
 }
 
-// TODO 0x100ff410 ?TransformInverseAffine@BoundingSphere@Gfx@@QBE?AV12@ABV?$TMatrix4@M@@@Z: the original keeps d[1], d[2] in memory and adds the third product with fadd st(1) (same open problem as multVec3PointLeft)
+// TODO 0x100ff410 ?TransformInverseAffine@BoundingSphere@Gfx@@QBE?AV12@ABV?$TMatrix4@M@@@Z: (62% similar) the original keeps d[1], d[2] in memory and adds the third product with fadd st(1) (same open problem as multVec3PointLeft)
 Gfx::BoundingSphere Gfx::BoundingSphere::TransformInverseAffine(const TMatrix4<float> &matrix) const
 {
     return Gfx::BoundingSphere(matrix.multVec3PointLeftInverseAffine(GetCenter()), m_Radius);
@@ -664,7 +664,7 @@ Gfx::BoundingBox Gfx::BoundingBox::TransformAffine(const TMatrix4<float> &matrix
 }
 
 // The same in the frame of the inverse of an affine matrix.
-// TODO 0x101001f0 ?TransformInverseAffine@BoundingBox@Gfx@@QBE?AV12@ABV?$TMatrix4@M@@@Z: the inlined multVector3Right sums left to right keeping the partial sum (fadd st(1)) in the original (open problem, see NOTES), and the original copies the translation row with integer moves; the loops match
+// TODO 0x101001f0 ?TransformInverseAffine@BoundingBox@Gfx@@QBE?AV12@ABV?$TMatrix4@M@@@Z: (78% similar) the inlined multVector3Right sums left to right keeping the partial sum (fadd st(1)) in the original (open problem, see NOTES), and the original copies the translation row with integer moves; the loops match
 Gfx::BoundingBox Gfx::BoundingBox::TransformInverseAffine(const TMatrix4<float> &matrix) const
 {
     Vec3<float> translation = matrix.multVector3Right(-Vec3<float>(matrix[3][0], matrix[3][1], matrix[3][2]));
@@ -697,7 +697,7 @@ Gfx::BoundingBox Gfx::BoundingBox::TransformInverseAffine(const TMatrix4<float> 
     }
 
 // Box around the eight corners after a projective transformation.
-// TODO 0x101003e0 ?Transform4@BoundingBox@Gfx@@QAEXABV?$TMatrix4@M@@@Z: the inlined multVec3PointLeft sums each row starting with elements[3][j] in the original (open problem, see NOTES)
+// TODO 0x101003e0 ?Transform4@BoundingBox@Gfx@@QAEXABV?$TMatrix4@M@@@Z: (57% similar) the inlined multVec3PointLeft sums each row starting with elements[3][j] in the original (open problem, see NOTES)
 void Gfx::BoundingBox::Transform4(const TMatrix4<float> &matrix)
 {
     Vec3<float> minima(FLT_MAX, FLT_MAX, FLT_MAX);
@@ -712,7 +712,7 @@ void Gfx::BoundingBox::Transform4(const TMatrix4<float> &matrix)
 }
 
 // The same with the corners written out.
-// TODO 0x10100580 ?Transform4X@BoundingBox@Gfx@@QAEXABV?$TMatrix4@M@@@Z: the inlined multVec3PointLeft sums each row starting with elements[3][j] in the original (open problem, see NOTES); the original calls Vec3(x, y, z), multVec3PointLeft and unhomo out of line for the last two corners
+// TODO 0x10100580 ?Transform4X@BoundingBox@Gfx@@QAEXABV?$TMatrix4@M@@@Z: (17% similar) the inlined multVec3PointLeft sums each row starting with elements[3][j] in the original (open problem, see NOTES); the original calls Vec3(x, y, z), multVec3PointLeft and unhomo out of line for the last two corners
 void Gfx::BoundingBox::Transform4X(const TMatrix4<float> &matrix)
 {
     Vec3<float> minima(FLT_MAX, FLT_MAX, FLT_MAX);
@@ -842,7 +842,7 @@ Vec3<float> Gfx::BoundingBox::FindClosestPoint(const Vec3<float> &point, Vec3<fl
 // the two end points; the normal is turned away from the centre. When an end
 // point wins, the original projects segmentPoint (not the end point) and
 // leaves segmentPoint as it is; kept.
-// TODO 0x10101160 ?FindClosestPoint@BoundingBox@Gfx@@QBE?AV?$Vec3@M@@ABVLineSegment3f@2@AAV3@1@Z: stack layout only: same instruction sequence (offsets aside), but the original frame is 0x80 bytes (0x6c here) with other slots for the temporaries
+// TODO 0x10101160 ?FindClosestPoint@BoundingBox@Gfx@@QBE?AV?$Vec3@M@@ABVLineSegment3f@2@AAV3@1@Z: (98% similar) stack layout only: same instruction sequence (offsets aside), but the original frame is 0x80 bytes (0x6c here) with other slots for the temporaries
 Vec3<float> Gfx::BoundingBox::FindClosestPoint(const Gfx::LineSegment3f &segment, Vec3<float> &segmentPoint,
     Vec3<float> &normal) const
 {
@@ -880,7 +880,7 @@ Vec3<float> Gfx::BoundingBox::FindClosestPoint(const Gfx::LineSegment3f &segment
 // Closest points of the box and a polygon given in the frame of matrix:
 // the polygon's edges against the box in box space, then the box's edges
 // against the polygon in polygon space.
-// TODO 0x101014d0 ?FindClosestPoint@BoundingBox@Gfx@@QBE?AV?$Vec3@M@@ABVPolygon3f@2@AAV3@1ABV?$TMatrix4@M@@@Z: inlining and the multVec3PointLeftAffine row sums differ (the original calls the inverse-affine and Vec3(FixedVec4) helpers, the second multVec3PointLeftAffine, multVector3Left, mag2 and operator- out of line)
+// TODO 0x101014d0 ?FindClosestPoint@BoundingBox@Gfx@@QBE?AV?$Vec3@M@@ABVPolygon3f@2@AAV3@1ABV?$TMatrix4@M@@@Z: (75% similar) inlining and the multVec3PointLeftAffine row sums differ (the original calls the inverse-affine and Vec3(FixedVec4) helpers, the second multVec3PointLeftAffine, multVector3Left, mag2 and operator- out of line)
 Vec3<float> Gfx::BoundingBox::FindClosestPoint(const Gfx::Polygon3f &polygon, Vec3<float> &polygonPoint,
     Vec3<float> &normal, const TMatrix4<float> &matrix) const
 {
@@ -922,7 +922,7 @@ Vec3<float> Gfx::BoundingBox::FindClosestPoint(const Gfx::Polygon3f &polygon, Ve
 
 // Closest points of this box and another one given in the frame of matrix:
 // the other box's edges, transformed, against this box.
-// TODO 0x101019c0 ?FindClosestPoint@BoundingBox@Gfx@@QBE?AV?$Vec3@M@@ABV12@AAV3@1ABV?$TMatrix4@M@@@Z: inlining differs (the original inlines the second Vec3(FixedVec4) of the loop's Transform and calls the others out of line)
+// TODO 0x101019c0 ?FindClosestPoint@BoundingBox@Gfx@@QBE?AV?$Vec3@M@@ABV12@AAV3@1ABV?$TMatrix4@M@@@Z: (86% similar) inlining differs (the original inlines the second Vec3(FixedVec4) of the loop's Transform and calls the others out of line)
 Vec3<float> Gfx::BoundingBox::FindClosestPoint(const Gfx::BoundingBox &box, Vec3<float> &boxPoint,
     Vec3<float> &normal, const TMatrix4<float> &matrix) const
 {
@@ -946,7 +946,7 @@ Vec3<float> Gfx::BoundingBox::FindClosestPoint(const Gfx::BoundingBox &box, Vec3
     return point;
 }
 
-// TODO 0x10101ce0 ?FindClosestPoint@BoundingBox@Gfx@@QBE?AV?$Vec3@M@@ABVBoundingSphere@2@AAV3@1ABV?$TMatrix4@M@@@Z: VC6 here loads the centre coordinate once before the first test, the original in each branch
+// TODO 0x10101ce0 ?FindClosestPoint@BoundingBox@Gfx@@QBE?AV?$Vec3@M@@ABVBoundingSphere@2@AAV3@1ABV?$TMatrix4@M@@@Z: (96% similar) VC6 here loads the centre coordinate once before the first test, the original in each branch
 Vec3<float> Gfx::BoundingBox::FindClosestPoint(const Gfx::BoundingSphere &sphere, Vec3<float> &spherePoint, Vec3<float> &normal, const TMatrix4<float> &matrix) const
 {
     Gfx::BoundingSphere transformed = sphere.TransformAffine(matrix);
@@ -1001,7 +1001,7 @@ float Gfx::BoundingBox::ComputeDistanceSquared(const Gfx::LineSegment3f &segment
 }
 
 // Squared distance between two boxes: the gaps along the separated axes.
-// TODO 0x10101f60 ?ComputeDistanceSquared@BoundingBox@Gfx@@QBEMABV12@@Z: the original walks the two boxes with other base registers and compares a copy of each gap (fld st(0); fcomp) where VC6 here uses fcom; same operations (76% similar)
+// TODO 0x10101f60 ?ComputeDistanceSquared@BoundingBox@Gfx@@QBEMABV12@@Z: the original walks the two boxes with other base registers and compares a copy of each gap (fld st(0); fcomp) where VC6 here uses fcom; same operations (85% similar)
 float Gfx::BoundingBox::ComputeDistanceSquared(const Gfx::BoundingBox &box) const
 {
     float gaps[3];
@@ -1025,7 +1025,7 @@ float Gfx::BoundingBox::ComputeDistanceSquared(const Gfx::BoundingBox &box) cons
 
 // Squared distance to a box given in the frame of matrix: corners both
 // ways, then the other box's edges.
-// TODO 0x10102040 ?ComputeDistanceSquared@BoundingBox@Gfx@@QBEMABV12@ABV?$TMatrix4@M@@@Z: the inlined multVec3PointLeftAffine sums each row in another order in the original (open problem, see NOTES)
+// TODO 0x10102040 ?ComputeDistanceSquared@BoundingBox@Gfx@@QBEMABV12@ABV?$TMatrix4@M@@@Z: (66% similar) the inlined multVec3PointLeftAffine sums each row in another order in the original (open problem, see NOTES)
 float Gfx::BoundingBox::ComputeDistanceSquared(const Gfx::BoundingBox &box, const TMatrix4<float> &matrix) const
 {
     float best = ComputeDistanceSquared(matrix.multVec3PointLeftAffine(box.GetCorner(0)));
@@ -1049,7 +1049,7 @@ float Gfx::BoundingBox::ComputeDistanceSquared(const Gfx::BoundingBox &box, cons
 }
 
 // Squared distance to a polygon given in the frame of matrix.
-// TODO 0x101022e0 ?ComputeDistanceSquared@BoundingBox@Gfx@@QBEMABVPolygon3f@2@ABV?$TMatrix4@M@@@Z: the inlined multVec3PointLeft/multVector3Right row sums differ (open problem, see NOTES) and the original calls Vec3(x, y, z) and Vec3(FixedVec4) out of line for one end point each
+// TODO 0x101022e0 ?ComputeDistanceSquared@BoundingBox@Gfx@@QBEMABVPolygon3f@2@ABV?$TMatrix4@M@@@Z: (73% similar) the inlined multVec3PointLeft/multVector3Right row sums differ (open problem, see NOTES) and the original calls Vec3(x, y, z) and Vec3(FixedVec4) out of line for one end point each
 float Gfx::BoundingBox::ComputeDistanceSquared(const Gfx::Polygon3f &polygon, const TMatrix4<float> &matrix) const
 {
     float best = FLT_MAX;
@@ -1090,7 +1090,7 @@ bool Gfx::BoundingBox::Intersects(const Gfx::BoundingSphere &sphere) const
 
 // Box against box under the current intersection matrix: the transformed
 // boxes must overlap, then some edge of one must cross the other.
-// TODO 0x10102690 ?IntersectsTransformed@BoundingBox@Gfx@@QBE_NABV12@@Z: inlining of the segment transforms differs (the original calls Vec3(x, y, z), multVector3Right, multVec3PointLeftInverseAffine, multVec3PointLeft and Vec3(FixedVec4) out of line in different places)
+// TODO 0x10102690 ?IntersectsTransformed@BoundingBox@Gfx@@QBE_NABV12@@Z: (80% similar) inlining of the segment transforms differs (the original calls Vec3(x, y, z), multVector3Right, multVec3PointLeftInverseAffine, multVec3PointLeft and Vec3(FixedVec4) out of line in different places)
 bool Gfx::BoundingBox::IntersectsTransformed(const Gfx::BoundingBox &box) const
 {
     if (GetIntersectionMatrixStack().GetSize() == 1)
@@ -1122,7 +1122,7 @@ bool Gfx::BoundingBox::IntersectsTransformed(const Gfx::BoundingBox &box) const
     return false;
 }
 
-// TODO 0x10102a00 ?IntersectsTransformed@BoundingBox@Gfx@@QBE_NABV12@ABV?$TMatrix4@M@@@Z: inlining of the segment transforms differs (as in IntersectsTransformed(box))
+// TODO 0x10102a00 ?IntersectsTransformed@BoundingBox@Gfx@@QBE_NABV12@ABV?$TMatrix4@M@@@Z: (85% similar) inlining of the segment transforms differs (as in IntersectsTransformed(box))
 bool Gfx::BoundingBox::IntersectsTransformed(const Gfx::BoundingBox &box, const TMatrix4<float> &matrix) const
 {
     Gfx::BoundingBox transformed = box.TransformAffine(matrix);
@@ -1308,7 +1308,7 @@ bool Gfx::BoundingBox::Intersects(const Gfx::Polygon3f &polygon) const
 }
 
 // The same for a polygon given in the frame of matrix.
-// TODO 0x10103350 ?Intersects@BoundingBox@Gfx@@QBE_NABVPolygon3f@2@ABV?$TMatrix4@M@@@Z: the inlined multVec3PointLeft sums each row in another order in the original (open problem, see NOTES); inlining of the segment transforms differs
+// TODO 0x10103350 ?Intersects@BoundingBox@Gfx@@QBE_NABVPolygon3f@2@ABV?$TMatrix4@M@@@Z: (76% similar) the inlined multVec3PointLeft sums each row in another order in the original (open problem, see NOTES); inlining of the segment transforms differs
 bool Gfx::BoundingBox::Intersects(const Gfx::Polygon3f &polygon, const TMatrix4<float> &matrix) const
 {
     int n = polygon.GetNumberOfPoints();
@@ -1394,7 +1394,7 @@ Gfx::BoundingBox &Gfx::BoundingBox::operator+=(const Vec3<float> &point)
     return *this;
 }
 
-// TODO 0x10103950 ??YBoundingBox@Gfx@@QAEAAV01@ABV01@@Z: inline budget (the original inlines the copy's Vec3(0, 0, 0), VC6 here calls it)
+// TODO 0x10103950 ??YBoundingBox@Gfx@@QAEAAV01@ABV01@@Z: (52% similar) inline budget (the original inlines the copy's Vec3(0, 0, 0), VC6 here calls it)
 Gfx::BoundingBox &Gfx::BoundingBox::operator+=(const Gfx::BoundingBox &other)
 {
     Gfx::BoundingBox box(other);
@@ -1476,8 +1476,8 @@ void Gfx::BoundingBox::Reset()
 // 0x10103d30 ??_G?$MatrixStack@M$0CA@@Gfx@@UAEPAXI@Z
 // 0x10103d50 ??G?$Vec3@M@@QBE?AV0@XZ
 // TODO 0x10103db0 ?unhomo@?$FixedVec@M$03@@QAEXXZ: out-of-line copy called by Transform4X in the original; VC6 here inlines every call (body in FixedVec.h)
-// TODO 0x10103dd0 ?multVec3PointLeft@?$TMatrix4@M@@QBE?AV?$Vec4@M@@ABV?$Vec3@M@@@Z: out-of-line copy (body in TMatrix4.h); not emitted here (inlined everywhere) and the row sums differ (open problem, see NOTES)
-// TODO 0x10103e80 ?multVec3PointLeftInverseAffine@?$TMatrix4@M@@QBE?AV?$Vec3@M@@ABV2@@Z: out-of-line copy (body in TMatrix4.h); not emitted here (inlined everywhere) and the multVector3Right row sums differ
+// TODO 0x10103dd0 ?multVec3PointLeft@?$TMatrix4@M@@QBE?AV?$Vec4@M@@ABV?$Vec3@M@@@Z: (76% similar) out-of-line copy (body in TMatrix4.h); not emitted here (inlined everywhere) and the row sums differ (open problem, see NOTES)
+// TODO 0x10103e80 ?multVec3PointLeftInverseAffine@?$TMatrix4@M@@QBE?AV?$Vec3@M@@ABV2@@Z: (26% similar) out-of-line copy (body in TMatrix4.h); not emitted here (inlined everywhere) and the multVector3Right row sums differ
 // TODO 0x10103f20 ?Push@?$MatrixStack@M$0CA@@Gfx@@QAEXABV?$TMatrix4@M@@@Z: out-of-line copy called by PushLeft/PushRightIntersectionMatrix in the original (body in Gfx_MatrixStack.h); not emitted here
 // 0x10008b50 ??_H@YGXPAXIHP6EX0@Z@Z
 // 0x100b4000 ??0?$SquareMatrix@M$03@@QAE@ABV0@@Z

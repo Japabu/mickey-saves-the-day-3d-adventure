@@ -129,7 +129,7 @@ static inline float Abs(float x)
     return x < 0.0f ? -x : x;
 }
 
-// TODO 0x1000ae90 ?Update@Mf3dPathActivity@@UAE?AW4MfActivityStatus@@K@Z: calls, branches and
+// TODO 0x1000ae90 ?Update@Mf3dPathActivity@@UAE?AW4MfActivityStatus@@K@Z: (81% similar) calls, branches and
 // constants follow the original; as in MfLocoActivity::Update the original calls the imported
 // MfVector3/MfRotation3 constructors and operator= where this build expands them inline, which
 // shifts the frame (60% similar)
@@ -334,7 +334,7 @@ MfActivityStatus Mf3dPathActivity::Update(unsigned long time)
     return MfActivity::Update(time);
 }
 
-// TODO 0x1000c1c0 ?_CheckBubble@Mf3dPathActivity@@MAEXAAK@Z: first body: a ray check from behind
+// TODO 0x1000c1c0 ?_CheckBubble@Mf3dPathActivity@@MAEXAAK@Z: (78% similar) first body: a ray check from behind
 // each bubble along its step and a sphere check; with mb4 a hit pushes the root out along the
 // surface normal, and afterwards three halvings between the pushed and the last root transform;
 // the call sequence follows the original, locals and the message arguments are not settled

@@ -49,7 +49,7 @@ bool Gfx::IONode::Close()
     return true;
 }
 
-// TODO 0x10111f10 ?Pick@IONode@Gfx@@UAE?AW4Response@NodeTraverser@Graph@@PAVPickTraverser@2@@Z: 48% - the original keeps this in a stack slot and the inlined Vec append/remove use other registers
+// TODO 0x10111f10 ?Pick@IONode@Gfx@@UAE?AW4Response@NodeTraverser@Graph@@PAVPickTraverser@2@@Z: 71% - the original keeps this in a stack slot and the inlined Vec append/remove use other registers
 Graph::NodeTraverser::Response Gfx::IONode::Pick(Gfx::PickTraverser *traverser)
 {
     if (!mCopyOfContents)

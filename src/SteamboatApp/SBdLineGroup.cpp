@@ -117,7 +117,7 @@ void SBdLineGroup::SetProperties(MBVector<unsigned long> &propVec, int val, MfAi
         SBDialoguePropertyManager::GetInstance()->SetProperty(propVec[i], val, mfPrimaryActor);
 }
 
-// TODO 0x10052fd0 ?PlayDialogue@SBdLineGroup@@QAE_NPAVMfAiActor@@@Z: not matching yet
+// TODO 0x10052fd0 ?PlayDialogue@SBdLineGroup@@QAE_NPAVMfAiActor@@@Z: (79% similar) not matching yet
 bool SBdLineGroup::PlayDialogue(MfAiActor *mfPrimaryActor)
 {
     if (mActive && !mSoundPlaying) {

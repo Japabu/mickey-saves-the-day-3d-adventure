@@ -36,7 +36,7 @@ DXGfx::PackedTriStripSetD3D::~PackedTriStripSetD3D()
 {
 }
 
-// TODO 0x100d6960 ?Render@PackedTriStripSetD3D@DXGfx@@UAE?AW4Response@NodeTraverser@Graph@@PAVRenderTraverser@Gfx@@@Z: 58% - no-alias code: the original reuses the CurrentTransformationMatrix pointer after the changed-flag stores and keeps the strided-data pointers in registers; a unit-wide #pragma optimize("a", on) gives 94% but breaks the ctor, dtor, Clean and the Vec instances; a per-function pragma has no effect
+// TODO 0x100d6960 ?Render@PackedTriStripSetD3D@DXGfx@@UAE?AW4Response@NodeTraverser@Graph@@PAVRenderTraverser@Gfx@@@Z: 71% - no-alias code: the original reuses the CurrentTransformationMatrix pointer after the changed-flag stores and keeps the strided-data pointers in registers; a unit-wide #pragma optimize("a", on) gives 94% but breaks the ctor, dtor, Clean and the Vec instances; a per-function pragma has no effect
 Graph::NodeTraverser::Response DXGfx::PackedTriStripSetD3D::Render(Gfx::RenderTraverser *traverser)
 {
     if (traverser->GetMultiTexturePass() > 0 && traverser->GetMultiTexturePass() >= m_TCoords.length())
@@ -171,7 +171,7 @@ void DXGfx::PackedTriStripSetD3D::BuildVertexData()
     }
 }
 
-// TODO 0x100d6e80 ?SetupStrips@PackedTriStripSetD3D@DXGfx@@IAEXXZ: 31% - no-alias code: the original reads the three bindings once before the strip loop (short stack slots) and keeps m_Prim/m_StridedData pointers in registers; a unit-wide #pragma optimize("a", on) gives 69%; locals for the bindings give 35-42%
+// TODO 0x100d6e80 ?SetupStrips@PackedTriStripSetD3D@DXGfx@@IAEXXZ: 62% - no-alias code: the original reads the three bindings once before the strip loop (short stack slots) and keeps m_Prim/m_StridedData pointers in registers; a unit-wide #pragma optimize("a", on) gives 69%; locals for the bindings give 35-42%
 void DXGfx::PackedTriStripSetD3D::SetupStrips()
 {
     m_StridedData.setLength(m_Prim.length() - 1);
@@ -200,7 +200,7 @@ void DXGfx::PackedTriStripSetD3D::SetupStrips()
     }
 }
 
-// TODO 0x100d7050 ?RenderDrawPrimitive@PackedTriStripSetD3D@DXGfx@@IAE_NPAVRenderTraverser@Gfx@@@Z: 49% - no-alias code: the original keeps the strip count, m_FVF and m_DrawFlags in stack slots across the draw calls; a unit-wide #pragma optimize("a", on) gives 87%
+// TODO 0x100d7050 ?RenderDrawPrimitive@PackedTriStripSetD3D@DXGfx@@IAE_NPAVRenderTraverser@Gfx@@@Z: 67% - no-alias code: the original keeps the strip count, m_FVF and m_DrawFlags in stack slots across the draw calls; a unit-wide #pragma optimize("a", on) gives 87%
 bool DXGfx::PackedTriStripSetD3D::RenderDrawPrimitive(Gfx::RenderTraverser *traverser)
 {
     if (Gfx::TextureAttribute::GetStack(0).size() != 0
@@ -244,7 +244,7 @@ void DXGfx::PackedTriStripSetD3D::SetDrawFunction()
 // 0x100d7150 ??_G?$Vec@U_D3DDRAWPRIMITIVESTRIDEDDATA@@@@UAEPAXI@Z
 // 0x100d7180 ??1?$Vec@U_D3DDRAWPRIMITIVESTRIDEDDATA@@@@UAE@XZ
 // 0x100d71b0 ?reallocMem@?$Vec@U_D3DDRAWPRIMITIVESTRIDEDDATA@@@@IAEXHHH@Z
-// TODO 0x100d72b0 ?initElements@?$Vec@U_D3DDRAWPRIMITIVESTRIDEDDATA@@@@IAEXHH@Z: 46% - rep movsd copy of the zero element only with /Oa at the end of the unit (template bodies), which breaks reallocMem
+// TODO 0x100d72b0 ?initElements@?$Vec@U_D3DDRAWPRIMITIVESTRIDEDDATA@@@@IAEXHH@Z: 60% - rep movsd copy of the zero element only with /Oa at the end of the unit (template bodies), which breaks reallocMem
 
 // the run-time type of DXGfx::PackedTriStripSetD3D (values from the original's data section)
 StdBase::TypeInfo const DXGfx::PackedTriStripSetD3D::s_TypeInfo = { "DXGfx::PackedTriStripSetD3D", &Gfx::PackedTriStripSet::s_TypeInfo };

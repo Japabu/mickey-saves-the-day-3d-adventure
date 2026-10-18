@@ -53,7 +53,7 @@ void Gfx::RenderList::AddShape(Gfx::Shape *shape)
     }
 }
 
-// TODO 0x10111460 ?Push@RenderList@Gfx@@UBEXPAVPassiveTraverser@Graph@@@Z: logic as in the original (one GetAttribute(0) for both branches, the shape loops test the list start each pass); register use and loop layout differ
+// TODO 0x10111460 ?Push@RenderList@Gfx@@UBEXPAVPassiveTraverser@Graph@@@Z: (63% similar) logic as in the original (one GetAttribute(0) for both branches, the shape loops test the list start each pass); register use and loop layout differ
 void Gfx::RenderList::Push(Graph::PassiveTraverser *traverser) const
 {
     Gfx::RenderTraverser *renderTraverser = StdBaseCast(traverser, (Gfx::RenderTraverser *)0);
@@ -135,9 +135,9 @@ void Gfx::RenderList::Clear()
 // 0x10111a90 ?_Ucopy@?$vector@PAVShape@Gfx@@V?$allocator@PAVShape@Gfx@@@std@@@std@@IAEPAPAVShape@Gfx@@PBQAV34@0PAPAV34@@Z
 // 0x10111ac0 ?_Ufill@?$vector@PAVShape@Gfx@@V?$allocator@PAVShape@Gfx@@@std@@@std@@IAEXPAPAVShape@Gfx@@IABQAV34@@Z
 // 0x10111af0 ?_Destroy@std@@YAXPAPAVShape@Gfx@@@Z
-// TODO 0x10111b00 ?_Construct@std@@YAXPAV?$vector@PAVShape@Gfx@@V?$allocator@PAVShape@Gfx@@@std@@@1@ABV21@@Z: matches without /Oa (a #pragma optimize("a", off) at the end of the unit), which breaks the constructor, destructor, Clear and the vector<vector> insert (72% similar)
+// TODO 0x10111b00 ?_Construct@std@@YAXPAV?$vector@PAVShape@Gfx@@V?$allocator@PAVShape@Gfx@@@std@@@1@ABV21@@Z: matches without /Oa (a #pragma optimize("a", off) at the end of the unit), which breaks the constructor, destructor, Clear and the vector<vector> insert (89% similar)
 // 0x10111ba0 ?_Construct@std@@YAXPAPAVShape@Gfx@@ABQAV23@@Z
-// TODO 0x10111bc0 ??4?$vector@PAVShape@Gfx@@V?$allocator@PAVShape@Gfx@@@std@@@std@@QAEAAV01@ABV01@@Z: as _Construct above: matches only without /Oa (47% similar)
+// TODO 0x10111bc0 ??4?$vector@PAVShape@Gfx@@V?$allocator@PAVShape@Gfx@@@std@@@std@@QAEAAV01@ABV01@@Z: as _Construct above: matches only without /Oa (81% similar)
 
 // the run-time type of Gfx::RenderList (values from the original's data section)
 StdBase::TypeInfo const Gfx::RenderList::s_TypeInfo = { "Gfx::RenderList", &Gfx::Attribute::s_TypeInfo };

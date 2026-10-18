@@ -68,7 +68,7 @@ void MfPePrintingContext::End()
     mTitleFont.DeleteObject();
 }
 
-// TODO 0x10012ef0 ?Print@MfPePrintingContext@@QAEXABVMfString@@H@Z: 59% - the original keeps the constant 1 in ebx (EH state, style == 1); the loop is entered with a jump
+// TODO 0x10012ef0 ?Print@MfPePrintingContext@@QAEXABVMfString@@H@Z: 70% - the original keeps the constant 1 in ebx (EH state, style == 1); the loop is entered with a jump
 void MfPePrintingContext::Print(const MfString &text, int style)
 {
     if (mPrinting) {
@@ -113,7 +113,7 @@ void MfPePrintingContext::NewLine()
     }
 }
 
-// TODO 0x10013180 ?StartNewPage@MfPePrintingContext@@QAEXXZ: 44% - frame is 4 bytes larger; the title y position is computed before the text pointer
+// TODO 0x10013180 ?StartNewPage@MfPePrintingContext@@QAEXXZ: 76% - frame is 4 bytes larger; the title y position is computed before the text pointer
 void MfPePrintingContext::StartNewPage()
 {
     if (mPrinting) {

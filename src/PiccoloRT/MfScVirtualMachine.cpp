@@ -188,7 +188,7 @@ inline MfScThreadManager *ThreadManager()
     return gThreadManager;
 }
 
-// TODO 0x10016f90 ?ExecuteCode@MfScVirtualMachine@@AAEHPAEPAPAVMfScDataHandle@@@Z: 52% similar; the inliner
+// TODO 0x10016f90 ?ExecuteCode@MfScVirtualMachine@@AAEHPAEPAPAVMfScDataHandle@@@Z: 65% similar; the inliner
 // gives up later here (at SETARRAYITEM, the original at CMPGTE) and inlines MfScDataHandle::Release in
 // POP_FP, ADDSP, POP_REGn and CLEAR_REGn, where the original calls it; then tail merging and registers differ.
 // Review 2026-10-16 (per-case diff by the jump tables): CMPGT..CMPNOT checked instruction by instruction

@@ -170,7 +170,7 @@ MfString MfPeEditorData::GetText()
     return text;
 }
 
-// TODO 0x10013b50 ?SetText@MfPeEditorData@@QAEXABVMfString@@PAVMfPeDrawingContext@@H@Z: 84% - the original moves each line pointer into a second register after the null test
+// TODO 0x10013b50 ?SetText@MfPeEditorData@@QAEXABVMfString@@PAVMfPeDrawingContext@@H@Z: 88% - the original moves each line pointer into a second register after the null test
 void MfPeEditorData::SetText(const MfString &text, MfPeDrawingContext *context, int keepCursor)
 {
     mLines->Clear();
@@ -200,7 +200,7 @@ void MfPeEditorData::SetText(const MfString &text, MfPeDrawingContext *context, 
     }
 }
 
-// TODO 0x10013d40 ?AppendText@MfPeEditorData@@QAEXABVMfString@@PAVMfPeDrawingContext@@@Z: 51% - the original calls MfArray's constructor out of line in the two new lines (VC5's per-function inline budget), this build inlines it
+// TODO 0x10013d40 ?AppendText@MfPeEditorData@@QAEXABVMfString@@PAVMfPeDrawingContext@@@Z: 72% - the original calls MfArray's constructor out of line in the two new lines (VC5's per-function inline budget), this build inlines it
 void MfPeEditorData::AppendText(const MfString &text, MfPeDrawingContext *context)
 {
     int atEnd = 0;
@@ -439,7 +439,7 @@ void MfPeEditorData::CursorUp(MfPeDrawingContext *context)
     }
 }
 
-// TODO 0x100144b0 ?CursorDown@MfPeEditorData@@QAEXPAVMfPeDrawingContext@@@Z: 69% - the original lays the branches out longer (257 bytes instead of 247)
+// TODO 0x100144b0 ?CursorDown@MfPeEditorData@@QAEXPAVMfPeDrawingContext@@@Z: 84% - the original lays the branches out longer (257 bytes instead of 247)
 void MfPeEditorData::CursorDown(MfPeDrawingContext *context)
 {
     int count = mLines->GetCount();
@@ -488,7 +488,7 @@ void MfPeEditorData::CursorRight(MfPeDrawingContext *context)
     }
 }
 
-// TODO 0x100146d0 ?TabLeft@MfPeEditorData@@QAEXPAVMfPeDrawingContext@@@Z: 58% - the original lays the branches out longer (164 bytes instead of 162)
+// TODO 0x100146d0 ?TabLeft@MfPeEditorData@@QAEXPAVMfPeDrawingContext@@@Z: 81% - the original lays the branches out longer (164 bytes instead of 162)
 void MfPeEditorData::TabLeft(MfPeDrawingContext *context)
 {
     context->ShowLine(mCursor, 0);
@@ -609,7 +609,7 @@ void MfPeEditorData::GotoTextStart(MfPeDrawingContext *context)
     context->ShowLine(mCursor, 0);
 }
 
-// TODO 0x10014ae0 ?GotoTextEnd@MfPeEditorData@@QAEXPAVMfPeDrawingContext@@@Z: 79% - the original lays the branches out longer (124 bytes instead of 121)
+// TODO 0x10014ae0 ?GotoTextEnd@MfPeEditorData@@QAEXPAVMfPeDrawingContext@@@Z: 87% - the original lays the branches out longer (124 bytes instead of 121)
 void MfPeEditorData::GotoTextEnd(MfPeDrawingContext *context)
 {
     UpdateSyntax();
@@ -655,7 +655,7 @@ void MfPeEditorData::WordLeft(MfPeDrawingContext *context)
     context->ShowLine(mCursor, 0);
 }
 
-// TODO 0x10014c90 ?WordRight@MfPeEditorData@@QAEXPAVMfPeDrawingContext@@@Z: 53% - the original lays the branches out longer (360 bytes instead of 352)
+// TODO 0x10014c90 ?WordRight@MfPeEditorData@@QAEXPAVMfPeDrawingContext@@@Z: 81% - the original lays the branches out longer (360 bytes instead of 352)
 void MfPeEditorData::WordRight(MfPeDrawingContext *context)
 {
     unsigned int column;
@@ -823,7 +823,7 @@ void MfPeEditorData::StartSelection(MfPeDrawingContext *context)
     }
 }
 
-// TODO 0x100151b0 ?SelectLine@MfPeEditorData@@QAEXVCPoint@@PAVMfPeDrawingContext@@@Z: 70% - the original lays the branches out longer (245 bytes instead of 237)
+// TODO 0x100151b0 ?SelectLine@MfPeEditorData@@QAEXVCPoint@@PAVMfPeDrawingContext@@@Z: 90% - the original lays the branches out longer (245 bytes instead of 237)
 void MfPeEditorData::SelectLine(CPoint point, MfPeDrawingContext *context)
 {
     if (!mSelection.mActive) {
@@ -850,7 +850,7 @@ void MfPeEditorData::SelectLine(CPoint point, MfPeDrawingContext *context)
     }
 }
 
-// TODO 0x100152b0 ?SelectWord@MfPeEditorData@@QAEXVCPoint@@PAVMfPeDrawingContext@@@Z: 42% - the original lays the branches out longer (412 bytes instead of 405)
+// TODO 0x100152b0 ?SelectWord@MfPeEditorData@@QAEXVCPoint@@PAVMfPeDrawingContext@@@Z: 72% - the original lays the branches out longer (412 bytes instead of 405)
 void MfPeEditorData::SelectWord(CPoint point, MfPeDrawingContext *context)
 {
     CPoint first = mCursor;
@@ -894,7 +894,7 @@ void MfPeEditorData::SelectWord(CPoint point, MfPeDrawingContext *context)
     context->UpdateCaretForSelection();
 }
 
-// TODO 0x10015450 ?CollapseSelection@MfPeEditorData@@QAEXHPAVMfPeDrawingContext@@@Z: 87% - the original lays the branches out longer (171 bytes instead of 167)
+// TODO 0x10015450 ?CollapseSelection@MfPeEditorData@@QAEXHPAVMfPeDrawingContext@@@Z: 88% - the original lays the branches out longer (171 bytes instead of 167)
 void MfPeEditorData::CollapseSelection(int toStart, MfPeDrawingContext *context)
 {
     if (mSelection.mActive == 1) {
@@ -945,7 +945,7 @@ void MfPeEditorData::ExtendSelection(MfPeDrawingContext *context)
     }
 }
 
-// TODO 0x100155a0 ?ExtendLineSelection@MfPeEditorData@@QAEXVCPoint@@PAVMfPeDrawingContext@@@Z: 56% - the original lays the branches out longer (209 bytes instead of 201)
+// TODO 0x100155a0 ?ExtendLineSelection@MfPeEditorData@@QAEXVCPoint@@PAVMfPeDrawingContext@@@Z: 80% - the original lays the branches out longer (209 bytes instead of 201)
 void MfPeEditorData::ExtendLineSelection(CPoint point, MfPeDrawingContext *context)
 {
     point.x = context->mMarginWidth;
@@ -1120,7 +1120,7 @@ void MfPeEditorData::InsertString(MfString *text, MfPeEditorState *editorState, 
     context->Update();
 }
 
-// TODO 0x10015d30 ?UndoInsertString@MfPeEditorData@@QAEXHPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 64% - this build expands more inline or lays the branches out longer (546 bytes instead of 531)
+// TODO 0x10015d30 ?UndoInsertString@MfPeEditorData@@QAEXHPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 78% - this build expands more inline or lays the branches out longer (546 bytes instead of 531)
 void MfPeEditorData::UndoInsertString(int length, MfPeEditorState *editorState, MfPeDrawingContext *context)
 {
     MfPeInsertStringState *state = dynamic_cast<MfPeInsertStringState *>(editorState);
@@ -1284,7 +1284,7 @@ void MfPeEditorData::SplitLine()
     mCursor.x = newLine->mText.CuBindToCursor(0, &mStringCursor) + 1;
 }
 
-// TODO 0x100165a0 ?NewLine@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 44% - this build expands more inline or lays the branches out longer (422 bytes instead of 413)
+// TODO 0x100165a0 ?NewLine@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 62% - this build expands more inline or lays the branches out longer (422 bytes instead of 413)
 void MfPeEditorData::NewLine(MfPeEditorState *editorState, MfPeDrawingContext *context)
 {
     MfPeNewLineState *state = dynamic_cast<MfPeNewLineState *>(editorState);
@@ -1338,7 +1338,7 @@ void MfPeEditorData::UndoNewLine(MfPeEditorState *editorState, MfPeDrawingContex
     context->ShowColumn(mCursor);
 }
 
-// TODO 0x100167c0 ?DeleteRegion@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 86% - the original lays the branches out longer (243 bytes instead of 239)
+// TODO 0x100167c0 ?DeleteRegion@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 87% - the original lays the branches out longer (243 bytes instead of 239)
 void MfPeEditorData::DeleteRegion(MfPeEditorState *editorState, MfPeDrawingContext *context)
 {
     MfPeDeleteRegionState *state = dynamic_cast<MfPeDeleteRegionState *>(editorState);
@@ -1429,7 +1429,7 @@ void MfPeEditorData::PasteRegion(MfPeEditorState *editorState, MfPeDrawingContex
     context->Update();
 }
 
-// TODO 0x10016ca0 ?UndoPasteRegion@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 26% - the original expands MfString::CopyOnWrite differently (VC5's per-function inline budget)
+// TODO 0x10016ca0 ?UndoPasteRegion@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 68% - the original expands MfString::CopyOnWrite differently (VC5's per-function inline budget)
 void MfPeEditorData::UndoPasteRegion(MfPeEditorState *editorState, MfPeDrawingContext *context)
 {
     MfPePasteRegionState *state = dynamic_cast<MfPePasteRegionState *>(editorState);
@@ -1461,7 +1461,7 @@ void MfPeEditorData::UndoPasteRegion(MfPeEditorState *editorState, MfPeDrawingCo
     context->UpdateCaretForSelection();
 }
 
-// TODO 0x10016e70 ?DragRegion@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 45% - same calls on each path (checked: both copies run CuBindToCursor/CuSetCharPos/CuSetCursorPos through tails shared with the single-line case, merged at different points); the original keeps count and the selection end in registers (0x28 bytes of locals, 0x34 here); using mSelection.mEnd directly instead of the local gives 39%
+// TODO 0x10016e70 ?DragRegion@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 79% - same calls on each path (checked: both copies run CuBindToCursor/CuSetCharPos/CuSetCursorPos through tails shared with the single-line case, merged at different points); the original keeps count and the selection end in registers (0x28 bytes of locals, 0x34 here); using mSelection.mEnd directly instead of the local gives 39%
 void MfPeEditorData::DragRegion(MfPeEditorState *editorState, MfPeDrawingContext *context)
 {
     MfPeDragRegionState *state = dynamic_cast<MfPeDragRegionState *>(editorState);
@@ -1515,7 +1515,7 @@ void MfPeEditorData::DragRegion(MfPeEditorState *editorState, MfPeDrawingContext
     context->Update();
 }
 
-// TODO 0x10017160 ?UndoDragRegion@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 57% - the original expands MfString::CopyOnWrite differently (VC5's per-function inline budget)
+// TODO 0x10017160 ?UndoDragRegion@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 82% - the original expands MfString::CopyOnWrite differently (VC5's per-function inline budget)
 void MfPeEditorData::UndoDragRegion(MfPeEditorState *editorState, MfPeDrawingContext *context)
 {
     MfPeDragRegionState *state = dynamic_cast<MfPeDragRegionState *>(editorState);
@@ -1555,7 +1555,7 @@ int MfPeEditorData::SpansLines()
     return spans;
 }
 
-// TODO 0x100173d0 ?CanUndent@MfPeEditorData@@QAEHXZ: 55% - this build expands more inline or lays the branches out longer (154 bytes instead of 140)
+// TODO 0x100173d0 ?CanUndent@MfPeEditorData@@QAEHXZ: 79% - this build expands more inline or lays the branches out longer (154 bytes instead of 140)
 int MfPeEditorData::CanUndent()
 {
     int found = 0;
@@ -1574,7 +1574,7 @@ int MfPeEditorData::CanUndent()
     return found;
 }
 
-// TODO 0x10017460 ?SelectWholeLines@MfPeEditorData@@QAEXPAVMfPeDrawingContext@@H@Z: 46% - the original lays the branches out longer (265 bytes instead of 245)
+// TODO 0x10017460 ?SelectWholeLines@MfPeEditorData@@QAEXPAVMfPeDrawingContext@@H@Z: 81% - the original lays the branches out longer (265 bytes instead of 245)
 void MfPeEditorData::SelectWholeLines(MfPeDrawingContext *context, int update)
 {
     CPoint start = mSelection.mStart;
@@ -1682,7 +1682,7 @@ void MfPeEditorData::UndentRegion(MfPeEditorState *editorState, MfPeDrawingConte
     context->Update();
 }
 
-// TODO 0x10017a40 ?UndoUndentRegion@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 57% - this build expands more inline or lays the branches out longer (419 bytes instead of 411)
+// TODO 0x10017a40 ?UndoUndentRegion@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 84% - this build expands more inline or lays the branches out longer (419 bytes instead of 411)
 void MfPeEditorData::UndoUndentRegion(MfPeEditorState *editorState, MfPeDrawingContext *context)
 {
     MfPeUndentRegionState *state = dynamic_cast<MfPeUndentRegionState *>(editorState);
@@ -1711,7 +1711,7 @@ void MfPeEditorData::UndoUndentRegion(MfPeEditorState *editorState, MfPeDrawingC
     context->Update();
 }
 
-// TODO 0x10017be0 ?DeleteBackWord@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 46% - this build expands more inline or lays the branches out longer (872 bytes instead of 871)
+// TODO 0x10017be0 ?DeleteBackWord@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 82% - this build expands more inline or lays the branches out longer (872 bytes instead of 871)
 void MfPeEditorData::DeleteBackWord(MfPeEditorState *editorState, MfPeDrawingContext *context)
 {
     MfPeDeleteBackWordState *state = dynamic_cast<MfPeDeleteBackWordState *>(editorState);
@@ -1801,7 +1801,7 @@ void MfPeEditorData::UndoDeleteBackWord(MfPeEditorState *editorState, MfPeDrawin
     context->Update();
 }
 
-// TODO 0x100180f0 ?DeleteForwardWord@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 65% - this build expands more inline or lays the branches out longer (804 bytes instead of 791)
+// TODO 0x100180f0 ?DeleteForwardWord@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 83% - this build expands more inline or lays the branches out longer (804 bytes instead of 791)
 void MfPeEditorData::DeleteForwardWord(MfPeEditorState *editorState, MfPeDrawingContext *context)
 {
     MfPeDeleteForwardWordState *state = dynamic_cast<MfPeDeleteForwardWordState *>(editorState);
@@ -1857,7 +1857,7 @@ void MfPeEditorData::DeleteForwardWord(MfPeEditorState *editorState, MfPeDrawing
     context->Update();
 }
 
-// TODO 0x10018410 ?UndoDeleteForwardWord@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 68% - register allocation and instruction order differ
+// TODO 0x10018410 ?UndoDeleteForwardWord@MfPeEditorData@@QAEXPAVMfPeEditorState@@PAVMfPeDrawingContext@@@Z: 87% - register allocation and instruction order differ
 void MfPeEditorData::UndoDeleteForwardWord(MfPeEditorState *editorState, MfPeDrawingContext *context)
 {
     MfPeDeleteForwardWordState *state = dynamic_cast<MfPeDeleteForwardWordState *>(editorState);
@@ -1901,7 +1901,7 @@ void MfPeEditorData::GotoSelectionStart(MfPeDrawingContext *context)
     mCursorLine = item;
 }
 
-// TODO 0x10018650 ?GetRegionText@MfPeEditorData@@AAEXHPAVMfStringList@@PAUMfPeRegionText@@@Z: 40% - calls, their order and the EH states now agree (the single-line removal keeps the left part in a named string that lives until after Scan); the original uses edi for this and keeps fewer values in stack slots (0x2c bytes of locals here 0x3c)
+// TODO 0x10018650 ?GetRegionText@MfPeEditorData@@AAEXHPAVMfStringList@@PAUMfPeRegionText@@@Z: 80% - calls, their order and the EH states now agree (the single-line removal keeps the left part in a named string that lives until after Scan); the original uses edi for this and keeps fewer values in stack slots (0x2c bytes of locals here 0x3c)
 void MfPeEditorData::GetRegionText(int remove, MfStringList *text, MfPeRegionText *taken)
 {
     if (mSelection.mStart.x == mSelection.mEnd.x && mSelection.mStart.y == mSelection.mEnd.y)
@@ -1974,7 +1974,7 @@ void MfPeEditorData::GetRegionText(int remove, MfStringList *text, MfPeRegionTex
         first->Scan(mTabSize);
 }
 
-// TODO 0x10018a50 ?InsertLines@MfPeEditorData@@AAEXPAVMfStringList@@@Z: 58% - the original calls MfArray's constructor out of line (VC5's per-function inline budget), this build inlines it
+// TODO 0x10018a50 ?InsertLines@MfPeEditorData@@AAEXPAVMfStringList@@@Z: 75% - the original calls MfArray's constructor out of line (VC5's per-function inline budget), this build inlines it
 void MfPeEditorData::InsertLines(MfStringList *text)
 {
     if (text->GetCount() == 0)
@@ -2022,7 +2022,7 @@ void MfPeEditorData::InsertLines(MfStringList *text)
     mCursor.x = lineText->CuSetCharPos(column, &mStringCursor) + 1;
 }
 
-// TODO 0x10018cf0 ?CopyToClipboard@MfPeEditorData@@AAEXPAVMfStringList@@PAVMfPeDrawingContext@@@Z: 70% - the original lays the branches out longer (314 bytes instead of 296)
+// TODO 0x10018cf0 ?CopyToClipboard@MfPeEditorData@@AAEXPAVMfStringList@@PAVMfPeDrawingContext@@@Z: 87% - the original lays the branches out longer (314 bytes instead of 296)
 void MfPeEditorData::CopyToClipboard(MfStringList *text, MfPeDrawingContext *context)
 {
     if (!context->OpenClipboard(1))
@@ -2070,7 +2070,7 @@ void MfPeEditorData::PasteFromClipboard(MfStringList *text, MfPeDrawingContext *
     }
 }
 
-// TODO 0x10018ee0 ?Find@MfPeEditorData@@QAEHABVMfString@@PAVMfPeDrawingContext@@HH@Z: 59% - the original calls MfPeRegion::IsEmpty out of line and keeps the line and column in other registers
+// TODO 0x10018ee0 ?Find@MfPeEditorData@@QAEHABVMfString@@PAVMfPeDrawingContext@@HH@Z: 80% - the original calls MfPeRegion::IsEmpty out of line and keeps the line and column in other registers
 int MfPeEditorData::Find(const MfString &text, MfPeDrawingContext *context, int backwards, int wrap)
 {
     int found = 0;
@@ -2241,7 +2241,7 @@ void MfPeEditorData::ClearGlyph(int glyphs, MfPeDrawingContext *context)
     }
 }
 
-// TODO 0x10019500 ?SetModuleName@MfPeEditorData@@QAEXABVMfString@@PAVMfPeDrawingContext@@@Z: 78% - the original expands ConvertToLower's CopyOnWrite differently (VC5's per-function inline budget)
+// TODO 0x10019500 ?SetModuleName@MfPeEditorData@@QAEXABVMfString@@PAVMfPeDrawingContext@@@Z: 82% - the original expands ConvertToLower's CopyOnWrite differently (VC5's per-function inline budget)
 void MfPeEditorData::SetModuleName(const MfString &module, MfPeDrawingContext *context)
 {
     MfString name(module);

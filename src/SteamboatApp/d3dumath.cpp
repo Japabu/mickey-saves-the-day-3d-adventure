@@ -9,14 +9,14 @@
 #define D3DX_EPSILON 1.0e-5f    // tolerance of the "close enough to 1" tests
 #define D3DX_TINY 1.0e-10f      // squared lengths at or below this are treated as zero
 
-// TODO 0x100c602c ?FloatEqual@@YAHMM@Z: d3dumath.obj is not VC output; VC6 inlines this static helper (not emitted)
+// TODO 0x100c602c ?FloatEqual@@YAHMM@Z: (50% similar) d3dumath.obj is not VC output; VC6 inlines this static helper (not emitted)
 static int FloatEqual(float a, float b)
 {
     float d = a - b;
     return d >= -D3DX_EPSILON && d <= D3DX_EPSILON;
 }
 
-// TODO 0x100c6059 ?SinCos@@YAXMPAM0@Z: d3dumath.obj is not VC output (one fsincos); VC6 inlines this static helper (not emitted)
+// TODO 0x100c6059 ?SinCos@@YAXMPAM0@Z: (62% similar) d3dumath.obj is not VC output (one fsincos); VC6 inlines this static helper (not emitted)
 static void SinCos(float angle, float *pSin, float *pCos)
 {
     *pSin = (float)sin(angle);
@@ -97,7 +97,7 @@ D3DXVECTOR3 *__stdcall D3DXVec3BaryCentric(D3DXVECTOR3 *pOut, const D3DXVECTOR3 
     return pOut;
 }
 
-// TODO 0x100c62e6 _D3DXVec3Transform@12: VC6 reassociates the sums (x*m11 + (y*m21 + z*m31)) where the original adds left to right, a real rounding difference (8% similar)
+// TODO 0x100c62e6 _D3DXVec3Transform@12: VC6 reassociates the sums (x*m11 + (y*m21 + z*m31)) where the original adds left to right, a real rounding difference (18% similar)
 D3DXVECTOR4 *__stdcall D3DXVec3Transform(D3DXVECTOR4 *pOut, const D3DXVECTOR3 *pV, const D3DXMATRIX *pM)
 {
     float x = pV->x * pM->_11 + pV->y * pM->_21 + pV->z * pM->_31 + pM->_41;
@@ -114,7 +114,7 @@ D3DXVECTOR4 *__stdcall D3DXVec3Transform(D3DXVECTOR4 *pOut, const D3DXVECTOR3 *p
 // TODO 0x100c6371 _acosf: inline float wrapper of <math.h>, emitted out of line by the original compiler
 // TODO 0x100c637b _atan2f: inline float wrapper of <math.h>, emitted out of line by the original compiler
 
-// TODO 0x100c6386 _D3DXVec3TransformNormal@12: VC6 reassociates the sums (x*m11 + (y*m21 + z*m31)) where the original adds left to right, a real rounding difference (12% similar)
+// TODO 0x100c6386 _D3DXVec3TransformNormal@12: VC6 reassociates the sums (x*m11 + (y*m21 + z*m31)) where the original adds left to right, a real rounding difference (21% similar)
 D3DXVECTOR3 *__stdcall D3DXVec3TransformNormal(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV, const D3DXMATRIX *pM)
 {
     float x = pV->x * pM->_11 + pV->y * pM->_21 + pV->z * pM->_31;
@@ -131,7 +131,7 @@ D3DXVECTOR3 *__stdcall D3DXVec3TransformNormal(D3DXVECTOR3 *pOut, const D3DXVECT
 // TODO 0x100c6402 ??0D3DXVECTOR2@@QAE@MM@Z: inline in d3dxmath.h, emitted out of line by the original compiler
 // TODO 0x100c6414 ??_0D3DXVECTOR2@@QAEAAU0@M@Z: inline in d3dxmath.h, emitted out of line by the original compiler
 
-// TODO 0x100c642b _D3DXVec4Hermite@24: 51% - d3dumath.obj is not VC output
+// TODO 0x100c642b _D3DXVec4Hermite@24: 57% - d3dumath.obj is not VC output
 D3DXVECTOR4 *__stdcall D3DXVec4Hermite(D3DXVECTOR4 *pOut, const D3DXVECTOR4 *pV1, const D3DXVECTOR4 *pT1,
                                        const D3DXVECTOR4 *pV2, const D3DXVECTOR4 *pT2, float s)
 {
@@ -161,7 +161,7 @@ D3DXVECTOR4 *__stdcall D3DXVec4BaryCentric(D3DXVECTOR4 *pOut, const D3DXVECTOR4 
     return pOut;
 }
 
-// TODO 0x100c6590 _D3DXVec4Transform@12: VC6 reassociates the sums (x*m11 + (y*m21 + z*m31)) where the original adds left to right, a real rounding difference (9% similar)
+// TODO 0x100c6590 _D3DXVec4Transform@12: VC6 reassociates the sums (x*m11 + (y*m21 + z*m31)) where the original adds left to right, a real rounding difference (14% similar)
 D3DXVECTOR4 *__stdcall D3DXVec4Transform(D3DXVECTOR4 *pOut, const D3DXVECTOR4 *pV, const D3DXMATRIX *pM)
 {
     float x = pV->x * pM->_11 + pV->y * pM->_21 + pV->z * pM->_31 + pV->w * pM->_41;
@@ -195,7 +195,7 @@ float __stdcall D3DXMatrixfDeterminant(const D3DXMATRIX *pM)
 
 // TODO 0x100c670c ??_0D3DXVECTOR3@@QAEAAU0@M@Z: inline in d3dxmath.h, emitted out of line by the original compiler
 
-// TODO 0x100c672b _D3DXMatrixMultiply@12: 16% - d3dumath.obj is not VC output
+// TODO 0x100c672b _D3DXMatrixMultiply@12: 13% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixMultiply(D3DXMATRIX *pOut, const D3DXMATRIX *pM1, const D3DXMATRIX *pM2)
 {
     int i, j;
@@ -252,7 +252,7 @@ D3DXMATRIX *__stdcall D3DXMatrixTranspose(D3DXMATRIX *pOut, const D3DXMATRIX *pM
 
 // TODO 0x100c68c6 ??0D3DXVECTOR4@@QAE@MMMM@Z: inline in d3dxmath.h, emitted out of line by the original compiler
 
-// TODO 0x100c68e6 _D3DXMatrixInverse@12: 6% - d3dumath.obj is not VC output
+// TODO 0x100c68e6 _D3DXMatrixInverse@12: 12% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixInverse(D3DXMATRIX *pOut, float *pDeterminant, const D3DXMATRIX *pM)
 {
     // cofactors from the 2x2 minors of the first two and the last two rows
@@ -317,7 +317,7 @@ D3DXMATRIX *__stdcall D3DXMatrixTranslation(D3DXMATRIX *pOut, float x, float y, 
     return pOut;
 }
 
-// TODO 0x100c6d58 _D3DXMatrixRotationX@8: 8% - d3dumath.obj is not VC output
+// TODO 0x100c6d58 _D3DXMatrixRotationX@8: 25% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixRotationX(D3DXMATRIX *pOut, float angle)
 {
     float s, c;
@@ -330,7 +330,7 @@ D3DXMATRIX *__stdcall D3DXMatrixRotationX(D3DXMATRIX *pOut, float angle)
     return pOut;
 }
 
-// TODO 0x100c6dd2 _D3DXMatrixRotationY@8: 7% - d3dumath.obj is not VC output
+// TODO 0x100c6dd2 _D3DXMatrixRotationY@8: 24% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixRotationY(D3DXMATRIX *pOut, float angle)
 {
     float s, c;
@@ -343,7 +343,7 @@ D3DXMATRIX *__stdcall D3DXMatrixRotationY(D3DXMATRIX *pOut, float angle)
     return pOut;
 }
 
-// TODO 0x100c6e4d _D3DXMatrixRotationZ@8: 7% - d3dumath.obj is not VC output
+// TODO 0x100c6e4d _D3DXMatrixRotationZ@8: 24% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixRotationZ(D3DXMATRIX *pOut, float angle)
 {
     float s, c;
@@ -356,7 +356,7 @@ D3DXMATRIX *__stdcall D3DXMatrixRotationZ(D3DXMATRIX *pOut, float angle)
     return pOut;
 }
 
-// TODO 0x100c6ec9 _D3DXMatrixRotationQuaternion@8: 16% - d3dumath.obj is not VC output
+// TODO 0x100c6ec9 _D3DXMatrixRotationQuaternion@8: 40% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixRotationQuaternion(D3DXMATRIX *pOut, const D3DXQUATERNION *pQ)
 {
     float x2 = 2.0f * pQ->x;
@@ -451,7 +451,7 @@ D3DXMATRIX *__stdcall D3DXMatrixPerspectiveLH(D3DXMATRIX *pOut, float w, float h
     return pOut;
 }
 
-// TODO 0x100c71d6 _D3DXMatrixPerspectiveFov@20: 11% - d3dumath.obj is not VC output
+// TODO 0x100c71d6 _D3DXMatrixPerspectiveFov@20: 33% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixPerspectiveFov(D3DXMATRIX *pOut, float fovy, float aspect, float zn, float zf)
 {
     // right-handed; aspect is height / width
@@ -470,7 +470,7 @@ D3DXMATRIX *__stdcall D3DXMatrixPerspectiveFov(D3DXMATRIX *pOut, float fovy, flo
 
 // TODO 0x100c726a ??0D3DXPLANE@@QAE@MMMM@Z: inline in d3dxmath.h, emitted out of line by the original compiler
 
-// TODO 0x100c728a _D3DXMatrixPerspectiveFovLH@20: 13% - d3dumath.obj is not VC output
+// TODO 0x100c728a _D3DXMatrixPerspectiveFovLH@20: 34% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixPerspectiveFovLH(D3DXMATRIX *pOut, float fovy, float aspect, float zn, float zf)
 {
     float s, c;
@@ -579,7 +579,7 @@ D3DXMATRIX *__stdcall D3DXMatrixOrthoOffCenterLH(D3DXMATRIX *pOut, float l, floa
 
 // TODO 0x100c76ad ?D3DXVec2LengthSq@@YAMPBUD3DXVECTOR2@@@Z: inline in d3dxmath.h, emitted out of line by the original compiler
 
-// TODO 0x100c76c5 _D3DXQuaternionRotationMatrix@8: 49% - d3dumath.obj is not VC output
+// TODO 0x100c76c5 _D3DXQuaternionRotationMatrix@8: 57% - d3dumath.obj is not VC output
 D3DXQUATERNION *__stdcall D3DXQuaternionRotationMatrix(D3DXQUATERNION *pOut, const D3DXMATRIX *pM)
 {
     static const int next[3] = { 1, 2, 0 };
@@ -617,7 +617,7 @@ D3DXQUATERNION *__stdcall D3DXQuaternionRotationMatrix(D3DXQUATERNION *pOut, con
 // TODO 0x100c7835 ?D3DXVec3Cross@@YAPAUD3DXVECTOR3@@PAU1@PBU1@1@Z: inline in d3dxmath.h, emitted out of line by the original compiler
 // TODO 0x100c7881 ?D3DXVec3Subtract@@YAPAUD3DXVECTOR3@@PAU1@PBU1@1@Z: inline in d3dxmath.h, emitted out of line by the original compiler
 
-// TODO 0x100c78a6 _D3DXQuaternionRotationYawPitchRoll@16: 17% - d3dumath.obj is not VC output
+// TODO 0x100c78a6 _D3DXQuaternionRotationYawPitchRoll@16: 46% - d3dumath.obj is not VC output
 D3DXQUATERNION *__stdcall D3DXQuaternionRotationYawPitchRoll(D3DXQUATERNION *pOut, float yaw, float pitch, float roll)
 {
     float sinRoll, cosRoll, sinPitch, cosPitch, sinYaw, cosYaw;
@@ -650,7 +650,7 @@ D3DXQUATERNION *__stdcall D3DXQuaternionMultiply(D3DXQUATERNION *pOut, const D3D
 // TODO 0x100c7a15 ?D3DXVec3Lerp@@YAPAUD3DXVECTOR3@@PAU1@PBU1@1M@Z: inline in d3dxmath.h, emitted out of line by the original compiler
 // TODO 0x100c7a4c ?D3DXVec4LengthSq@@YAMPBUD3DXVECTOR4@@@Z: inline in d3dxmath.h, emitted out of line by the original compiler
 
-// TODO 0x100c7a7a _D3DXQuaternionLn@8: 41% - d3dumath.obj is not VC output
+// TODO 0x100c7a7a _D3DXQuaternionLn@8: 49% - d3dumath.obj is not VC output
 D3DXQUATERNION *__stdcall D3DXQuaternionLn(D3DXQUATERNION *pOut, const D3DXQUATERNION *pQ)
 {
     if (pQ->w < 1.0f) {
@@ -672,7 +672,7 @@ D3DXQUATERNION *__stdcall D3DXQuaternionLn(D3DXQUATERNION *pOut, const D3DXQUATE
     return pOut;
 }
 
-// TODO 0x100c7afa _D3DXQuaternionExp@8: 26% - d3dumath.obj is not VC output
+// TODO 0x100c7afa _D3DXQuaternionExp@8: 42% - d3dumath.obj is not VC output
 D3DXQUATERNION *__stdcall D3DXQuaternionExp(D3DXQUATERNION *pOut, const D3DXQUATERNION *pQ)
 {
     float theta = (float)sqrt(pQ->x * pQ->x + pQ->y * pQ->y + pQ->z * pQ->z);
@@ -754,7 +754,7 @@ D3DXCOLOR *__stdcall D3DXColorAdjustContrast(D3DXCOLOR *pOut, const D3DXCOLOR *p
     return pOut;
 }
 
-// TODO 0x100c7e43 _D3DXVec2Normalize@8: 23% - d3dumath.obj is not VC output
+// TODO 0x100c7e43 _D3DXVec2Normalize@8: 49% - d3dumath.obj is not VC output
 D3DXVECTOR2 *__stdcall D3DXVec2Normalize(D3DXVECTOR2 *pOut, const D3DXVECTOR2 *pV)
 {
     float lengthSq = D3DXVec2LengthSq(pV);
@@ -770,7 +770,7 @@ D3DXVECTOR2 *__stdcall D3DXVec2Normalize(D3DXVECTOR2 *pOut, const D3DXVECTOR2 *p
     return pOut;
 }
 
-// TODO 0x100c7ed7 _D3DXVec2TransformCoord@12: 7% - d3dumath.obj is not VC output
+// TODO 0x100c7ed7 _D3DXVec2TransformCoord@12: 26% - d3dumath.obj is not VC output
 D3DXVECTOR2 *__stdcall D3DXVec2TransformCoord(D3DXVECTOR2 *pOut, const D3DXVECTOR2 *pV, const D3DXMATRIX *pM)
 {
     // the shipped copy also adds a third component (the float after pV->y) times the third row
@@ -785,7 +785,7 @@ D3DXVECTOR2 *__stdcall D3DXVec2TransformCoord(D3DXVECTOR2 *pOut, const D3DXVECTO
     return pOut;
 }
 
-// TODO 0x100c7f82 _D3DXVec3Normalize@8: 37% - d3dumath.obj is not VC output
+// TODO 0x100c7f82 _D3DXVec3Normalize@8: 42% - d3dumath.obj is not VC output
 D3DXVECTOR3 *__stdcall D3DXVec3Normalize(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV)
 {
     float lengthSq = D3DXVec3LengthSq(pV);
@@ -802,7 +802,7 @@ D3DXVECTOR3 *__stdcall D3DXVec3Normalize(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *p
     return pOut;
 }
 
-// TODO 0x100c8029 _D3DXVec3TransformCoord@12: 7% - d3dumath.obj is not VC output
+// TODO 0x100c8029 _D3DXVec3TransformCoord@12: 25% - d3dumath.obj is not VC output
 D3DXVECTOR3 *__stdcall D3DXVec3TransformCoord(D3DXVECTOR3 *pOut, const D3DXVECTOR3 *pV, const D3DXMATRIX *pM)
 {
     float x = pV->x * pM->_11 + pV->y * pM->_21 + pV->z * pM->_31 + pM->_41;
@@ -817,7 +817,7 @@ D3DXVECTOR3 *__stdcall D3DXVec3TransformCoord(D3DXVECTOR3 *pOut, const D3DXVECTO
     return pOut;
 }
 
-// TODO 0x100c80f9 _D3DXVec4Cross@16: 13% - d3dumath.obj is not VC output
+// TODO 0x100c80f9 _D3DXVec4Cross@16: 29% - d3dumath.obj is not VC output
 D3DXVECTOR4 *__stdcall D3DXVec4Cross(D3DXVECTOR4 *pOut, const D3DXVECTOR4 *pV1, const D3DXVECTOR4 *pV2,
                                      const D3DXVECTOR4 *pV3)
 {
@@ -836,7 +836,7 @@ D3DXVECTOR4 *__stdcall D3DXVec4Cross(D3DXVECTOR4 *pOut, const D3DXVECTOR4 *pV1, 
     return pOut;
 }
 
-// TODO 0x100c81e9 _D3DXVec4Normalize@8: 15% - d3dumath.obj is not VC output
+// TODO 0x100c81e9 _D3DXVec4Normalize@8: 26% - d3dumath.obj is not VC output
 D3DXVECTOR4 *__stdcall D3DXVec4Normalize(D3DXVECTOR4 *pOut, const D3DXVECTOR4 *pV)
 {
     float lengthSq = D3DXVec4LengthSq(pV);
@@ -854,7 +854,7 @@ D3DXVECTOR4 *__stdcall D3DXVec4Normalize(D3DXVECTOR4 *pOut, const D3DXVECTOR4 *p
     return pOut;
 }
 
-// TODO 0x100c8275 _D3DXMatrixRotationAxis@12: 16% - d3dumath.obj is not VC output
+// TODO 0x100c8275 _D3DXMatrixRotationAxis@12: 41% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixRotationAxis(D3DXMATRIX *pOut, const D3DXVECTOR3 *pV, float angle)
 {
     float s, c;
@@ -890,7 +890,7 @@ D3DXMATRIX *__stdcall D3DXMatrixRotationYawPitchRoll(D3DXMATRIX *pOut, float yaw
     return pOut;
 }
 
-// TODO 0x100c83b0 _D3DXMatrixTransformation@28: 29% - d3dumath.obj is not VC output
+// TODO 0x100c83b0 _D3DXMatrixTransformation@28: 50% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixTransformation(D3DXMATRIX *pOut, const D3DXVECTOR3 *pScalingCenter,
                                                const D3DXQUATERNION *pScalingRotation, const D3DXVECTOR3 *pScaling,
                                                const D3DXVECTOR3 *pRotationCenter, const D3DXQUATERNION *pRotation,
@@ -955,7 +955,7 @@ D3DXMATRIX *__stdcall D3DXMatrixTransformation(D3DXMATRIX *pOut, const D3DXVECTO
     return pOut;
 }
 
-// TODO 0x100c85af _D3DXMatrixLookAt@16: 32% - d3dumath.obj is not VC output
+// TODO 0x100c85af _D3DXMatrixLookAt@16: 45% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixLookAt(D3DXMATRIX *pOut, const D3DXVECTOR3 *pEye, const D3DXVECTOR3 *pAt,
                                        const D3DXVECTOR3 *pUp)
 {
@@ -985,7 +985,7 @@ D3DXMATRIX *__stdcall D3DXMatrixLookAt(D3DXMATRIX *pOut, const D3DXVECTOR3 *pEye
     return pOut;
 }
 
-// TODO 0x100c86b5 _D3DXMatrixLookAtLH@16: 25% - d3dumath.obj is not VC output
+// TODO 0x100c86b5 _D3DXMatrixLookAtLH@16: 44% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixLookAtLH(D3DXMATRIX *pOut, const D3DXVECTOR3 *pEye, const D3DXVECTOR3 *pAt,
                                          const D3DXVECTOR3 *pUp)
 {
@@ -1014,7 +1014,7 @@ D3DXMATRIX *__stdcall D3DXMatrixLookAtLH(D3DXMATRIX *pOut, const D3DXVECTOR3 *pE
     return pOut;
 }
 
-// TODO 0x100c87bb _D3DXMatrixShadow@12: 26% - d3dumath.obj is not VC output
+// TODO 0x100c87bb _D3DXMatrixShadow@12: 65% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixShadow(D3DXMATRIX *pOut, const D3DXVECTOR4 *pLight, const D3DXPLANE *pPlane)
 {
     D3DXPLANE p;
@@ -1040,7 +1040,7 @@ D3DXMATRIX *__stdcall D3DXMatrixShadow(D3DXMATRIX *pOut, const D3DXVECTOR4 *pLig
     return pOut;
 }
 
-// TODO 0x100c8899 _D3DXMatrixReflect@8: 23% - d3dumath.obj is not VC output
+// TODO 0x100c8899 _D3DXMatrixReflect@8: 47% - d3dumath.obj is not VC output
 D3DXMATRIX *__stdcall D3DXMatrixReflect(D3DXMATRIX *pOut, const D3DXPLANE *pPlane)
 {
     D3DXPLANE p;
@@ -1067,7 +1067,7 @@ D3DXMATRIX *__stdcall D3DXMatrixReflect(D3DXMATRIX *pOut, const D3DXPLANE *pPlan
     return pOut;
 }
 
-// TODO 0x100c8958 _D3DXQuaternionToAxisAngle@12: 33% - d3dumath.obj is not VC output
+// TODO 0x100c8958 _D3DXQuaternionToAxisAngle@12: 54% - d3dumath.obj is not VC output
 void __stdcall D3DXQuaternionToAxisAngle(const D3DXQUATERNION *pQ, D3DXVECTOR3 *pAxis, float *pAngle)
 {
     float lengthSq = D3DXQuaternionLengthSq(pQ);
@@ -1091,7 +1091,7 @@ void __stdcall D3DXQuaternionToAxisAngle(const D3DXQUATERNION *pQ, D3DXVECTOR3 *
     }
 }
 
-// TODO 0x100c89d5 _D3DXQuaternionRotationAxis@12: 9% - d3dumath.obj is not VC output
+// TODO 0x100c89d5 _D3DXQuaternionRotationAxis@12: 44% - d3dumath.obj is not VC output
 D3DXQUATERNION *__stdcall D3DXQuaternionRotationAxis(D3DXQUATERNION *pOut, const D3DXVECTOR3 *pV, float angle)
 {
     D3DXVECTOR3 v;
@@ -1104,7 +1104,7 @@ D3DXQUATERNION *__stdcall D3DXQuaternionRotationAxis(D3DXQUATERNION *pOut, const
     return pOut;
 }
 
-// TODO 0x100c8a31 _D3DXQuaternionNormalize@8: 15% - d3dumath.obj is not VC output
+// TODO 0x100c8a31 _D3DXQuaternionNormalize@8: 26% - d3dumath.obj is not VC output
 D3DXQUATERNION *__stdcall D3DXQuaternionNormalize(D3DXQUATERNION *pOut, const D3DXQUATERNION *pQ)
 {
     float lengthSq = D3DXQuaternionLengthSq(pQ);
@@ -1122,7 +1122,7 @@ D3DXQUATERNION *__stdcall D3DXQuaternionNormalize(D3DXQUATERNION *pOut, const D3
     return pOut;
 }
 
-// TODO 0x100c8abd _D3DXQuaternionInverse@8: 20% - d3dumath.obj is not VC output
+// TODO 0x100c8abd _D3DXQuaternionInverse@8: 24% - d3dumath.obj is not VC output
 D3DXQUATERNION *__stdcall D3DXQuaternionInverse(D3DXQUATERNION *pOut, const D3DXQUATERNION *pQ)
 {
     float lengthSq = D3DXQuaternionLengthSq(pQ);
@@ -1139,7 +1139,7 @@ D3DXQUATERNION *__stdcall D3DXQuaternionInverse(D3DXQUATERNION *pOut, const D3DX
     return pOut;
 }
 
-// TODO 0x100c8b3c _D3DXQuaternionSlerp@16: 33% - d3dumath.obj is not VC output
+// TODO 0x100c8b3c _D3DXQuaternionSlerp@16: 48% - d3dumath.obj is not VC output
 D3DXQUATERNION *__stdcall D3DXQuaternionSlerp(D3DXQUATERNION *pOut, const D3DXQUATERNION *pQ1,
                                               const D3DXQUATERNION *pQ2, float t)
 {
@@ -1177,7 +1177,7 @@ D3DXQUATERNION *__stdcall D3DXQuaternionSquad(D3DXQUATERNION *pOut, const D3DXQU
     return pOut;
 }
 
-// TODO 0x100c8c6d _D3DXQuaternionBaryCentric@24: 24% - d3dumath.obj is not VC output
+// TODO 0x100c8c6d _D3DXQuaternionBaryCentric@24: 41% - d3dumath.obj is not VC output
 D3DXQUATERNION *__stdcall D3DXQuaternionBaryCentric(D3DXQUATERNION *pOut, const D3DXQUATERNION *pQ1,
                                                     const D3DXQUATERNION *pQ2, const D3DXQUATERNION *pQ3, float f,
                                                     float g)
@@ -1195,7 +1195,7 @@ D3DXQUATERNION *__stdcall D3DXQuaternionBaryCentric(D3DXQUATERNION *pOut, const 
     return pOut;
 }
 
-// TODO 0x100c8cf9 _D3DXPlaneIntersectLine@16: 38% - d3dumath.obj is not VC output
+// TODO 0x100c8cf9 _D3DXPlaneIntersectLine@16: 49% - d3dumath.obj is not VC output
 D3DXVECTOR3 *__stdcall D3DXPlaneIntersectLine(D3DXVECTOR3 *pOut, const D3DXPLANE *pP, const D3DXVECTOR3 *pV1,
                                               const D3DXVECTOR3 *pV2)
 {
@@ -1209,7 +1209,7 @@ D3DXVECTOR3 *__stdcall D3DXPlaneIntersectLine(D3DXVECTOR3 *pOut, const D3DXPLANE
     return D3DXVec3Lerp(pOut, pV1, pV2, t);
 }
 
-// TODO 0x100c8d86 _D3DXPlaneFromPoints@16: 46% - d3dumath.obj is not VC output
+// TODO 0x100c8d86 _D3DXPlaneFromPoints@16: 49% - d3dumath.obj is not VC output
 D3DXPLANE *__stdcall D3DXPlaneFromPoints(D3DXPLANE *pOut, const D3DXVECTOR3 *pV1, const D3DXVECTOR3 *pV2,
                                          const D3DXVECTOR3 *pV3)
 {
@@ -1223,7 +1223,7 @@ D3DXPLANE *__stdcall D3DXPlaneFromPoints(D3DXPLANE *pOut, const D3DXVECTOR3 *pV1
     return pOut;
 }
 
-// TODO 0x100c8e05 _D3DXPlaneTransform@12: 45% - d3dumath.obj is not VC output
+// TODO 0x100c8e05 _D3DXPlaneTransform@12: 78% - d3dumath.obj is not VC output
 D3DXPLANE *__stdcall D3DXPlaneTransform(D3DXPLANE *pOut, const D3DXPLANE *pP, const D3DXMATRIX *pM)
 {
     // move a point of the plane and its normal, then rebuild the plane from them
