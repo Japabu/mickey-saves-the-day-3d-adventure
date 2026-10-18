@@ -25,7 +25,7 @@ decompiled code in `src/` stays as the original was; each improvement is new cod
   do not stop for each other (the original cancelled one walk at random, which made
   Mickey pause, snap round and slide in the main menu).
 - **Skipping lines**: Space or Enter ends the line being spoken, and the dialogue goes on
-  with the next one (`port/improve/SteamboatApp/dialogue.cpp`).
+  with the next one (`port/improve/MBEngine/dialogue.cpp`).
 - **The recipe again** (`platform/win32/defaults.cpp`): Goofy reads Von Drake's tissue only
   once; using the tissue under the magnifying glass on him makes him read it again.
 - **No vanishing characters** (`port/edits/improvements.py`): a script that turns a
