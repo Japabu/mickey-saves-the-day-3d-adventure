@@ -57,8 +57,9 @@ EDITS = {
          '    if (!moving && !mBlockList.GetCount())\n', 1),
     ],
     # The options panel's volumes (platform/win32/options.cpp; Escape opens it): every
-    # channel's volume is scaled by its slider (20 voices, 10 music, the rest sound
-    # effects) and applied again when a slider moves; the background music stream follows
+    # channel's sound gets its slider's gain (20 voices, 10 music, the rest sound effects)
+    # as a float factor with its volume (platform/media/miles.cpp, port_sound_next_gain),
+    # again when a slider moves; the background music stream follows
     # the music slider (port/improve/MBEngine/sound.cpp, SteamboatApp/sound.cpp).
     'MBEngine/MBSoundChannel.h': [
         ('    long mChannelID;\n    float mRateMultiplier;\n    short mVolume;',
@@ -69,7 +70,8 @@ EDITS = {
          'void MBSoundChannel::Idle(void)\n{ { unsigned PortSoundGainVersion(); unsigned v = PortSoundGainVersion(); '
          'if (v != mPortGainVersion) { mPortGainVersion = v; VolumeChanged(); } }\n', 1),
         ('    return (short)(mVolume * masterVolume / 127);\n',
-         '    float PortSoundGain(int); return (short)(mVolume * masterVolume / 127 * PortSoundGain(mChannelID));\n', 1),
+         '    float PortSoundGain(int); void PortNextSoundGain(float); PortNextSoundGain(PortSoundGain(mChannelID)); '
+         'return (short)(mVolume * masterVolume / 127);\n', 1),
     ],
     'MfActorLib/MfProtoSkill.cpp': [
         ('        s >> iSampleRate >> bInterpolate;\n',

@@ -103,10 +103,11 @@ static std::atomic<int> s_volume[3] = {{-1}, {-1}, {-1}}; // percent; -1 until r
 static std::atomic<unsigned> s_volume_version{1};
 static const char *const kVolumeKeys[3] = {"music volume", "voice volume", "effects volume"};
 
-// The sliders are logarithmic: a slider's percent is a level in decibels over a 40 dB
-// range (100 is full volume, 50 is -20 dB, 0 is silent), so equal steps sound like equal
-// steps. gain() is the amplitude, 0..1.
-static const double kRangeDb = 40;
+// The sliders are logarithmic: a slider's percent is a level in decibels over a 60 dB
+// range (100 is full volume, 50 is -30 dB, 1 is -59 dB, 0 is silent), so equal steps
+// sound like equal steps down to very quiet. gain() is the amplitude, 0..1; the mixer
+// applies it as a float (port_sound_next_gain), not in the game's 0..127 volume steps.
+static const double kRangeDb = 60;
 
 static float gain(int percent)
 {
@@ -117,22 +118,24 @@ static int volume(int which)
 {
     static std::once_flag once;
     std::call_once(once, [] {
-        // port.ini from before the logarithmic sliders holds amplitudes in percent: they
-        // become the slider positions of the same loudness, once
+        // port.ini's "volume scale" says what its volumes are: none, amplitudes in percent
+        // (before the logarithmic sliders); 1, levels over 40 dB; 2, over kRangeDb. Older
+        // ones become the slider positions of the same loudness, once.
         std::string scale;
-        bool linear = !ini_get("volume scale", scale);
+        int was = ini_get("volume scale", scale) ? atoi(scale.c_str()) : 0;
         for (int i = 0; i < 3; i++) {
             int v = ini_int(kVolumeKeys[i], 100);
             v = v < 0 ? 0 : v > 100 ? 100 : v;
-            if (linear && v > 0 && v < 100) {
-                v = (int)lround(100 + 100 / kRangeDb * 20 * log10(v / 100.0));
+            if (was < 2 && v > 0 && v < 100) {
+                double db = was == 1 ? (v - 100) * 40.0 / 100 : 20 * log10(v / 100.0);
+                v = (int)lround(100 + 100 / kRangeDb * db);
                 v = v < 1 ? 1 : v;
                 ini_set(kVolumeKeys[i], v);
             }
             s_volume[i] = v;
         }
-        if (linear)
-            ini_set("volume scale", 1);
+        if (was < 2)
+            ini_set("volume scale", 2);
     });
     return s_volume[which];
 }

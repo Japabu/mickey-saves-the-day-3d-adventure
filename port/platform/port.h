@@ -28,6 +28,9 @@ unsigned port_sound_gain_version(void);
 int port_setting(const char *key, int fallback);
 int port_scale(void);
 void port_set_scale(int scale);  // takes effect at once (the sharp copies are made again)
+// The slider gain (0..1) of the sound whose volume the game sets next (AIL_quick_set_volume,
+// AIL_set_stream_volume on this thread), applied as a float on top of its 0..127 volume.
+void port_sound_next_gain(float gain);
 // Marks a Miles stream as the background music (its volume follows the music slider).
 void port_music_stream(void *stream);
 // Blocks until the next display refresh (IDirectDraw::WaitForVerticalBlank).

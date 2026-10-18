@@ -24,6 +24,9 @@
 // - volumes are 0..127, the pan ("extravol") 0..127 with 64 the centre; the master
 //   volume is the mixer's, so it applies to the movies' sound too, as in the original
 //   where Bink and Smacker played through Miles.
+// - the options panel's slider of a sound's channel is a float factor on top of the
+//   volume (port_sound_next_gain): in the 0..127 steps the quiet end of a slider would
+//   be a handful of loud steps and then silence.
 #include "media.h"
 #include "../port.h"
 
@@ -47,8 +50,13 @@ void set_error(const std::string &e)
     MEDIA_LOG("miles: %s\n", e.c_str());
 }
 
+// The slider gain the next volume call takes (port_sound_next_gain), -1 when none: the
+// game computes a channel's volume and hands it to its sound in one go, on one thread.
+thread_local float t_next_gain = -1;
+
 struct Voice {
     enum State { Idle, Playing, Paused, Done };
+    float slider = 1;                // its channel's slider gain (port_sound_next_gain)
     std::atomic<bool> music{false};  // the background music (port_music_stream): the music slider applies
     float stream_volume = 1;         // a file stream's own volume (AIL_set_stream_volume), 0..1
     float stream_gain = -1;          // what the stream has: stream_volume times the music slider
@@ -170,7 +178,11 @@ struct Voice {
 
     void set_volume(int volume, int pan)
     {
-        float v = (volume < 0 ? 0 : volume > 127 ? 127 : volume) / 127.0f;
+        if (t_next_gain >= 0) {
+            slider = t_next_gain;
+            t_next_gain = -1;
+        }
+        float v = (volume < 0 ? 0 : volume > 127 ? 127 : volume) / 127.0f * slider;
         if (media) {
             // a stream is always centred; the gain applies to what is queued too
             stream_volume = v;
@@ -475,8 +487,10 @@ void __stdcall AIL_quick_unload(HAUDIO audio) { delete quick(audio); }
 
 void __stdcall AIL_quick_set_volume(HAUDIO audio, int volume, int extravol)
 {
-    if (!audio)
+    if (!audio) {
+        t_next_gain = -1;
         return;
+    }
     Voice &v = quick(audio)->voice;
     Lock l(&v);
     v.set_volume(volume, extravol);
@@ -546,6 +560,8 @@ HSTREAM __stdcall AIL_open_stream(_DIG_DRIVER *dig, const char *filename, int st
 
 void __stdcall AIL_close_stream(HSTREAM stream) { delete stream_voice(stream); }
 
+void port_sound_next_gain(float gain) { t_next_gain = gain < 0 ? 0 : gain; }
+
 void port_music_stream(void *stream)
 {
     if (stream)
@@ -597,8 +613,10 @@ int __stdcall AIL_stream_status(HSTREAM stream)
 
 void __stdcall AIL_set_stream_volume(HSTREAM stream, int volume)
 {
-    if (!stream)
+    if (!stream) {
+        t_next_gain = -1;
         return;
+    }
     Voice *v = stream_voice(stream);
     Lock l(v);
     v->set_volume(volume, 64);

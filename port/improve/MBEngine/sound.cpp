@@ -4,3 +4,4 @@
 
 float PortSoundGain(int channel) { return port_sound_gain(channel); }
 unsigned PortSoundGainVersion() { return port_sound_gain_version(); }
+void PortNextSoundGain(float gain) { port_sound_next_gain(gain); }
