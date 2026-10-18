@@ -169,7 +169,7 @@ png_read_init(png_structp png_ptr)
  * here.  The application can then have access to the signature bytes we
  * read if it is determined that this isn't a valid PNG file.
  */
-// TODO 0x1011f360 _png_read_info: the chunk dispatch: the original hoists the three argument pushes above each chunk-name compare and shares the call (91% similar)
+// EQUIV 0x1011f360 _png_read_info: proven (renaming-equivalent); bytes differ: the chunk dispatch: the original hoists the three argument pushes above each chunk-name compare and shares the call (91% similar)
 void
 png_read_info(png_structp png_ptr, png_infop info_ptr)
 {
@@ -734,7 +734,7 @@ png_read_image(png_structp png_ptr, png_bytepp image)
  * file, will verify the end is accurate, and will read any comments
  * or time information at the end of the file, if info is not NULL.
  */
-// TODO 0x1011fcb0 _png_read_end: as png_read_info: argument pushes hoisted above the chunk-name compares (91% similar)
+// EQUIV 0x1011fcb0 _png_read_end: proven (renaming-equivalent); bytes differ: as png_read_info: argument pushes hoisted above the chunk-name compares (91% similar)
 void
 png_read_end(png_structp png_ptr, png_infop info_ptr)
 {
