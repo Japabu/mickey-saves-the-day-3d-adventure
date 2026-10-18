@@ -16,6 +16,23 @@ EDITS = {
     # frames move by nothing, then one by a whole keyframe).
     # A walking character's height follows the floor smoothly (port/improve/RuntimeLib/
     # walk.cpp) instead of jumping by up to a quarter of a leg when a walk starts.
+    # A click finds thin objects (the fishing pole) also a little right of and below the
+    # cursor's tip, where the glove is (port/improve/RuntimeLib/pick.cpp for the clicks
+    # the scripts get, port/improve/SteamboatApp/cursor.cpp for using an item and the
+    # cursor over the 3D scene).
+    'RuntimeLib/MfViewEventHandler.h': [
+        ('    void PickWithRay(MfRenderView *view);\n',
+         '    void PickWithRay(MfRenderView *view); void PortPickWithRay(MfRenderView *view, float x, float y);\n', 1),
+    ],
+    'RuntimeLib/MfViewEventHandler.cpp': [
+        ('    PickWithRay(view);\n    if (mPickedNode)\n        return;\n    best = -FLT_MAX;\n',
+         '    PortPickWithRay(view, x, y);\n    if (mPickedNode)\n        return;\n    best = -FLT_MAX;\n', 1),
+    ],
+    'SteamboatApp/ViewEventHandler.cpp': [
+        ('MfAiActor *ViewEventHandler::HandleLButtonUp(MfMouseHookData *data, MfPickData &pickData)\n{\n',
+         'MfAiActor *ViewEventHandler::HandleLButtonUp(MfMouseHookData *data, MfPickData &pickData)\n'
+         '{ { MfAiActor *PortWidePick(ViewEventHandler *, MfMouseHookData *, MfPickData &); return PortWidePick(this, data, pickData); }\n', 1),
+    ],
     'RuntimeLib/MfLocoActivity.cpp': [
         ('    mLastSampleTime = sample;\n    mPathPos = pos;\n',
          '    mLastSampleTime = sample; { void PortEaseWalkHeight(MfSkeletonNode *, const MfTransform3 &, unsigned long); '
@@ -105,11 +122,17 @@ EDITS = {
         ('void SteamboatNode::Idle()\n{\n', 'void SteamboatNode::Idle()\n{ PortHover3D();\n', 1),
         # A held item sparkles over an item hotspot or a 3D actor a click with it is used on
         # (port/improve/SteamboatApp/cursor.cpp): the item cursor gets a sparkle sequence, the
-        # item hotspots' enter and leave events are noted while an item is held too.
+        # item hotspots' enter and leave events are noted while an item is held too. An item
+        # hotspot without a rollover cursor of its own (the bait bucket) shows the pointing
+        # hand: a click on any of them makes the player go and use it.
         ('        case 203:\n            if (!sCursorItem)\n                SetCursorSequence(0);\n            break;\n'
          '        case 202:\n            if (!sCursorItem)\n                SetCursorSequence(((SBItem *)data)->GetRolloverCursor());\n',
          '        case 203: { void PortOverItemHotspot(bool); PortOverItemHotspot(false); }\n            if (!sCursorItem)\n                SetCursorSequence(0);\n            break;\n'
-         '        case 202: { void PortOverItemHotspot(bool); PortOverItemHotspot(true); }\n            if (!sCursorItem)\n                SetCursorSequence(((SBItem *)data)->GetRolloverCursor());\n', 1),
+         '        case 202: { void PortOverItemHotspot(bool); PortOverItemHotspot(true); }\n            if (!sCursorItem)\n'
+         '                SetCursorSequence(((SBItem *)data)->GetRolloverCursor() ? ((SBItem *)data)->GetRolloverCursor() : 10);\n', 1),
+        # the cursor a hotspot asked for (0 when it is left): the 3D cursor leaves it alone
+        ('void SteamboatNode::SetCursorSequence(unsigned long seq)\n{\n',
+         'void SteamboatNode::SetCursorSequence(unsigned long seq)\n{ { void PortHotspotCursor(unsigned long); PortHotspotCursor(seq); }\n', 1),
         ('        surface->Release();\n    }\n\n    int cursorInt = 0;\n    MBString cursorString = item->GetClassNameA();\n',
          '        surface->Release();\n    } { void PortAddSparkles(IMBAnim *); PortAddSparkles(cursor); }\n\n    int cursorInt = 0;\n    MBString cursorString = item->GetClassNameA();\n', 1),
     ],

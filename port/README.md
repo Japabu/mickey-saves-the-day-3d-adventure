@@ -20,6 +20,9 @@ decompiled code in `src/` stays as the original was; each improvement is new cod
   the pointing hand now shows only over the buttons and the items usable in the scene.
   A held item sparkles over what a click with it is used on (an object, a character),
   not over the floor, where a click only makes Mickey walk.
+  A click finds what it can be used on also a few pixels right of and below the glove's
+  tip (thin things like the fishing pole), and items of the scene without a cursor of
+  their own (the bait bucket) show the pointing hand.
 - **Options panel** (Escape; `platform/win32/options.cpp`, `platform/media`): an overall
   volume and one each for music, voices and sound effects, logarithmic and fine at the
   quiet end; moving the voices or effects slider plays a sample, and the music plays on
