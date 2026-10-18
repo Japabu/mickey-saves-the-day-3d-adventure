@@ -1,10 +1,16 @@
 # Builds the browser version from source and publishes it on GitHub Pages.
-# It runs only when started by hand (Actions > Web version > Run workflow). The page
-# contains no game data: each player picks their own CD image, which stays in their
-# browser. Needs Settings > Pages > Source: GitHub Actions.
+# It runs on every push to main that changes the game's code (or by hand: Actions > Web
+# version > Run workflow). The page contains no game data: each player picks their own
+# CD image, which stays in their browser. Needs Settings > Pages > Source: GitHub Actions.
 name: Web version
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'port/**'
+      - 'src/**'
+      - '.github/workflows/pages.yml'
   workflow_dispatch:
 
 permissions:
