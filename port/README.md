@@ -42,7 +42,8 @@ decompiled code in `src/` stays as the original was; each improvement is new cod
   game's data let it be used in no scene, so the click did nothing.
 - **Saved songs stay** (`port/improve/SteamboatApp/songbird.cpp`): a song saved with the
   camera in the Songbird activity is still in the song book next time, and an erased one
-  stays gone. The original wrote it into a file opened read-only, so it was lost.
+  stays gone; a song already in the book, or an empty board, is not saved. The
+  original wrote songs into a file opened read-only, so they were lost.
 - **No vanishing characters** (`port/edits/improvements.py`): a script that turns a
   character toward the point it stands on (Ludwig Von Drake after the tissue) no longer
   makes its position invalid, which made it disappear.

@@ -175,6 +175,11 @@ EDITS = {
          '        stream->Release(); (void)key;\n'
          '        PortWriteSongs();\n'
          '        // PORT: the book is written into the file opened for writing\n', 1),
+        # a song already in the book, or an empty board, is not saved again
+        ('    mSongs.insert(mSongs.end(), song);\n',
+         '    if (song.find_first_not_of(\'x\') == MBString::npos) return; '
+         'for (MBString *s = mSongs.begin(); s != mSongs.end(); s++) if (*s == song) return; '
+         'mSongs.insert(mSongs.end(), song);\n', 1),
         ('                mSongPtr = mSongs.erase(--mSongPtr);\n',
          '                mSongPtr = mSongs.erase(--mSongPtr); PortWriteSongs();\n', 1),
     ],
