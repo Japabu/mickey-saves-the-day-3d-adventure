@@ -298,6 +298,11 @@ void pump_events()
             key_state(vk, down);
             UINT base = vk == VK_LBUTTON ? WM_LBUTTONDOWN : vk == VK_RBUTTON ? WM_RBUTTONDOWN : WM_MBUTTONDOWN;
             UINT msg = down ? (e.clicks == 2 && (w->cls->wc.style & CS_DBLCLKS) ? base + 2 : base) : base + 1;
+            // a click ends the line being spoken, as Space does, before the game sees it:
+            // a remark of the menus gives way to what was clicked, and a conversation
+            // goes on with its next line (a double click skips one line, not two)
+            if (msg == WM_LBUTTONDOWN)
+                port_skip_dialogue();
             mouse_message(w, msg, e.x, e.y);
             break;
         }

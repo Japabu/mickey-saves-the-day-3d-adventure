@@ -33,8 +33,10 @@ decompiled code in `src/` stays as the original was; each improvement is new cod
   floor over a few frames instead of jumping when a walk starts; two walking characters
   do not stop for each other (the original cancelled one walk at random, which made
   Mickey pause, snap round and slide in the main menu).
-- **Skipping lines**: Space or Enter ends the line being spoken, and the dialogue goes on
-  with the next one (`port/improve/MBEngine/dialogue.cpp`).
+- **Skipping lines**: a click, Space or Enter ends the line being spoken, and the dialogue
+  goes on with the next one (`port/improve/MBEngine/dialogue.cpp`). A click on a button of
+  the menus or the activities works while Mickey still explains it (the original waited
+  for him to finish).
 - **The recipe again** (`platform/win32/defaults.cpp`): Goofy reads Von Drake's tissue only
   once; using the tissue under the magnifying glass on him makes him read it again.
 - **The dog whistle plays** (`port/improve/SteamboatApp/items.cpp`): a click on it in the
