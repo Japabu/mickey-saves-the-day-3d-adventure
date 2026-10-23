@@ -276,21 +276,17 @@ async function savedGameFile(dir, icon) {
                   { type: 'application/json' });
 }
 
-async function exportSave(dir, icon, share) {
+async function exportSave(dir, icon) {
   try {
     const file = await savedGameFile(dir, icon);
     if (!file) { sayAboutSaves(`${SLOT_ICONS[icon - 1][1]} has no saved game file.`); return; }
-    if (share) {
-      await navigator.share({ files: [file], title: 'Mickey Saves the Day: a saved game' });
-      return;
-    }
     const a = document.createElement('a');
     a.href = URL.createObjectURL(file);
     a.download = file.name;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 10000);
   } catch (err) {
-    if (err.name !== 'AbortError') sayAboutSaves(`Exporting failed: ${err.message}`);
+    sayAboutSaves(`Exporting failed: ${err.message}`);
   }
 }
 
@@ -387,7 +383,6 @@ async function showSaves() {
   } catch (err) {
     sayAboutSaves(`The saved games cannot be read: ${err.message}`);
   }
-  const canShare = !!navigator.canShare?.({ files: [new File([''], 'x.json', { type: 'application/json' })] });
   const when = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
   for (const { slot, icon: pictureNo, scene, used, lang, dir } of slots) {
     if (pictureNo !== slot) console.warn(`saved game slot ${slot} has the picture ${pictureNo}`);
@@ -409,8 +404,7 @@ async function showSaves() {
       b.addEventListener('click', action);
       li.append(b);
     };
-    add('Export', 'secondary', () => exportSave(dir, pictureNo, false));
-    if (canShare) add('Share', 'secondary', () => exportSave(dir, pictureNo, true));
+    add('Export', 'secondary', () => exportSave(dir, pictureNo));
     add('Delete', 'danger', () => deleteSave(dir, slot, pictureNo, `${emoji} ${picture}, ${languageLabel(lang)}`));
     list.append(li);
   }
