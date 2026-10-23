@@ -156,6 +156,10 @@ EDITS = {
          '            }\n'
          '        }\n'
          '    PortCursor(worldMousePosition); }\n', 1),
+        # The dog whistle can be played (port/improve/SteamboatApp/items.cpp): the game's
+        # data lets it be used in no scene, so a click on it did nothing.
+        ('            bool bActive = pItem->IsItemActiveInSpace(SteamboatNode::GetSpaceCode());\n',
+         '            bool PortItemUsable(SBItem *); bool bActive = PortItemUsable(pItem);\n', 1),
     ],
     # Facing the point it stands on: the script of Von Drake's lab (DKinit's face_board,
     # after the tissue dialogue) turns him toward his own saved position. The direction

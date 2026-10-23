@@ -37,6 +37,9 @@ decompiled code in `src/` stays as the original was; each improvement is new cod
   with the next one (`port/improve/MBEngine/dialogue.cpp`).
 - **The recipe again** (`platform/win32/defaults.cpp`): Goofy reads Von Drake's tissue only
   once; using the tissue under the magnifying glass on him makes him read it again.
+- **The dog whistle plays** (`port/improve/SteamboatApp/items.cpp`): a click on it in the
+  inventory bar blows it, in every scene (in Daisy's yard that scares the cat away). The
+  game's data let it be used in no scene, so the click did nothing.
 - **No vanishing characters** (`port/edits/improvements.py`): a script that turns a
   character toward the point it stands on (Ludwig Von Drake after the tissue) no longer
   makes its position invalid, which made it disappear.

@@ -371,9 +371,8 @@ void CSBInventory::PortCursor(const MBPoint &worldMousePosition)
     bool live = anim == recyclebin || anim == map || anim == pants;
     if (anim >= item1 && anim <= item10) {
         MBComPtr<ISBGameState> gs(MBIID_CSBGameState);
-        SBItem *item = gs->GetItem(m_vecItemsInInventory[anim - item1].strInstanceName);
-        MBString space = SteamboatNode::GetSpaceCode();
-        live = item && item->IsItemActiveInSpace(space);
+        bool PortItemUsable(SBItem *); // items.cpp
+        live = PortItemUsable(gs->GetItem(m_vecItemsInInventory[anim - item1].strInstanceName));
     }
     SteamboatNode::GetActiveCursor()->SetCurrentSequence(live ? kHighlightCursor : kPlainCursor);
 }
