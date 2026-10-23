@@ -11,6 +11,19 @@
 
 extern "C" {
 
+static thread_local unsigned int sHoldRand = 1;
+
+void port_srand(unsigned int seed)
+{
+    sHoldRand = seed;
+}
+
+int port_rand(void)
+{
+    sHoldRand = sHoldRand * 214013u + 2531011u;
+    return (sHoldRand >> 16) & 0x7fff;
+}
+
 int port_iswctype(wint_t c, unsigned short mask)
 {
     int r = 0;

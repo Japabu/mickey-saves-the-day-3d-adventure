@@ -62,6 +62,14 @@ char *_ltoa(long value, char *buf, int radix);
 static inline char *itoa(int value, char *buf, int radix) { return _itoa(value, buf, radix); }
 static inline char *ltoa(long value, char *buf, int radix) { return _ltoa(value, buf, radix); }
 static inline int _putenv(const char *s) { return putenv(strdup(s)); }
+// Microsoft's rand (per thread, 15 bits): a seed gives the original's sequence on every
+// build (the saved game's seed places the recyclable cans).
+int port_rand(void);
+void port_srand(unsigned int seed);
+#define rand port_rand
+#define srand port_srand
+#undef RAND_MAX
+#define RAND_MAX 0x7fff
 #define _MAX_PATH 260
 #define _MAX_DRIVE 3
 #define _MAX_DIR 256
