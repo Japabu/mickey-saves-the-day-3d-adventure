@@ -161,6 +161,23 @@ EDITS = {
         ('            bool bActive = pItem->IsItemActiveInSpace(SteamboatNode::GetSpaceCode());\n',
          '            bool PortItemUsable(SBItem *); bool bActive = PortItemUsable(pItem);\n', 1),
     ],
+    # Saved songs stay in the song book (port/improve/SteamboatApp/songbird.cpp): the
+    # original wrote a saved song into the scene file opened read-only, and only after
+    # releasing it; erasing a song never reached the file.
+    'SteamboatApp/SBSongbirdNode.h': [
+        ('    void InitSongGrid();\n',
+         '    void InitSongGrid(); void PortWriteSongs(); // port/improve/SteamboatApp/songbird.cpp\n', 1),
+    ],
+    'SteamboatApp/SBSongbirdNode.cpp': [
+        ('        MBComPtr<IMBPref> pref(MBIID_CMBPref);\n'
+         '        pref->SetString(stream, "songs", key, MBString(song));\n'
+         '        stream->Release();\n',
+         '        stream->Release(); (void)key;\n'
+         '        PortWriteSongs();\n'
+         '        // PORT: the book is written into the file opened for writing\n', 1),
+        ('                mSongPtr = mSongs.erase(--mSongPtr);\n',
+         '                mSongPtr = mSongs.erase(--mSongPtr); PortWriteSongs();\n', 1),
+    ],
     # Facing the point it stands on: the script of Von Drake's lab (DKinit's face_board,
     # after the tissue dialogue) turns him toward his own saved position. The direction
     # is then (0, 0, 0) and its normalization 0/0 made his transform NaN, so he vanished
